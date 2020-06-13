@@ -1,3 +1,3 @@
-# Safe-rl
+# Machine Learning Control
 
-Repository for performing the safe-RL research on the panda robot.
+Repository for the machine learning control framework.
