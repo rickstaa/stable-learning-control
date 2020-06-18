@@ -1,0 +1,1 @@
+Each algorithm will be placed in a seperate folder.
