@@ -1,9 +1,3 @@
-[submodule "Guarantee_Learning_Control"]
-	path = Guarantee_Learning_Control
-	url = git@github.com:RLControlTheoreticGuarantee/Guarantee_Learning_Control.git
-[submodule "Actor-critic-with-stability-guarantee"]
-	path = Actor-critic-with-stability-guarantee
-	url = git@github.com:hithmh/Actor-critic-with-stability-guarantee.git
 [submodule "panda_openai_sim"]
 	path = panda_openai_sim
 	url = git@github.com:rickstaa/panda_openai_sim.git
