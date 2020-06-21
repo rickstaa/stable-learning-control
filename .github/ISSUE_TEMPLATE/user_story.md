@@ -1,7 +1,7 @@
 ---
 name: User Story template
 about: Template for creating user stories
-title: "[topic] - [User-Story]"
+title: "[User-Story]"
 labels: ''
 assignees: ''
 
