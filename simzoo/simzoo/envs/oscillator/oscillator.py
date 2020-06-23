@@ -13,7 +13,7 @@ import csv
 import matplotlib.pyplot as plt
 
 
-class oscillator(gym.Env):
+class Oscillator(gym.Env):
     def __init__(self):
         self.K = 1  # + np.random.uniform(0, 10, 1)
         self.c1 = 1.6
@@ -141,7 +141,7 @@ class oscillator(gym.Env):
 
 
 if __name__ == "__main__":
-    env = oscillator()
+    env = Oscillator()
     T = 600
     path = []
     t1 = []
