@@ -64,7 +64,7 @@ setup(
             "sphinx_rtd_theme",
             "sphinx-navtree",
         ],
-        "dev": ["bumpversion", "flake8", "black"],
+        "dev": ["pytest", "bumpversion", "flake8", "black"],
     },
     include_package_data=True,
     data_files=[(date_files_relative_path, ["README.md"])],

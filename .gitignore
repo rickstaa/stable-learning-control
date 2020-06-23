@@ -3,6 +3,7 @@
 logs/*
 control/logs
 __pycache__/
+*.pytest_cache/
 
 # Files to ignore
 *.code-workspace
