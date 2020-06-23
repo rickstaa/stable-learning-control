@@ -1,10 +1,10 @@
-"""A setup.py file for the 'simzoo' python package.
+"""Setup file for the 'simzoo' python package.
 """
 
 # Standard library imports
 import logging
 import os
-from setuptools import setup, find_packages
+from setuptools import setup
 import sys
 import re
 from distutils.sysconfig import get_python_lib

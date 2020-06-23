@@ -1,6 +1,9 @@
 # Folders to ignore
 .vscode/
-log/*
+logs/*
+control/logs
+__pycache__/
 
 # Files to ignore
 *.code-workspace
+*.egg-info

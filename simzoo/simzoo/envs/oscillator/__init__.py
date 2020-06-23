@@ -2,4 +2,4 @@
 (repressilator)."""
 
 # Import modules
-from .oscillator import Oscillator
+from simzoo.envs.oscillator.oscillator import Oscillator
