@@ -24,19 +24,17 @@ class Oscillator(gym.Env):
         # self.c2 = 0.16 + np.random.uniform(-0.08,0.08,1)
         # self.c3 = 0.16 + np.random.uniform(-0.08,0.08,1)
         # self.c4 = 0.06 + np.random.uniform(-0.03,0.03,1)
-        self.b1 = 1
-        self.b2 = 1
-        self.b3 = 1
+        self.b1 = 5
+        self.b2 = 5
+        self.b3 = 5
         self.dt = 1.0
         self.t = 0
         self.sigma = 0.0
         # Angle limit set to 2 * theta_threshold_radians so failing observation is still within bounds
-        high = np.array([100, 100, 100, 100, 100, 100, 100, 100])
+        high = np.array([1, 1, 1, 1, 1, 1, 1, 1])
 
         self.action_space = spaces.Box(
-            low=np.array([0.0, 0.0, 0.0]),
-            high=np.array([1.0, 1.0, 1.0]),
-            dtype=np.float32,
+            low=np.array([0.0, 0.0, 0.0]), high=np.array([1, 1, 1]), dtype=np.float32
         )
         self.observation_space = spaces.Box(-high, high, dtype=np.float32)
 
@@ -51,7 +49,7 @@ class Oscillator(gym.Env):
         return [seed]
 
     def step(self, action):
-        # action = np.clip(action, np.array([-1., -1., -1.]), np.array([1., 1., 1.]))
+        action = np.clip(action, np.array([0.0, 0.0, 0.0]), np.array([1, 1, 1]))
         u1, u2, u3 = action
 
         m1, m2, m3, p1, p2, p3 = self.state
@@ -106,7 +104,6 @@ class Oscillator(gym.Env):
         self.t = self.t + 1
         r1, r2 = self.reference(self.t)
         cost = np.square(p1 - r1)
-        # print(cost)
         if cost > 100:
             done = True
         else:
@@ -130,7 +127,6 @@ class Oscillator(gym.Env):
     def reference(self, t):
         r1 = 8 + 7 * np.sin((2 * np.pi) * t / 200)
         # r1 = 8 + 7 * np.sin((2 * np.pi) * t / 40)
-        # r1 = 8
         r2 = 8 + 7 * np.sin((2 * np.pi) * (t + 200 / 3) / 200)
         return r1, r2
 
@@ -145,13 +141,13 @@ class Oscillator(gym.Env):
 
 
 if __name__ == "__main__":
-    env = oscillator()
+    env = Oscillator()
     T = 600
     path = []
     t1 = []
     s = env.reset()
     for i in range(int(T / env.dt)):
-        s, r, done, info = env.step(np.array([0, 0, 0]))
+        s, r, done, info = env.step(np.array([0, 0]))
         path.append(s)
         t1.append(i * env.dt)
 
@@ -184,22 +180,13 @@ if __name__ == "__main__":
 
     fig = plt.figure(figsize=(9, 6))
     ax = fig.add_subplot(111)
-    # ax.plot(t1, path, color='blue', label='0.1')
-    ax.plot(t1, np.array(path)[:, 3], color="blue", label="protein1")
-    # ax.plot(t1, np.array(path)[:, 4], color='blue', label='protein2')
-    # ax.plot(t1, np.array(path)[:, 5], color='blue', label='protein3')
-    # # ax.plot(t1, np.array(path)[:, 3:5], color='red', label='protein')
-    ax.plot(t1, np.array(path)[:, 6], color="yellow", label="error")
-    # plt.plot(n, su, n, sl)
-    #
-    # plt.show()
-
+    ax.plot(t1, path, color="blue", label="0.1")
     # ax.plot(t2, path2, color='red',label='1')
     #
     # ax.plot(t3, path3, color='black', label='0.01')
     # ax.plot(t4, path4, color='orange', label='0.001')
     handles, labels = ax.get_legend_handles_labels()
-    #
+
     ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
     plt.show()
     print("done")
