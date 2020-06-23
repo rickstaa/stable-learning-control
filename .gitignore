@@ -3,7 +3,9 @@
 logs/*
 control/logs
 __pycache__/
+*.pytest_cache/
 
 # Files to ignore
+*.pyc
 *.code-workspace
 *.egg-info
