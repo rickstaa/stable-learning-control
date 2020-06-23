@@ -10,6 +10,7 @@ SEED = None
 
 # Retrieve script path
 FILE_PATH = os.path.realpath(__file__)
+FOLDER_PATH = os.path.join(FILE_PATH, "..")
 
 # Algorithm settings
 VARIANT = {
@@ -91,7 +92,7 @@ if VARIANT["algorithm_name"] == "RARL":
 VARIANT["log_path"] = os.path.abspath(
     os.path.join(
         "..",
-        FILE_PATH,
+        FOLDER_PATH,
         "logs",
         VARIANT["env_name"],
         VARIANT["algorithm_name"] + VARIANT["additional_description"],
@@ -415,15 +416,7 @@ def get_env_from_name(name):
         env = dreamer(eval=True)
         env = env.unwrapped
     elif name == "oscillator":
-        current_dir = os.path.dirname(
-            os.path.abspath(inspect.getfile(inspect.currentframe()))
-        )
-        parent_dir = os.path.dirname(current_dir)
-        sys.path.insert(0, parent_dir)
-        import simzoo
-        from simzoo.envs.oscillator import (
-            Oscillator as env,
-        )  # TODO: FIX to absolute import
+        from simzoo.envs.oscillator import Oscillator as env
 
         env = env()
         env = env.unwrapped
