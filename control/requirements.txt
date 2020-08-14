@@ -1,7 +1,0 @@
-numpy==1.16.3
-tensorflow-gpu==1.13.1
-tensorflow-probability==0.6.0
-opencv-python
-cloudpickle
-gym
-matplotlib

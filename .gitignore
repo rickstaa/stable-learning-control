@@ -4,8 +4,11 @@ logs/*
 control/logs
 __pycache__/
 *.pytest_cache/
+*.egg-info/
+runs/
 
 # Files to ignore
 *.pyc
 *.code-workspace
 *.egg-info
+MUJOCO_LOG.TXT
