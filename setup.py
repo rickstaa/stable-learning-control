@@ -26,15 +26,6 @@ logger.setLevel(logging.INFO)
 # Setup script ##################################
 #################################################
 
-# Get current package version
-# __version__ = re.sub(
-#     r"[^\d.]",
-#     "",
-#     open(
-#         os.path.join(os.path.dirname(os.path.realpath(__file__)), "version.py")
-#     ).read(),
-# )
-
 # Parse readme.md
 with open("README.md") as f:
     readme = f.read()
@@ -42,7 +33,6 @@ with open("README.md") as f:
 # Run python setup
 setup(
     name="machine_learning_control",
-    # version=__version__,
     setup_requires=["setuptools_scm"],
     use_scm_version=True,
     description=(
