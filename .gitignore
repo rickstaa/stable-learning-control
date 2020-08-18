@@ -9,6 +9,7 @@ runs/
 .eggs/
 build/
 dist/
+data/
 
 # Files to ignore
 *.pyc
