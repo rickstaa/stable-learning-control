@@ -1,16 +1,24 @@
+"""This module contains several replay buffers.
+"""
+
 import numpy as np
 import torch
 
-from control.utils.helpers import combined_shape
+from machine_learning_control.control.utils.helpers import combined_shape
 
 
 class ReplayBuffer:
-    """
-    A simple FIFO experience replay buffer for SAC agents.
+    """A simple FIFO experience replay buffer.
     """
 
     def __init__(self, obs_dim, act_dim, size):
-        # QUESTION: Why is self.size needed what does it track?
+        """Constructs all the necessary attributes for the FIFO ReplayBuffer object.
+
+        Args:
+            obs_dim (tuple): The size of the observation space.
+            act_dim (tuple): The size of the action space.
+            size (int): The replay buffer size.
+        """
 
         # Preallocate memory for experience buffer (s,s',a,r,d)
         self.obs_buf = np.zeros(combined_shape(size, obs_dim), dtype=np.float32)  # S
@@ -23,7 +31,15 @@ class ReplayBuffer:
         self.ptr, self.size, self.max_size = 0, 0, size
 
     def store(self, obs, act, rew, next_obs, done):
-        """Store experience tuple elements."""
+        """Add experience tuple to buffer.
+
+        Args:
+            obs (numpy.ndarray): Start state (observation).
+            act (numpy.ndarray): Action.
+            rew (numpy.float64): Reward.
+            next_obs (numpy.ndarray): Next state (observation)
+            done (bool): Boolean specifying whether the terminal state was reached.
+        """
         self.obs_buf[self.ptr] = obs
         self.obs2_buf[self.ptr] = next_obs
         self.act_buf[self.ptr] = act
@@ -35,7 +51,14 @@ class ReplayBuffer:
         self.size = min(self.size + 1, self.max_size)  # Increase current size
 
     def sample_batch(self, batch_size=32):
-        """Return batch of experiences"""
+        """Retrieve a batch of experiences from buffer.
+
+        Args:
+            batch_size (int, optional): The batch size. Defaults to 32.
+
+        Returns:
+            dict: A batch of experiences.
+        """
         idxs = np.random.randint(
             0, self.size, size=batch_size
         )  # Choice random experiences

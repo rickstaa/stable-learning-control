@@ -4,7 +4,7 @@
 # Standard library imports
 import logging
 import os
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 import sys
 import re
 from distutils.sysconfig import get_python_lib
@@ -30,11 +30,27 @@ logger.setLevel(logging.INFO)
 with open("README.md") as f:
     readme = f.read()
 
+# Retrieve package list
+PACKAGES = find_namespace_packages(include=["machine_learning_control*"])
+
+# Add extra virtual shortened package for each of namespace_pkgs
+namespace_pkgs = ["simzoo"]
+exclusions = r"|".join(
+    [r"\." + item + r"\.(?=" + item + r".)" for item in namespace_pkgs]
+)
+PACKAGE_DIR = {}
+for package in PACKAGES:
+    sub_tmp = re.sub(exclusions, ".", package)
+    if sub_tmp is not package:
+        PACKAGE_DIR[sub_tmp] = package.replace(".", "/")
+PACKAGES.extend(PACKAGE_DIR.keys())
+
 # Run python setup
 setup(
     name="machine_learning_control",
     setup_requires=["setuptools_scm"],
     use_scm_version=True,
+    version="0.0.0",
     description=(
         "A python package for performing the whole machine_learning_control pipeline."
     ),
@@ -64,4 +80,6 @@ setup(
     },
     include_package_data=True,
     data_files=[(date_files_relative_path, ["README.md"])],
+    packages=PACKAGES,
+    package_dir=PACKAGE_DIR,
 )

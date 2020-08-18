@@ -18,11 +18,9 @@ import torch
 from torch.optim import Adam
 from spinup.utils.logx import EpochLogger
 
-import control.algos.sac.core as core
-from control.utils.helpers import count_vars
-from control.algos.common.buffers import ReplayBuffer
-
-# import simzoo.envs
+import machine_learning_control.control.algos.sac.core as core
+from machine_learning_control.control.utils.helpers import count_vars
+from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 
 
 def sac(
@@ -410,6 +408,9 @@ def sac(
 
 if __name__ == "__main__":
 
+    # import machine_learning_control.simzoo.envs
+
+    # Parse Arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
         # "--env",

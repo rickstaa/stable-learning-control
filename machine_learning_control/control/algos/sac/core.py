@@ -12,14 +12,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions.normal import Normal
 
-from control.utils.helpers import mlp
+from machine_learning_control.control.utils.helpers import mlp
 
 
 class SquashedGaussianMLPActor(nn.Module):
     """
 
-    Args:
-        nn ([type]): [description]
     """
 
     def __init__(

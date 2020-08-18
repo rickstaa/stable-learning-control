@@ -7,6 +7,8 @@ __pycache__/
 *.egg-info/
 runs/
 .eggs/
+build/
+dist/
 
 # Files to ignore
 *.pyc

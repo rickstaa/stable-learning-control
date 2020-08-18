@@ -21,7 +21,6 @@ from spinup.utils.logx import EpochLogger
 
 # from tensorboardX import SummaryWriter
 import argparse
-import simzoo.envs
 
 RENDER = True
 # RENDER = False
