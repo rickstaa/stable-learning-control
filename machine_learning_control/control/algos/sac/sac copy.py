@@ -16,6 +16,7 @@ import gym
 import numpy as np
 import torch
 from torch.optim import Adam
+TODO: RENAME TO
 
 import machine_learning_control.control.algos.sac.core as core
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
@@ -28,7 +29,7 @@ from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 # TODO: Add totoal steps argument
 # FIXME: The experiments are capped at 200000 steps I think this is due to the max_step
 # QUESTION: It looks like the GPU is used is GPU really not faster? To much communication overhead when using GPU right because of small network.
-# FIXME: The max episode step doesn't change the step of the gym environment
+
 global t  # Make attribute out of this
 
 
@@ -37,20 +38,20 @@ def sac(
     actor_critic=core.MLPActorCritic,
     ac_kwargs=dict(),
     seed=0,
-    steps_per_epoch=50,
-    epochs=400,
+    steps_per_epoch=4000,
+    epochs=250,
     replay_size=int(1e6),
-    gamma=0.995,
+    gamma=0.99,
     polyak=0.995,
-    lr_a=3e-4,
-    lr_c=3e-4,
-    alpha=1.0,
-    batch_size=256,
-    start_steps=2500,
+    lr_a=1e-3,
+    lr_c=1e-3,
+    alpha=0.2,
+    batch_size=100,
+    start_steps=10000,
     update_after=1000,
     update_every=50,
     num_test_episodes=10,
-    max_ep_len=400,
+    max_ep_len=1000,
     logger_kwargs=dict(),
     save_freq=1,
 ):
@@ -169,8 +170,8 @@ def sac(
     act_dim = env.action_space.shape[0]
 
     # Ensure that the max env step count is at least equal to the steps in one epoch
-    env._max_episode_steps = max_ep_len
-    test_env._max_episode_steps = max_ep_len
+    env._max_episode_steps = steps_per_epoch
+    test_env._max_episode_steps = steps_per_epoch
 
     # Action limit for clamping: critically, assumes all dimensions share the same
     # bound!
@@ -247,8 +248,6 @@ def sac(
             q_pi_targ = torch.min(
                 q1_pi_targ, q2_pi_targ
             )  # Use min clipping to prevent overestimation bias (Replaced V by E(Q-H))
-            # FIXME: I changed rewrad to minus
-            # backup = r + gamma * (1 - d) * (q_pi_targ - alpha * logp_a2)
             backup = r + gamma * (1 - d) * (q_pi_targ - alpha * logp_a2)
 
         # MSE loss against Bellman backup
@@ -273,7 +272,7 @@ def sac(
         """Function computes the loss for the policy network.
 
         Args:
-              data (dict): Dictionary containing a batch of experiences.
+            data (dict): Dictionary containing a batch of experiences.
 
         Returns:
             (torch.Tensor, dict):
@@ -423,8 +422,7 @@ def sac(
                 update(data=batch)
 
         # End of epoch handling
-        # FIXME: Quickfix
-        if (t + 1) % steps_per_epoch == 0 and (t >= update_after):
+        if (t + 1) % steps_per_epoch == 0:
             epoch = (t + 1) // steps_per_epoch
 
             # Save model
@@ -435,67 +433,17 @@ def sac(
             test_agent()
 
             # Log info about epoch
-            # TODO: Fails if step per epoch is 50 This is because the replay buffer is
-            # FIXME: This needs to be fixed
-            if "Epoch" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["Epoch"]) > 0:
-                    logger.log_tabular("Epoch", epoch)
-            if "EpRet" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["EpRet"]) > 0:
-                    logger.log_tabular("EpRet", with_min_and_max=True, tb_write=True)
-            if "TestEpRet" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["TestEpRet"]) > 0:
-                    logger.log_tabular(
-                        "TestEpRet", with_min_and_max=True, tb_write=True
-                    )
-            if "EpLen" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["EpLen"]) > 0:
-                    logger.log_tabular("EpLen", average_only=True, tb_write=True)
-            if "TestEpLen" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["TestEpLen"]) > 0:
-                    logger.log_tabular("TestEpLen", average_only=True, tb_write=True)
-            if "TotalEnvInteracts" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["TotalEnvInteracts"]) > 0:
-                    logger.log_tabular("TotalEnvInteracts", t)
-            if "Q1Vals" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["Q1Vals"]) > 0:
-                    logger.log_tabular("Q1Vals", with_min_and_max=True)
-            if "Q2Vals" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["Q2Vals"]) > 0:
-                    logger.log_tabular("Q2Vals", with_min_and_max=True)
-            if "LogPi" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["LogPi"]) > 0:
-                    logger.log_tabular("LogPi", with_min_and_max=True, tb_write=True)
-            if "LossPi" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["LossPi"]) > 0:
-                    logger.log_tabular("LossPi", average_only=True, tb_write=True)
-            if "LossQ" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["LossQ"]) > 0:
-                    logger.log_tabular("LossQ", average_only=True, tb_write=True)
-
-            # not yet full
-            # if "Epoch" in logger.epoch_dict.keys():
-            #     logger.log_tabular("Epoch", epoch)
-            # if "EpRet" in logger.epoch_dict.keys():
-            #     logger.log_tabular("EpRet", with_min_and_max=True, tb_write=True)
-            # if "TestEpRet" in logger.epoch_dict.keys():
-            #     logger.log_tabular("TestEpRet", with_min_and_max=True, tb_write=True)
-            # if "EpLen" in logger.epoch_dict.keys():
-            #     logger.log_tabular("EpLen", average_only=True, tb_write=True)
-            # if "TestEpLen" in logger.epoch_dict.keys():
-            #     logger.log_tabular("TestEpLen", average_only=True, tb_write=True)
-            # if "TotalEnvInteracts" in logger.epoch_dict.keys():
-            #     logger.log_tabular("TotalEnvInteracts", t)
-            # if "Q1Vals" in logger.epoch_dict.keys():
-            #     logger.log_tabular("Q1Vals", with_min_and_max=True)
-            # if "Q2Vals" in logger.epoch_dict.keys():
-            #     logger.log_tabular("Q2Vals", with_min_and_max=True)
-            # if "LogPi" in logger.epoch_dict.keys():
-            #     logger.log_tabular("LogPi", with_min_and_max=True, tb_write=True)
-            # if "LossPi" in logger.epoch_dict.keys():
-            #     logger.log_tabular("LossPi", average_only=True, tb_write=True)
-            # if "LossQ" in logger.epoch_dict.keys():
-            #     logger.log_tabular("LossQ", average_only=True, tb_write=True)
+            logger.log_tabular("Epoch", epoch)
+            logger.log_tabular("EpRet", with_min_and_max=True, tb_write=True)
+            logger.log_tabular("TestEpRet", with_min_and_max=True, tb_write=True)
+            logger.log_tabular("EpLen", average_only=True, tb_write=True)
+            logger.log_tabular("TestEpLen", average_only=True, tb_write=True)
+            logger.log_tabular("TotalEnvInteracts", t)
+            logger.log_tabular("Q1Vals", with_min_and_max=True)
+            logger.log_tabular("Q2Vals", with_min_and_max=True)
+            logger.log_tabular("LogPi", with_min_and_max=True, tb_write=True)
+            logger.log_tabular("LossPi", average_only=True, tb_write=True)
+            logger.log_tabular("LossQ", average_only=True, tb_write=True)
             logger.log_tabular("Time", time.time() - start_time)
             logger.dump_tabular()
 
@@ -509,6 +457,7 @@ if __name__ == "__main__":
     # TODO: Add helper to arguments
     # QUESTION: ADD optimizer argument?
     # QUESTION: ADD activation function argument?
+    # TODO: ADD DEFAULTS TO JSON
     parser = argparse.ArgumentParser()
     parser.add_argument(
         # "--env",
@@ -518,7 +467,7 @@ if __name__ == "__main__":
         type=str,
         default="Oscillator-v0",
     )  # https://github.com/openai/gym/blob/master/gym/envs/mujoco/assets/half_cheetah.xml
-    parser.add_argument("--hid", type=int, default=128)
+    parser.add_argument("--hid", type=int, default=256)
     parser.add_argument("--l", type=int, default=2)
     parser.add_argument("--lra", type=float, default=1e-4)
     parser.add_argument("--lrc", type=float, default=3e-4)
@@ -545,12 +494,17 @@ if __name__ == "__main__":
         lambda: gym.make(args.env),
         actor_critic=core.MLPActorCritic,
         ac_kwargs=dict(hidden_sizes=[args.hid] * args.l),
-        # replay_size=args.replay_size,
-        # gamma=args.gamma,
-        # lr_a=args.lra,
-        # lr_c=args.lrc,
-        # seed=args.seed,
-        # epochs=args.epochs,
+        replay_size=args.replay_size,
+        gamma=args.gamma,
+        lr_a=args.lra,
+        lr_c=args.lrc,
+        seed=args.seed,
+        epochs=args.epochs,
         logger_kwargs=logger_kwargs,
     )
-    print("done")
+
+
+# SAC()
+# CLASS
+SAC.train()
+SAC.eval()

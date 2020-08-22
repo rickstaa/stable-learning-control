@@ -16,7 +16,17 @@ date_files_relative_path = os.path.join(
 )
 
 # Additional python requirements that could not be specified in the package.xml
-requirements = ["gym"]
+requirements = [
+    "gym",
+    "matplotlib",
+    "numpy",
+    "torch",
+    "joblib",
+    "tensorboard",
+    "mpi4py",
+    "psutil",
+    "tqdm",
+]
 
 # Set up logger
 logger = logging.getLogger(__name__)

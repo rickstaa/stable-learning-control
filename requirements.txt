@@ -1,0 +1,9 @@
+gym==0.17.2
+matplotlib==3.3.1
+numpy
+torch
+joblib
+tensorboard
+mpi4py
+psutil
+tqdm

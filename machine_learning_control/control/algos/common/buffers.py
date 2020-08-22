@@ -9,6 +9,18 @@ from machine_learning_control.control.utils.helpers import combined_shape
 
 class ReplayBuffer:
     """A simple FIFO experience replay buffer.
+
+    Attributes:
+        obs_buf (numpy.ndarray): Buffer containing the current state.
+
+        obs2_buf (numpy.ndarray): Buffer containing the next state.
+
+        act_buf (numpy.ndarray): Buffer containing the current action.
+
+        rew_buf (numpy.ndarray): Buffer containing the current reward.
+
+        done_buf (numpy.ndarray): Buffer containing information whether the episode was
+            terminated after the action was taken.
     """
 
     def __init__(self, obs_dim, act_dim, size):
@@ -35,9 +47,13 @@ class ReplayBuffer:
 
         Args:
             obs (numpy.ndarray): Start state (observation).
+
             act (numpy.ndarray): Action.
+
             rew (numpy.float64): Reward.
+
             next_obs (numpy.ndarray): Next state (observation)
+
             done (bool): Boolean specifying whether the terminal state was reached.
         """
         self.obs_buf[self.ptr] = obs
