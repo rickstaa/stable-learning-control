@@ -180,6 +180,9 @@ def sac(
     ac = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
     ac_targ = deepcopy(ac)
 
+    # Add graph to tensorboard
+    logger.tb_writer.add_graph(ac, env.action_space.sample())
+
     # Print network information
     print("==Actor==")
     print(ac.pi)
@@ -247,15 +250,9 @@ def sac(
             q_pi_targ = torch.min(
                 q1_pi_targ, q2_pi_targ
             )  # Use min clipping to prevent overestimation bias (Replaced V by E(Q-H))
-            # FIXME: I changed rewrad to minus
-            # backup = r + gamma * (1 - d) * (q_pi_targ - alpha * logp_a2)
             backup = r + gamma * (1 - d) * (q_pi_targ - alpha * logp_a2)
 
         # MSE loss against Bellman backup
-        # NOTE: WHy would we want to do this togheter?
-        # Question: Where did the 1/2 of the paper go? This scaling is because of simplifying the gradient right?
-        # Official sac uses 1/2 https://github.com/haarnoja/sac/blob/master/sac/algos/sac.py
-        # Can be done since 1/2+1/2?
         loss_q1 = ((q1 - backup) ** 2).mean()
         loss_q2 = ((q2 - backup) ** 2).mean()
         loss_q = loss_q1 + loss_q2
