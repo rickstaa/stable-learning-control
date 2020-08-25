@@ -3,7 +3,7 @@ matplotlib==3.3.1
 numpy
 torch
 joblib
-tensorboard
+tensorboard>=1.15
 mpi4py
 psutil
 tqdm

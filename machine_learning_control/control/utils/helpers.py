@@ -32,9 +32,10 @@ def combined_shape(length, shape=None):
     """Combines length and shape objects into one tuple.
 
     Args:
-        length (int, optional): The length of an object. Defaults to None.
+        length (int): The length of an object.
 
-        shape (tuple): The shape of an object.
+        shape (tuple, optional): The shape of an object. Only uses length if not
+            supplied.
 
     Returns:
         Tuple: A tuple in which the length and shape are combined.
@@ -105,3 +106,72 @@ def is_scalar(obj):
             return False
     else:
         return False
+
+
+def compare_models(model_1, model_2):
+    """Compares two models to see if the weights are equal.
+
+    Args:
+        model_1 (torch.nn.module): The first Pytorch model.
+        model_2 (torch.nn.module): The second Pytorch model.
+
+    Raises:
+        Exception: Raises Key error if the graph of the two models is different.
+
+    Returns:
+        Bool: Bool specifying whether the weights of two models are equal.
+    """
+
+    models_differ = 0
+    for key_item_1, key_item_2 in zip(
+        model_1.state_dict().items(), model_2.state_dict().items()
+    ):
+        if torch.equal(key_item_1[1], key_item_2[1]):
+            pass
+        else:
+            models_differ += 1
+            if key_item_1[0] == key_item_2[0]:
+                print("Mismatch found at", key_item_1[0])
+            else:
+                raise KeyError(
+                    "Model weights could not be compared between the two models as "
+                    f"the two models appear to be different. Parameter {key_item_1[0]} "
+                    f"which is found in model 1, does not exist in the model 2."
+                )
+
+    # Return result
+    if models_differ == 0:
+        print("Models match perfectly! :)")
+        return True
+    else:
+        return False
+
+
+def clamp(data, min_bound, max_bound):
+    """Clamp all the values of a input to be between the min and max boundaries.
+
+    Args:
+        data (np.ndarray/list): Input data.
+        min_bound (np.ndarray/list): Array containing the desired minimum values.
+        max_bound (np.ndarray/list): Array containing the desired maximum values.
+
+    Returns:
+        np.ndarray: Array which has it values clamped between the min and max
+            boundaries.
+    """
+
+    # Convert arguments to numpy array is not already
+    data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
+    min_bound = (
+        torch.tensor(min_bound)
+        if not isinstance(min_bound, torch.Tensor)
+        else min_bound
+    )
+    max_bound = (
+        torch.tensor(max_bound)
+        if not isinstance(max_bound, torch.Tensor)
+        else max_bound
+    )
+
+    # Clamp all actions to be within the boundaries
+    return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound

@@ -7,10 +7,6 @@ so that besides logging to tab-separated-values file
 it also logs the data to a tensorboard file.
 """
 
-# TODO: Remove tensorflow dependency
-# TODO: Display graph
-# FIXME: Why is file not written
-
 import os.path as osp
 import time
 import atexit
@@ -52,12 +48,22 @@ color2num = dict(
     crimson=38,
 )
 
+# TODO: Remove tf dependency
 
 def colorize(string, color, bold=False, highlight=False):
-    """
-    Colorize a string.
+    """Colorize a string.
 
     This function was originally written by John Schulman.
+
+    Args:
+        string (str): The string you want to colorize.
+        color (str): The color you want to use.
+        bold (bool, optional): Whether you want the text to be bold text has to be bold.
+        highlight (bool, optional):  Whether you want to highlight the text. Defaults to
+            False.
+
+    Returns:
+        str: Colorized string.
     """
     attr = []
     num = color2num[color]
@@ -125,24 +131,47 @@ class Logger:
     state of a training run, and the trained model.
     """
 
-    def __init__(self, output_dir=None, output_fname="progress.txt", exp_name=None):
+    def __init__(
+        self,
+        output_dir=None,
+        output_fname="progress.txt",
+        exp_name=None,
+        use_tensorboard=False,
+        save_checkpoints=False,
+    ):
         """
         Initialize a Logger.
 
         Args:
-            output_dir (string): A directory for saving results to. If
+            output_dir (string, optional): A directory for saving results to. If
                 ``None``, defaults to a temp directory of the form
                 ``/tmp/experiments/somerandomnumber``.
 
-            output_fname (string): Name for the tab-separated-value file
+            output_fname (string, optional): Name for the tab-separated-value file
                 containing metrics logged throughout a training run.
                 Defaults to ``progress.txt``.
 
-            exp_name (string): Experiment name. If you run multiple training
+            exp_name (string.optional): Experiment name. If you run multiple training
                 runs and give them all the same ``exp_name``, the plotter
                 will know to group them. (Use case: if you run the same
                 hyperparameter configuration with multiple random seeds, you
                 should give them all the same ``exp_name``.)
+
+            save_checkpoints (bool, optional): Save checkpoints during training.
+                Defaults to False.
+
+            use_tensorboard (bool): Specifies whether you want also log to tensorboard.
+
+        Attributes:
+            tb_writer (torch.utils.tensorboard.writer.SummaryWriter): A tensorboard
+                writer. Is only created when the :py:attr:`.use_tensorboard` variable
+                is set to `True`, if not it returns `None`.
+
+            output_dir (str): The directory in which the log data and models are saved.
+
+            output_file (str): The name of the file in which the progress data is saved.
+
+            exp_name (str): Experiment name.
         """
         if proc_id() == 0:
 
@@ -165,14 +194,16 @@ class Logger:
         else:
             self.output_dir = None
             self.output_file = None
-        self.first_row = True
-        self.log_headers = []
-        self.log_current_row = {}
         self.exp_name = exp_name
+        self._first_row = True
+        self._log_headers = []
+        self._log_current_row = {}
+        self._save_checkpoints = save_checkpoints
+        self._checkpoint = 0
 
         # Create tensorboard related attributes
         self.tb_writer = None  # None if it does not exist
-        self._use_tensorboard = False
+        self._use_tensorboard = use_tensorboard
         self._tabular_to_tb_dict = (
             dict()
         )  # Stores whether tabular is logged to tensorboard when dump_tabular is called
@@ -185,7 +216,9 @@ class Logger:
         if proc_id() == 0:
             print(colorize(msg, color, bold=True))
 
-    def log_tabular(self, key, val, tb_write=False):
+    def log_tabular(
+        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
+    ):
         """
         Log a value of some diagnostic.
 
@@ -205,25 +238,34 @@ class Logger:
 
             tb_write (bool, optional): Boolean specifying whether you also want to write
                 the value to the tensorboard logfile. Defaults to False.
+
+            tb_prefix(str, optional): A prefix which can be added to group the
+                variables.
+
+            tb_alias (str, optional): A tb alias for the variable you want to store
+                store. Defaults to empty dict(). If not supplied the variable name is
+                used.
         """
-        if self.first_row:
-            self.log_headers.append(key)
+        if self._first_row:
+            self._log_headers.append(key)
         else:
-            # FIXME: TODO
-            pass
-            # assert key in self.log_headers, (
-            #     "Trying to introduce a new key %s that you didn't include in the first "
-            #     "iteration" % key
-            # )
-        assert key not in self.log_current_row, (
+            assert key in self._log_headers, (
+                "Trying to introduce a new key %s that you didn't include in the first "
+                "iteration" % key
+            )
+        assert key not in self._log_current_row, (
             "You already set %s this iteration. Maybe you forgot to call dump_tabular()"
             % key
         )
-        self.log_current_row[key] = val
+        self._log_current_row[key] = val
 
-        # Store whether tabular should be logged to tensorboard when dump_tabular is
-        # called
-        self._tabular_to_tb_dict[key] = tb_write
+        # Store whether and how a tabular should be logged to tensorboard when
+        # dump_tabular is called
+        self._tabular_to_tb_dict[key] = {
+            "tb_write": tb_write,
+            "tb_prefix": tb_prefix,
+            "tb_alias": tb_alias,
+        }
 
     def save_config(self, config):
         """
@@ -253,7 +295,7 @@ class Logger:
             with open(osp.join(self.output_dir, "config.json"), "w") as out:
                 out.write(output)
 
-    def save_state(self, state_dict, itr=None):
+    def save_state(self, state_dict, itr=None, epoch=None):
         """
         Saves the state of an experiment.
 
@@ -272,7 +314,9 @@ class Logger:
             state_dict (dict): Dictionary containing essential elements to
                 describe the current state of training.
 
-            itr: An int, or None. Current iteration of training.
+            itr (int/None): Current iteration of training. Defaults to None
+
+            epoch (int/None): Current epoch of the SGD. Defaults to None
         """
         if proc_id() == 0:
             fname = "vars.pkl" if itr is None else "vars%d.pkl" % itr
@@ -283,7 +327,7 @@ class Logger:
             if hasattr(self, "shape"):
                 self._tf_simple_save(itr)
             if hasattr(self, "pytorch_saver_elements"):
-                self._pytorch_simple_save(itr)
+                self._pytorch_simple_save(itr, epoch)
 
     def setup_tf_saver(self, sess, inputs, outputs):
         """
@@ -324,9 +368,11 @@ class Logger:
             }
 
     def _tf_simple_save(self, itr=None):
-        """
-        Uses simple_save to save a trained model, plus info to make it easy
+        """Uses simple_save to save a trained model, plus info to make it easy
         to associated tensors to variables after restore.
+
+        Args:
+            itr (int/None): Current iteration of training. Defaults to None.
         """
 
         # Safe tensorflow graph
@@ -359,20 +405,40 @@ class Logger:
         """
         self.pytorch_saver_elements = what_to_save
 
-    def _pytorch_simple_save(self, itr=None):
-        """
-        Saves the PyTorch model (or models).
+    def _pytorch_simple_save(self, itr=None, epoch=None):
+        """Saves the PyTorch model (or models).
+
+        Args:
+            itr(int/None): Current iteration of training. Defaults to None
         """
         if proc_id() == 0:
             assert hasattr(
                 self, "pytorch_saver_elements"
             ), "First have to setup saving with self.setup_pytorch_saver"
+
+            # Create filename
             fpath = "pyt_save"
             fpath = osp.join(self.output_dir, fpath)
             fname = "model" + ("%d" % itr if itr is not None else "") + ".pt"
             fname = osp.join(fpath, fname)
             os.makedirs(fpath, exist_ok=True)
+
+            # Create Checkpoints Name
+            if self._save_checkpoints:
+                epoch_name = (
+                    "epoch%d" % epoch
+                    if epoch is not None
+                    else "epoch" + str(self._checkpoint)
+                )
+                model_name = "model%d" % itr if itr is not None else ""
+                cpath = osp.join(fpath, "checkpoints", model_name, str(epoch_name))
+                cname = "model" + ("%d" % itr if itr is not None else "") + ".pt"
+                cname = osp.join(cpath, cname)
+                os.makedirs(cpath, exist_ok=True)
+
+            # Save model
             with warnings.catch_warnings():
+                # FIXME: Improve saving!
                 warnings.simplefilter("ignore")
                 # We are using a non-recommended way of saving PyTorch models,
                 # by pickling whole objects (which are dependent on the exact
@@ -382,7 +448,14 @@ class Logger:
                 # something different for your personal PyTorch project.
                 # We use a catch_warnings() context to avoid the warnings about
                 # not being able to save the source code.
+
+                # Save model
                 torch.save(self.pytorch_saver_elements, fname)
+
+                # Save checkpoint
+                if self._save_checkpoints:
+                    torch.save(self.pytorch_saver_elements, cname)
+                    self._checkpoint += 1  # Increase epoch
 
     def dump_tabular(self, global_step=None):
         """
@@ -391,7 +464,8 @@ class Logger:
         Writes both to stdout, tensorboard and to the output file.
 
         Args:
-            global_step (int, optional): Global step value to record. Defaults to None.
+            global_step (int, optional): Global step value to record. Uses internal step
+            counter if global step is not supplied.
         """
         if proc_id() == 0:
 
@@ -400,35 +474,49 @@ class Logger:
 
             # Write tabular to stdout and tensorboard
             vals = []
-            key_lens = [len(key) for key in self.log_headers]
+            key_lens = [len(key) for key in self._log_headers]
             max_key_len = max(15, max(key_lens))
             keystr = "%" + "%d" % max_key_len
             fmt = "| " + keystr + "s | %15s |"
             n_slashes = 22 + max_key_len
             print("-" * n_slashes)
-            for key in self.log_headers:
+            for key in self._log_headers:
 
                 # Print tabular to stdout
-                val = self.log_current_row.get(key, "")
+                val = self._log_current_row.get(key, "")
                 valstr = "%8.3g" % val if hasattr(val, "__float__") else val
                 print(fmt % (key, valstr))
                 vals.append(val)
 
                 # Write tabular to tensorboard log
-                if self._tabular_to_tb_dict[key]:
-                    self._write_to_tb(key, val, global_step=global_step)
+                if self._tabular_to_tb_dict[key]["tb_write"]:
+
+                    # Check if prefix and alias were supplied
+                    var_name = (
+                        self._tabular_to_tb_dict[key]["tb_alias"]
+                        if self._tabular_to_tb_dict[key]["tb_alias"]
+                        else key
+                    )
+                    var_name = (
+                        self._tabular_to_tb_dict[key]["tb_prefix"] + "/" + var_name
+                        if self._tabular_to_tb_dict[key]["tb_prefix"]
+                        else var_name
+                    )
+
+                    # Write to tb
+                    self._write_to_tb(var_name, val, global_step=global_step)
             print("-" * n_slashes, flush=True)
 
             # Write tabular to output file
             if self.output_file is not None:
-                if self.first_row:
-                    self.output_file.write("\t".join(self.log_headers) + "\n")
+                if self._first_row:
+                    self.output_file.write("\t".join(self._log_headers) + "\n")
                 self.output_file.write("\t".join(map(str, vals)) + "\n")
                 self.output_file.flush()
 
         # Clear cache variables
-        self.log_current_row.clear()
-        self.first_row = False
+        self._log_current_row.clear()
+        self._first_row = False
 
     def _write_to_tb(self, var_name, data, global_step=None):
         """Writes data to tensorboard log file. It currently works with scalars,
@@ -440,7 +528,8 @@ class Logger:
 
             data (int, float, numpy.ndarray, torch.Tensor): Data you want to write.
 
-            global_step (int, optional): Global step value to record. Defaults to None.
+            global_step (int, optional): Global step value to record. Uses internal step
+                counter if global step is not supplied.
         """
 
         # Create tensorboard writer if it does not yet exist
@@ -450,9 +539,7 @@ class Logger:
         # Try to write data to tb as as historgram
         if is_scalar(data):  # Extra protection since trying to write a list freezes tb
             try:  # Try to write as scalar
-                self.tb_writer.add_scalar(
-                    var_name, data, global_step=global_step
-                )
+                self.tb_writer.add_scalar(var_name, data, global_step=global_step)
             except (
                 AssertionError,
                 NotImplementedError,
@@ -520,6 +607,198 @@ class Logger:
         """
         return max(self._step_count_dict.values())
 
+    def get_logdir(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.get_logdir` method while first making
+        sure a SummaryWriter object exits. The `get_logdir` method can be used to
+        retrieve the directory where event files will be written
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.get_logdir(*args, **kwargs)
+
+    def add_hparams(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_hparams` method while first making
+        sure a SummaryWriter object exits. The `add_hparams` method adds a set of
+        hyperparameters to be compared in TensorBoard.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_hparams(*args, **kwargs)
+
+    def add_scalar(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_scalar` method while first making
+        sure a SummaryWriter object exits. The `add_scalar` method is used to add scalar
+        data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_scalar(*args, **kwargs)
+
+    def add_scalars(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_scalars` method while first making
+        sure a SummaryWriter object exits. The `add_scalars` method is used to add many
+        scalar data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_scalars(*args, **kwargs)
+
+    def add_histogram(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_histogram` method while first making
+        sure a SummaryWriter object exits. The `add_histogram` method is used to add
+        a histogram to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_histogram(*args, **kwargs)
+
+    def add_histogram_raw(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_histogram_raw` method while first
+        making sure a SummaryWriter object exits. The `add_histogram_raw` method is used
+        to add histograms with raw data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_histogram_raw(*args, **kwargs)
+
+    def add_image(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_image` method while first making
+        sure a SummaryWriter object exits. The `add_image` method is used to add image
+        data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_image(*args, **kwargs)
+
+    def add_images(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_images` method while first making
+        sure a SummaryWriter object exits. The `add_images` method is used to add
+        batched image data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_images(*args, **kwargs)
+
+    def add_image_with_boxes(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_image_with_boxes` method while
+        first making sure a SummaryWriter object exits. The `add_image_with_boxes`
+        method is used to add image and draw bounding boxes on the image.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_image_with_boxes(*args, **kwargs)
+
+    def add_figure(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_figure` method while
+        first making sure a SummaryWriter object exits. The `add_figure`
+        method is used to render a matplotlib figure into an image and add it to
+        summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_figure(*args, **kwargs)
+
+    def add_video(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_video` method while
+        first making sure a SummaryWriter object exits. The `add_video`
+        method is used to add video data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_video(*args, **kwargs)
+
+    def add_audio(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_audio` method while
+        first making sure a SummaryWriter object exits. The `add_audio`
+        method is used to add audio data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_audio(*args, **kwargs)
+
+    def add_text(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_text` method while
+        first making sure a SummaryWriter object exits. The `add_text`
+        method is used to add text data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_text(*args, **kwargs)
+
+    def add_onnx_graph(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_onnx_graph` method while
+        first making sure a SummaryWriter object exits. The `add_onnx_graph`
+        method is used to add a onnx graph data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_onnx_graph(*args, **kwargs)
+
+    def add_graph(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_graph` method while
+        first making sure a SummaryWriter object exits. The `add_graph`
+        method is used to add a graph data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_graph(*args, **kwargs)
+
+    def add_embedding(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_embedding` method while
+        first making sure a SummaryWriter object exits. The `add_embedding`
+        method is used to add embedding projector data to summary.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_embedding(*args, **kwargs)
+
+    def add_pr_curve(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_pr_curve` method while
+        first making sure a SummaryWriter object exits. The `add_pr_curve`
+        method is used to add a precision recall curve.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_pr_curve(*args, **kwargs)
+
+    def add_pr_curve_raw(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_pr_curve_raw` method while
+        first making sure a SummaryWriter object exits. The `add_pr_curve_raw`
+        method is used to add a precision recall curve with raw data.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_pr_curve_raw(*args, **kwargs)
+
+    def add_custom_scalars_multilinechart(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_custom_scalars_multilinechart`
+        method while first making sure a SummaryWriter object exits. The
+        `add_custom_scalars_multilinechart`, which is shorthand for creating
+        `multilinechart` is similar to `add_custom_scalars`, but the only necessary
+        argument is *tags*.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_custom_scalars_multilinechart(*args, **kwargs)
+
+    def add_custom_scalars_marginchart(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_custom_scalars_marginchart`
+        method while first making sure a SummaryWriter object exits. The
+        `add_custom_scalars_marginchart`, which is shorthand for creating marginchart
+        is similar the `add_custom_scalars`, but the only necessary argument is *tags*,
+        which should have exactly 3 elements.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_custom_scalars_marginchart(*args, **kwargs)
+
+    def add_custom_scalars(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_custom_scalars` method while
+        first making sure a SummaryWriter object exits. The `add_custom_scalars`
+        method is used to create special charts by collecting charts tags in 'scalars'.
+        Note that this function can only be called once for each `SummaryWriter` object.
+        Because it only provides metadata to tensorboard, the function can be called
+        before or after the training loop.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_custom_scalars(*args, **kwargs)
+
+    def add_mesh(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.add_mesh` method while
+        first making sure a SummaryWriter object exits. The `add_mesh`
+        method is used to add meshes or 3D point clouds to TensorBoard.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.add_mesh(*args, **kwargs)
+
+    def flush(self, *args, **kwargs):
+        """Wrapper that calls the `SummaryWriter.flush` method while
+        first making sure a SummaryWriter object exits. The `flush`
+        method is used to flush the event file to disk.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        return self.tb_writer.flush(*args, **kwargs)
+
 
 class EpochLogger(Logger):
     """
@@ -548,10 +827,6 @@ class EpochLogger(Logger):
     Attributes:
         epoch_dict (dict): Dictionary used to store variables you want to log into the
             epoch_loggers current state.
-
-        tb_writer (torch.utils.tensorboard.writer.SummaryWriter): A tensorboard summary
-            writer. Is only created when the :py:attr:`.use_tensorboard` variable is set
-            to `True`, if not it returns `None`.
     """
 
     def __init__(self, *args, **kwargs):
@@ -572,7 +847,8 @@ class EpochLogger(Logger):
             tb_write (bool, optional): Boolean specifying whether you also want to write
                 the value to the tensorboard logfile. Defaults to False.
 
-            global_step (int, optional): Global step value to record. Defaults to None.
+            global_step (int, optional): Global step value to record. Uses internal step
+                counter if global step is not supplied.
 
             tb_aliases (dict, optional): Dictionary that can be used to set aliases for
                 the variables you want to store. Defaults to empty dict().
@@ -605,7 +881,14 @@ class EpochLogger(Logger):
                 self._write_to_tb(var_name, v, global_step=global_step)
 
     def log_tabular(
-        self, key, val=None, with_min_and_max=False, average_only=False, tb_write=False
+        self,
+        key,
+        val=None,
+        with_min_and_max=False,
+        average_only=False,
+        tb_write=False,
+        tb_prefix=None,
+        tb_alias=None,
     ):
         """
         Log a value or possibly the mean/std/min/max values of a diagnostic.
@@ -627,9 +910,18 @@ class EpochLogger(Logger):
 
             tb_write (bool, optional): Boolean specifying whether you also want to write
                 the value to the tensorboard logfile. Defaults to False.
+
+            tb_prefix(str, optional): A prefix which can be added to group the
+                variables.
+
+            tb_alias (str, optional): A tb alias for the variable you want to store
+                store. Defaults to empty dict(). If not supplied the variable name is
+                used.
         """
         if val is not None:
-            super().log_tabular(key, val, tb_write=tb_write)
+            super().log_tabular(
+                key, val, tb_write=tb_write, tb_prefix=tb_prefix, tb_alias=tb_alias
+            )
         else:
             v = self.epoch_dict[key]
             vals = (
@@ -638,12 +930,36 @@ class EpochLogger(Logger):
                 else v
             )
             stats = mpi_statistics_scalar(vals, with_min_and_max=with_min_and_max)
-            super().log_tabular("Average" + key, stats[0], tb_write=tb_write)
+            super().log_tabular(
+                "Average" + key,
+                stats[0],
+                tb_write=tb_write,
+                tb_prefix=tb_prefix + "/Average" if tb_prefix else "Average",
+                tb_alias=tb_alias,
+            )
             if not (average_only):
-                super().log_tabular("Std" + key, stats[1], tb_write=tb_write)
+                super().log_tabular(
+                    "Std" + key,
+                    stats[1],
+                    tb_write=tb_write,
+                    tb_prefix=tb_prefix + "/Std" if tb_prefix else "Std",
+                    tb_alias=tb_alias,
+                )
             if with_min_and_max:
-                super().log_tabular("Max" + key, stats[3], tb_write=tb_write)
-                super().log_tabular("Min" + key, stats[2], tb_write=tb_write)
+                super().log_tabular(
+                    "Max" + key,
+                    stats[3],
+                    tb_write=tb_write,
+                    tb_prefix=tb_prefix + "/Max" if tb_prefix else "Max",
+                    tb_alias=tb_alias,
+                )
+                super().log_tabular(
+                    "Min" + key,
+                    stats[2],
+                    tb_write=tb_write,
+                    tb_prefix=tb_prefix + "/Min" if tb_prefix else "Min",
+                    tb_alias=tb_alias,
+                )
         self.epoch_dict[key] = []
 
     def get_stats(self, key):

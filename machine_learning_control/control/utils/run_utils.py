@@ -34,7 +34,14 @@ from machine_learning_control.control.utils.serialization_utils import convert_j
 DIV_LINE_WIDTH = 80
 
 
-def setup_logger_kwargs(exp_name, seed=None, data_dir=None, datestamp=False):
+def setup_logger_kwargs(
+    exp_name,
+    seed=None,
+    save_checkpoints=False,
+    use_tensorboard=False,
+    data_dir=None,
+    datestamp=False,
+):
     """
     Sets up the output_dir for a logger and returns a dict for logger kwargs.
 
@@ -63,16 +70,22 @@ def setup_logger_kwargs(exp_name, seed=None, data_dir=None, datestamp=False):
 
         exp_name (string): Name for experiment.
 
-        seed (int): Seed for random number generators used by experiment.
+        seed (int, optional): Seed for random number generators used by experiment.
 
-        data_dir (string): Path to folder where results should be saved.
-            Default is the ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``.
+        save_checkpoints (bool, optional): Save checkpoints during training.
+            Defaults to False.
 
-        datestamp (bool): Whether to include a date and timestamp in the
-            name of the save directory.
+        use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
+            to True.
+
+        data_dir (string, optional): Path to folder where results should be saved.
+            Default is the ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``. Defaults
+            to None.
+
+        datestamp (bool, optional): Whether to include a date and timestamp in the
+            name of the save directory. Defaults to False.
 
     Returns:
-
         logger_kwargs, a dict containing output_dir and exp_name.
     """
 
@@ -93,7 +106,12 @@ def setup_logger_kwargs(exp_name, seed=None, data_dir=None, datestamp=False):
         relpath = osp.join(relpath, subfolder)
 
     data_dir = data_dir or DEFAULT_DATA_DIR
-    logger_kwargs = dict(output_dir=osp.join(data_dir, relpath), exp_name=exp_name)
+    logger_kwargs = dict(
+        output_dir=osp.join(data_dir, relpath),
+        exp_name=exp_name,
+        save_checkpoints=save_checkpoints,
+        use_tensorboard=use_tensorboard,
+    )
     return logger_kwargs
 
 

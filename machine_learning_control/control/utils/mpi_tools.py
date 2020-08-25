@@ -13,8 +13,7 @@ import numpy as np
 
 
 def mpi_fork(n, bind_to_core=False):
-    """
-    Re-launches the current script with workers linked by MPI.
+    """Re-launches the current script with workers linked by MPI.
 
     Also, terminates the original process that launched it.
 
@@ -26,7 +25,7 @@ def mpi_fork(n, bind_to_core=False):
     Args:
         n (int): Number of process to split into.
 
-        bind_to_core (bool): Bind each MPI process to a core.
+        bind_to_core (bool, optional): Bind each MPI process to a core. Defaults to False.
     """
     if n <= 1:
         return
@@ -76,20 +75,20 @@ def mpi_sum(x):
 
 
 def mpi_avg(x):
-    """Average a scalar or vector over MPI processes."""
+    """Average a scalar or vector over MPI processes.
+    """
     return mpi_sum(x) / num_procs()
 
 
 def mpi_statistics_scalar(x, with_min_and_max=False):
-    """
-    Get mean/std and optional min/max of scalar x across MPI processes.
+    """Get mean/std and optional min/max of scalar x across MPI processes.
 
     Args:
         x: An array containing samples of the scalar to produce statistics
             for.
 
-        with_min_and_max (bool): If true, return min and max of x in
-            addition to mean and std.
+        with_min_and_max (bool, optional): If true, return min and max of x in
+            addition to mean and std. Defaults to False.
     """
     x = np.array(x, dtype=np.float32)
     global_sum, global_n = mpi_sum([np.sum(x), len(x)])

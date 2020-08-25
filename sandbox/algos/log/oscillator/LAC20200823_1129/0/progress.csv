@@ -1,0 +1,2 @@
+a_loss,alpha,alpha3,average_length,batch_size,entropy,lambda,length,lr_a,lr_c,lr_l,lyapunov_error,return,target_entropy,tau,total_timesteps
+5.149894,1.0540096,0.2,399.0,256,-5.0675583,0.94509053,333.5,9.0005e-05,0.00027001499999999997,0.00027001499999999997,31.042511,293.6136482853245,-3,0.005,2048
