@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 ENV_NAME = "Oscillator-v0"
 # ENV_NAME = "Hopper-v2"
 # MAX_EP_LEN = 200
-MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/run_1598380525/pyt_save/model.pt"
+MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/run_1598434346/pyt_save/model.pt"
 # MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1597959914/pyt_save/model.pt"
 EP = 1000
 

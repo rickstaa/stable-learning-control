@@ -18,7 +18,7 @@ import numpy as np
 import torch
 from torch.optim import Adam
 
-import machine_learning_control.control.algos.sac.core as core
+import machine_learning_control.control.algos.lac.core as core
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.logx import EpochLogger
 from machine_learning_control.control.utils.helpers import count_vars, clamp
@@ -39,7 +39,8 @@ global t  # TODO: Make attribute out of this
 # oscillator or mujoco)
 # Better to set to mujoco because that is more often used
 # TODO: Add argument option to request last run out of config file.
-
+# Question: Why does labda not have target labda?
+# TODO: Change learning rate at the epoch
 
 def sac(
     env_fn,
@@ -53,9 +54,13 @@ def sac(
     polyak=0.995,
     lr_a=1e-4,
     lr_c=3e-4,
+    lr_l=3e-4,
     decaying_lr=True,
     alpha=1.0,
+    alpha3=0.2,
+    labda=1.0,
     target_entropy="auto",
+    use_lyapunov=True,
     batch_size=256,
     start_steps=0,
     update_after=1000,
@@ -139,6 +144,12 @@ def sac(
 
         alpha (float): Entropy regularization coefficient (Equivalent to
             inverse of reward scale in the original SAC paper).
+
+        TODO: Add alpha 3
+
+        TODO: Add labda
+
+        TODO: Use lyapunov
 
         target_entropy (str/None/float, optional): Target entropy used while learning
             the entropy temperature (alpha). Set to "auto" if you want to let the
@@ -226,6 +237,9 @@ def sac(
 
     # Convert alpha to log_alpha (Used for computational stability)
     log_alpha = torch.tensor(np.log(alpha), requires_grad=True)
+
+    # Convert labda to log_labda (Used for computational stability)
+    log_labda = torch.tensor(np.log(labda), requires_grad=True)
 
     # Ensure that the max env step count is at least equal to the steps in one epoch
     env._max_episode_steps = max_ep_len
@@ -349,9 +363,11 @@ def sac(
         q2_pi = ac.q2(o, pi)
         q_pi = torch.min(q1_pi, q2_pi)
 
+        # Calculate l_delta
+
         # Entropy-regularized policy loss
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
-        loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
+        loss_pi = log_labda.exp() * l_delta + (log_alpha.exp() * logp_pi - q_pi).mean()
 
         # Store log-likelihood
         pi_info = dict(LogPi=logp_pi.detach().numpy())
@@ -373,7 +389,7 @@ def sac(
         """
 
         # Return loss of
-        if not isinstance(target_entropy, Number):
+        if not isinstance(target_entropy, Number):  # DEBUG: Is this really neeeded?
             return torch.tensor(0.0)
 
         # Get log from observations
@@ -384,7 +400,7 @@ def sac(
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
         loss_alpha = (
             -1.0 * (log_alpha.exp() * (logp_pi + target_entropy).detach())
-        ).mean()
+        ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so
 
         # Store log-likelihood
         log_alpha_info = dict(LogAlpha=log_alpha.detach())
@@ -392,10 +408,47 @@ def sac(
         # Return alpha losses
         return loss_alpha, log_alpha_info
 
+    def compute_loss_log_labda(data):
+        """Function computes the loss of the lagrance multiplier (lambda). translated to labda because of python.
+        """
+
+        # Get log from observations
+        o = data["obs"]
+        r = data["rew"]
+
+        # Get Main actor q value
+        pi, logp_pi = ac.pi(o)  # FIXME: Convert to lyapunov actor
+        q1_pi = ac.q1(o, pi)
+        q2_pi = ac.q2(o, pi)
+        q_pi = torch.min(q1_pi, q2_pi)  # Question: Is this now needed?
+
+        # Get target net actor q values
+        pi, logp_pi = ac.pi(o)
+
+        # Calculate lyapunov constraint # TODO: Change to delta
+        # DEBUG
+        l_delta = q_pi - q_pi_lya + alpha3 * r
+
+        # Calculate labda loss (used for labda tuning)
+        # Question: Again why does Han use log labda
+        # loss_labda = (
+        #     -1.0 * (log_labda.exp() * l_delta.detach())
+        # ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so
+        loss_labda = (
+            1.0 * (log_labda.exp() * l_delta.detach())
+        ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so
+
+        # Store log-likelihood
+        log_labda_info = dict(LogLabda=log_labda.detach())
+
+        # Return alpha losses
+        return loss_labda, log_labda_info
+
     # Set up optimizers for policy, q-function and alpha temperature regularization
     pi_optimizer = Adam(ac.pi.parameters(), lr=lr_a)
     q_optimizer = Adam(q_params, lr=lr_c)  # Pass both SoftQ networks to optimizer
     log_alpha_optimizer = Adam([log_alpha], lr=lr_a)
+    log_labda_optimizer = Adam([log_labda], lr=lr_l)
 
     # Create learning rate decay wrappers
     pi_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
@@ -422,7 +475,20 @@ def sac(
             else lambda epoch: 1.0
         ),
     )
-    opt_schedulers = [pi_opt_scheduler, q_opt_scheduler, log_alpha_opt_scheduler]
+    log_labda_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
+        log_labda_optimizer,
+        lr_lambda=(
+            (lambda epoch: 1.0 - (epoch - 1.0) / 1000)
+            if decaying_lr
+            else lambda epoch: 1.0
+        ),
+    )
+    opt_schedulers = [
+        pi_opt_scheduler,
+        q_opt_scheduler,
+        log_alpha_opt_scheduler,
+        log_labda_opt_scheduler,
+    ]
 
     # Store initial learning rates
     if logger_kwargs["use_tensorboard"]:
@@ -510,6 +576,36 @@ def sac(
         else:
             logger.store(
                 tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
+            )
+
+        # Optimize the lagrance multiplier for the current policy
+        if use_lyapunov:  # TODO: Update comments
+
+            # Freeze Policy-networks so you don't waste computational effort
+            # computing gradients for them during the labda learning steps.
+            for p in ac.pi.parameters():
+                p.requires_grad = False
+
+            # Perform SGD to tune the entropy Temperature (Labda)
+            log_labda_optimizer.zero_grad()
+            loss_log_labda, log_labda_info = compute_loss_log_labda(data)
+            loss_log_labda.backward()
+            log_labda_optimizer.step()
+
+            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
+            for p in ac.pi.parameters():
+                p.requires_grad = True
+
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                LossLogLabda=loss_log_labda.item(),
+                Labda=log_labda_info["LogLabda"].exp(),
+                tb_aliases={"LossAlpha": "Loss/LossLogLabda"},
+            )
+        else:
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"], Labda=labda,
             )
 
         # Finally, update target networks by polyak averaging.

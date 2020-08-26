@@ -67,7 +67,11 @@ class SquashedGaussianMLPActor(nn.Module):
         super().__init__()
         self.net = mlp([obs_dim] + list(hidden_sizes), activation, activation)
         self.mu_layer = nn.Linear(hidden_sizes[-1], act_dim)
-        self.log_std_layer = nn.Linear(hidden_sizes[-1], act_dim)
+        # self.log_std_layer = nn.Linear(hidden_sizes[-1], act_dim)
+        self.log_std_layer = nn.Linear(
+            obs_dim, act_dim
+        )  # Question: Why use obs_dim (Han: L469)
+        # FIXME: LOOKOUT THIS IS CHANGED COMPARED TO SPINNINGUP
         self.act_limits = act_limits
         self._log_std_min = log_std_min
         self._log_std_max = log_std_max
@@ -95,6 +99,8 @@ class SquashedGaussianMLPActor(nn.Module):
         net_out = self.net(obs)
         mu = self.mu_layer(net_out)
         log_std = self.log_std_layer(net_out)
+        log_std = self.log_std_layer(net_out)  # Question: Why use obs (Han: L469)?
+        # FIXME: LOOKOUT THIS IS CHANGED COMPARED TO SPINNINGUP
         log_std = torch.clamp(log_std, self._log_std_min, self._log_std_max)
         std = torch.exp(log_std)
 
@@ -223,11 +229,11 @@ class MLPActorCritic(nn.Module):
         # build policy and value functions
         self.pi = SquashedGaussianMLPActor(
             obs_dim, act_dim, hidden_sizes_actor, activation, act_limits
-        )
-        self.q1 = MLPQFunction(
+        )  # SquashedGaussianActor
+        self.lq1 = MLPQFunction(
             obs_dim, act_dim, hidden_sizes_critic, activation
-        )  # Use min-clipping
-        self.q2 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
+        )  # Lyapunov soft critic 1
+        self.lq2 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
 
     def forward(self, obs, act):
         """Perform a forward pass through all the networks.

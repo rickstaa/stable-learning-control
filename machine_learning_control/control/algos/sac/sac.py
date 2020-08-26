@@ -38,7 +38,7 @@ global t  # TODO: Make attribute out of this
 # FIXME: Make sure the right hyperparameters are here (Do we want the ones for
 # oscillator or mujoco)
 # Better to set to mujoco because that is more often used
-
+# TODO:
 
 def sac(
     env_fn,
@@ -46,13 +46,13 @@ def sac(
     ac_kwargs=dict(),
     seed=0,
     steps_per_epoch=2000,
-    epochs=10,
+    epochs=100,
     replay_size=int(1e6),
     gamma=0.995,
     polyak=0.995,
     lr_a=1e-4,
     lr_c=3e-4,
-    decaying_lr=False,
+    decaying_lr=True,
     alpha=1.0,
     target_entropy="auto",
     batch_size=256,
@@ -352,7 +352,7 @@ def sac(
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
         loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
 
-        # Store log-likelihood
+        # Store log-likelihoo
         pi_info = dict(LogPi=logp_pi.detach().numpy())
 
         # Return actor loss and log-likelihood
@@ -400,7 +400,7 @@ def sac(
     pi_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
         pi_optimizer,
         lr_lambda=(
-            (lambda epoch: 1.0 - (epoch - 1.0) / 1000)
+            (lambda epoch: 1.0 - (epoch - 1.0) / epochs)
             if decaying_lr
             else lambda epoch: 1.0
         ),
@@ -408,7 +408,7 @@ def sac(
     q_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
         q_optimizer,
         lr_lambda=(
-            (lambda epoch: 1.0 - (epoch - 1.0) / 1000)
+            (lambda epoch: 1.0 - (epoch - 1.0) / epochs)
             if decaying_lr
             else lambda epoch: 1.0
         ),
@@ -416,7 +416,7 @@ def sac(
     log_alpha_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
         log_alpha_optimizer,
         lr_lambda=(
-            (lambda epoch: 1.0 - (epoch - 1.0) / 1000)
+            (lambda epoch: 1.0 - (epoch - 1.0) / epochs)
             if decaying_lr
             else lambda epoch: 1.0
         ),
@@ -601,25 +601,6 @@ def sac(
                 tb_write=logger_kwargs["use_tensorboard"], EpRet=ep_ret, EpLen=ep_len
             )
             o, ep_ret, ep_len = env.reset(), 0, 0
-            # FIXME: This is how it is done in han but it makes more sense to do this
-            # after the optim.step()
-            for scheduler in opt_schedulers:
-                scheduler.step()  # Decay learning rate
-
-                # Log lr to tensorboard
-                if logger_kwargs["use_tensorboard"]:
-                    logger.add_scalar(
-                        "LearningRates/Lr_a", pi_optimizer.param_groups[0]["lr"], t
-                    )
-                    logger.add_scalar(
-                        "LearningRates/Lr_c", q_optimizer.param_groups[0]["lr"], t
-                    )
-                    if target_entropy:
-                        logger.add_scalar(
-                            "LearningRates/Lr_alpha",
-                            log_alpha_optimizer.param_groups[0]["lr"],
-                            t,
-                        )
 
         # Update handling
         if t >= update_after and t % update_every == 0:
@@ -639,6 +620,26 @@ def sac(
 
             # Test the performance of the deterministic version of the agent.
             test_agent()
+
+            # FIXME: This is how it is done in han but it makes more sense to do this
+            # after the optim.step()
+            for scheduler in opt_schedulers:
+                scheduler.step()  # Decay learning rate
+
+            # Log lr to tensorboard
+            if logger_kwargs["use_tensorboard"]:
+                logger.add_scalar(
+                    "LearningRates/Lr_a", pi_optimizer.param_groups[0]["lr"], t
+                )
+                logger.add_scalar(
+                    "LearningRates/Lr_c", q_optimizer.param_groups[0]["lr"], t
+                )
+                if target_entropy:
+                    logger.add_scalar(
+                        "LearningRates/Lr_alpha",
+                        log_alpha_optimizer.param_groups[0]["lr"],
+                        t,
+                    )
 
             # Log info about epoch
             # TODO: Fails if step per epoch is 50 This is because the replay buffer is

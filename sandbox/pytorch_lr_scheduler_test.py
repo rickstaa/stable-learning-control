@@ -12,7 +12,7 @@ max_t = torch.tensor(100)
 model = nn.Linear(3 * 224 * 224, 10)
 optimizer = optim.SGD(model.parameters(), lr=0.005)
 scheduler = optim.lr_scheduler.MultiplicativeLR(
-    optimizer, lr_lambda=lambda epoch: 1.0 - (epoch - 1.0) / 1000, last_epoch=1000
+    optimizer, lr_lambda=lambda epoch: 1.0 - (epoch - 1.0) / 100
 )
 criterion = nn.NLLLoss()
 
