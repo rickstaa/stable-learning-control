@@ -1,6 +1,8 @@
 """A number of usefull helper functions.
 """
 
+import decimal
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -175,3 +177,49 @@ def clamp(data, min_bound, max_bound):
 
     # Clamp all actions to be within the boundaries
     return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
+
+
+def calc_gamma_lr_decay(lr_init, lr_final, epoch):
+    """Returns the exponential decay factor (gamma) needed to achieve a given final
+    learning rate at a certain epoch. This decay factor can for example be used with a
+    :py:class:`torch.optim.lr_scheduler.LambdaLR` scheduler. Keep in mind that this
+    function assumes the following formula for the learning rate decay.
+
+    .. math::
+        lr_{terminal} = lr_{init} \cdot  \gamma^{epoch}
+
+    Args:
+        lr_init (float): The initial learning rate.
+        lr_final (float): The final learning rate you want to achieve.
+        epoch (int): The eposide at which you want to achieve this learning rate.
+
+    Returns:
+        decimal.Decimal: Exponential learning rate decay factor (gamma).
+    """
+    gamma_a = (decimal.Decimal(lr_final) / decimal.Decimal(lr_init)) ** (
+        decimal.Decimal(1.0) / decimal.Decimal(epoch)
+    )
+    return gamma_a
+
+
+def calc_linear_lr_decay(lr_init, lr_final, epoch):
+    """Returns the linear decay factor (G) needed to achieve a given final learning
+    rate at a certain epoch. This decay factor can for example be used with a
+    :py:class:`torch.optim.lr_scheduler.LambdaLR` scheduler. Keep in mind that this
+    function assumes the following formula for the learning rate decay.
+
+    .. math::
+        lr_{terminal} = lr_{init} * (1.0 - G \cdot epoch)
+
+    Args:
+        lr_init (float): The initial learning rate.
+        lr_final (float): The final learning rate you want to achieve.
+        epoch (int): The eposide at which you want to achieve this learning rate.
+
+    Returns:
+        decimal.Decimal: Linear learning rate decay factor (G)
+    """
+    return -(
+        ((decimal.Decimal(lr_final) / decimal.Decimal(lr_init)) - decimal.Decimal(1.0))
+        / (decimal.Decimal(epoch) - decimal.Decimal(1.0))
+    )

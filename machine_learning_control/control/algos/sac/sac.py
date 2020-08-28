@@ -6,13 +6,17 @@ on the one found in the the
 `Spinning Up repository <https://github.com/openai/spinningup>`_
 """
 
+import decimal
+
 import itertools
 import time
 import os
 import argparse
 from copy import deepcopy
 from numbers import Number
+import json
 
+# Import os.path as osp
 import gym
 import numpy as np
 import torch
@@ -21,7 +25,12 @@ from torch.optim import Adam
 import machine_learning_control.control.algos.sac.core as core
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.helpers import count_vars, clamp
+from machine_learning_control.control.utils.helpers import (
+    count_vars,
+    clamp,
+    calc_gamma_lr_decay,
+    calc_linear_lr_decay,
+)
 from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from machine_learning_control.control.utils.gym import (
     is_continuous_space,
@@ -38,7 +47,14 @@ global t  # TODO: Make attribute out of this
 # FIXME: Make sure the right hyperparameters are here (Do we want the ones for
 # oscillator or mujoco)
 # Better to set to mujoco because that is more often used
-# TODO:
+# TODO: Add additional config file that can be loaded from argument
+
+RUN_DB_FILE = os.path.abspath(
+    os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "../cfg/_cfg/sac_last_run.json"
+    )
+)
+
 
 def sac(
     env_fn,
@@ -52,7 +68,10 @@ def sac(
     polyak=0.995,
     lr_a=1e-4,
     lr_c=3e-4,
+    lr_a_final=1e-10,
+    lr_c_final=1e-10,
     decaying_lr=True,
+    decaying_lr_type="linear",
     alpha=1.0,
     target_entropy="auto",
     batch_size=256,
@@ -136,6 +155,8 @@ def sac(
 
         decaying_lr (bool): Whether you want to use decaying learning rates.
 
+        decaying_lr_type (str, optional): The type of learning rate decay you want to
+            use (options: exponential or linear). Defaults to linear.
         alpha (float): Entropy regularization coefficient (Equivalent to
             inverse of reward scale in the original SAC paper).
 
@@ -397,30 +418,64 @@ def sac(
     log_alpha_optimizer = Adam([log_alpha], lr=lr_a)
 
     # Create learning rate decay wrappers
-    pi_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
-        pi_optimizer,
-        lr_lambda=(
-            (lambda epoch: 1.0 - (epoch - 1.0) / epochs)
+    # TODO: make class method
+    # TODO: limit minimum
+    # TEST: Wheter this works
+    if decaying_lr_type.lower() == "exponential":
+
+        # Calculated required gamma
+        gamma_a = np.longdouble(
+            (calc_gamma_lr_decay(lr_a, lr_a_final, epochs) if decaying_lr else 1.0)
+        )  # The decay exponent
+        gamma_c = np.longdouble(
+            (calc_gamma_lr_decay(lr_c, lr_c_final, epochs) if decaying_lr else 1.0)
+        )  # The decay exponent
+
+        # Create scheduler
+        pi_opt_scheduler = torch.optim.lr_scheduler.ExponentialLR(pi_optimizer, gamma_a)
+        q_opt_scheduler = torch.optim.lr_scheduler.ExponentialLR(q_optimizer, gamma_c)
+        log_alpha_opt_scheduler = torch.optim.lr_scheduler.ExponentialLR(
+            log_alpha_optimizer, gamma_a
+        )
+    else:
+        # Calculate linear decay rate
+        lr_decay_a = (
+            (
+                lambda epoch: np.longdouble(
+                    decimal.Decimal(1.0)
+                    - (
+                        calc_linear_lr_decay(lr_a, lr_a_final, epochs)
+                        * decimal.Decimal(epoch)
+                    )
+                )
+            )
             if decaying_lr
             else lambda epoch: 1.0
-        ),
-    )
-    q_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
-        q_optimizer,
-        lr_lambda=(
-            (lambda epoch: 1.0 - (epoch - 1.0) / epochs)
+        )
+        lr_decay_c = (
+            (
+                lambda epoch: np.longdouble(
+                    decimal.Decimal(1.0)
+                    - (
+                        calc_linear_lr_decay(lr_c, lr_c_final, epochs)
+                        * decimal.Decimal(epoch)
+                    )
+                )
+            )
             if decaying_lr
             else lambda epoch: 1.0
-        ),
-    )
-    log_alpha_opt_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
-        log_alpha_optimizer,
-        lr_lambda=(
-            (lambda epoch: 1.0 - (epoch - 1.0) / epochs)
-            if decaying_lr
-            else lambda epoch: 1.0
-        ),
-    )
+        )
+
+        # Create schedulers
+        pi_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
+            pi_optimizer, lr_lambda=lr_decay_a
+        )
+        q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
+            q_optimizer, lr_lambda=lr_decay_c,
+        )
+        log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
+            log_alpha_optimizer, lr_lambda=lr_decay_a
+        )
     opt_schedulers = [pi_opt_scheduler, q_opt_scheduler, log_alpha_opt_scheduler]
 
     # Store initial learning rates
@@ -504,7 +559,7 @@ def sac(
                 tb_write=logger_kwargs["use_tensorboard"],
                 LossLogAlpha=loss_log_alpha.item(),
                 Alpha=log_alpha_info["LogAlpha"].exp(),
-                tb_aliases={"LossAlpha": "Loss/LossLogAlpha"},
+                tb_aliases={"LossLogAlpha": "Loss/LossLogAlpha"},
             )
         else:
             logger.store(
@@ -820,6 +875,12 @@ if __name__ == "__main__":
         )
     )
     torch.set_num_threads(torch.get_num_threads())
+
+    # Update last run in json database
+    # TODO: I'm here
+    run_name = os.path.split(logger_kwargs["output_dir"])[-1]
+    with open(RUN_DB_FILE, "w") as outfile:
+        json.dump(run_name, outfile)
 
     # Run SAC algorithm
     # TODO: Reinable arguments

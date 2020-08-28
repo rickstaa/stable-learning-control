@@ -1,5 +1,9 @@
 """Simple script used to test the performance of a trained model."""
 
+
+import json
+import os
+
 import gym
 import torch
 
@@ -10,7 +14,32 @@ import matplotlib.pyplot as plt
 ENV_NAME = "Oscillator-v0"
 # ENV_NAME = "Hopper-v2"
 # MAX_EP_LEN = 200
-MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/run_1598434346/pyt_save/model.pt"
+
+# GET LAST RUN PATH
+# FIXME: Does not always work
+RUN_DB_FILE = os.path.abspath(
+    os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "../cfg/_cfg/sac_last_run.json"
+    )
+)
+# print(os.path.dirname(__file__))
+# print(__file__)
+print(RUN_DB_FILE)
+lines = []
+with open(RUN_DB_FILE, "r") as f:
+    for line in f:
+        lines.append(json.loads(line))
+LAST_RUN = lines[0]  # FIXME: MAKE READ ONLY FIRST LINE
+MODEL_PATH = os.path.abspath(
+    os.path.join(
+        "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/",
+        LAST_RUN,
+        "pyt_save/model.pt",
+    )
+)
+
+# HARD MODEL PATH
+# MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/run_1598434346/pyt_save/model.pt"
 # MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1597959914/pyt_save/model.pt"
 EP = 1000
 
@@ -20,8 +49,10 @@ EP = 1000
 env = gym.make(ENV_NAME)
 
 # Load model
+# TODO: Cath error
 SAC = torch.load(MODEL_PATH)
 
+# IMPROVE: Clean code and add argument option
 # # Perform several steps in the test environment using the current policy
 # for j in range(EP):
 #     o, d, ep_ret, ep_len = env.reset(), False, 0, 0
