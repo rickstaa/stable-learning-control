@@ -418,6 +418,11 @@ def lac(
             l_pi_targ = ac_targ.l(o2, a2)
 
             # Calculate lyapunov target
+
+            # # Used when agent has to maximize reward is negative deviation (My version)
+            # backup = -r + gamma * (1 - d) * l_pi_targ.detach()
+
+            # Used when agent has to minimize reward is positive deviation (Minghoas version)
             backup = r + gamma * (1 - d) * l_pi_targ.detach()
             # Question: Why no entropy regularization in l?
 
@@ -470,14 +475,40 @@ def lac(
             l = ac.l(o, pi)
 
             # Calculate lyapunov constraint
-            # TODO: Make function out of this
+
+            # # Used when agent has to maximize reward is negative deviation (My version)
+            # # TODO: Make function out of this
+            # l_delta = (
+            #     l2 - l - alpha3 * r
+            # )  # FIXME: Why + 1.0 in cost SAC this is not the case in LAC L91 vs L113
+            # # DEBUG: Why +1.0
+
+            # Used when agent has to minimize reward is positive deviation (Minghoas version)
             l_delta = (
-                l2 - l - alpha3 * r
+                l2 - l + alpha3 * r
             )  # FIXME: Why + 1.0 in cost SAC this is not the case in LAC L91 vs L113
             # DEBUG: Why +1.0
 
             # Calculate entropy-regularized policy loss
             # TODO: Rewrite formula to be consistent with Literature
+
+            # # Used when agent has to maximize reward is negative deviation (My version)
+            # loss_pi = (
+            #     (
+            #         torch.clamp(
+            #             log_labda.exp(),
+            #             SCALE_lambda_MIN_MAX[0],
+            #             SCALE_lambda_MIN_MAX[1],
+            #         )
+            #         * l_delta
+            #     )
+            #     + (log_alpha.exp() * logp_pi)
+            #     - l
+            # ).mean()  # FIXME: TODO I need the policy log! Thats l here right?
+            # # DEBUG: Doesn't this need to be -1?
+
+            # Used when agent has to minimize reward is positive deviation (Minghoas version)
+            # FIXME: THIS SHOULD BE according to HAn not LOG labda
             loss_pi = (
                 (
                     torch.clamp(
@@ -488,9 +519,9 @@ def lac(
                     * l_delta
                 )
                 + (log_alpha.exp() * logp_pi)
-                - l
             ).mean()  # FIXME: TODO I need the policy log! Thats l here right?
             # DEBUG: Doesn't this need to be -1?
+
         else:
 
             # Retrieve the current Q values for the action given by the current policy
@@ -501,7 +532,12 @@ def lac(
             # Calculate Entropy-regularized policy loss
             # IMPROVE: detch log_alpha
             # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
-            loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
+
+            # # MY version
+            # loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
+
+            # Minghoas version
+            loss_pi = (log_alpha * logp_pi - q_pi).mean()
 
         # Store log-likelihood
         pi_info = dict(LogPi=logp_pi.detach().numpy())
@@ -538,6 +574,9 @@ def lac(
             -1.0 * (log_alpha.exp() * (logp_pi + target_entropy).detach())
         ).mean()
 
+        # # # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        # loss_alpha = (-1.0 * (log_alpha * (logp_pi + target_entropy).detach())).mean()
+
         # Store log-likelihood
         log_alpha_info = dict(LogAlpha=log_alpha.detach())
 
@@ -568,25 +607,39 @@ def lac(
 
         # Calculate lyapunov constraint
         # TODO: Make function out of this
-        # l_delta = l2 - l + alpha3 * r # Changed
-        l_delta = l2 - l - alpha3 * r
+
+        # # Used when agent has to maximize reward is negative deviation (My version)
+        # l_delta = l2 - l - alpha3 * r
+
+        # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        l_delta = l2 - l + alpha3 * r  # Changed
+
         # FIXME: Do we need alpha3 + 1.0 in cost SAC this is not the case in LAC L91 vs L113
         # DEBUG: Why +1.0
 
         # Calculate labda loss (used for labda tuning)
-        # Question: Again why does Han use log labda
+
+        # # Used when agent has to maximize reward is negative deviation (My version)
+        # # Question: Again why does Han use log labda
+        # loss_labda = (
+        #     torch.clamp(
+        #         log_labda.exp(), SCALE_lambda_MIN_MAX[0], SCALE_lambda_MIN_MAX[1]
+        #     )
+        #     * l_delta.detach()
+        # ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so differs from SAC SPINNING UP
+
+        # DEBUG:
         loss_labda = (
-            torch.clamp(
-                log_labda.exp(), SCALE_lambda_MIN_MAX[0], SCALE_lambda_MIN_MAX[1]
-            )
-            * l_delta.detach()
+            log_labda.exp() * l_delta.detach()
         ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so differs from SAC SPINNING UP
+
+        # Used when agent has to minimize reward is positive deviation (Minghoas version)
         # loss_labda = (
         #     -1.0
         #     * (
         #         torch.clamp(
         #             log_labda.exp(), SCALE_lambda_MIN_MAX[0], SCALE_lambda_MIN_MAX[1]
-        #         )
+        #         ).log()
         #         * l_delta.detach()
         #     )
         # ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so differs from SAC SPINNING UP
