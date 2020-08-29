@@ -7,7 +7,6 @@ on the one found in the the
 """
 
 import decimal
-
 import itertools
 import time
 import os
@@ -48,6 +47,7 @@ global t  # TODO: Make attribute out of this
 # oscillator or mujoco)
 # Better to set to mujoco because that is more often used
 # TODO: Add additional config file that can be loaded from argument
+# FIXME: The learning rate became negative!
 
 RUN_DB_FILE = os.path.abspath(
     os.path.join(
@@ -63,6 +63,7 @@ def sac(
     seed=0,
     steps_per_epoch=2000,
     epochs=100,
+    max_ep_len=600,
     replay_size=int(1e6),
     gamma=0.995,
     polyak=0.995,
@@ -79,7 +80,6 @@ def sac(
     update_after=1000,
     update_every=100,
     num_test_episodes=10,
-    max_ep_len=400,
     logger_kwargs=dict(),
     save_freq=1,
 ):
@@ -135,6 +135,8 @@ def sac(
 
         epochs (int): Number of epochs to run and train agent.
 
+        max_ep_len (int): Maximum length of trajectory / episode / rollout.
+
         replay_size (int): Maximum length of replay buffer.
 
         gamma (float): Discount factor. (Always between 0 and 1.)
@@ -157,6 +159,7 @@ def sac(
 
         decaying_lr_type (str, optional): The type of learning rate decay you want to
             use (options: exponential or linear). Defaults to linear.
+
         alpha (float): Entropy regularization coefficient (Equivalent to
             inverse of reward scale in the original SAC paper).
 
@@ -181,8 +184,6 @@ def sac(
 
         num_test_episodes (int): Number of episodes to test the deterministic
             policy at the end of each epoch.
-
-        max_ep_len (int): Maximum length of trajectory / episode / rollout.
 
         logger_kwargs (dict): Keyword args for EpochLogger.
 
@@ -273,7 +274,7 @@ def sac(
     print("==Soft critic 1==")
     print(ac.q1)
     print("")
-    print("==Soft critic 2=")
+    print("==Soft critic 2==")
     print(ac.q2)
     print("")
 
@@ -369,17 +370,17 @@ def sac(
         q2_pi = ac.q2(o, pi)
         q_pi = torch.min(q1_pi, q2_pi)
 
-        # Entropy-regularized policy loss
+        # Calculate Entropy-regularized policy loss
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
         loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
 
-        # Store log-likelihoo
+        # Store log-likelihood
         pi_info = dict(LogPi=logp_pi.detach().numpy())
 
         # Return actor loss and log-likelihood
         return loss_pi, pi_info
 
-    def compute_loss_log_alpha(data):
+    def compute_loss_alpha(data):
         """Function computes the loss of the entropy Temperature (alpha). Log used for
         numerical stability.
 
@@ -393,7 +394,7 @@ def sac(
         """
 
         # Return loss of
-        if not isinstance(target_entropy, Number):
+        if not isinstance(target_entropy, Number):  # DEBUG: Is this really neeeded?
             return torch.tensor(0.0)
 
         # Get log from observations
@@ -404,7 +405,7 @@ def sac(
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
         loss_alpha = (
             -1.0 * (log_alpha.exp() * (logp_pi + target_entropy).detach())
-        ).mean()
+        ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so
 
         # Store log-likelihood
         log_alpha_info = dict(LogAlpha=log_alpha.detach())
@@ -420,7 +421,7 @@ def sac(
     # Create learning rate decay wrappers
     # TODO: make class method
     # TODO: limit minimum
-    # TEST: Wheter this works
+    # TEST: Whether this works
     if decaying_lr_type.lower() == "exponential":
 
         # Calculated required gamma
@@ -500,6 +501,8 @@ def sac(
 
         # First run one gradient descent step for Q1 and Q2 (Both network are in the
         # optimizer)
+
+        # Optimize Q-vals
         q_optimizer.zero_grad()
         loss_q, q_info = compute_loss_q(data)
         loss_q.backward()
@@ -524,10 +527,6 @@ def sac(
         loss_pi.backward()
         pi_optimizer.step()
 
-        # Unfreeze Q-networks so you can optimize it at next DDPG step.
-        for p in q_params:
-            p.requires_grad = True
-
         # Record things
         logger.store(
             tb_write=logger_kwargs["use_tensorboard"],
@@ -535,6 +534,10 @@ def sac(
             tb_aliases={"LossPi": "Loss/LossPi"},
             **pi_info,
         )
+
+        # Unfreeze Q-networks so you can optimize it at next DDPG step.
+        for p in q_params:
+            p.requires_grad = True
 
         # Optimize the temperature for the current policy
         if target_entropy:
@@ -546,7 +549,7 @@ def sac(
 
             # Perform SGD to tune the entropy Temperature (alpha)
             log_alpha_optimizer.zero_grad()
-            loss_log_alpha, log_alpha_info = compute_loss_log_alpha(data)
+            loss_log_alpha, log_alpha_info = compute_loss_alpha(data)
             loss_log_alpha.backward()
             log_alpha_optimizer.step()
 
@@ -567,6 +570,7 @@ def sac(
             )
 
         # Finally, update target networks by polyak averaging.
+        # TODO: Make function?
         with torch.no_grad():
             for p, p_targ in zip(ac.parameters(), ac_targ.parameters()):
                 # NB: We use an in-place operations "mul_", "add_" to update target

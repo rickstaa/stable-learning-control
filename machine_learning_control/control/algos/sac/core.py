@@ -14,6 +14,8 @@ from torch.distributions.normal import Normal
 
 from machine_learning_control.control.utils.helpers import mlp, clamp
 
+# TODO: RENAME TO SAC
+
 
 class SquashedGaussianMLPActor(nn.Module):
     """The squashed gaussian actor network.
@@ -141,7 +143,7 @@ class SquashedGaussianMLPActor(nn.Module):
 
 
 class MLPQFunction(nn.Module):
-    """Soft Q-Network.
+    """Soft Q critic network.
 
     Attributes:
         q (torch.nn.modules.container.Sequential): The layers of the network.
@@ -224,9 +226,7 @@ class MLPActorCritic(nn.Module):
         self.pi = SquashedGaussianMLPActor(
             obs_dim, act_dim, hidden_sizes_actor, activation, act_limits
         )
-        self.q1 = MLPQFunction(
-            obs_dim, act_dim, hidden_sizes_critic, activation
-        )  # Use min-clipping
+        self.q1 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
         self.q2 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
 
     def forward(self, obs, act):

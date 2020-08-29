@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 ENV_NAME = "Oscillator-v0"
 # ENV_NAME = "Hopper-v2"
 # MAX_EP_LEN = 200
-MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/run_1598366169/pyt_save/model.pt"
+MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/oscillator-v0/runs/run_1598723405/pyt_save/model.pt"
 # MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1597959914/pyt_save/model.pt"
 EP = 1000
 
@@ -20,7 +20,7 @@ EP = 1000
 env = gym.make(ENV_NAME)
 
 # Load model
-SAC = torch.load(MODEL_PATH)
+LAC = torch.load(MODEL_PATH)
 
 # # Perform several steps in the test environment using the current policy
 # for j in range(EP):
@@ -44,7 +44,7 @@ a_lowerbound = env.action_space.low
 a_upperbound = env.action_space.high
 
 for i in range(int(T / env.dt)):
-    a = SAC.act(torch.as_tensor(s, dtype=torch.float32), True)
+    a = LAC.act(torch.as_tensor(s, dtype=torch.float32), True)
     s, r, done, info = env.step(a)
     # s, r, done, info = env.step(np.array([0, 0, 0]))
     path.append(s)

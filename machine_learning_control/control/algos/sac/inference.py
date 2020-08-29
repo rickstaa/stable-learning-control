@@ -39,8 +39,8 @@ MODEL_PATH = os.path.abspath(
 )
 
 # HARD MODEL PATH
-# MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/run_1598434346/pyt_save/model.pt"
-# MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1597959914/pyt_save/model.pt"
+MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/run_1598691929/pyt_save/model.pt"
+# MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1598608665/pyt_save/model.pt"
 EP = 1000
 
 # TODO: Change number

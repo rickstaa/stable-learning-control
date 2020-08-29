@@ -14,6 +14,8 @@ from torch.distributions.normal import Normal
 
 from machine_learning_control.control.utils.helpers import mlp, clamp
 
+# TODO: RENAME TO LAC
+
 
 class SquashedGaussianMLPActor(nn.Module):
     """The squashed gaussian actor network.
@@ -67,11 +69,7 @@ class SquashedGaussianMLPActor(nn.Module):
         super().__init__()
         self.net = mlp([obs_dim] + list(hidden_sizes), activation, activation)
         self.mu_layer = nn.Linear(hidden_sizes[-1], act_dim)
-        # self.log_std_layer = nn.Linear(hidden_sizes[-1], act_dim)
-        self.log_std_layer = nn.Linear(
-            obs_dim, act_dim
-        )  # Question: Why use obs_dim (Han: L469)
-        # FIXME: LOOKOUT THIS IS CHANGED COMPARED TO SPINNINGUP
+        self.log_std_layer = nn.Linear(hidden_sizes[-1], act_dim)
         self.act_limits = act_limits
         self._log_std_min = log_std_min
         self._log_std_max = log_std_max
@@ -99,8 +97,6 @@ class SquashedGaussianMLPActor(nn.Module):
         net_out = self.net(obs)
         mu = self.mu_layer(net_out)
         log_std = self.log_std_layer(net_out)
-        log_std = self.log_std_layer(net_out)  # Question: Why use obs (Han: L469)?
-        # FIXME: LOOKOUT THIS IS CHANGED COMPARED TO SPINNINGUP
         log_std = torch.clamp(log_std, self._log_std_min, self._log_std_max)
         std = torch.exp(log_std)
 
@@ -147,7 +143,7 @@ class SquashedGaussianMLPActor(nn.Module):
 
 
 class MLPQFunction(nn.Module):
-    """Soft Q-Network.
+    """Soft Q critic network.
 
     Attributes:
         q (torch.nn.modules.container.Sequential): The layers of the network.
@@ -179,6 +175,41 @@ class MLPQFunction(nn.Module):
         """
         q = self.q(torch.cat([obs, act], dim=-1))
         return torch.squeeze(q, -1)  # Critical to ensure q has right shape.
+
+
+class MLPLFunction(nn.Module):
+    """Soft Lyapunov critic Network.
+
+    Attributes:
+        q (torch.nn.modules.container.Sequential): The layers of the network.
+    """
+
+    def __init__(self, obs_dim, act_dim, hidden_sizes, activation):
+        """Constructs all the necessary attributes for the Soft Q critic object.
+
+        Args:
+            obs_dim (int): Dimension of the observation space.
+            act_dim (int): Dimension of the action space.
+            hidden_sizes (list): Sizes of the hidden layers.
+            activation (torch.nn.modules.activation): The activation function.
+        """
+        super().__init__()
+        self.l = mlp([obs_dim + act_dim] + list(hidden_sizes) + [1], activation)
+
+    def forward(self, obs, act):
+        """Perform forward pass through the network.
+
+        Args:
+            obs (torch.Tensor): The tensor of observations.
+
+            act (torch.Tensor): The tensor of actions.
+
+        Returns:
+            torch.Tensor: The tensor containing the lyapunov values of the input
+                observations and actions.
+        """
+        l = self.l(torch.cat([obs, act], dim=-1))
+        return torch.squeeze(l, -1)  # Critical to ensure q has right shape.
 
 
 class MLPActorCritic(nn.Module):
@@ -229,11 +260,10 @@ class MLPActorCritic(nn.Module):
         # build policy and value functions
         self.pi = SquashedGaussianMLPActor(
             obs_dim, act_dim, hidden_sizes_actor, activation, act_limits
-        )  # SquashedGaussianActor
-        self.lq1 = MLPQFunction(
-            obs_dim, act_dim, hidden_sizes_critic, activation
-        )  # Lyapunov soft critic 1
-        self.lq2 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
+        )
+        self.q1 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
+        self.q2 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
+        self.l = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
 
     def forward(self, obs, act):
         """Perform a forward pass through all the networks.
@@ -253,6 +283,7 @@ class MLPActorCritic(nn.Module):
         pi_action, logp_pi = self.pi(obs)
         q1 = self.q1(obs, act)
         q2 = self.q1(obs, act)
+        l = self.q1(obs, act)
         return pi_action, logp_pi, q1, q2
 
     def act(self, obs, deterministic=False):
