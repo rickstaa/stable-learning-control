@@ -31,17 +31,16 @@ with open(RUN_DB_FILE, "r") as f:
     for line in f:
         lines.append(json.loads(line))
 LAST_RUN = lines[0]  # FIXME: MAKE READ ONLY FIRST LINE
-# MODEL_PATH = os.path.abspath(
-#     os.path.join(
-#         "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/",
-#         LAST_RUN,
-#         "pyt_save/model.pt",
-#     )
-# )
+MODEL_PATH = os.path.abspath(
+    os.path.join(
+        "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/",
+        LAST_RUN,
+        "pyt_save/model.pt",
+    )
+)
 
 # HARD MODEL PATH
-MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/ex3_eka_negative-v0/runs/run_1598794906/pyt_save/model.pt"
-# MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/ex3_ekf-v0/runs/run_1598777598/pyt_save/model.pt"
+MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/ex3_ekf-v0/runs/run_1598777598/pyt_save/model.pt"
 # MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1598608665/pyt_save/model.pt"
 EP = 1000
 
@@ -67,9 +66,8 @@ SAC = torch.load(MODEL_PATH)
 #         env.render()
 
 # Take T steps in the environment
-T = 200
+T = 600
 path = []
-info_dict = []
 t1 = []
 s = env.reset()
 print(f"Taking {T} steps in the oscillator environment.")
@@ -82,42 +80,25 @@ for i in range(int(T / env.dt)):
     s, r, done, info = env.step(a)
     # s, r, done, info = env.step(np.array([0, 0, 0]))
     path.append(s)
-    info_dict.append(info)
     t1.append(i * env.dt)
 print("Finished oscillator environment simulation.")
 
 # Plot results
 # observations = (m1, m2, m3, p1, p2, p3, r1, p1 - r1)
-# print("Plot results.")
-# fig = plt.figure(figsize=(9, 6))
-# ax = fig.add_subplot(111)
-# # ax.plot(t1, np.array(path)[:, 0], color="orange", label="mRNA1")
-# # ax.plot(t1, np.array(path)[:, 1], color="magenta", label="mRNA2")
-# # ax.plot(t1, np.array(path)[:, 2], color="sienna", label="mRNA3")
-# ax.plot(t1, np.array(path)[:, 3], color="blue", label="protein1")
-# # ax.plot(t1, np.array(path)[:, 4], color="cyan", label="protein2")
-# # ax.plot(t1, np.array(path)[:, 5], color="green", label="protein3")
-# # ax.plot(t1, np.array(path)[:, 0:3], color="blue", label="mRNA")
-# # ax.plot(t1, np.array(path)[:, 3:6], color="blue", label="protein")
-# ax.plot(t1, np.array(path)[:, 6], color="yellow", label="reference")
-# ax.plot(t1, np.array(path)[:, 7], color="red", label="error")
-# handles, labels = ax.get_legend_handles_labels()
-# ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
-
+print("Plot results.")
 fig = plt.figure(figsize=(9, 6))
 ax = fig.add_subplot(111)
-ax.set_title("Sac results")
+ax.plot(t1, np.array(path)[:, 0], color="yellow", label="x1")
+ax.plot(t1, np.array(path)[:, 1], color="green", label="x2")
+# ax.plot(t1, np.array(path)[:, 1], color="magenta", label="mRNA2")
+# ax.plot(t1, np.array(path)[:, 2], color="sienna", label="mRNA3")
+# ax.plot(t1, np.array(path)[:, 3], color="blue", label="protein1")
+# ax.plot(t1, np.array(path)[:, 4], color="cyan", label="protein2")
+# ax.plot(t1, np.array(path)[:, 5], color="green", label="protein3")
+# ax.plot(t1, np.array(path)[:, 0:3], color="blue", label="mRNA")
+# ax.plot(t1, np.array(path)[:, 3:6], color="blue", label="protein")
 # ax.plot(t1, np.array(path)[:, 6], color="yellow", label="reference")
-# soi = [item["state_of_interest" for itme in item]
-soi1 = []
-soi2 = []
-for item in info_dict:
-    soi1.append(item["state_of_interest"][0])
-    soi2.append(item["state_of_interest"][1])
-
-# soi = [item["state_of_interest" for itme in item]
-ax.plot(t1, soi1, color="blue", label="state_of_interest1")
-ax.plot(t1, soi2, color="red", label="state_of_interest2")
+# ax.plot(t1, np.array(path)[:, 7], color="red", label="error")
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
 plt.show()

@@ -249,10 +249,12 @@ class Logger:
         if self._first_row:
             self._log_headers.append(key)
         else:
-            assert key in self._log_headers, (
-                "Trying to introduce a new key %s that you didn't include in the first "
-                "iteration" % key
-            )
+            # DEBUG: CHANGED THIS!
+            pass
+            # assert key in self._log_headers, (
+            #     "Trying to introduce a new key %s that you didn't include in the first "
+            #     "iteration" % key
+            # )
         assert key not in self._log_current_row, (
             "You already set %s this iteration. Maybe you forgot to call dump_tabular()"
             % key

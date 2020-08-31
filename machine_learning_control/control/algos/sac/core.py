@@ -15,6 +15,7 @@ from torch.distributions.normal import Normal
 from machine_learning_control.control.utils.helpers import mlp, clamp
 
 # TODO: RENAME TO SAC
+# TODO: Change naming of action limit
 
 
 class SquashedGaussianMLPActor(nn.Module):

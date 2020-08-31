@@ -70,7 +70,7 @@ class SquashedGaussianMLPActor(nn.Module):
         self.net = mlp([obs_dim] + list(hidden_sizes), activation, activation)
         self.mu_layer = nn.Linear(hidden_sizes[-1], act_dim)
         self.log_std_layer = nn.Linear(hidden_sizes[-1], act_dim)
-        self.act_limits = act_limits
+        self.act_limits = act_limits  # FIXME: VALIDATE
         self._log_std_min = log_std_min
         self._log_std_max = log_std_max
 
@@ -177,7 +177,7 @@ class MLPQFunction(nn.Module):
         return torch.squeeze(q, -1)  # Critical to ensure q has right shape.
 
 
-class MLPLFunction(nn.Module):
+class MLPLFunction(nn.Module):  # TODO: Confusing names
     """Soft Lyapunov critic Network.
 
     Attributes:
@@ -208,7 +208,7 @@ class MLPLFunction(nn.Module):
             torch.Tensor: The tensor containing the lyapunov values of the input
                 observations and actions.
         """
-        l = self.l(torch.cat([obs, act], dim=-1))
+        l = torch.square(self.l(torch.cat([obs, act], dim=-1)))
         return torch.squeeze(l, -1)  # Critical to ensure q has right shape.
 
 
@@ -263,7 +263,7 @@ class MLPActorCritic(nn.Module):
         )
         self.q1 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
         self.q2 = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
-        self.l = MLPQFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
+        self.l = MLPLFunction(obs_dim, act_dim, hidden_sizes_critic, activation)
 
     def forward(self, obs, act):
         """Perform a forward pass through all the networks.

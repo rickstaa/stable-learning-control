@@ -1,9 +1,9 @@
-"""Soft Actor-Critic algorithm
+"""Soft Lyapunov Actor-Critic algorithm
 
-This module contains an implementation of the SAC algorithm of
-`Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_. This implementation is based
-on the one found in the the
-`Spinning Up repository <https://github.com/openai/spinningup>`_
+This module contains a pytorch implementation of the LAC algorithm of
+`Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_. The original tensorflow
+implementation can be
+[found here](https://github.com/hithmh/Actor-critic-with-stability-guarantee).
 """
 
 import decimal
@@ -21,7 +21,7 @@ import numpy as np
 import torch
 from torch.optim import Adam
 
-import machine_learning_control.control.algos.sac.core as core
+import machine_learning_control.control.algos.lac.core as core
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.logx import EpochLogger
 from machine_learning_control.control.utils.helpers import (
@@ -36,6 +36,8 @@ from machine_learning_control.control.utils.gym import (
     is_discrete_space,
 )
 
+SCALE_lambda_MIN_MAX = (0, 20)
+
 global t  # TODO: Make attribute out of this
 # TODO: Replace alphas with property!
 # TODO: Add detach methods for faster computation
@@ -47,7 +49,14 @@ global t  # TODO: Make attribute out of this
 # oscillator or mujoco)
 # Better to set to mujoco because that is more often used
 # TODO: Add additional config file that can be loaded from argument
-# FIXME: The learning rate became negative!
+# TODO: Change txt to csv of progress
+# TODO: Name adaptive alpha
+
+# QUESTION: Do we need approximate values in lyapunov?
+# QUESTION: Does we need to be able to disable lyapunov?
+# QUESTION: Why don't we use a double lyapunov trick to correct for overestimation bias? Is this because we now use double actor?
+# QUESTION: Why don't we use twin network in L update but only the not trained network
+# QUESTION: Approximate?
 
 RUN_DB_FILE = os.path.abspath(
     os.path.join(
@@ -56,29 +65,34 @@ RUN_DB_FILE = os.path.abspath(
 )
 
 
-def sac(
+def lac(
     env_fn,
     actor_critic=core.MLPActorCritic,
     ac_kwargs=dict(),
     seed=0,
-    epochs=50,
-    steps_per_epoch=2048,
-    max_ep_len=100,
+    steps_per_epoch=2000,
+    epochs=100,
+    max_ep_len=600,
     replay_size=int(1e6),
     gamma=0.995,
     polyak=0.995,
     lr_a=1e-4,
     lr_c=3e-4,
+    lr_l=3e-4,
     lr_a_final=1e-10,
     lr_c_final=1e-10,
+    lr_l_final=1e-10,
     decaying_lr=True,
     decaying_lr_type="linear",
     alpha=1.0,
+    alpha3=0.2,
+    labda=1.0,
     target_entropy="auto",
+    use_lyapunov=True,
     batch_size=256,
     start_steps=0,
-    update_every=100,
     update_after=1000,
+    update_every=100,
     num_test_episodes=10,
     logger_kwargs=dict(),
     save_freq=1,
@@ -162,6 +176,11 @@ def sac(
 
         alpha (float): Entropy regularization coefficient (Equivalent to
             inverse of reward scale in the original SAC paper).
+        TODO: Add alpha 3
+
+        TODO: Add labda
+
+        TODO: Use lyapunov
 
         target_entropy (str/None/float, optional): Target entropy used while learning
             the entropy temperature (alpha). Set to "auto" if you want to let the
@@ -248,6 +267,9 @@ def sac(
     # Convert alpha to log_alpha (Used for computational stability)
     log_alpha = torch.tensor(np.log(alpha), requires_grad=True)
 
+    # Convert labda to log_labda (Used for computational stability)
+    log_labda = torch.tensor(np.log(labda), requires_grad=True)
+
     # Ensure that the max env step count is at least equal to the steps in one epoch
     env._max_episode_steps = max_ep_len
     test_env._max_episode_steps = max_ep_len
@@ -256,7 +278,14 @@ def sac(
     ac = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
     ac_targ = deepcopy(ac)
 
+    # Create extra lypunov actor-critic network for target creation
+    ac_lya = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
+    for p in ac_lya.parameters():  # Make sure this network is not trained
+        p.requires_grad = False
+
     # Add network graph to tensorboard
+    # FIXME: Currently not showing graph
+    # TODO: Add lyapunov actor critic
     if logger_kwargs["use_tensorboard"]:
         with torch.no_grad():
             logger.add_graph(
@@ -268,6 +297,7 @@ def sac(
             )
 
     # Print network information
+    # TODO: CLEANUP
     print("==Actor==")
     print(ac.pi)
     print("")
@@ -276,6 +306,12 @@ def sac(
     print("")
     print("==Soft critic 2==")
     print(ac.q2)
+    print("")
+    print("==Lyapunov soft critic==")
+    print(ac.l)
+    print("")
+    print("==Lyapunov actor==")
+    print(ac_lya.pi)
     print("")
 
     # Freeze target networks with respect to optimizers (update via polyak averaging)
@@ -348,6 +384,57 @@ def sac(
         # Return Soft actor critic loss and q-values
         return loss_q, q_info
 
+    def compute_error_l(data):
+        # TODO: UPDATE DOCSTRING
+        # QUESTION: error l or also loss l? Naming
+        """Function computes the loss for the soft-Q networks
+
+        Args:
+            data (dict): Dictionary containing a batch of experiences.
+
+        Returns:
+            (torch.Tensor, dict):
+                Tensor containing the q-loss, dictionary with the current q values
+                (Usefull for logging).
+        """
+
+        # Unpack experiences from the data dictionary
+        o, a, r, o2, d = (
+            data["obs"],
+            data["act"],
+            data["rew"],
+            data["obs2"],
+            data["done"],
+        )
+
+        # Calculate current lyapunov value
+        l = ac.l(o, a)  # TODO: Consistency in naming
+
+        # Bellman backup for L functions
+        with torch.no_grad():  # Make sure the gradients are not tracked
+
+            # Get target lyapunov value out of lyapunov actor
+            a2, logp_a2 = ac_targ.pi(o2)
+            l_pi_targ = ac_targ.l(o2, a2)
+
+            # Calculate lyapunov target
+
+            # # Used when agent has to maximize reward is negative deviation (My version)
+            # backup = -r + gamma * (1 - d) * l_pi_targ.detach()
+
+            # Used when agent has to minimize reward is positive deviation (Minghoas version)
+            backup = r + gamma * (1 - d) * l_pi_targ.detach()
+            # Question: Why no entropy regularization in l?
+
+        # Calculate lyapunov loss
+        error_l = ((l - backup) ** 2).mean()
+
+        # Store l-values
+        l_info = dict(LVals=l.detach().numpy())
+
+        # Return Soft actor critic loss and q-values
+        return error_l, l_info
+
     # Set up function for computing SAC pi loss
     def compute_loss_pi(data):
         """Function computes the loss for the policy network.
@@ -362,17 +449,95 @@ def sac(
         """
 
         # Unpack experiences from the data dictionary
-        o = data["obs"]
+        o, a, r, o2, _ = (
+            data["obs"],
+            data["act"],
+            data["rew"],
+            data["obs2"],
+            data["done"],
+        )
 
-        # Retrieve the current Q values for the action given by the current policy
+        # Compute current best action according to policy
         pi, logp_pi = ac.pi(o)
-        q1_pi = ac.q1(o, pi)
-        q2_pi = ac.q2(o, pi)
-        q_pi = torch.min(q1_pi, q2_pi)
 
-        # Calculate Entropy-regularized policy loss
+        # Entropy-regularized policy loss
+        # loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
-        loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
+        # TODO: MAKE CLASS METHOD FROM THIS! LABDA NEEDS TO BE CLIPPED IN BETWEEN VALUES
+        if use_lyapunov:
+
+            # Get target lyapunov value out of lyapunov actor
+            pi_lya, logp_pi_lya = ac_lya.pi(o2)
+            l2 = ac_lya.l(o2, pi_lya)
+            # DEBUG: Check if this is correct this network is not trained
+
+            # Calculate current lyapunov value using the current best action (Prior)
+            l = ac.l(o, pi)
+
+            # Calculate lyapunov constraint
+
+            # # Used when agent has to maximize reward is negative deviation (My version)
+            # # TODO: Make function out of this
+            # l_delta = (
+            #     l2 - l - alpha3 * r
+            # )  # FIXME: Why + 1.0 in cost SAC this is not the case in LAC L91 vs L113
+            # # DEBUG: Why +1.0
+
+            # Used when agent has to minimize reward is positive deviation (Minghoas version)
+            l_delta = (
+                l2 - l + alpha3 * r
+            )  # FIXME: Why + 1.0 in cost SAC this is not the case in LAC L91 vs L113
+            # DEBUG: Why +1.0
+
+            # Calculate entropy-regularized policy loss
+            # TODO: Rewrite formula to be consistent with Literature
+
+            # # Used when agent has to maximize reward is negative deviation (My version)
+            # loss_pi = (
+            #     (
+            #         torch.clamp(
+            #             log_labda.exp(),
+            #             SCALE_lambda_MIN_MAX[0],
+            #             SCALE_lambda_MIN_MAX[1],
+            #         )
+            #         * l_delta
+            #     )
+            #     + (log_alpha.exp() * logp_pi)
+            #     - l
+            # ).mean()  # FIXME: TODO I need the policy log! Thats l here right?
+            # # DEBUG: Doesn't this need to be -1?
+
+            # Used when agent has to minimize reward is positive deviation (Minghoas version)
+            # FIXME: THIS SHOULD BE according to HAn not LOG labda
+            loss_pi = (
+                (
+                    torch.clamp(
+                        log_labda.exp(),
+                        SCALE_lambda_MIN_MAX[0],
+                        SCALE_lambda_MIN_MAX[1],
+                    )
+                    * l_delta
+                )
+                + (log_alpha.exp() * logp_pi)
+            ).mean()  # FIXME: TODO I need the policy log! Thats l here right?
+            # DEBUG: Doesn't this need to be -1?
+
+        else:
+
+            # Retrieve the current Q values for the action given by the current policy
+            q1_pi = ac.q1(o, pi)
+            q2_pi = ac.q2(o, pi)
+            q_pi = torch.min(q1_pi, q2_pi)
+
+            # Calculate Entropy-regularized policy loss
+            # IMPROVE: detch log_alpha
+            # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
+
+            # # MY version
+            # loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
+
+            # Minghoas version
+            loss_pi = (log_alpha * logp_pi - q_pi).mean()
 
         # Store log-likelihood
         pi_info = dict(LogPi=logp_pi.detach().numpy())
@@ -394,7 +559,7 @@ def sac(
         """
 
         # Return loss of
-        if not isinstance(target_entropy, Number):  # DEBUG: Is this really neeeded?
+        if not isinstance(target_entropy, Number):  # Question: Is this really neeeded?
             return torch.tensor(0.0)
 
         # Get log from observations
@@ -403,9 +568,14 @@ def sac(
 
         # Entropy tuning
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
+        # QUESTION: LAC_V1 uses log_alpha instead of alpha!
+        # DEBUG
         loss_alpha = (
             -1.0 * (log_alpha.exp() * (logp_pi + target_entropy).detach())
-        ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so
+        ).mean()
+
+        # # # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        # loss_alpha = (-1.0 * (log_alpha * (logp_pi + target_entropy).detach())).mean()
 
         # Store log-likelihood
         log_alpha_info = dict(LogAlpha=log_alpha.detach())
@@ -413,10 +583,81 @@ def sac(
         # Return alpha losses
         return loss_alpha, log_alpha_info
 
+    def compute_loss_labda(data):
+        """Function computes the loss of the lagrance multiplier (lambda). translated to labda because of python.
+        """
+
+        # Get log from observations
+        o, a, r, o2, _ = (
+            data["obs"],
+            data["act"],
+            data["rew"],
+            data["obs2"],
+            data["done"],
+        )
+
+        # Get target lyapunov value out of lyapunov actor
+        # DEBUG: Why don't we just use a twin actor that is uses the moving average? Because this is log_pi update?
+        pi_lya, logp_pi_lya = ac_lya.pi(o2)
+        l2 = ac_lya.l(o2, pi_lya)
+        # DEBUG: Check if this is correct this network is not trained
+
+        # Calculate current lyapunov value
+        l = ac.l(o, a)
+
+        # Calculate lyapunov constraint
+        # TODO: Make function out of this
+
+        # # Used when agent has to maximize reward is negative deviation (My version)
+        # l_delta = l2 - l - alpha3 * r
+
+        # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        l_delta = l2 - l + alpha3 * r  # Changed
+
+        # FIXME: Do we need alpha3 + 1.0 in cost SAC this is not the case in LAC L91 vs L113
+        # DEBUG: Why +1.0
+
+        # Calculate labda loss (used for labda tuning)
+
+        # # Used when agent has to maximize reward is negative deviation (My version)
+        # # Question: Again why does Han use log labda
+        # loss_labda = (
+        #     torch.clamp(
+        #         log_labda.exp(), SCALE_lambda_MIN_MAX[0], SCALE_lambda_MIN_MAX[1]
+        #     )
+        #     * l_delta.detach()
+        # ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so differs from SAC SPINNING UP
+
+        # DEBUG:
+        loss_labda = (
+            log_labda.exp() * l_delta.detach()
+        ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so differs from SAC SPINNING UP
+
+        # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        # loss_labda = (
+        #     -1.0
+        #     * (
+        #         torch.clamp(
+        #             log_labda.exp(), SCALE_lambda_MIN_MAX[0], SCALE_lambda_MIN_MAX[1]
+        #         ).log()
+        #         * l_delta.detach()
+        #     )
+        # ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so differs from SAC SPINNING UP
+
+        # Store log-likelihood
+        log_labda_info = dict(LogLabda=log_labda.detach())
+
+        # Return alpha losses
+        return loss_labda, log_labda_info
+
     # Set up optimizers for policy, q-function and alpha temperature regularization
     pi_optimizer = Adam(ac.pi.parameters(), lr=lr_a)
     q_optimizer = Adam(q_params, lr=lr_c)  # Pass both SoftQ networks to optimizer
+    if use_lyapunov:
+        l_optimizer = Adam(ac.l.parameters(), lr=lr_l)
     log_alpha_optimizer = Adam([log_alpha], lr=lr_a)
+
+    log_labda_optimizer = Adam([log_labda], lr=lr_l)
 
     # Create learning rate decay wrappers
     # TODO: make class method
@@ -431,10 +672,14 @@ def sac(
         gamma_c = np.longdouble(
             (calc_gamma_lr_decay(lr_c, lr_c_final, epochs) if decaying_lr else 1.0)
         )  # The decay exponent
+        gamma_l = np.longdouble(
+            (calc_gamma_lr_decay(lr_l, lr_l_final, epochs) if decaying_lr else 1.0)
+        )  # The decay exponent
 
         # Create scheduler
         pi_opt_scheduler = torch.optim.lr_scheduler.ExponentialLR(pi_optimizer, gamma_a)
         q_opt_scheduler = torch.optim.lr_scheduler.ExponentialLR(q_optimizer, gamma_c)
+        l_opt_scheduler = torch.optim.lr_scheduler.ExponentialLR(l_optimizer, gamma_l)
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.ExponentialLR(
             log_alpha_optimizer, gamma_a
         )
@@ -466,6 +711,19 @@ def sac(
             if decaying_lr
             else lambda epoch: 1.0
         )
+        lr_decay_l = (
+            (
+                lambda epoch: np.longdouble(
+                    decimal.Decimal(1.0)
+                    - (
+                        calc_linear_lr_decay(lr_l, lr_l_final, epochs)
+                        * decimal.Decimal(epoch)
+                    )
+                )
+            )
+            if decaying_lr
+            else lambda epoch: 1.0
+        )
 
         # Create schedulers
         pi_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
@@ -474,16 +732,31 @@ def sac(
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             q_optimizer, lr_lambda=lr_decay_c,
         )
+        l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
+            l_optimizer, lr_lambda=lr_decay_l,
+        )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
         )
-    opt_schedulers = [pi_opt_scheduler, q_opt_scheduler, log_alpha_opt_scheduler]
+    opt_schedulers = [
+        pi_opt_scheduler,
+        q_opt_scheduler,
+        l_opt_scheduler,
+        log_alpha_opt_scheduler,
+    ]
 
     # Store initial learning rates
     if logger_kwargs["use_tensorboard"]:
         # FIXME: Add to csv logger
         logger.add_scalar("LearningRates/Lr_a", pi_optimizer.param_groups[0]["lr"], 0)
-        logger.add_scalar("LearningRates/Lr_c", q_optimizer.param_groups[0]["lr"], 0)
+        if use_lyapunov:
+            logger.add_scalar(
+                "LearningRates/Lr_l", l_optimizer.param_groups[0]["lr"], 0
+            )
+        else:
+            logger.add_scalar(
+                "LearningRates/Lr_c", q_optimizer.param_groups[0]["lr"], 0
+            )
         if target_entropy:
             logger.add_scalar(
                 "LearningRates/Lr_alpha", log_alpha_optimizer.param_groups[0]["lr"], 0
@@ -501,25 +774,47 @@ def sac(
 
         # First run one gradient descent step for Q1 and Q2 (Both network are in the
         # optimizer)
+        if use_lyapunov:
 
-        # Optimize Q-vals
-        q_optimizer.zero_grad()
-        loss_q, q_info = compute_loss_q(data)
-        loss_q.backward()
-        q_optimizer.step()
+            # First run one gradient descent step for Q1 and Q2 (Both network are in the
+            # optimizer) # FIXME: CHECK IF THE ORDER IS RIGHT
+            l_optimizer.zero_grad()
+            error_l, l_info = compute_loss_q(data)
+            error_l.backward()
+            l_optimizer.step()
 
-        # Record things
-        logger.store(
-            tb_write=logger_kwargs["use_tensorboard"],
-            LossQ=loss_q.item(),
-            tb_aliases={"LossQ": "Loss/LossQ"},
-            **q_info,
-        )
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                ErrorL=error_l.item(),
+                tb_aliases={"ErrorL": "Loss/ErrorL"},
+                **l_info,
+            )  # QUESTION: CHECK NAMING
 
-        # Freeze Q-networks so you don't waste computational effort
-        # computing gradients for them during the policy learning steps.
-        for p in q_params:
-            p.requires_grad = False
+            # Freeze L network parameter so you don't waste computational effort
+            # computing gradients for them during the policy learning steps.
+            for p in ac.l.parameters():
+                p.requires_grad = False
+        else:
+
+            # Optimize Q-vals
+            q_optimizer.zero_grad()
+            loss_q, q_info = compute_loss_q(data)
+            loss_q.backward()
+            q_optimizer.step()
+
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                LossQ=loss_q.item(),
+                tb_aliases={"LossQ": "Loss/LossQ"},
+                **q_info,
+            )
+
+            # Freeze Q-networks so you don't waste computational effort
+            # computing gradients for them during the policy learning steps.
+            for p in q_params:
+                p.requires_grad = False
 
         # Next run one gradient descent step for pi.
         pi_optimizer.zero_grad()
@@ -535,9 +830,13 @@ def sac(
             **pi_info,
         )
 
-        # Unfreeze Q-networks so you can optimize it at next DDPG step.
-        for p in q_params:
-            p.requires_grad = True
+        # Unfreeze Q or l networks so you can optimize it at next DDPG step.
+        if use_lyapunov:
+            for p in ac.l.parameters():
+                p.requires_grad = True
+        else:
+            for p in q_params:
+                p.requires_grad = True
 
         # Optimize the temperature for the current policy
         if target_entropy:
@@ -568,6 +867,32 @@ def sac(
             logger.store(
                 tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
             )
+
+        # Optimize the lagrance multiplier for the current policy
+        if use_lyapunov:  # TODO: Update comments
+
+            # Freeze Policy-networks so you don't waste computational effort
+            # computing gradients for them during the labda learning steps.
+            for p in ac.pi.parameters():
+                p.requires_grad = False
+
+            # Perform SGD to tune the entropy Temperature (Labda)
+            log_labda_optimizer.zero_grad()
+            loss_log_labda, log_labda_info = compute_loss_labda(data)
+            loss_log_labda.backward()
+            log_labda_optimizer.step()
+
+            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
+            for p in ac.pi.parameters():
+                p.requires_grad = True
+
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                LossLogLabda=loss_log_labda.item(),
+                Labda=log_labda_info["LogLabda"].exp(),
+                tb_aliases={"LossLogLabda": "Loss/LossLogLabda"},
+            )  # TODO: CHECK IF LOG OR NOT LOG
 
         # Finally, update target networks by polyak averaging.
         # TODO: Make function?
@@ -690,9 +1015,14 @@ def sac(
                 logger.add_scalar(
                     "LearningRates/Lr_a", pi_optimizer.param_groups[0]["lr"], t
                 )
-                logger.add_scalar(
-                    "LearningRates/Lr_c", q_optimizer.param_groups[0]["lr"], t
-                )
+                if use_lyapunov:
+                    logger.add_scalar(
+                        "LearningRates/Lr_l", l_optimizer.param_groups[0]["lr"], t
+                    )
+                else:
+                    logger.add_scalar(
+                        "LearningRates/Lr_c", q_optimizer.param_groups[0]["lr"], t
+                    )
                 if target_entropy:
                     logger.add_scalar(
                         "LearningRates/Lr_alpha",
@@ -704,6 +1034,7 @@ def sac(
             # TODO: Fails if step per epoch is 50 This is because the replay buffer is
             # FIXME: This needs to be fixed
             # TODO: Add loss alpha
+            # TODO: ADd L vals to logger and only display Q if lypunov is disahled
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("Step", t)
             logger.log_tabular("L_a", pi_optimizer.param_groups[0]["lr"])
@@ -791,8 +1122,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--env",
         type=str,
-        default="Ex3_EKA_negative-v0",
-        help="the gym env (default: Ex3_EKA_negative-v0)",
+        default="Oscillator-v0",
+        help="the gym env (default: Oscillator-v0)",
     )
     parser.add_argument(
         "--hid-a",
@@ -804,8 +1135,8 @@ if __name__ == "__main__":
         "--hid-c",
         type=int,
         default=256,
-        help="hidden layer size of the critic (default: 256)",
-    )
+        help="hidden layer size of the lyapunov critic (default: 256)",
+    )  # QUESTION: I see in the code minghoa used 64 where in sac they use 256
     parser.add_argument(
         "--l_a",
         type=int,
@@ -848,7 +1179,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--exp_name",
         type=str,
-        default="sac",
+        default="lac",
         help="the name of the experiment (default: sac)",
     )
     parser.add_argument(
@@ -875,7 +1206,7 @@ if __name__ == "__main__":
     logger_kwargs["output_dir"] = os.path.abspath(
         os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            f"../../../../data/sac/{args.env.lower()}/runs/run_{int(time.time())}",
+            f"../../../../data/lac/{args.env.lower()}/runs/run_{int(time.time())}",
         )
     )
     torch.set_num_threads(torch.get_num_threads())
@@ -888,7 +1219,7 @@ if __name__ == "__main__":
 
     # Run SAC algorithm
     # TODO: Reinable arguments
-    sac(
+    lac(
         lambda: gym.make(args.env),
         actor_critic=core.MLPActorCritic,
         ac_kwargs=dict(
