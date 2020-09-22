@@ -16,3 +16,4 @@ data/
 *.code-workspace
 *.egg-info
 MUJOCO_LOG.TXT
+client_id

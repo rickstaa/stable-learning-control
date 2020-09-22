@@ -20,7 +20,6 @@ import gym
 import numpy as np
 import torch
 from torch.optim import Adam
-import torch.nn.functional as F
 
 import machine_learning_control.control.algos.lac.core as core
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
@@ -72,13 +71,11 @@ def lac(
     actor_critic=core.MLPActorCritic,
     ac_kwargs=dict(),
     seed=0,  # Changed from 0 to None
-    # epochs=50,  # Oscilator env
-    epochs=25, # ex3 env
-    # epochs=2,  # DEBUG
+    epochs=50,
     steps_per_epoch=2048,  # NOTE: This appears to be the evaluation frequency in spinning up not the epoch
-    max_ep_len=500,
+    max_ep_len=100,
     replay_size=int(1e6),
-    gamma=0.99,
+    gamma=0.995,
     polyak=0.995,
     lr_a=1e-4,
     lr_c=3e-4,
@@ -88,17 +85,17 @@ def lac(
     lr_l_final=1e-10,
     decaying_lr=True,
     decaying_lr_type="linear",
-    alpha=0.99,
+    alpha=1.0,
     alpha3=0.2,
-    labda=0.99,
+    labda=1.0,
     target_entropy="auto",
     # use_lyapunov=True,
-    use_lyapunov=True,  # FIXME: Not working atm when false
+    use_lyapunov=False,
     batch_size=256,
     start_steps=0,
     update_every=100,
     update_after=1000,
-    train_per_cycle=80,  # TODO: Give it a clear name or remove it.
+    # train_per_cycle=80,  # TODO: Give it a clear name or remove it.
     num_test_episodes=10,
     logger_kwargs=dict(),
     save_freq=1,
@@ -285,9 +282,9 @@ def lac(
     ac_targ = deepcopy(ac)
 
     # Create extra lypunov actor-critic network for target creation
-    # ac_lya = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
-    # for p in ac_lya.parameters():  # Make sure this network is not trained
-    # p.requires_grad = False
+    ac_lya = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
+    for p in ac_lya.parameters():  # Make sure this network is not trained
+        p.requires_grad = False
 
     # Add network graph to tensorboard
     # # FIXME: Currently not showing graph
@@ -312,6 +309,12 @@ def lac(
     print("")
     print("==Soft critic 2==")
     print(ac.q2)
+    print("")
+    print("==Lyapunov soft critic==")
+    print(ac.l)
+    print("")
+    print("==Lyapunov actor==")
+    print(ac_lya.pi)
     print("")
 
     # Freeze target networks with respect to optimizers (update via polyak averaging)
@@ -467,10 +470,8 @@ def lac(
         if use_lyapunov:
 
             # Get target lyapunov value out of lyapunov actor
-            pi_lya, logp_pi_lya = ac.pi(o2)
-            # pi_lya, logp_pi_lya = ac_lya.pi(o2)
-            # l2 = ac_lya.l(o2, pi_lya)
-            l2 = ac.l(o2, pi_lya)
+            pi_lya, logp_pi_lya = ac_lya.pi(o2)
+            l2 = ac_lya.l(o2, pi_lya)
             # DEBUG: Check if this is correct this network is not trained
 
             # Calculate current lyapunov value using the current best action (Prior)
@@ -808,15 +809,128 @@ def lac(
             data (dict): Dictionary containing a batch of experiences.
         """
 
-        # FIXME: This is a quick fix so rewrite later!
-        # NOTE: NEW CODE
+        # First run one gradient descent step for Q1 and Q2 (Both network are in the
+        # optimizer)
+        if use_lyapunov:
 
-        # Retrieve state, action and reward from the batch
-        bs = data["obs"]  # state
-        ba = data["act"]  # action
-        br = data["rew"]  # reward
-        bterminal = data["done"]
-        bs_ = data["obs2"]  # next state
+            # First run one gradient descent step for Q1 and Q2 (Both network are in the
+            # optimizer) # FIXME: CHECK IF THE ORDER IS RIGHT
+            l_optimizer.zero_grad()
+            error_l, l_info = compute_error_l(data)
+            error_l.backward()
+            l_optimizer.step()
+
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                ErrorL=error_l.item(),
+                tb_aliases={"ErrorL": "Loss/ErrorL"},
+                **l_info,
+            )  # QUESTION: CHECK NAMING
+
+            # Freeze L network parameter so you don't waste computational effort
+            # computing gradients for them during the policy learning steps.
+            # FIXME: IS this needed?
+            for p in ac.l.parameters():
+                p.requires_grad = False
+        else:
+
+            # Optimize Q-vals
+            q_optimizer.zero_grad()
+            loss_q, q_info = compute_loss_q(data)
+            loss_q.backward()
+            q_optimizer.step()
+
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                LossQ=loss_q.item(),
+                tb_aliases={"LossQ": "Loss/LossQ"},
+                **q_info,
+            )
+
+            # Freeze Q-networks so you don't waste computational effort
+            # computing gradients for them during the policy learning steps.
+            for p in q_params:
+                p.requires_grad = False
+
+        # Next run one gradient descent step for pi.
+        pi_optimizer.zero_grad()
+        loss_pi, pi_info = compute_loss_pi(data)
+        loss_pi.backward()
+        pi_optimizer.step()
+
+        # Record things
+        logger.store(
+            tb_write=logger_kwargs["use_tensorboard"],
+            LossPi=loss_pi.item(),
+            tb_aliases={"LossPi": "Loss/LossPi"},
+            **pi_info,
+        )  # FIXME: This is wrong the steps are not okay
+
+        # Unfreeze Q or l networks so you can optimize it at next DDPG step.
+        if use_lyapunov:
+            for p in ac.l.parameters():
+                p.requires_grad = True
+        else:
+            for p in q_params:
+                p.requires_grad = True
+
+        # Optimize the temperature for the current policy
+        if target_entropy:
+
+            # Freeze Policy-networks so you don't waste computational effort
+            # computing gradients for them during the alpha learning steps.
+            for p in ac.pi.parameters():
+                p.requires_grad = False
+
+            # Perform SGD to tune the entropy Temperature (alpha)
+            log_alpha_optimizer.zero_grad()
+            loss_log_alpha, log_alpha_info = compute_loss_alpha(data)
+            loss_log_alpha.backward()
+            log_alpha_optimizer.step()
+
+            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
+            for p in ac.pi.parameters():
+                p.requires_grad = True
+
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                LossLogAlpha=loss_log_alpha.item(),
+                Alpha=log_alpha_info["LogAlpha"].exp(),
+                tb_aliases={"LossLogAlpha": "Loss/LossLogAlpha"},
+            )
+        else:
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
+            )
+
+        # Optimize the lagrance multiplier for the current policy
+        if use_lyapunov:  # TODO: Update comments
+
+            # Freeze Policy-networks so you don't waste computational effort
+            # computing gradients for them during the labda learning steps.
+            for p in ac.pi.parameters():
+                p.requires_grad = False
+
+            # Perform SGD to tune the entropy Temperature (Labda)
+            log_labda_optimizer.zero_grad()
+            loss_log_labda, log_labda_info = compute_loss_labda(data)
+            loss_log_labda.backward()
+            log_labda_optimizer.step()
+
+            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
+            for p in ac.pi.parameters():
+                p.requires_grad = True
+
+            # Record things
+            logger.store(
+                tb_write=logger_kwargs["use_tensorboard"],
+                LossLogLabda=loss_log_labda.item(),
+                Labda=log_labda_info["LogLabda"].exp(),
+                tb_aliases={"LossLogLabda": "Loss/LossLogLabda"},
+            )
 
         # Finally, update target networks by polyak averaging.
         # TODO: Make function?
@@ -826,198 +940,6 @@ def lac(
                 # params, as opposed to "mul" and "add", which would make new tensors.
                 p_targ.data.mul_(polyak)
                 p_targ.data.add_((1 - polyak) * p.data)
-
-        # Calculate variables from which we do not require the gradients
-        with torch.no_grad():
-            a_, _ = ac_targ.pi(bs_)
-            l_ = ac_targ.l(bs_, a_)
-            l_target = br + gamma * (1 - bterminal) * l_.detach()
-
-        # Calculate current lyapunov value
-        l = ac.l(bs, ba)
-
-        # Calculate current value and target lyapunov multiplier value
-        lya_a_, _ = ac.pi(bs_)
-        l_ = ac.l(bs_, lya_a_)
-
-        # Calculate log probability of a_input based on current policy
-        _, log_pis = ac.pi(bs)
-
-        # Calculate Lyapunov constraint function
-        l_delta = torch.mean(l_ - l.detach() + (alpha3) * br)
-
-        # Zero gradients on labda
-        log_labda_optimizer.zero_grad()
-
-        # Lagrance multiplier loss functions and optimizers graphs
-        labda_loss = -torch.mean(log_labda * l_delta.detach())
-
-        # Apply gradients to log_lambda
-        labda_loss.backward()
-        log_labda_optimizer.step()
-
-        # Zero gradients on alpha
-        log_alpha_optimizer.zero_grad()
-
-        # Calculate alpha loss
-        alpha_loss = -torch.mean(log_alpha * log_pis.detach() + target_entropy)
-
-        # Apply gradients
-        alpha_loss.backward()
-        log_alpha_optimizer.step()
-
-        # Zero gradients on the actor
-        pi_optimizer.zero_grad()
-
-        # Calculate actor loss
-        a_loss = labda * l_delta + alpha * torch.mean(log_pis)
-
-        # Apply gradients
-        a_loss.backward()
-        pi_optimizer.step()
-
-        # Zero gradients on the critic
-        l_optimizer.zero_grad()
-
-        # Calculate L_backup
-        l_error = F.mse_loss(l_target, l)
-
-        # Apply gradients
-        l_error.backward()
-        l_optimizer.step()
-
-        # # NOTE: OLD_CODE
-        # # First run one gradient descent step for Q1 and Q2 (Both network are in the
-        # # optimizer)
-        # if use_lyapunov:
-
-        #     # First run one gradient descent step for Q1 and Q2 (Both network are in the
-        #     # optimizer) # FIXME: CHECK IF THE ORDER IS RIGHT
-        #     l_optimizer.zero_grad()
-        #     error_l, l_info = compute_error_l(data)
-        #     error_l.backward()
-        #     l_optimizer.step()
-
-        #     # Record things
-        #     logger.store(
-        #         tb_write=logger_kwargs["use_tensorboard"],
-        #         ErrorL=error_l.item(),
-        #         tb_aliases={"ErrorL": "Loss/ErrorL"},
-        #         **l_info,
-        #     )  # QUESTION: CHECK NAMING
-
-        #     # Freeze L network parameter so you don't waste computational effort
-        #     # computing gradients for them during the policy learning steps.
-        #     # FIXME: IS this needed?
-        #     for p in ac.l.parameters():
-        #         p.requires_grad = False
-        # else:
-
-        #     # Optimize Q-vals
-        #     q_optimizer.zero_grad()
-        #     loss_q, q_info = compute_loss_q(data)
-        #     loss_q.backward()
-        #     q_optimizer.step()
-
-        #     # Record things
-        #     logger.store(
-        #         tb_write=logger_kwargs["use_tensorboard"],
-        #         LossQ=loss_q.item(),
-        #         tb_aliases={"LossQ": "Loss/LossQ"},
-        #         **q_info,
-        #     )
-
-        #     # Freeze Q-networks so you don't waste computational effort
-        #     # computing gradients for them during the policy learning steps.
-        #     for p in q_params:
-        #         p.requires_grad = False
-
-        # # Next run one gradient descent step for pi.
-        # pi_optimizer.zero_grad()
-        # loss_pi, pi_info = compute_loss_pi(data)
-        # loss_pi.backward()
-        # pi_optimizer.step()
-
-        # # Record things
-        # logger.store(
-        #     tb_write=logger_kwargs["use_tensorboard"],
-        #     LossPi=loss_pi.item(),
-        #     tb_aliases={"LossPi": "Loss/LossPi"},
-        #     **pi_info,
-        # )  # FIXME: This is wrong the steps are not okay
-
-        # # Unfreeze Q or l networks so you can optimize it at next DDPG step.
-        # if use_lyapunov:
-        #     for p in ac.l.parameters():
-        #         p.requires_grad = True
-        # else:
-        #     for p in q_params:
-        #         p.requires_grad = True
-
-        # # Optimize the temperature for the current policy
-        # if target_entropy:
-
-        #     # Freeze Policy-networks so you don't waste computational effort
-        #     # computing gradients for them during the alpha learning steps.
-        #     for p in ac.pi.parameters():
-        #         p.requires_grad = False
-
-        #     # Perform SGD to tune the entropy Temperature (alpha)
-        #     log_alpha_optimizer.zero_grad()
-        #     loss_log_alpha, log_alpha_info = compute_loss_alpha(data)
-        #     loss_log_alpha.backward()
-        #     log_alpha_optimizer.step()
-
-        #     # Unfreeze Policy-networks so you can optimize it at next DDPG step.
-        #     for p in ac.pi.parameters():
-        #         p.requires_grad = True
-
-        #     # Record things
-        #     logger.store(
-        #         tb_write=logger_kwargs["use_tensorboard"],
-        #         LossLogAlpha=loss_log_alpha.item(),
-        #         Alpha=log_alpha_info["LogAlpha"].exp(),
-        #         tb_aliases={"LossLogAlpha": "Loss/LossLogAlpha"},
-        #     )
-        # else:
-        #     logger.store(
-        #         tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
-        #     )
-
-        # # Optimize the lagrance multiplier for the current policy
-        # if use_lyapunov:  # TODO: Update comments
-
-        #     # Freeze Policy-networks so you don't waste computational effort
-        #     # computing gradients for them during the labda learning steps.
-        #     for p in ac.pi.parameters():
-        #         p.requires_grad = False
-
-        #     # Perform SGD to tune the entropy Temperature (Labda)
-        #     log_labda_optimizer.zero_grad()
-        #     loss_log_labda, log_labda_info = compute_loss_labda(data)
-        #     loss_log_labda.backward()
-        #     log_labda_optimizer.step()
-
-        #     # Unfreeze Policy-networks so you can optimize it at next DDPG step.
-        #     for p in ac.pi.parameters():
-        #         p.requires_grad = True
-
-        #     # Record things
-        #     logger.store(
-        #         tb_write=logger_kwargs["use_tensorboard"],
-        #         LossLogLabda=loss_log_labda.item(),
-        #         Labda=log_labda_info["LogLabda"].exp(),
-        #         tb_aliases={"LossLogLabda": "Loss/LossLogLabda"},
-        #     )
-
-        # # Finally, update target networks by polyak averaging.
-        # # TODO: Make function?
-        # with torch.no_grad():
-        #     for p, p_targ in zip(ac.parameters(), ac_targ.parameters()):
-        #         # NB: We use an in-place operations "mul_", "add_" to update target
-        #         # params, as opposed to "mul" and "add", which would make new tensors.
-        #         p_targ.data.mul_(polyak)
-        #         p_targ.data.add_((1 - polyak) * p.data)
 
     def get_action(o, deterministic=False):
         """Get the action under the current policy.
@@ -1103,10 +1025,8 @@ def lac(
 
         # Update handling
         if t >= update_after and t % update_every == 0:
-            # for j in range(update_every):
-            for j in range(
-                train_per_cycle
-            ):  # DEBUG: This was changed to be more in line with minghoa
+            for j in range(update_every):
+                # for j in range(train_per_cycle):  # DEBUG: This was changed to be more in line with minghoa
                 batch = replay_buffer.sample_batch(batch_size)
                 update(data=batch)
 
@@ -1155,7 +1075,7 @@ def lac(
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("Step", t)
             logger.log_tabular("L_a", pi_optimizer.param_groups[0]["lr"])
-            # logger.log_tabular("L_c", q_optimizer.param_groups[0]["lr"])
+            logger.log_tabular("L_c", q_optimizer.param_groups[0]["lr"])
             logger.log_tabular("L_alpha", log_alpha_optimizer.param_groups[0]["lr"])
             if "EpRet" in logger.epoch_dict.keys():
                 if len(logger.epoch_dict["EpRet"]) > 0:
@@ -1241,13 +1161,7 @@ if __name__ == "__main__":
         type=str,
         default="Ex3_EKF-v0",
         help="the gym env (default: Oscillator-v0)",
-    )  # EX3 env
-    # parser.add_argument(
-    #     "--env",
-    #     type=str,
-    #     default="Oscillator-v0",
-    #     help="the gym env (default: Oscillator-v0)",
-    # )
+    )
     parser.add_argument(
         "--hid-a",
         type=int,

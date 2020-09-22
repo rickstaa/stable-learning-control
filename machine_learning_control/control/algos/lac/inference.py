@@ -7,11 +7,12 @@ import numpy as np
 import machine_learning_control.simzoo.simzoo.envs
 import matplotlib.pyplot as plt
 
-ENV_NAME = "Ex3_EKF-v0"
+# ENV_NAME = "Ex3_EKF-v0"
+ENV_NAME = "Oscillator-v0"
 # ENV_NAME = "Hopper-v2"
 # MAX_EP_LEN = 200
-MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/ex3_ekf-v0/runs/run_1598825984/pyt_save/model.pt"
-# MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1597959914/pyt_save/model.pt"
+# MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/ex3_ekf-v0/runs/run_1600718353/pyt_save/model.pt"  # Ex3 env
+MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/oscillator-v0/runs/run_1600718271/pyt_save/model.pt"  # Oscillator env
 EP = 1000
 
 # TODO: Change number
@@ -53,42 +54,43 @@ for i in range(int(T / env.dt)):
     t1.append(i * env.dt)
 print("Finished oscillator environment simulation.")
 
-# # Plot results
-# # observations = (m1, m2, m3, p1, p2, p3, r1, p1 - r1)
-# print("Plot results.")
-# fig = plt.figure(figsize=(9, 6))
-# ax = fig.add_subplot(111)
-# # ax.plot(t1, np.array(path)[:, 0], color="orange", label="mRNA1")
-# # ax.plot(t1, np.array(path)[:, 1], color="magenta", label="mRNA2")
-# # ax.plot(t1, np.array(path)[:, 2], color="sienna", label="mRNA3")
-# ax.plot(t1, np.array(path)[:, 3], color="blue", label="protein1")
-# # ax.plot(t1, np.array(path)[:, 4], color="cyan", label="protein2")
-# # ax.plot(t1, np.array(path)[:, 5], color="green", label="protein3")
-# # ax.plot(t1, np.array(path)[:, 0:3], color="blue", label="mRNA")
-# # ax.plot(t1, np.array(path)[:, 3:6], color="blue", label="protein")
-# ax.plot(t1, np.array(path)[:, 6], color="yellow", label="reference")
-# ax.plot(t1, np.array(path)[:, 7], color="red", label="error")
-# handles, labels = ax.get_legend_handles_labels()
-# ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
-# plt.show()
-# print("Done")
+if ENV_NAME == "Oscillator-v0":
+    # Plot results
+    # observations = (m1, m2, m3, p1, p2, p3, r1, p1 - r1)
+    print("Plot results.")
+    fig = plt.figure(figsize=(9, 6))
+    ax = fig.add_subplot(111)
+    # ax.plot(t1, np.array(path)[:, 0], color="orange", label="mRNA1")
+    # ax.plot(t1, np.array(path)[:, 1], color="magenta", label="mRNA2")
+    # ax.plot(t1, np.array(path)[:, 2], color="sienna", label="mRNA3")
+    ax.plot(t1, np.array(path)[:, 3], color="blue", label="protein1")
+    # ax.plot(t1, np.array(path)[:, 4], color="cyan", label="protein2")
+    # ax.plot(t1, np.array(path)[:, 5], color="green", label="protein3")
+    # ax.plot(t1, np.array(path)[:, 0:3], color="blue", label="mRNA")
+    # ax.plot(t1, np.array(path)[:, 3:6], color="blue", label="protein")
+    ax.plot(t1, np.array(path)[:, 6], color="yellow", label="reference")
+    ax.plot(t1, np.array(path)[:, 7], color="red", label="error")
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
+    plt.show()
+    print("Done")
+else:
+    fig = plt.figure(figsize=(9, 6))
+    ax = fig.add_subplot(111)
+    ax.set_title("Lac results")
+    # ax.plot(t1, np.array(path)[:, 6], color="yellow", label="reference")
+    # soi = [item["state_of_interest" for itme in item]
+    soi1 = []
+    soi2 = []
+    for item in info_dict:
+        soi1.append(item["state_of_interest"][0])
+        soi2.append(item["state_of_interest"][1])
 
-fig = plt.figure(figsize=(9, 6))
-ax = fig.add_subplot(111)
-ax.set_title("Lac results")
-# ax.plot(t1, np.array(path)[:, 6], color="yellow", label="reference")
-# soi = [item["state_of_interest" for itme in item]
-soi1 = []
-soi2 = []
-for item in info_dict:
-    soi1.append(item["state_of_interest"][0])
-    soi2.append(item["state_of_interest"][1])
-
-# soi = [item["state_of_interest" for itme in item]
-ax.plot(t1, soi1, color="blue", label="state_of_interest1")
-ax.plot(t1, soi2, color="red", label="state_of_interest2")
-handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
+    # soi = [item["state_of_interest" for itme in item]
+    ax.plot(t1, soi1, color="blue", label="state_of_interest1")
+    ax.plot(t1, soi2, color="red", label="state_of_interest2")
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
 
 plt.show()
 print("Done")

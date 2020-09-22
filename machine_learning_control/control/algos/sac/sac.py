@@ -373,6 +373,7 @@ def sac(
         # Calculate Entropy-regularized policy loss
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
         loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
+        loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
 
         # Store log-likelihood
         pi_info = dict(LogPi=logp_pi.detach().numpy())

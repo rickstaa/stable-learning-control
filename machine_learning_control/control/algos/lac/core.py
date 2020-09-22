@@ -194,7 +194,10 @@ class MLPLFunction(nn.Module):  # TODO: Confusing names
             activation (torch.nn.modules.activation): The activation function.
         """
         super().__init__()
-        self.l = mlp([obs_dim + act_dim] + list(hidden_sizes) + [1], activation)
+        self.l = mlp(
+            [obs_dim + act_dim] + list(hidden_sizes) + [1], activation
+        )  # Check if this is needed
+        # self.l = mlp([obs_dim + act_dim] + list(hidden_sizes), activation)
 
     def forward(self, obs, act):
         """Perform forward pass through the network.
@@ -208,8 +211,10 @@ class MLPLFunction(nn.Module):  # TODO: Confusing names
             torch.Tensor: The tensor containing the lyapunov values of the input
                 observations and actions.
         """
-        l = torch.square(self.l(torch.cat([obs, act], dim=-1)))
-        return torch.squeeze(l, -1)  # Critical to ensure q has right shape.
+        l_hid_out = self.l(torch.cat([obs, act], dim=-1))
+        l_out = torch.square(l_hid_out)
+        l_out = torch.sum(l_out, dim=1)
+        return torch.squeeze(l_out, -1)  # Critical to ensure q has right shape.
 
 
 class MLPActorCritic(nn.Module):
