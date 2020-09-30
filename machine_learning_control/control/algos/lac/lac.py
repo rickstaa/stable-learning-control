@@ -756,13 +756,11 @@ def lac(
         )
         if use_lyapunov:
             l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                l_optimizer,
-                lr_lambda=lr_decay_l,
+                l_optimizer, lr_lambda=lr_decay_l,
             )
         else:
             q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                q_optimizer,
-                lr_lambda=lr_decay_c,
+                q_optimizer, lr_lambda=lr_decay_c,
             )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -1248,13 +1246,13 @@ if __name__ == "__main__":
     #     help="the gym env (default: Oscillator-v0)",
     # )
     parser.add_argument(
-        "--hid-a",
+        "--hid_a",
         type=int,
         default=64,
         help="hidden layer size of the actor (default: 256)",
     )
     parser.add_argument(
-        "--hid-c",
+        "--hid_c",
         type=int,
         default=128,
         help="hidden layer size of the lyapunov critic (default: 256)",
@@ -1272,10 +1270,10 @@ if __name__ == "__main__":
         help="number of hidden layer in the critic (default: 2)",
     )
     parser.add_argument(
-        "--lra", type=float, default=1e-4, help="actor learning rate (default: 1e-4)"
+        "--lr_a", type=float, default=1e-4, help="actor learning rate (default: 1e-4)"
     )
     parser.add_argument(
-        "--lrc", type=float, default=3e-4, help="critic learning rate (default: 1e-4)"
+        "--lr_c", type=float, default=3e-4, help="critic learning rate (default: 1e-4)"
     )
     parser.add_argument(
         "--batch-size",

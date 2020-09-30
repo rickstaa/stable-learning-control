@@ -473,8 +473,7 @@ def sac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer,
-            lr_lambda=lr_decay_c,
+            q_optimizer, lr_lambda=lr_decay_c,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -568,8 +567,7 @@ def sac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"],
-                Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
             )
 
         # Finally, update target networks by polyak averaging.
@@ -797,13 +795,13 @@ if __name__ == "__main__":
         help="the gym env (default: Ex3_EKA_negative-v0)",
     )
     parser.add_argument(
-        "--hid-a",
+        "--hid_a",
         type=int,
         default=256,
         help="hidden layer size of the actor (default: 256)",
     )
     parser.add_argument(
-        "--hid-c",
+        "--hid_c",
         type=int,
         default=256,
         help="hidden layer size of the critic (default: 256)",
@@ -821,10 +819,10 @@ if __name__ == "__main__":
         help="number of hidden layer in the critic (default: 2)",
     )
     parser.add_argument(
-        "--lra", type=float, default=1e-4, help="actor learning rate (default: 1e-4)"
+        "--lr_a", type=float, default=1e-4, help="actor learning rate (default: 1e-4)"
     )
     parser.add_argument(
-        "--lrc", type=float, default=3e-4, help="critic learning rate (default: 1e-4)"
+        "--lr_c", type=float, default=3e-4, help="critic learning rate (default: 1e-4)"
     )
     parser.add_argument(
         "--batch-size",
