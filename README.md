@@ -17,3 +17,33 @@ can pull the submodules using the following git command:
 ```bash
 git submodule update --init --recursive
 ```
+
+## Create conda environment
+
+From the general python package sanity perspective, it is a good idea to use conda environments to make sure packages from different projects do not interfere with each other.
+
+To create a conda env with python3, one runs
+
+```bash
+conda create -n mlc python=3.6
+```
+
+To activate the env:
+
+    conda activate mlc
+
+## Installation Environment
+
+```bash
+pip install .
+```
+
+## Run the experiments
+
+After the environment has been successfully set up you can run the algorithms as follows:
+
+### SAC
+
+```bash
+python "./machine_learning_control/control/algos/sac/sac.py" --env="Oscillator-v0" --lra="1e-4" --lrc="3e-4" --gamma="0.995" --batch-size="256" --replay-size="1000000" --l="2" --hid="256"
+```

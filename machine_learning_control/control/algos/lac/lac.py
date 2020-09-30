@@ -27,7 +27,6 @@ from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.logx import EpochLogger
 from machine_learning_control.control.utils.helpers import (
     count_vars,
-    clamp,
     calc_gamma_lr_decay,
     calc_linear_lr_decay,
 )
@@ -73,7 +72,7 @@ def lac(
     ac_kwargs=dict(),
     seed=0,  # Changed from 0 to None
     # epochs=50,  # Oscilator env
-    epochs=25, # ex3 env
+    epochs=25,  # ex3 env
     # epochs=2,  # DEBUG
     steps_per_epoch=2048,  # NOTE: This appears to be the evaluation frequency in spinning up not the epoch
     max_ep_len=500,
@@ -596,8 +595,7 @@ def lac(
         return loss_alpha, log_alpha_info
 
     def compute_loss_labda(data):
-        """Function computes the loss of the lagrance multiplier (lambda). translated to labda because of python.
-        """
+        """Function computes the loss of the lagrance multiplier (lambda). translated to labda because of python."""
 
         # Get log from observations
         o, a, r, o2, _ = (
@@ -758,11 +756,13 @@ def lac(
         )
         if use_lyapunov:
             l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                l_optimizer, lr_lambda=lr_decay_l,
+                l_optimizer,
+                lr_lambda=lr_decay_l,
             )
         else:
             q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                q_optimizer, lr_lambda=lr_decay_c,
+                q_optimizer,
+                lr_lambda=lr_decay_c,
             )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -1036,8 +1036,7 @@ def lac(
         return ac.act(torch.as_tensor(o, dtype=torch.float32), deterministic)
 
     def test_agent():
-        """Validate the Performance of the AC in a separate test environment.
-        """
+        """Validate the Performance of the AC in a separate test environment."""
 
         # Perform several steps in the test environment using the current policy
         for j in range(num_test_episodes):

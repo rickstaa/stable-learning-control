@@ -75,8 +75,7 @@ def mpi_sum(x):
 
 
 def mpi_avg(x):
-    """Average a scalar or vector over MPI processes.
-    """
+    """Average a scalar or vector over MPI processes."""
     return mpi_sum(x) / num_procs()
 
 

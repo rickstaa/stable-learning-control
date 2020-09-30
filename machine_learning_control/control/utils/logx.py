@@ -50,6 +50,7 @@ color2num = dict(
 
 # TODO: Remove tf dependency
 
+
 def colorize(string, color, bold=False, highlight=False):
     """Colorize a string.
 
@@ -217,7 +218,12 @@ class Logger:
             print(colorize(msg, color, bold=True))
 
     def log_tabular(
-        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
+        self,
+        key,
+        val,
+        tb_write=False,
+        tb_prefix=None,
+        tb_alias=None,
     ):
         """
         Log a value of some diagnostic.
@@ -605,8 +611,7 @@ class Logger:
 
     @property
     def _global_step(self):
-        """Retrieve the current estimated global step count.
-        """
+        """Retrieve the current estimated global step count."""
         return max(self._step_count_dict.values())
 
     def get_logdir(self, *args, **kwargs):
@@ -832,8 +837,7 @@ class EpochLogger(Logger):
     """
 
     def __init__(self, *args, **kwargs):
-        """Constructs all the necessary attributes for the EpochLogger object.
-        """
+        """Constructs all the necessary attributes for the EpochLogger object."""
 
         # Run parent init method and create epoch data storage dict
         super().__init__(*args, **kwargs)

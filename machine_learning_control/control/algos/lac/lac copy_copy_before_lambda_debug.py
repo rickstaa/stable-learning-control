@@ -587,8 +587,7 @@ def lac(
         return loss_alpha, log_alpha_info
 
     def compute_loss_labda(data):
-        """Function computes the loss of the lagrance multiplier (lambda). translated to labda because of python.
-        """
+        """Function computes the loss of the lagrance multiplier (lambda). translated to labda because of python."""
 
         # Get log from observations
         o, a, r, o2, _ = (
@@ -733,10 +732,12 @@ def lac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer, lr_lambda=lr_decay_c,
+            q_optimizer,
+            lr_lambda=lr_decay_c,
         )
         l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            l_optimizer, lr_lambda=lr_decay_l,
+            l_optimizer,
+            lr_lambda=lr_decay_l,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -868,7 +869,8 @@ def lac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"],
+                Alpha=alpha,
             )
 
         # Optimize the lagrance multiplier for the current policy
@@ -923,8 +925,7 @@ def lac(
         return ac.act(torch.as_tensor(o, dtype=torch.float32), deterministic)
 
     def test_agent():
-        """Validate the Performance of the AC in a separate test environment.
-        """
+        """Validate the Performance of the AC in a separate test environment."""
 
         # Perform several steps in the test environment using the current policy
         for j in range(num_test_episodes):

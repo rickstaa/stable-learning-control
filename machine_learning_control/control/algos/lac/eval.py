@@ -54,8 +54,7 @@ def get_distrubance_function(env_name):
 
 
 def oscillator_disturber(time, s, action, env, eval_params, disturber=None):
-    """Disturbance function used for evaluating the oscillator.
-    """
+    """Disturbance function used for evaluating the oscillator."""
     d = np.zeros_like(action)
     s_, r, done, info = env.step(action + d)
     done = False
@@ -63,8 +62,7 @@ def oscillator_disturber(time, s, action, env, eval_params, disturber=None):
 
 
 def Ex3_EKF_disturber(time, s, action, env, eval_params, disturber=None):
-    """Disturbance function used for evaluating the Ex3_EKF environment.
-    """
+    """Disturbance function used for evaluating the Ex3_EKF environment."""
     d = np.zeros_like(action)
     s_, r, done, info = env.step(action + d)
     done = False
@@ -72,8 +70,7 @@ def Ex3_EKF_disturber(time, s, action, env, eval_params, disturber=None):
 
 
 def Ex4_EKF_disturber(time, s, action, env, eval_params, disturber=None):
-    """Disturbance function used for evaluating the Ex3_EKF environment.
-    """
+    """Disturbance function used for evaluating the Ex3_EKF environment."""
     d = np.zeros_like(action)
     s_, r, done, info = env.step(action + d)
     done = False
