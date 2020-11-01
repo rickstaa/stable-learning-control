@@ -45,9 +45,9 @@ jobs:
     needs: build
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      # - uses: actions/checkout@v2
+      #   with:
+      #     fetch-depth: 0
       - name: python-flake8
         uses: tayfun/flake8-your-pr@1.0.1
         env:
@@ -58,43 +58,31 @@ jobs:
   #   needs: build
   #   runs-on: ubuntu-18.04
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     # - uses: actions/checkout@v2
   #     - name: python-black
   #       uses: lgeiger/black-action@v1.0.1
   #       with:
   #         args: ". --check"
-  python-format:
-    name: python-format
-    needs: build
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: python-black
-        uses: jpetrucciani/black-check@master
-        with:
-          path: './machine_learning_control'
 
-  python-tests:
-    name: python-tests
-    needs: build
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: python-tests
-        uses: cclauss/GitHub-Action-for-pytest@0.5.0
-        with:
-          args: pytest
+  # python-tests:
+  #   name: python-tests
+  #   needs: build
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: python-tests
+  #       uses: cclauss/GitHub-Action-for-pytest@0.5.0
+  #       with:
+  #         args: pytest
 
-  markdown-lint:
-    name: runner / markdown-lint
-    needs: build
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v1
-      - name: remark-lint
-        uses: prologic/action-remark-lint@v0.0.5
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-check # Change reporter. (Only `github-pr-check` is supported at the moment).
+  # markdown-lint:
+  #   name: runner / markdown-lint
+  #   needs: build
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     # - uses: actions/checkout@v1
+  #     - name: remark-lint
+  #       uses: prologic/action-remark-lint@v0.0.5
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         reporter: github-pr-check # Change reporter. (Only `github-pr-check` is supported at the moment).
