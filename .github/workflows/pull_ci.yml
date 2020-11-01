@@ -54,7 +54,7 @@ jobs:
     needs: build
     runs-on: ubuntu-18.04
     steps:
-      - name: python-lint
+      - name: python-black
         uses: lgeiger/black-action@v1.0.1
         with:
           args: "./machine_learning_control --check"
