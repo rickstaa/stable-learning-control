@@ -41,14 +41,14 @@ jobs:
         run: pip3 install -r requirements.txt
 
   python-lint:
-    name: runner / python-lint
+    name: python-flake8 (Runner)
     needs: build
     runs-on: ubuntu-18.04
     steps:
       # - uses: actions/checkout@v2
       #   with:
       #     fetch-depth: 0
-      - name: python-flake8
+      - name: Run flake8 on your PR - with annotations!
         uses: tayfun/flake8-your-pr@1.0.1
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
