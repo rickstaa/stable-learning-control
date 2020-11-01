@@ -60,8 +60,8 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-        # with:
-        #   fetch-depth: 0
+        with:
+          fetch-depth: 0
       - name: python-black
         uses: lgeiger/black-action@v1.0.1
         with:
@@ -80,6 +80,9 @@ jobs:
     needs: build
     runs-on: ubuntu-18.04
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: remark-lint
         uses: prologic/action-remark-lint@v0.0.5
         with:
