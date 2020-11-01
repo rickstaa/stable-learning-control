@@ -45,8 +45,8 @@ jobs:
     steps:
       - name: python-lint
         uses: tayfun/flake8-your-pr@1.0.1
-        with:
-          secrets: ${{ secrets.GITHUB_TOKEN }}
+        # with:
+        #   github_token: ${{ secrets.GITHUB_TOKEN }}
 
   black-format:
     name: runner / black-format
