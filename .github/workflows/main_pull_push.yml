@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: "${{ github.head_ref }}"
+          # ref: "${{ github.head_ref }}"
           fetch-depth: 2
       - name: Run flake8 on your PR - with annotations!
         uses: tayfun/flake8-your-pr@1.0.1
