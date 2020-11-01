@@ -52,7 +52,8 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run flake8 on your PR - with annotations!
-        uses: tayfun/flake8-your-pr@1.0.1
+        # uses: tayfun/flake8-your-pr@1.0.1
+        uses: valentijnscholten/flake8-your-pr@master
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
