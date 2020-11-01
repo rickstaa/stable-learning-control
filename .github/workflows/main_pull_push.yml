@@ -16,29 +16,32 @@ jobs:
     name: build
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
-      - name: local-fix
-        run: |
-          # Hack to get setup-python to work on act
-          # (see https://github.com/nektos/act/issues/251)
-          if [ ! -f "/etc/lsb-release" ] ; then
-            echo "DISTRIB_RELEASE=18.04" > /etc/lsb-release
-          fi
-      - name: install-deps
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      # - name: local-fix
+      #   run: |
+      #     # Hack to get setup-python to work on act
+      #     # (see https://github.com/nektos/act/issues/251)
+      #     if [ ! -f "/etc/lsb-release" ] ; then
+      #       echo "DISTRIB_RELEASE=18.04" > /etc/lsb-release
+      #     fi
+      - name: Install system dependencies
         run: sudo apt-get install libopenmpi-dev
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.8"
-      - name: pip-cache
+      - name: Create pip cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements_dev.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: install-pip-deps
+      - name: Install pip dependencies
         run: pip3 install -r requirements.txt
+      - name: instal mlc pip package
+        run: pip3 install .
 
   python-lint:
     name: python-flake8 (Runner)
@@ -53,36 +56,40 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-  # python-format:
-  #   name: python-format
-  #   needs: build
-  #   runs-on: ubuntu-18.04
-  #   steps:
-  #     # - uses: actions/checkout@v2
-  #     - name: python-black
-  #       uses: lgeiger/black-action@v1.0.1
-  #       with:
-  #         args: ". --check"
+  python-format:
+    name: python-black
+    needs: build
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: python-black
+        uses: lgeiger/black-action@v1.0.1
+        with:
+          args: "./machine_learning_control --check"
 
-  # python-tests:
-  #   name: python-tests
-  #   needs: build
-  #   runs-on: ubuntu-18.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: python-tests
-  #       uses: cclauss/GitHub-Action-for-pytest@0.5.0
-  #       with:
-  #         args: pytest
+  python-tests:
+    name: python-tests
+    needs: build
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: python-tests
+        uses: cclauss/GitHub-Action-for-pytest@0.5.0
+        with:
+          args: pytest ./machine_learning_control
 
-  # markdown-lint:
-  #   name: runner / markdown-lint
-  #   needs: build
-  #   runs-on: ubuntu-18.04
-  #   steps:
-  #     # - uses: actions/checkout@v1
-  #     - name: remark-lint
-  #       uses: prologic/action-remark-lint@v0.0.5
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         reporter: github-pr-check # Change reporter. (Only `github-pr-check` is supported at the moment).
+  markdown-lint:
+    name: markdown-lint (Runner)
+    needs: build
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: remark-lint
+        uses: prologic/action-remark-lint@v0.0.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-check # Change reporter. (Only `github-pr-check` is supported at the moment).
