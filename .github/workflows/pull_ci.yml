@@ -24,7 +24,7 @@ jobs:
             echo "DISTRIB_RELEASE=18.04" > /etc/lsb-release
           fi
       - name: install-deps
-        run: apt-get install libopenmpi-dev
+        run: sudo apt-get install libopenmpi-dev
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
