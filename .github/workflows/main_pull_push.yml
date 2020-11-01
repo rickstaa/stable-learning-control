@@ -72,6 +72,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: python-black
         uses: lgeiger/black-action@v1.0.1
         with:
