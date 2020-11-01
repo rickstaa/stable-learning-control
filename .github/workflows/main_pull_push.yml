@@ -43,7 +43,7 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Install pip dependencies
         run: pip3 install -r requirements.txt
-      - name: instal mlc pip package
+      - name: Install mlc pip package
         run: pip3 install .
 
   python-lint:
