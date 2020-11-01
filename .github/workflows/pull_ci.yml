@@ -53,6 +53,7 @@ jobs:
     name: runner / black-format
     needs: build
     runs-on: ubuntu-18.04
+    uses: actions/checkout@v2
     steps:
       - name: python-black
         uses: lgeiger/black-action@v1.0.1
