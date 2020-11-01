@@ -51,6 +51,16 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
+  # python-format:
+  #   name: python-format
+  #   needs: build
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: python-black
+  #       uses: lgeiger/black-action@v1.0.1
+  #       with:
+  #         args: ". --check"
   python-format:
     name: python-format
     needs: build
@@ -58,9 +68,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: python-black
-        uses: lgeiger/black-action@v1.0.1
+        uses: jpetrucciani/black-check@master
         with:
-          args: ". --check"
+          path: './machine_learning_control'
 
   python-tests:
     name: python-tests
