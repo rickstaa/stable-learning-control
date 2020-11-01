@@ -18,8 +18,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-          submodules: true
-          fetch-depth: 0
+          with:
+            submodules: true
+            fetch-depth: 0
       # - name: local-fix
       #   run: |
       #     # Hack to get setup-python to work on act
