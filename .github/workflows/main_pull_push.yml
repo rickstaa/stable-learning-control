@@ -1,11 +1,14 @@
-# Pull request CI config file
+# Main push/Pull request CI config file
 # Note: For local testing with https://github.com/nektos/act use the
 # `sudo act -P ubuntu-18.04=nektos/act-environments-ubuntu:18.04` command.
 name: MLC pull CI
 
 on:
-  # Trigger the workflow on pull request,
+  # Trigger the workflow on push or pull request,
   # but only for the master branch
+
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -57,8 +60,8 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        # with:
+        #   fetch-depth: 0
       - name: python-black
         uses: lgeiger/black-action@v1.0.1
         with:
