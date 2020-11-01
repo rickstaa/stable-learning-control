@@ -74,7 +74,8 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
       - name: python-black
-        uses: lgeiger/black-action@v1.0.1
+        # uses: lgeiger/black-action@v1.0.1
+        uses: jpetrucciani/black-check@master
         with:
           args: "./machine_learning_control --check"
 
