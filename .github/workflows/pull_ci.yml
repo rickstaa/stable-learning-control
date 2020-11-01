@@ -44,9 +44,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: python-lint
-        uses: tayfun/flake8-your-pr@1.0.1
-        # with:
-        #   github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: tayfun/flake8-your-pr@master
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   black-format:
     name: runner / black-format
