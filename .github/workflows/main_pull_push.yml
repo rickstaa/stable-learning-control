@@ -5,8 +5,7 @@ name: MLC pull CI
 
 on:
   # Trigger the workflow on push or pull request,
-  # but only for the master branch
-
+  # but only for the main branch
   push:
     branches: [main]
   pull_request:
@@ -14,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: runner / build
+    name: build
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
@@ -49,35 +48,37 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: python-lint
-        uses: tayfun/flake8-your-pr@master
+      - name: python-flake8
+        uses: tayfun/flake8-your-pr@1.0.1
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-  black-format:
-    name: runner / black-format
+  python-format:
+    name: python-format
     needs: build
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: python-black
         uses: lgeiger/black-action@v1.0.1
         with:
-          args: "./machine_learning_control --check"
+          args: ". --check"
 
-  python_tests:
-    name: runner / python-tests
+  python-tests:
+    name: python-tests
     needs: build
     runs-on: ubuntu-18.04
     steps:
+      - uses: actions/checkout@v2
       - name: python-tests
-        uses: cclauss/GitHub-Action-for-pytest@master
+        uses: cclauss/GitHub-Action-for-pytest@0.5.0
+        with:
+          args: pytest
 
-  remark-lint:
-    name: runner / remark-lint
+  markdown-lint:
+    name: runner / markdown-lint
     needs: build
     runs-on: ubuntu-18.04
     steps:
