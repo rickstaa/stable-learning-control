@@ -102,10 +102,10 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-          level: warning
       - name: remark-lint
         # uses: prologic/action-remark-lint@v0.0.5
         uses: rickstaa/action-remark-lint@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check # Change reporter. (Only `github-pr-check` is supported at the moment).
+          level: warning
