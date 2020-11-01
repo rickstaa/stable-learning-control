@@ -75,10 +75,11 @@ jobs:
           # ref: ${{ github.event.pull_request.head.sha }}
       - name: python-black
         # uses: lgeiger/black-action@v1.0.1
+        # uses: jpetrucciani/black-check@master
         uses: jpetrucciani/black-check@master
-        with:
+        # with:
           # args: "./machine_learning_control --check"
-          args: "./machine_learning_control"
+          # args: "./machine_learning_control"
 
   python-tests:
     name: python-tests
@@ -107,7 +108,7 @@ jobs:
           fetch-depth: 0
       - name: remark-lint
         # uses: prologic/action-remark-lint@v0.0.5
-        uses: rickstaa/action-remark-lint@master
+        uses: rickstaa/action-remark-lint@fix_reviewdog_exit_code_bug
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-check # Change reporter. (Only `github-pr-check` is supported at the moment).
