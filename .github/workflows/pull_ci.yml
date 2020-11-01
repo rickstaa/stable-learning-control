@@ -1,4 +1,4 @@
-# Pull request ci config file
+# Pull request CI config file
 # Note: For local testing with https://github.com/nektos/act use the
 # `sudo act -P ubuntu-18.04=nektos/act-environments-ubuntu:18.04` command.
 name: MLC pull CI
