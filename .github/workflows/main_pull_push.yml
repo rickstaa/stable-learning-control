@@ -73,7 +73,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: python-tests
-        uses: cclauss/GitHub-Action-for-pytest@master
+        uses: cclauss/GitHub-Action-for-pytest@0.5.0
+        with:
+          args: pytest
 
   remark-lint:
     name: runner / remark-lint
