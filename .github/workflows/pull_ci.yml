@@ -43,6 +43,9 @@ jobs:
     needs: build
     runs-on: ubuntu-18.04
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: python-lint
         uses: tayfun/flake8-your-pr@master
         env:
