@@ -3,6 +3,10 @@
 # `sudo act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04` command.
 name: MLC pull CI
 
+# TODO: Check python caching
+# TODO: Check flake8 linting rules
+# TODO: Check markdown lint fix
+
 on:
   # Trigger the workflow on push or pull request,
   # but only for the main branch
@@ -13,6 +17,7 @@ on:
 
 jobs:
 
+  # Run python linter
   python-lint:
     name: python-flake8 (Linting)
     runs-on: ubuntu-latest
@@ -47,14 +52,16 @@ jobs:
       - name: Install mlc package
         run: |
           pip install .
-      - name: Run flake8
-        uses: julianwachholz/flake8-action@v1.1.0
-        with:
-          checkName: "python-lint"
-          path: ./machine_learning_control
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup flake8 annotations
+        uses: rbialon/flake8-annotations@v1
+      - name: Run flake 8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
+  # Check python code quality
   python-format:
     # Currently has a bug (see https://github.com/lgeiger/black-action/issues/11).
     name: python-black (Formatting)
@@ -68,6 +75,7 @@ jobs:
       - name: Check python code quality using black
         uses: lgeiger/black-action@v1.0.1
 
+  # Run python tests
   python-tests:
     name: python-tests (Testing)
     runs-on: ubuntu-latest
@@ -121,6 +129,7 @@ jobs:
       #   # Use always() to always run this step to publish test results when there are test failures
         # if: ${{ always() }}
 
+  # Check markdown code quality
   markdown-lint:
     # Currently has a bug (see https://github.com/prologic/action-remark-lint/pull/4).
     name: markdown-lint (Linting)
@@ -131,7 +140,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 2
-      - name: remark-lint
+      - name: Check markdown code quality using remark-lint
         # uses: prologic/action-remark-lint@v0.0.5
         uses: rickstaa/action-remark-lint@fix_reviewdog_exit_code_bug
         with:
