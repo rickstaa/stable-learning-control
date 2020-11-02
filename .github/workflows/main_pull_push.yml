@@ -34,10 +34,10 @@ jobs:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip--${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-3.8-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip
-            ${{ runner.os }}-
+            ${{ runner.os }}-3.8-pip
+            ${{ runner.os }}-3.8
       - name: Install python dependencies from the requirements file
         run: |
           python -m pip install --upgrade pip
@@ -47,12 +47,26 @@ jobs:
       - name: Install mlc package
         run: |
           pip install .
-      - name: Run flake8 linter and add annotations
-        uses: suo/flake8-github-action@v1
+      - name: Run flake8
+        uses: julianwachholz/flake8-action@v1.1.0
         with:
-          checkName: 'python-lint'   # NOTE: this needs to be the same as the job name
+          checkName: "python-lint"
+          path: ./machine_learning_control
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  python-format:
+    # Currently has a bug (see https://github.com/lgeiger/black-action/issues/11).
+    name: python-black (Formatting)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mlc repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 2
+      - name: Check python code quality using black
+        uses: lgeiger/black-action@v1.0.1
 
   python-tests:
     name: python-tests (Testing)
@@ -82,15 +96,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.python-version }}-pip
             ${{ runner.os }}-${{ matrix.python-version }}
-      # - name: Install python dependencies from the requirements file
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      # - name: Install mlc package
-      #   run: |
-      #     pip install .
-      # - name: Install CI python dependencies
-      #   run: pip install flake8 pytest pytest-cov
+      - name: Install python dependencies from the requirements file
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install mlc package
+        run: |
+          pip install .
+      - name: Install CI python dependencies
+        run: pip install flake8 pytest pytest-cov
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
