@@ -17,23 +17,49 @@ jobs:
     name: python-flake8 (Linting)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 2
-      - name: Run flake8 linter and add annotations!
-        # uses: tayfun/flake8-your-pr@1.0.1 # NOTE: Contains a bug
-        uses: valentijnscholten/flake8-your-pr@master
+      - name: Install system dependencies
+        run: sudo apt-get install libopenmpi-dev
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          with:
+            python-version: '3.8'
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip--${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip
+            ${{ runner.os }}-
+      - name: Install python dependencies from the requirements file
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install flake8
+        run: pip install flake8
+      - name: Install mlc package
+        run: |
+          pip install .
+      - name: Run flake8 linter and add annotations
+        uses: suo/flake8-github-action@v1
+        with:
+          checkName: 'python-lint'   # NOTE: this needs to be the same as the job name
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  python-format:
     # Currently has a bug (see https://github.com/lgeiger/black-action/issues/11).
     name: python-black (Formatting)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
           submodules: true
@@ -49,7 +75,7 @@ jobs:
         python-version: [3.6, 3.7, 3.8] # Supported python versions
 
     steps:
-      - name: Checkout repository
+      - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
           submodules: true
@@ -72,7 +98,6 @@ jobs:
       # - name: Install python dependencies from the requirements file
       #   run: |
       #     python -m pip install --upgrade pip
-      #     pip install flake8 pytest
       #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       # - name: Install mlc package
       #   run: |
@@ -100,7 +125,7 @@ jobs:
     name: markdown-lint (Linting)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
           submodules: true
