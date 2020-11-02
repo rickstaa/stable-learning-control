@@ -55,18 +55,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # Currently has a bug (see https://github.com/lgeiger/black-action/issues/11).
-    name: python-black (Formatting)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout mlc repository
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-          fetch-depth: 2
-      - name: Check python code quality using black
-        uses: lgeiger/black-action@v1.0.1
-
   python-tests:
     name: python-tests (Testing)
     runs-on: ubuntu-latest
