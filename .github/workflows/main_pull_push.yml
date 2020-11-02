@@ -69,31 +69,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.python-version }}-pip
             ${{ runner.os }}-${{ matrix.python-version }}
-      - name: Install python dependencies from the requirements file
-        run: |
-          python -m pip install --upgrade pip
-          pip install flake8 pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Install mlc package
-        run: |
-          pip install .
-      - name: Install CI python dependencies
-        run: pip install flake8 pytest pytest-cov
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 ./machine_learning_control --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Test with Pytest
-        run: pytest tests.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
-      - name: Upload pytest test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: pytest-results-${{ matrix.python-version }}
-          path: junit/test-results-${{ matrix.python-version }}.xml
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
+      # - name: Install python dependencies from the requirements file
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install flake8 pytest
+      #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      # - name: Install mlc package
+      #   run: |
+      #     pip install .
+      # - name: Install CI python dependencies
+      #   run: pip install flake8 pytest pytest-cov
+      # - name: Lint with flake8
+      #   run: |
+      #     # stop the build if there are Python syntax errors or undefined names
+      #     flake8 ./machine_learning_control --count --select=E9,F63,F7,F82 --show-source --statistics
+      #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+      #     flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      # - name: Test with Pytest
+      #   run: pytest tests.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+      # - name: Upload pytest test results
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: pytest-results-${{ matrix.python-version }}
+      #     path: junit/test-results-${{ matrix.python-version }}.xml
+      #   # Use always() to always run this step to publish test results when there are test failures
+        # if: ${{ always() }}
 
   markdown-lint:
     # Currently has a bug (see https://github.com/prologic/action-remark-lint/pull/4).
