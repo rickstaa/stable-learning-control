@@ -20,14 +20,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-          fetch-depth: 0
-      # - name: local-fix
-      #   run: |
-      #     # Hack to get setup-python to work on act
-      #     # (see https://github.com/nektos/act/issues/251)
-      #     if [ ! -f "/etc/lsb-release" ] ; then
-      #       echo "DISTRIB_RELEASE=18.04" > /etc/lsb-release
-      #     fi
+          fetch-depth: 2
       - name: Install system dependencies
         run: sudo apt-get install libopenmpi-dev
       - name: Set up Python
@@ -55,14 +48,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-          fetch-depth: 0
+          fetch-depth: 2
       - name: Run flake8 on your PR - with annotations!
-        # uses: tayfun/flake8-your-pr@1.0.1
+        # uses: tayfun/flake8-your-pr@1.0.1 # NOTE: Contains a bug
         uses: valentijnscholten/flake8-your-pr@master
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   python-format:
+    # Currently has a bug (see https://github.com/lgeiger/black-action/issues/11).
     name: python-black
     needs: build
     runs-on: ubuntu-18.04
@@ -72,14 +66,8 @@ jobs:
         with:
           submodules: true
           fetch-depth: 2
-          # ref: ${{ github.event.pull_request.head.sha }}
       - name: python-black
-        # uses: lgeiger/black-action@v1.0.1
-        # uses: jpetrucciani/black-check@master
-        uses: jpetrucciani/black-check@master
-        # with:
-          # args: "./machine_learning_control --check"
-          # args: "./machine_learning_control"
+        uses: lgeiger/black-action@v1.0.1
 
   python-tests:
     name: python-tests
@@ -90,13 +78,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-          fetch-depth: 0
       - name: python-tests
         uses: cclauss/GitHub-Action-for-pytest@0.5.0
         with:
           args: pytest ./machine_learning_control
 
   markdown-lint:
+    # Currently has a bug (see https://github.com/prologic/action-remark-lint/pull/4).
     name: markdown-lint (Runner)
     needs: build
     runs-on: ubuntu-18.04
@@ -105,7 +93,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-          fetch-depth: 0
+          fetch-depth: 2
       - name: remark-lint
         # uses: prologic/action-remark-lint@v0.0.5
         uses: rickstaa/action-remark-lint@fix_reviewdog_exit_code_bug

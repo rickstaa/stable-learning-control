@@ -473,7 +473,8 @@ def sac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer, lr_lambda=lr_decay_c,
+            q_optimizer,
+            lr_lambda=lr_decay_c,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -567,7 +568,8 @@ def sac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"],
+                Alpha=alpha,
             )
 
         # Finally, update target networks by polyak averaging.

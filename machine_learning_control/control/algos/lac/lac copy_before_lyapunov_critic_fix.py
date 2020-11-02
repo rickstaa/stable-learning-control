@@ -758,11 +758,13 @@ def lac(
         )
         if use_lyapunov:
             l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                l_optimizer, lr_lambda=lr_decay_l,
+                l_optimizer,
+                lr_lambda=lr_decay_l,
             )
         else:
             q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                q_optimizer, lr_lambda=lr_decay_c,
+                q_optimizer,
+                lr_lambda=lr_decay_c,
             )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -902,7 +904,8 @@ def lac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"],
+                Alpha=alpha,
             )
 
         # Optimize the lagrance multiplier for the current policy

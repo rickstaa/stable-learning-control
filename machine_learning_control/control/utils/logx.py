@@ -218,7 +218,12 @@ class Logger:
             print(colorize(msg, color, bold=True))
 
     def log_tabular(
-        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
+        self,
+        key,
+        val,
+        tb_write=False,
+        tb_prefix=None,
+        tb_alias=None,
     ):
         """
         Log a value of some diagnostic.
