@@ -112,7 +112,7 @@ jobs:
         run: |
           pip install .
       - name: Install CI python dependencies
-        run: pip install flake8 pytest pytest-cov
+        run: pip install flake8 pytest pytest-cov pytest-html
       # - name: Lint with flake8
       #   run: |
       #     # stop the build if there are Python syntax errors or undefined names
@@ -120,12 +120,19 @@ jobs:
       #     # exit-zero treats all errors as warnings. We use the black defined max-line-length
       #     flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
       - name: Test with Pytest
-        run: pytest tests.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+        run: |
+          pytest \
+            ./machine_learning_control \
+            --html=pytest/${{ matrix.python-version }}/html/results.html
+            --doctest-modules \
+            --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml \
+            --cov=./machine_learning_control \
+            --cov-report=html:pytest/${{ matrix.python-version }}/cov/
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         with:
           name: pytest-results-${{ matrix.python-version }}
-          path: junit/test-results-${{ matrix.python-version }}.xml
+          path: pytest/
         # Use always() to always run this step to publish test results when there are test failures
         if: ${{ always() }}
 
