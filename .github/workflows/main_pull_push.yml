@@ -1,6 +1,6 @@
 # Main push/Pull request CI config file
 # Note: For local testing with https://github.com/nektos/act use the
-# `sudo act -P ubuntu-18.04=nektos/act-environments-ubuntu:18.04` command.
+# `sudo act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04` command.
 name: MLC pull CI
 
 on:
@@ -12,44 +12,17 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    name: build
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-          fetch-depth: 2
-      - name: Install system dependencies
-        run: sudo apt-get install libopenmpi-dev
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-      - name: Create pip cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements_dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Install pip dependencies
-        run: pip3 install -r requirements.txt
-      - name: Install mlc pip package
-        run: pip3 install .
 
   python-lint:
-    name: python-flake8 (Runner)
-    needs: build
-    runs-on: ubuntu-18.04
+    name: python-flake8 (Linting)
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 2
-      - name: Run flake8 on your PR - with annotations!
+      - name: Run flake8 linter and add annotations!
         # uses: tayfun/flake8-your-pr@1.0.1 # NOTE: Contains a bug
         uses: valentijnscholten/flake8-your-pr@master
         env:
@@ -57,37 +30,76 @@ jobs:
 
   python-format:
     # Currently has a bug (see https://github.com/lgeiger/black-action/issues/11).
-    name: python-black
-    needs: build
-    runs-on: ubuntu-18.04
+    name: python-black (Formatting)
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 2
-      - name: python-black
+      - name: Check python code quality using black
         uses: lgeiger/black-action@v1.0.1
 
   python-tests:
-    name: python-tests
-    needs: build
-    runs-on: ubuntu-18.04
+    name: python-tests (Testing)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8] # Supported python versions
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: python-tests
-        uses: cclauss/GitHub-Action-for-pytest@0.5.0
+      - name: Install system dependencies
+        run: sudo apt-get install libopenmpi-dev
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
         with:
-          args: pytest ./machine_learning_control
+          python-version: ${{ matrix.python-version }}
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - name: Install python dependencies from the requirements file
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install mlc package
+        run: |
+          pip install .
+      - name: Install CI python dependencies
+        run: pip install flake8 pytest pytest-cov
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 ./machine_learning_control --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Test with Pytest
+        run: pytest tests.py --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: pytest-results-${{ matrix.python-version }}
+          path: junit/test-results-${{ matrix.python-version }}.xml
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
 
   markdown-lint:
     # Currently has a bug (see https://github.com/prologic/action-remark-lint/pull/4).
-    name: markdown-lint (Runner)
-    needs: build
-    runs-on: ubuntu-18.04
+    name: markdown-lint (Linting)
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
