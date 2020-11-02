@@ -120,14 +120,12 @@ jobs:
       #     # exit-zero treats all errors as warnings. We use the black defined max-line-length
       #     flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
       - name: Test with Pytest
-        run: |
-          pytest \
-            ./machine_learning_control \
-            --html=pytest/${{ matrix.python-version }}/html/results.html
-            --doctest-modules \
-            --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml \
-            --cov=./machine_learning_control \
-            --cov-report=html:pytest/${{ matrix.python-version }}/cov/
+        run: pytest ./machine_learning_control \
+          --html=pytest/${{ matrix.python-version }}/html/results.html
+          --doctest-modules
+          --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml
+          --cov=./machine_learning_control
+          --cov-report=html:pytest/${{ matrix.python-version }}/cov/
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         with:
