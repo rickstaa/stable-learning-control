@@ -46,6 +46,8 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install -e .
+      - name: Setup flake8 annotations
+        uses: rbialon/flake8-annotations@v1
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -108,7 +110,13 @@ jobs:
       #     # exit-zero treats all errors as warnings. We use the black defined max-line-length
       #     flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
       - name: Test with Pytest
-        run: pytest ./machine_learning_control --html=pytest/${{ matrix.python-version }}/html/results.html --doctest-modules --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml --cov=./machine_learning_control --cov-report=html:pytest/${{ matrix.python-version }}/cov/
+        run: pytest \
+          ./machine_learning_control \
+          --doctest-modules \
+          --html=pytest/${{ matrix.python-version }}/html/results.html \
+          --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml \
+          --cov=./machine_learning_control \
+          --cov-report=html:pytest/${{ matrix.python-version }}/cov/
       - name: Upload Pytest test results to artifacts
         uses: actions/upload-artifact@v2
         with:
