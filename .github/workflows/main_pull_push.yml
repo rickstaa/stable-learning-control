@@ -74,8 +74,8 @@ jobs:
     name: python-tests (Testing)
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false  # Run all matrix jobs
       matrix:
-        fail-fast: false  # Run all matrix jobs
         python-version: [3.6, 3.7, 3.8]  # Supported python versions
 
     steps:
