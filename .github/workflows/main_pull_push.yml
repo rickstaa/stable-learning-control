@@ -75,8 +75,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # python-version: [3.6, 3.7, 3.8] # Supported python versions
-        python-version: [3.8] # Supported python versions
+        fail-fast: false  # Run all matrix jobs
+        python-version: [3.6, 3.7, 3.8]  # Supported python versions
 
     steps:
       - name: Checkout mlc repository
