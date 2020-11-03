@@ -3,9 +3,6 @@
 # `sudo act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04` command.
 name: MLC pull CI
 
-# TODO: Check flake8 linting rules
-# TODO: Check markdown lint fix
-
 on:
   # Trigger the workflow on push or pull request,
   # but only for the main branch
