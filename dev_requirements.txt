@@ -9,5 +9,7 @@ psutil
 tqdm
 
 pytest
+pytest-cov
+pytest-html
 black
 flake8

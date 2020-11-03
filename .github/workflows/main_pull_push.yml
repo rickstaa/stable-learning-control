@@ -27,8 +27,8 @@ jobs:
         with:
           submodules: true
           fetch-depth: 2
-      # - name: Install system dependencies
-      #   run: sudo apt-get install libopenmpi-dev
+      - name: Install system dependencies
+        run: sudo apt-get install libopenmpi-dev
       - name: Setup Python 3.8
         uses: actions/setup-python@v1
         with:
