@@ -10,4 +10,4 @@ tqdm
 
 pytest
 black
-flak8
+flake8
