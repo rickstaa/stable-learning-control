@@ -7,3 +7,7 @@ tensorboard>=1.15
 mpi4py
 psutil
 tqdm
+
+pytest
+black
+flak8
