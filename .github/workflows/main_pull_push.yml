@@ -46,12 +46,12 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install -e .
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 ./machine_learning_control --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. We use the black defined max-line-length
-          flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+      # - name: Lint with flake8
+      #   run: |
+      #     # stop the build if there are Python syntax errors or undefined names
+      #     flake8 ./machine_learning_control --count --select=E9,F63,F7,F82 --show-source --statistics
+      #     # exit-zero treats all errors as warnings. We use the black defined max-line-length
+      #     flake8 ./machine_learning_control --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
   # Check python code quality
   python-format:

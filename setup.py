@@ -1,4 +1,4 @@
-"""Setup file for the 'machine_learning_control' python package
+"""Setup file for the 'machine_learning_control' python package.
 """
 
 # Standard library imports
