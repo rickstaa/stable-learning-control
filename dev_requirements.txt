@@ -13,3 +13,4 @@ pytest-cov
 pytest-html
 black
 flake8
+functiontrace
