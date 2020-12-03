@@ -12,6 +12,7 @@ dist/
 data/
 
 # Files to ignore
+.coverage
 *.pyc
 *.code-workspace
 *.egg-info

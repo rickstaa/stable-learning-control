@@ -34,7 +34,7 @@ TRAIN_PARAMS = {
     # "episodes": int(2e4),  # The number of episodes you want to perform
     "num_of_training_paths": 10,  # Number of training rollouts stored for analysis
     "evaluation_frequency": 2048,  # After how many steps the performance is evaluated
-    "num_of_evaluation_paths": 10,  # number of rollouts for evaluation
+    "num_of_evaluation_paths": 20,  # number of rollouts for evaluation
     "num_of_trials": 1,  # number of randomly seeded trained agents
     "start_of_trial": 0,  # The start number of the rollouts (used during model save)
 }
