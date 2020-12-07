@@ -13,10 +13,8 @@ def mlp(sizes, activation, output_activation=nn.Identity):
 
     Args:
         sizes (list): The size of each of the layers.
-
         activation (torch.nn.modules.activation): The activation function used for the
             hidden layers.
-
         output_activation (torch.nn.modules.activation, optional): The activation
             function used for the output layers. Defaults to torch.nn.Identity.
 
@@ -35,7 +33,6 @@ def combined_shape(length, shape=None):
 
     Args:
         length (int): The length of an object.
-
         shape (tuple, optional): The shape of an object. Only uses length if not
             supplied.
 
@@ -68,8 +65,6 @@ def is_scalar(obj):
     Returns:
         boole: Boolean specifying whether the object is a scalar.
     """
-
-    # Check if obj is scalar
     if type(obj) in [int, float]:
         return True
     elif np.isscalar(obj):
@@ -123,7 +118,6 @@ def compare_models(model_1, model_2):
     Returns:
         Bool: Bool specifying whether the weights of two models are equal.
     """
-
     models_differ = 0
     for key_item_1, key_item_2 in zip(
         model_1.state_dict().items(), model_2.state_dict().items()
@@ -162,7 +156,7 @@ def clamp(data, min_bound, max_bound):
             boundaries.
     """
 
-    # Convert arguments to numpy array is not already
+    # Convert arguments to torch tensor if not already
     data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
     min_bound = (
         torch.tensor(min_bound)
