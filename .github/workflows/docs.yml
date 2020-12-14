@@ -39,7 +39,7 @@ jobs:
         run: |
           pip install -e .
       - name: Check if documentation builds
-      - uses: ammaraskar/sphinx-action@master
+        uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"
       - name: Upload build documentation
