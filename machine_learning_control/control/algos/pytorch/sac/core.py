@@ -15,6 +15,7 @@ from torch.distributions.normal import Normal
 
 # TODO: RENAME TO SAC
 # TODO: Change naming of action limit
+# TODO: Add ability to set output activation
 
 
 class SquashedGaussianMLPActor(nn.Module):

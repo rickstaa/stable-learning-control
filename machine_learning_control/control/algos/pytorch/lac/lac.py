@@ -17,18 +17,22 @@ from numbers import Number
 
 # Import os.path as osp
 import gym
-import machine_learning_control.control.algos.lac.core as core
+import machine_learning_control.control.algos.pytorch.lac.core as core
 import numpy as np
 import torch
 import torch.nn.functional as F
-from machine_learning_control.control.algos.common.buffers import ReplayBuffer
+from machine_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.gym_utils import (
-    is_continuous_space, is_discrete_space)
+    is_continuous_space,
+    is_discrete_space,
+)
 from machine_learning_control.control.utils.helpers import (
-    calc_gamma_lr_decay, calc_linear_lr_decay, count_vars)
+    calc_gamma_lr_decay,
+    calc_linear_lr_decay,
+    count_vars,
+)
 from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.run_utils import \
-    setup_logger_kwargs
+from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from torch.optim import Adam
 
 SCALE_lambda_MIN_MAX = (0, 20)

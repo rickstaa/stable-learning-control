@@ -17,10 +17,10 @@ from numbers import Number
 
 # Import os.path as osp
 import gym
-import machine_learning_control.control.algos.sac.core as core
+import machine_learning_control.control.algos.pytorch.sac.core as core
 import numpy as np
 import torch
-from machine_learning_control.control.algos.common.buffers import ReplayBuffer
+from machine_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.gym_utils import (
     is_continuous_space,
     is_discrete_space,
@@ -48,9 +48,10 @@ global t  # TODO: Make attribute out of this
 # TODO: Add additional config file that can be loaded from argument
 # FIXME: The learning rate became negative!
 
+# TODO: Distinction between pytorch and tf
 RUN_DB_FILE = os.path.abspath(
     os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "../cfg/_cfg/sac_last_run.json"
+        os.path.dirname(os.path.dirname(__file__)), "../../cfg/_cfg/sac_last_run.json"
     )
 )
 

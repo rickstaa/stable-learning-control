@@ -19,7 +19,7 @@ from textwrap import dedent
 import cloudpickle
 import numpy as np
 import psutil
-from machine_learning_control.control.user_config import (
+from machine_learning_control.user_config import (
     DEFAULT_DATA_DIR,
     DEFAULT_SHORTHAND,
     FORCE_DATESTAMP,

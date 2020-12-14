@@ -9,7 +9,9 @@ stand_alone_ns_pkgs = ["simzoo"]
 # Add extra virtual shortened package for each stand-alone namespace package
 # NOTE: This only works if you don't have a __init__.py file in your parent folder and
 # stand alone_ns_pkgs folder.
-PACKAGES = find_namespace_packages(include=["machine_learning_control*"])
+PACKAGES = find_namespace_packages(
+    include=["machine_learning_control*"], exclude=["*tests"]
+)
 redundant_namespaces = [
     pkg
     for pkg in PACKAGES

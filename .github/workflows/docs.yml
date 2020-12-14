@@ -1,0 +1,49 @@
+# Github action that checks if the documentation still builds
+name: "Pull Request Docs Check"
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+    branches:
+      - main
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mlc repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 1
+      - name: Install system dependencies
+        run: sudo apt-get install libopenmpi-dev
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Cache python environment
+        uses: actions/cache@v2
+        id: cache-python-env
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev_requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - name: Install python dependencies from the requirements file
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
+        run: |
+          pip install --upgrade --upgrade-strategy eager -r dev_requirements.txt -e .
+      - name: Install the mlc package
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
+        run: |
+          pip install -e .
+      - name: Check if documentation builds
+      - uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+      - name: Upload build documentation
+        uses: actions/upload-artifact@v1
+        with:
+          name: DocumentationHTML
+          path: docs/_build/html/
