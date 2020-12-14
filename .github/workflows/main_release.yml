@@ -1,7 +1,0 @@
-# Main realse CI config file
-# Note: For local testing with https://github.com/nektos/act use the
-# `sudo act -P ubuntu-latest=nektos/act-environments-ubuntu:18.04` command.
-name: MLC release CI
-on:
-  # Trigger the workflow on release.
-  release:
