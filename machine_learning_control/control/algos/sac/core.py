@@ -16,6 +16,7 @@ from machine_learning_control.control.utils.helpers import mlp, clamp
 
 # TODO: RENAME TO SAC
 # TODO: Change naming of action limit
+# TODO: Add ability to set output activation
 
 
 class SquashedGaussianMLPActor(nn.Module):

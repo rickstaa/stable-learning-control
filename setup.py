@@ -15,17 +15,16 @@ date_files_relative_path = os.path.join(
     relative_site_packages, "machine_learning_control"
 )
 
-# Additional python requirements that could not be specified in the package.xml
-requirements = [
-    "gym",
-    "matplotlib",
-    "numpy",
-    "torch",
-    "joblib",
-    "tensorboard",
-    "mpi4py",
-    "psutil",
-    "tqdm",
+# Add extra virtual shortened package for each stand-alone namespace package
+# NOTE: This only works if you don't have a __init__.py file in your parent folder and
+# stand alone_ns_pkgs folder.
+PACKAGES = find_namespace_packages(
+    include=["machine_learning_control*"], exclude=["*tests"]
+)
+redundant_namespaces = [
+    pkg
+    for pkg in PACKAGES
+    if pkg in [PACKAGES[0] + "." + item + "." + item for item in stand_alone_ns_pkgs]
 ]
 
 # Set up logger

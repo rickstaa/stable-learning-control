@@ -18,10 +18,7 @@ import time
 import zlib
 
 import psutil
-import numpy as np
-from tqdm import trange
-
-from machine_learning_control.control.user_config import (
+from machine_learning_control.user_config import (
     DEFAULT_DATA_DIR,
     FORCE_DATESTAMP,
     DEFAULT_SHORTHAND,
