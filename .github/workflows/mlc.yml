@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: reviewdog/action-misspell@v1
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
   alex: # Checks docs for inconsiderate writing
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: reviewdog/action-alex@v1
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
   markdown-lint: # Lints the markdown code
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: reviewdog/action-black@v1
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
   flake8: # Lints python code
@@ -81,7 +81,7 @@ jobs:
         run: |
           pip install -e .
       - name: flake8 Lint
-        uses: reviewdog/action-flake8
+        uses: reviewdog/action-flake8@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   python-tests:
