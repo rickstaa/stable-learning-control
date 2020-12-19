@@ -36,7 +36,7 @@ jobs:
         uses: reviewdog/action-remark-lint@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
+          reporter: github-check
           level: warning
   black: # Check python code format
     name: runner / black
@@ -46,7 +46,7 @@ jobs:
       - uses: reviewdog/action-black@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
+          reporter: github-check
           level: warning
   flake8: # Lints python code
     name: runner / flake8
