@@ -4,29 +4,34 @@ This module was cloned from the
 `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/run_utils.py>`_.
 """
 
-import sys
 import base64
-import cloudpickle
 import json
 import os
 import os.path as osp
 import string
 import subprocess
-from subprocess import CalledProcessError
-from textwrap import dedent
+import sys
 import time
 import zlib
+from subprocess import CalledProcessError
+from textwrap import dedent
 
+<<<<<<< HEAD
+=======
+import cloudpickle
+import numpy as np
+>>>>>>> add_lac_algorithm
 import psutil
 from machine_learning_control.user_config import (
     DEFAULT_DATA_DIR,
-    FORCE_DATESTAMP,
     DEFAULT_SHORTHAND,
+    FORCE_DATESTAMP,
     WAIT_BEFORE_LAUNCH,
 )
 from machine_learning_control.control.utils.logx import colorize
 from machine_learning_control.control.utils.mpi_tools import mpi_fork, msg
 from machine_learning_control.control.utils.serialization_utils import convert_json
+from tqdm import trange
 
 DIV_LINE_WIDTH = 80
 
@@ -39,8 +44,7 @@ def setup_logger_kwargs(
     data_dir=None,
     datestamp=False,
 ):
-    """
-    Sets up the output_dir for a logger and returns a dict for logger kwargs.
+    """Sets up the output_dir for a logger and returns a dict for logger kwargs.
 
     If no seed is given and datestamp is false,
 
@@ -64,21 +68,15 @@ def setup_logger_kwargs(
     ``spinup/user_config.py``.
 
     Args:
-
         exp_name (string): Name for experiment.
-
         seed (int, optional): Seed for random number generators used by experiment.
-
         save_checkpoints (bool, optional): Save checkpoints during training.
             Defaults to False.
-
         use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
             to True.
-
         data_dir (string, optional): Path to folder where results should be saved.
             Default is the ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``. Defaults
             to None.
-
         datestamp (bool, optional): Whether to include a date and timestamp in the
             name of the save directory. Defaults to False.
 
@@ -93,8 +91,8 @@ def setup_logger_kwargs(
     ymd_time = time.strftime("%Y-%m-%d_") if datestamp else ""
     relpath = "".join([ymd_time, exp_name])
 
+    # Make a seed-specific subfolder in the experiment directory.
     if seed is not None:
-        # Make a seed-specific subfolder in the experiment directory.
         if datestamp:
             hms_time = time.strftime("%Y-%m-%d_%H-%M-%S")
             subfolder = "".join([hms_time, "-", exp_name, "_s", str(seed)])
@@ -115,8 +113,7 @@ def setup_logger_kwargs(
 def call_experiment(
     exp_name, thunk, seed=0, num_cpu=1, data_dir=None, datestamp=False, **kwargs
 ):
-    """
-    Run a function (thunk) with hyperparameters (kwargs), plus configuration.
+    """Run a function (thunk) with hyperparameters (kwargs), plus configuration.
 
     This wraps a few pieces of functionality which are useful when you want
     to run many experiments in sequence, including logger configuration and
@@ -135,23 +132,16 @@ def call_experiment(
     directly here---to avoid leaking state between successive experiments.
 
     Args:
-
         exp_name (string): Name for experiment.
-
         thunk (callable): A python function.
-
         seed (int): Seed for random number generators.
-
         num_cpu (int): Number of MPI processes to split into. Also accepts
             'auto', which will set up as many procs as there are cpus on
             the machine.
-
         data_dir (string): Used in configuring the logger, to decide where
             to store experiment results. Note: if left as None, data_dir will
             default to ``DEFAULT_DATA_DIR`` from ``spinup/user_config.py``.
-
         **kwargs: All kwargs to pass to thunk.
-
     """
 
     # Determine number of CPU cores to run on
@@ -261,17 +251,26 @@ def call_experiment(
 
 
 def all_bools(vals):
+    """Check if list contains only strings.
+
+    Args:
+        vals (list): List with values.
+
+    Returns:
+        bool: Boolean specifying the result.
+    """
     return all([isinstance(v, bool) for v in vals])
 
 
 def valid_str(v):
-    """
-    Convert a value or values to a string which could go in a filepath.
+    """Convert a value or values to a string which could go in a filepath.
 
     Partly based on `this gist`_.
 
     .. _`this gist`: https://gist.github.com/seanh/93666
 
+    Args:
+        vals (list): List with values.
     """
     if hasattr(v, "__name__"):
         return valid_str(v.__name__)
@@ -288,11 +287,15 @@ def valid_str(v):
 
 
 class ExperimentGrid:
-    """
-    Tool for running many experiments given hyperparameter ranges.
+    """Tool for running many experiments given hyperparameter ranges.
     """
 
     def __init__(self, name=""):
+        """Initiate object.
+
+        Args:
+            name (str): Experimental grid id.
+        """
         self.keys = []
         self.vals = []
         self.shs = []
@@ -300,6 +303,11 @@ class ExperimentGrid:
         self.name(name)
 
     def name(self, _name):
+        """Validate grid id.
+
+        Args:
+            _name (object): Input object.
+        """
         assert isinstance(_name, str), "Name has to be a string."
         self._name = _name
 
@@ -342,10 +350,18 @@ class ExperimentGrid:
         print("=" * DIV_LINE_WIDTH)
 
     def _default_shorthand(self, key):
-        # Create a default shorthand for the key, built from the first
-        # three letters of each colon-separated part.
-        # But if the first three letters contains something which isn't
-        # alphanumeric, shear that off.
+        """Create grid key shorthands.
+
+        Create a default shorthand for the key, built from the first three letters of
+        each colon-separated part. But if the first three letters contains something
+        which isn't alphanumeric, shear that off.
+
+        Args:
+            key (string): Full grid key name.
+
+        Returns:
+            str: Generated shorthand.
+        """
         valid_chars = "%s%s" % (string.ascii_letters, string.digits)
 
         def shear(x):
@@ -355,8 +371,7 @@ class ExperimentGrid:
         return sh
 
     def add(self, key, vals, shorthand=None, in_name=False):
-        """
-        Add a parameter (key) to the grid config, with potential values (vals).
+        """Add a parameter (key) to the grid config, with potential values (vals).
 
         By default, if a shorthand isn't given, one is automatically generated
         from the key using the first three letters of each colon-separated
@@ -365,13 +380,10 @@ class ExperimentGrid:
 
         Args:
             key (string): Name of parameter.
-
             vals (value or list of values): Allowed values of parameter.
-
             shorthand (string): Optional, shortened name of parameter. For
                 example, maybe the parameter ``steps_per_epoch`` is shortened
                 to ``steps``.
-
             in_name (bool): When constructing variant names, force the
                 inclusion of this parameter into the name.
         """
@@ -389,8 +401,7 @@ class ExperimentGrid:
         self.in_names.append(in_name)
 
     def variant_name(self, variant):
-        """
-        Given a variant (dict of valid param/value pairs), make an exp_name.
+        """Given a variant (dict of valid param/value pairs), make an exp_name.
 
         A variant's name is constructed as the grid name (if you've given it
         one), plus param names (or shorthands if available) and values
@@ -444,8 +455,14 @@ class ExperimentGrid:
         return var_name.lstrip("_")
 
     def _variants(self, keys, vals):
-        """
-        Recursively builds list of valid variants.
+        """Recursively builds list of valid variants.
+
+        Args:
+            keys (object): Hyperparameter key name.
+            vals (object): Grid value.
+
+        Returns:
+            list: List of valid variants.
         """
         if len(keys) == 1:
             pre_variants = [dict()]
@@ -462,8 +479,7 @@ class ExperimentGrid:
         return variants
 
     def variants(self):
-        """
-        Makes a list of dicts, where each dict is a valid config in the grid.
+        """Makes a list of dicts, where each dict is a valid config in the grid.
 
         There is special handling for variant parameters whose names take
         the form
@@ -532,8 +548,7 @@ class ExperimentGrid:
         return new_variants
 
     def run(self, thunk, num_cpu=1, data_dir=None, datestamp=False):
-        """
-        Run each variant in the grid with function 'thunk'.
+        """Run each variant in the grid with function 'thunk'.
 
         Note: 'thunk' must be either a callable function, or a string. If it is
         a string, it must be the name of a parameter whose values are all
@@ -617,14 +632,3 @@ class ExperimentGrid:
                 datestamp=datestamp,
                 **var,
             )
-
-
-def test_eg():
-    eg = ExperimentGrid()
-    eg.add("test:a", [1, 2, 3], "ta", True)
-    eg.add("test:b", [1, 2, 3])
-    eg.add("some", [4, 5])
-    eg.add("why", [True, False])
-    eg.add("huh", 5)
-    eg.add("no", 6, in_name=True)
-    return eg.variants()

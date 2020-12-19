@@ -8,8 +8,8 @@ import os
 import subprocess
 import sys
 
-from mpi4py import MPI
 import numpy as np
+from mpi4py import MPI
 
 
 def mpi_fork(n, bind_to_core=False):
@@ -24,7 +24,6 @@ def mpi_fork(n, bind_to_core=False):
 
     Args:
         n (int): Number of process to split into.
-
         bind_to_core (bool, optional): Bind each MPI process to a core. Defaults to False.
     """
     if n <= 1:
@@ -41,7 +40,19 @@ def mpi_fork(n, bind_to_core=False):
 
 
 def msg(m, string=""):
+    """Send message from one MPI process to the other.
+
+    Args:
+        m (string): Message you want to send.
+        string (str, optional): Additional process description. Defaults to "".
+    """
     print(("Message from %d: %s \t " % (MPI.COMM_WORLD.Get_rank(), string)) + str(m))
+
+
+def pprint(input_str="", end="\n", comm=MPI.COMM_WORLD):
+    """Print for MPI parallel programs: Only rank 0 prints *str*."""
+    if comm.rank == 0:
+        print(str(input_str) + end)
 
 
 def proc_id():
@@ -50,19 +61,47 @@ def proc_id():
 
 
 def allreduce(*args, **kwargs):
+    """Reduced results of a operation across all processes.
+
+    Args:
+        *args: All args to pass to thunk.
+        **kwargs: All kwargs to pass to thunk.
+
+    Returns:
+        object: Result object.
+    """
     return MPI.COMM_WORLD.Allreduce(*args, **kwargs)
 
 
 def num_procs():
-    """Count active MPI processes."""
+    """Count active MPI processes.
+
+    Returns:
+        int: The number of mpi processes.
+    """
     return MPI.COMM_WORLD.Get_size()
 
 
 def broadcast(x, root=0):
+    """Broadcast variable to other MPI processes.
+
+    Args:
+        x (object): Variable you want to broadcast.
+        root (int, optional): Rank of the root process. Defaults to 0.
+    """
     MPI.COMM_WORLD.Bcast(x, root=root)
 
 
 def mpi_op(x, op):
+    """Perform a MPI operation.
+
+    Args:
+        x (object): Python variable.
+        op (mpi4py.MPI.Op): Operation type
+
+    Returns:
+        object: Reduced mpi operation result.
+    """
     x, scalar = ([x], True) if np.isscalar(x) else (x, False)
     x = np.asarray(x, dtype=np.float32)
     buff = np.zeros_like(x, dtype=np.float32)
@@ -71,11 +110,26 @@ def mpi_op(x, op):
 
 
 def mpi_sum(x):
+    """Take the sum of a scalar or vector over MPI processes.
+
+    Args:
+        x (object): Python variable.
+
+    Returns:
+        object: Reduced sum.
+    """
     return mpi_op(x, MPI.SUM)
 
 
 def mpi_avg(x):
-    """Average a scalar or vector over MPI processes."""
+    """Average a scalar or vector over MPI processes.
+
+    Args:
+        x (object): Python variable.
+
+    Returns:
+        object: Reduced average.
+    """
     return mpi_sum(x) / num_procs()
 
 
@@ -85,9 +139,11 @@ def mpi_statistics_scalar(x, with_min_and_max=False):
     Args:
         x: An array containing samples of the scalar to produce statistics
             for.
-
         with_min_and_max (bool, optional): If true, return min and max of x in
             addition to mean and std. Defaults to False.
+
+    Returns:
+        tuple: Reduced mean and standard deviation.
     """
     x = np.array(x, dtype=np.float32)
     global_sum, global_n = mpi_sum([np.sum(x), len(x)])

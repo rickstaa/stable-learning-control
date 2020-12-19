@@ -1,10 +1,2 @@
-gym==0.17.2
-matplotlib==3.3.1
-numpy
-torch
-joblib
-tensorboard>=1.15
-mpi4py
-psutil
-tqdm
-pytest
+# The pinned down dependencies are found under the [build] category of the setup.py file.
+-e ./[build]
