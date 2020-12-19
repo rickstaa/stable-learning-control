@@ -11,7 +11,7 @@ In this section, we will show that
 
     \nabla_{\theta} J(\pi_{\theta}) &= \underE{\tau \sim \pi_{\theta}}{\sum_{t=0}^{T} \Big( \nabla_{\theta} \log \pi_{\theta}(a_t |s_t) \Big) Q^{\pi_{\theta}}(s_t, a_t)},
 
-for the finite-horizon undiscounted return setting. (An analagous result holds in the infinite-horizon discounted case using basically the same proof.)
+for the finite-horizon undiscounted return setting. (An analogous result holds in the infinite-horizon discounted case using basically the same proof.)
 
 
 The proof of this claim depends on the `law of iterated expectations`_. First, let's rewrite the expression for the policy gradient, starting from the reward-to-go form (using the notation :math:`\hat{R}_t = \sum_{t'=t}^T R(s_t', a_t', s_{t'+1})` to help shorten things):
@@ -39,7 +39,7 @@ In Markov Decision Processes, the future only depends on the most recent state a
 
     \underE{\tau_{t:} \sim \pi_{\theta}}{ \left. \hat{R}_t \right| \tau_{:t}} = \underE{\tau_{t:} \sim \pi_{\theta}}{ \left. \hat{R}_t \right| s_t, a_t},
 
-which is the *definition* of :math:`Q^{\pi_{\theta}}(s_t, a_t)`: the expected return, starting from state :math:`s_t` and action :math:`a_t`, when acting on-policy for the rest of the trajectory. 
+which is the *definition* of :math:`Q^{\pi_{\theta}}(s_t, a_t)`: the expected return, starting from state :math:`s_t` and action :math:`a_t`, when acting on-policy for the rest of the trajectory.
 
 The result follows immediately.
 

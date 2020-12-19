@@ -81,7 +81,7 @@ jobs:
         run: |
           pip install -e .
       - name: flake8 Lint
-        uses: reviewdog/flake8@v2
+        uses: reviewdog/action-flake8
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   python-tests:

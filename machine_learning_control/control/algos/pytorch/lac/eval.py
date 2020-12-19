@@ -142,7 +142,7 @@ def evaluation(
     policy_path, env_name, env, env_params, eval_params, policy, disturber=None
 ):
 
-    # Retrieve disturber and action space dimention
+    # Retrieve disturber and action space dimension
     disturbance_step = get_disturbance_function(env_name)
     a_dim = env.action_space.shape[0]
     a_upperbound = env.action_space.high
