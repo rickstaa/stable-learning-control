@@ -80,6 +80,8 @@ jobs:
         uses: reviewdog/action-flake8@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
   python-tests:
     name: python-tests (Testing)
     runs-on: ubuntu-latest
