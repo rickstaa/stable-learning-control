@@ -1,3 +1,0 @@
-[submodule "machine_learning_control/simzoo"]
-	path = machine_learning_control/simzoo
-	url = ../simzoo.git
