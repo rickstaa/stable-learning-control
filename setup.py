@@ -1,8 +1,9 @@
 """Setup file for the 'machine_learning_control' python package.
 """
 
-from setuptools import setup, find_namespace_packages
 import re
+
+from setuptools import find_namespace_packages, setup
 
 stand_alone_ns_pkgs = ["simzoo"]
 
