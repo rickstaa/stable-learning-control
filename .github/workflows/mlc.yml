@@ -37,7 +37,7 @@ jobs:
           submodules: true
           fetch-depth: 2
       - name: Check markdown code quality using remark-lint
-        uses: reviewdog/action-remark-lint@master # TODO: Fix version
+        uses: reviewdog/action-remark-lint@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
@@ -50,7 +50,7 @@ jobs:
       - uses: reviewdog/action-black@v1
         with:
           github_token: ${{ secrets.github_token }}
-          reporter: github-pr-check
+          reporter: github-pr-review
           level: warning
   flake8: # Lints python code
     name: runner / flake8
