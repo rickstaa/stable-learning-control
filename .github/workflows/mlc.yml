@@ -68,15 +68,12 @@ jobs:
         id: cache-python-env
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev_requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-      - name: Install python dependencies from the requirements file
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}
+      - name: Update pip
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-          pip install --upgrade --upgrade-strategy eager -r dev_requirements.txt -e .
-      - name: Install the mlc package
+          pip install --upgrade --upgrade-strategy eager
+      - name: Install the mlc package with its dependencies
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install -e .
@@ -108,12 +105,12 @@ jobs:
         id: cache-python-env
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev_requirements.txt') }}
-      - name: Install python dependencies from the requirements file
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}
+      - name: Update pip
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-          pip install --upgrade --upgrade-strategy eager -r dev_requirements.txt -e .
-      - name: Install the mlc package
+          pip install --upgrade --upgrade-strategy eager
+      - name: Install the mlc package with its dependencies
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install -e .
