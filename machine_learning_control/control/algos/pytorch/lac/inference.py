@@ -7,11 +7,11 @@ import numpy as np
 import torch
 
 # ENV_NAME = "Ex3_EKF-v0"
-ENV_NAME = "Oscillator-v0"
+ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Hopper-v2"
 # MAX_EP_LEN = 200
 # MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/ex3_ekf-v0/runs/run_1600718353/pyt_save/model.pt"  # Ex3 env
-MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/oscillator-v0/runs/run_1600718271/pyt_save/model.pt"  # Oscillator env
+MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/Oscillator-v1/runs/run_1600718271/pyt_save/model.pt"  # Oscillator env
 EP = 1000
 
 # TODO: Change number
@@ -53,7 +53,7 @@ for i in range(int(T / env.dt)):
     t1.append(i * env.dt)
 print("Finished oscillator environment simulation.")
 
-if ENV_NAME == "Oscillator-v0":
+if ENV_NAME == "Oscillator-v1":
     # Plot results
     # observations = (m1, m2, m3, p1, p2, p3, r1, p1 - r1)
     print("Plot results.")

@@ -10,6 +10,7 @@ runs/
 build/
 dist/
 data/
+pytest/
 
 # Files to ignore
 .coverage

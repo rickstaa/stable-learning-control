@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
-# ENV_NAME = "Oscillator-v0"
+# ENV_NAME = "Oscillator-v1"
 ENV_NAME = "Ex3_EKF-v0"
 # ENV_NAME = "Hopper-v2"
 # MAX_EP_LEN = 200
@@ -32,7 +32,7 @@ with open(RUN_DB_FILE, "r") as f:
 LAST_RUN = lines[0]  # FIXME: MAKE READ ONLY FIRST LINE
 # MODEL_PATH = os.path.abspath(
 #     os.path.join(
-#         "/home/ricks/Development/machine_learning_control_ws/src/data/sac/oscillator-v0/runs/",
+#         "/home/ricks/Development/machine_learning_control_ws/src/data/sac/Oscillator-v1/runs/",
 #         LAST_RUN,
 #         "pyt_save/model.pt",
 #     )

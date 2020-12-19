@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
-ENV_NAME = "Oscillator-v0"
+ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Hopper-v2"
 # MAX_EP_LEN = 200
-MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/oscillator-v0/runs/run_1598746638/pyt_save/model.pt"
+MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/lac/oscillator-v1/runs/run_1598746638/pyt_save/model.pt"
 # MODEL_PATH = "/home/ricks/Development/machine_learning_control_ws/src/data/sac/hopper-v2/runs/run_1597959914/pyt_save/model.pt"
 EP = 1000
 

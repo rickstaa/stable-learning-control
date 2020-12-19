@@ -1238,13 +1238,13 @@ if __name__ == "__main__":
         "--env",
         type=str,
         default="Ex3_EKF-v0",
-        help="the gym env (default: Oscillator-v0)",
+        help="the gym env (default: Oscillator-v1)",
     )  # EX3 env
     # parser.add_argument(
     #     "--env",
     #     type=str,
-    #     default="Oscillator-v0",
-    #     help="the gym env (default: Oscillator-v0)",
+    #     default="Oscillator-v1",
+    #     help="the gym env (default: Oscillator-v1)",
     # )
     parser.add_argument(
         "--hid_a",

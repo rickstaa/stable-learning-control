@@ -1,5 +1,6 @@
 # TODOS
 
 -   [ ] Add gpu support to SAC.
--   [ ] Add MPI to SAC/ LAC
--   [ ] Add LAC algorithm
+-   [ ] Add MPI to SAC/ LAC.
+-   [ ] Add LAC algorithm.
+-   [ ] Set tensorflow dependency as optional.

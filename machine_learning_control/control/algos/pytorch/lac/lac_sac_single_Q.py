@@ -1125,8 +1125,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--env",
         type=str,
-        default="Oscillator-v0",
-        help="the gym env (default: Oscillator-v0)",
+        default="Oscillator-v1",
+        help="the gym env (default: Oscillator-v1)",
     )
     parser.add_argument(
         "--hid-a",

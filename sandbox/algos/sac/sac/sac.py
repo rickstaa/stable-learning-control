@@ -473,7 +473,7 @@ if __name__ == "__main__":
         # default="HalfCheeta/h-v2"
         "--env",
         type=str,
-        default="Oscillator-v0",
+        default="Oscillator-v1",
     )  # https://github.com/openai/gym/blob/master/gym/envs/mujoco/assets/half_cheetah.xml
     parser.add_argument("--hid", type=int, default=256)
     parser.add_argument("--l", type=int, default=2)

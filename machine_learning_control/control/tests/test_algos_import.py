@@ -5,8 +5,8 @@ successfully imported.
 import pytest
 
 ALGOS = [
-    "machine_learning_control.control.algos.lac.lac",
-    "machine_learning_control.control.algos.sac.sac",
+    "machine_learning_control.control.algos.pytorch.lac.lac",
+    "machine_learning_control.control.algos.pytorch.sac.sac",
 ]
 
 
