@@ -13,8 +13,8 @@ jobs:
       - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
-          submodules: true
-          fetch-depth: 1
+          submodules: recursive
+          token: ${{ secrets.GA_SUB }}
       - name: Install system dependencies
         run: sudo apt-get install libopenmpi-dev
       - name: Set up Python environment
@@ -26,18 +26,14 @@ jobs:
         id: cache-python-env
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev_requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-      - name: Install python dependencies from the requirements file
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}
+      - name: Update pip
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install the mlc package with its dependencies
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-          pip install --upgrade --upgrade-strategy eager -r dev_requirements.txt -e .
-      - name: Install the mlc package
-        if: steps.cache-python-env.outputs.cache-hit != 'true'
-        run: |
-          pip install -e .
+            pip install -e .[docs]
       - name: Check if documentation builds
         uses: ammaraskar/sphinx-action@master
         with:
