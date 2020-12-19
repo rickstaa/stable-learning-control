@@ -22,12 +22,17 @@ import numpy as np
 import torch
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.gym_utils import (
-    is_continuous_space, is_discrete_space)
+    is_continuous_space,
+    is_discrete_space,
+)
 from machine_learning_control.control.utils.helpers import (
-    calc_gamma_lr_decay, calc_linear_lr_decay, clamp, count_vars)
+    calc_gamma_lr_decay,
+    calc_linear_lr_decay,
+    clamp,
+    count_vars,
+)
 from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.run_utils import \
-    setup_logger_kwargs
+from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from torch.optim import Adam
 
 SCALE_lambda_MIN_MAX = (0, 20)

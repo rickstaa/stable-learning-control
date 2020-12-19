@@ -15,43 +15,19 @@ import time
 from copy import deepcopy
 from numbers import Number
 
-# Import os.path as osp
 import gym
-<<<<<<< HEAD:machine_learning_control/control/algos/sac/sac.py
-<<<<<<< HEAD:machine_learning_control/control/algos/sac/sac.py
-import numpy as np
-import torch
-from torch.optim import Adam
-
-import machine_learning_control.control.algos.sac.core as core
-from machine_learning_control.control.algos.common.buffers import ReplayBuffer
-from machine_learning_control.control.utils.logx import EpochLogger
-=======
 import machine_learning_control.control.algos.pytorch.sac.core as core
 import numpy as np
 import torch
-=======
-import machine_learning_control.control.algos.pytorch.sac.core as core
-import numpy as np
-import torch
->>>>>>> add_lac_algorithm:machine_learning_control/control/algos/pytorch/sac/sac.py
-from machine_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
+from machine_learning_control.control.algos.pytorch.common.buffers import \
+    ReplayBuffer
 from machine_learning_control.control.utils.gym_utils import (
-    is_continuous_space,
-    is_discrete_space,
-)
-<<<<<<< HEAD:machine_learning_control/control/algos/sac/sac.py
->>>>>>> 3a85ad4... :green_heart: Updates github actions:machine_learning_control/control/algos/pytorch/sac/sac.py
-=======
->>>>>>> add_lac_algorithm:machine_learning_control/control/algos/pytorch/sac/sac.py
+    is_continuous_space, is_discrete_space)
 from machine_learning_control.control.utils.helpers import (
-    calc_gamma_lr_decay,
-    calc_linear_lr_decay,
-    clamp,
-    count_vars,
-)
+    calc_gamma_lr_decay, calc_linear_lr_decay, count_vars)
 from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
+from machine_learning_control.control.utils.run_utils import \
+    setup_logger_kwargs
 from torch.optim import Adam
 
 global t  # TODO: Make attribute out of this
@@ -492,8 +468,7 @@ def sac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer,
-            lr_lambda=lr_decay_c,
+            q_optimizer, lr_lambda=lr_decay_c,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -587,8 +562,7 @@ def sac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"],
-                Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
             )
 
         # Finally, update target networks by polyak averaging.
@@ -655,7 +629,7 @@ def sac(
             a = env.action_space.sample()
 
         # Step the env
-        # QUESTION: Abreviations or action ext next_state etc
+        # QUESTION: Abreviations or action ext next_state ect
         o2, r, d, _ = env.step(a)
         ep_ret += r  # Increase episode reward
         ep_len += 1  # Increase episode length

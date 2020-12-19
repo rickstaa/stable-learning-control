@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++)
+        filterItems[i].hidden = false;
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>results.html</h1>
+    <p>Report generated on 19-Dec-2020 at 14:00:48 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>Packages</td>
+        <td>{"pluggy": "0.13.1", "py": "1.10.0", "pytest": "6.2.1"}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Linux-5.4.0-58-generic-x86_64-with-glibc2.10</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{"cov": "2.10.1", "html": "3.1.1", "metadata": "1.11.0"}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.8.5</td></tr></table>
+    <h2>Summary</h2>
+    <p>0 tests ran in 1.89 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">0 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">26 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/run.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/run.py:16: in &lt;module&gt;<br/>    from machine_learning_control.control.utils.run_utils import ExperimentGrid<br/><span class="error">E     File &quot;/home/ricks/miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/utils/run_utils.py&quot;, line 19</span><br/><span class="error">E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br/><span class="error">E       ^</span><br/><span class="error">E   SyntaxError: invalid syntax</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/__init__.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;<br/>    import tensorflow as tf<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;tensorflow&#x27;</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/lac/inference copy.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:121: in spec<br/>    return self.env_specs[id]<br/><span class="error">E   KeyError: &#x27;Oscillator-v0&#x27;</span><br/><br/>During handling of the above exception, another exception occurred:<br/>machine_learning_control/control/algos/pytorch/lac/inference copy.py:19: in &lt;module&gt;<br/>    env = gym.make(ENV_NAME)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:145: in make<br/>    return registry.make(id, **kwargs)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:89: in make<br/>    spec = self.spec(path)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:129: in spec<br/>    raise error.DeprecatedEnv(&#x27;Env {} not found (valid versions include {})&#x27;.format(id, matching_envs))<br/><span class="error">E   gym.error.DeprecatedEnv: Env Oscillator-v0 not found (valid versions include [&#x27;Oscillator-v1&#x27;])</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/lac/inference.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:121: in spec<br/>    return self.env_specs[id]<br/><span class="error">E   KeyError: &#x27;Oscillator-v0&#x27;</span><br/><br/>During handling of the above exception, another exception occurred:<br/>machine_learning_control/control/algos/pytorch/lac/inference.py:20: in &lt;module&gt;<br/>    env = gym.make(ENV_NAME)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:145: in make<br/>    return registry.make(id, **kwargs)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:89: in make<br/>    spec = self.spec(path)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:129: in spec<br/>    raise error.DeprecatedEnv(&#x27;Env {} not found (valid versions include {})&#x27;.format(id, matching_envs))<br/><span class="error">E   gym.error.DeprecatedEnv: Env Oscillator-v0 not found (valid versions include [&#x27;Oscillator-v1&#x27;])</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/lac/lac copy.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/pytorch/lac/lac copy.py:20: in &lt;module&gt;<br/>    import machine_learning_control.control.algos.lac.core as core<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;<br/>    import tensorflow as tf<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;tensorflow&#x27;</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/lac/lac copy_before_lyapunov_critic_fix.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/pytorch/lac/lac copy_before_lyapunov_critic_fix.py:20: in &lt;module&gt;<br/>    import machine_learning_control.control.algos.lac.core as core<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;<br/>    import tensorflow as tf<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;tensorflow&#x27;</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/lac/lac copy_copy_before_lambda_debug.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/pytorch/lac/lac copy_copy_before_lambda_debug.py:20: in &lt;module&gt;<br/>    import machine_learning_control.control.algos.lac.core as core<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;<br/>    import tensorflow as tf<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;tensorflow&#x27;</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/lac/lac.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/pytorch/lac/lac.py:20: in &lt;module&gt;<br/>    import machine_learning_control.control.algos.pytorch.lac.core as core<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;<br/>    import tensorflow as tf<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;tensorflow&#x27;</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/lac/lac_sac_single_Q.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/pytorch/lac/lac_sac_single_Q.py:20: in &lt;module&gt;<br/>    import machine_learning_control.control.algos.lac.core as core<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;<br/>    import tensorflow as tf<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;tensorflow&#x27;</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/sac/core.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/runner.py:311: in from_call<br/>    result: Optional[TResult] = func()<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/runner.py:341: in &lt;lambda&gt;<br/>    call = CallInfo.from_call(lambda: list(collector.collect()), &quot;collect&quot;)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/doctest.py:532: in collect<br/>    module = import_path(self.fspath)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/pathlib.py:551: in import_path<br/>    raise ImportPathMismatchError(module_name, module_file, path)<br/><span class="error">E   _pytest.pathlib.ImportPathMismatchError: (&#x27;core&#x27;, &#x27;/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/pytorch/lac/core.py&#x27;, PosixPath(&#x27;/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/pytorch/sac/core.py&#x27;))</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/sac/inference copy.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/pytorch/sac/inference copy.py:29: in &lt;module&gt;<br/>    with open(RUN_DB_FILE, &quot;r&quot;) as f:<br/><span class="error">E   FileNotFoundError: [Errno 2] No such file or directory: &#x27;/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/cfg/_cfg/sac_last_run.json&#x27;</span><br/> --------------------------------Captured stdout--------------------------------- <br/>/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/cfg/_cfg/sac_last_run.json
+<br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/sac/inference.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/algos/pytorch/sac/inference.py:29: in &lt;module&gt;<br/>    with open(RUN_DB_FILE, &quot;r&quot;) as f:<br/><span class="error">E   FileNotFoundError: [Errno 2] No such file or directory: &#x27;/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/cfg/_cfg/sac_last_run.json&#x27;</span><br/> --------------------------------Captured stdout--------------------------------- <br/>/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/cfg/_cfg/sac_last_run.json
+<br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/algos/pytorch/sac/sac.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:975: in _find_and_load_unlocked<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:671: in _load_unlocked<br/>    ???<br/>&lt;frozen importlib._bootstrap_external&gt;:779: in exec_module<br/>    ???<br/>&lt;frozen importlib._bootstrap_external&gt;:916: in get_code<br/>    ???<br/>&lt;frozen importlib._bootstrap_external&gt;:846: in source_to_code<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:219: in _call_with_frames_removed<br/>    ???<br/><span class="error">E     File &quot;/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/pytorch/sac/sac.py&quot;, line 20</span><br/><span class="error">E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD:machine_learning_control/control/algos/sac/sac.py</span><br/><span class="error">E       ^</span><br/><span class="error">E   SyntaxError: invalid syntax</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/tests/test_eg.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">machine_learning_control/control/tests/test_eg.py:4: in &lt;module&gt;<br/>    from machine_learning_control.control.utils.run_utils import ExperimentGrid<br/><span class="error">E     File &quot;/home/ricks/miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/utils/run_utils.py&quot;, line 19</span><br/><span class="error">E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br/><span class="error">E       ^</span><br/><span class="error">E   SyntaxError: invalid syntax</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/tests/test_eg.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/python.py:578: in _importtestmodule<br/>    mod = import_path(self.fspath, mode=importmode)<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/pathlib.py:531: in import_path<br/>    importlib.import_module(module_name)<br/>../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:975: in _find_and_load_unlocked<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:671: in _load_unlocked<br/>    ???<br/>../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/assertion/rewrite.py:170: in exec_module<br/>    exec(co, module.__dict__)<br/>machine_learning_control/control/tests/test_eg.py:4: in &lt;module&gt;<br/>    from machine_learning_control.control.utils.run_utils import ExperimentGrid<br/><span class="error">E     File &quot;/home/ricks/miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/utils/run_utils.py&quot;, line 19</span><br/><span class="error">E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br/><span class="error">E       ^</span><br/><span class="error">E   SyntaxError: invalid syntax</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/gym_utils.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.gym_utils&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/helpers.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.helpers&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/logx.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.logx&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/mpi_pytorch.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.mpi_pytorch&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/mpi_tools.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.mpi_tools&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/plot.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.plot&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/run_entrypoint.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.run_entrypoint&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/run_utils.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.run_utils&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/serialization_utils.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.serialization_utils&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/test_policy.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/>&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load<br/>    ???<br/>&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked<br/>    ???<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.test_policy&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody>
+      <tbody class="error results-table-row">
+        <tr>
+          <td class="col-result">Error</td>
+          <td class="col-name">machine_learning_control/control/utils/test_policy.py::collect</td>
+          <td class="col-duration"></td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">ImportError while importing test module &#x27;/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/utils/test_policy.py&#x27;.<br/>Hint: make sure your test modules/packages have valid Python names.<br/>Traceback:<br/>../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module<br/>    return _bootstrap._gcd_import(name[level:], package, level)<br/><span class="error">E   ModuleNotFoundError: No module named &#x27;utils.test_policy&#x27;; &#x27;utils&#x27; is not a package</span><br/></div></td></tr></tbody></table></body></html>

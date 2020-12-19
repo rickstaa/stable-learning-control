@@ -22,12 +22,17 @@ import numpy as np
 import torch
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.gym_utils import (
-    is_continuous_space, is_discrete_space)
+    is_continuous_space,
+    is_discrete_space,
+)
 from machine_learning_control.control.utils.helpers import (
-    calc_gamma_lr_decay, calc_linear_lr_decay, clamp, count_vars)
+    calc_gamma_lr_decay,
+    calc_linear_lr_decay,
+    clamp,
+    count_vars,
+)
 from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.run_utils import \
-    setup_logger_kwargs
+from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from torch.optim import Adam
 
 SCALE_lambda_MIN_MAX = (0, 20)
@@ -723,12 +728,10 @@ def lac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer,
-            lr_lambda=lr_decay_c,
+            q_optimizer, lr_lambda=lr_decay_c,
         )
         l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            l_optimizer,
-            lr_lambda=lr_decay_l,
+            l_optimizer, lr_lambda=lr_decay_l,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -860,8 +863,7 @@ def lac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"],
-                Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
             )
 
         # Optimise the lagrance multiplier for the current policy

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage report</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="coverage_html.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(coverage.index_ready);
+    </script>
+</head>
+<body class="indexfile">
+<div id="header">
+    <div class="content">
+        <h1>Coverage report:
+            <span class="pc_cov">11%</span>
+        </h1>
+        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        <form id="filter_container">
+            <input id="filter" type="text" value="" placeholder="filter..." />
+        </form>
+    </div>
+</div>
+<div class="help_panel">
+    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
+    <p class="legend">Hot-keys on this page</p>
+    <div>
+    <p class="keyhelp">
+        <span class="key">n</span>
+        <span class="key">s</span>
+        <span class="key">m</span>
+        <span class="key">x</span>
+        <span class="key">c</span> &nbsp; change column sorting
+    </p>
+    </div>
+</div>
+<div id="index">
+    <table class="index">
+        <thead>
+            <tr class="tablehead" title="Click to sort">
+                <th class="name left headerSortDown shortkey_n">Module</th>
+                <th class="shortkey_s">statements</th>
+                <th class="shortkey_m">missing</th>
+                <th class="shortkey_x">excluded</th>
+                <th class="right shortkey_c">coverage</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr class="total">
+                <td class="name left">Total</td>
+                <td>2797</td>
+                <td>2476</td>
+                <td>0</td>
+                <td class="right" data-ratio="321 2797">11%</td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos___init___py.html">machine_learning_control/control/algos/__init__.py</a></td>
+                <td>4</td>
+                <td>3</td>
+                <td>0</td>
+                <td class="right" data-ratio="1 4">25%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_common_buffers_py.html">machine_learning_control/control/algos/pytorch/common/buffers.py</a></td>
+                <td>23</td>
+                <td>16</td>
+                <td>0</td>
+                <td class="right" data-ratio="7 23">30%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_core_py.html">machine_learning_control/control/algos/pytorch/lac/core.py</a></td>
+                <td>69</td>
+                <td>50</td>
+                <td>0</td>
+                <td class="right" data-ratio="19 69">28%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_eval_py.html">machine_learning_control/control/algos/pytorch/lac/eval.py</a></td>
+                <td>159</td>
+                <td>141</td>
+                <td>0</td>
+                <td class="right" data-ratio="18 159">11%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_inference copy_py.html">machine_learning_control/control/algos/pytorch/lac/inference copy.py</a></td>
+                <td>33</td>
+                <td>24</td>
+                <td>0</td>
+                <td class="right" data-ratio="9 33">27%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_inference_py.html">machine_learning_control/control/algos/pytorch/lac/inference.py</a></td>
+                <td>50</td>
+                <td>41</td>
+                <td>0</td>
+                <td class="right" data-ratio="9 50">18%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_lac copy_py.html">machine_learning_control/control/algos/pytorch/lac/lac copy.py</a></td>
+                <td>319</td>
+                <td>309</td>
+                <td>0</td>
+                <td class="right" data-ratio="10 319">3%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_lac copy_before_lyapunov_critic_fix_py.html">machine_learning_control/control/algos/pytorch/lac/lac copy_before_lyapunov_critic_fix.py</a></td>
+                <td>321</td>
+                <td>311</td>
+                <td>0</td>
+                <td class="right" data-ratio="10 321">3%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_lac copy_copy_before_lambda_debug_py.html">machine_learning_control/control/algos/pytorch/lac/lac copy_copy_before_lambda_debug.py</a></td>
+                <td>319</td>
+                <td>309</td>
+                <td>0</td>
+                <td class="right" data-ratio="10 319">3%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_lac_py.html">machine_learning_control/control/algos/pytorch/lac/lac.py</a></td>
+                <td>296</td>
+                <td>286</td>
+                <td>0</td>
+                <td class="right" data-ratio="10 296">3%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_lac_sac_single_Q_py.html">machine_learning_control/control/algos/pytorch/lac/lac_sac_single_Q.py</a></td>
+                <td>320</td>
+                <td>310</td>
+                <td>0</td>
+                <td class="right" data-ratio="10 320">3%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_logger_py.html">machine_learning_control/control/algos/pytorch/lac/logger.py</a></td>
+                <td>343</td>
+                <td>263</td>
+                <td>0</td>
+                <td class="right" data-ratio="80 343">23%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_utils_py.html">machine_learning_control/control/algos/pytorch/lac/utils.py</a></td>
+                <td>71</td>
+                <td>62</td>
+                <td>0</td>
+                <td class="right" data-ratio="9 71">13%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_lac_variant_py.html">machine_learning_control/control/algos/pytorch/lac/variant.py</a></td>
+                <td>20</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="18 20">90%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_sac_inference copy_py.html">machine_learning_control/control/algos/pytorch/sac/inference copy.py</a></td>
+                <td>42</td>
+                <td>30</td>
+                <td>0</td>
+                <td class="right" data-ratio="12 42">29%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_algos_pytorch_sac_inference_py.html">machine_learning_control/control/algos/pytorch/sac/inference.py</a></td>
+                <td>48</td>
+                <td>36</td>
+                <td>0</td>
+                <td class="right" data-ratio="12 48">25%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_tests_test_algos_import_py.html">machine_learning_control/control/tests/test_algos_import.py</a></td>
+                <td>5</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="right" data-ratio="4 5">80%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_control_tests_test_eg_py.html">machine_learning_control/control/tests/test_eg.py</a></td>
+                <td>10</td>
+                <td>9</td>
+                <td>0</td>
+                <td class="right" data-ratio="1 10">10%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_run_py.html">machine_learning_control/run.py</a></td>
+                <td>109</td>
+                <td>101</td>
+                <td>0</td>
+                <td class="right" data-ratio="8 109">7%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_simzoo___init___py.html">machine_learning_control/simzoo/simzoo/__init__.py</a></td>
+                <td>10</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="8 10">80%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_simzoo_envs___init___py.html">machine_learning_control/simzoo/simzoo/envs/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_simzoo_envs_ex3_ekf___init___py.html">machine_learning_control/simzoo/simzoo/envs/ex3_ekf/__init__.py</a></td>
+                <td>7</td>
+                <td>3</td>
+                <td>0</td>
+                <td class="right" data-ratio="4 7">57%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_simzoo_envs_ex3_ekf_ex3_ekf_py.html">machine_learning_control/simzoo/simzoo/envs/ex3_ekf/ex3_ekf.py</a></td>
+                <td>93</td>
+                <td>79</td>
+                <td>0</td>
+                <td class="right" data-ratio="14 93">15%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_simzoo_envs_oscillator___init___py.html">machine_learning_control/simzoo/simzoo/envs/oscillator/__init__.py</a></td>
+                <td>7</td>
+                <td>3</td>
+                <td>0</td>
+                <td class="right" data-ratio="4 7">57%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_simzoo_envs_oscillator_oscillator_py.html">machine_learning_control/simzoo/simzoo/envs/oscillator/oscillator.py</a></td>
+                <td>95</td>
+                <td>80</td>
+                <td>0</td>
+                <td class="right" data-ratio="15 95">16%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_simzoo_version_py.html">machine_learning_control/simzoo/simzoo/version.py</a></td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="2 2">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_simzoo_tests_test_envs_register_py.html">machine_learning_control/simzoo/tests/test_envs_register.py</a></td>
+                <td>14</td>
+                <td>5</td>
+                <td>0</td>
+                <td class="right" data-ratio="9 14">64%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_user_config_py.html">machine_learning_control/user_config.py</a></td>
+                <td>6</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="6 6">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="machine_learning_control_version_py.html">machine_learning_control/version.py</a></td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="2 2">100%</td>
+            </tr>
+        </tbody>
+    </table>
+    <p id="no_rows">
+        No items found using the specified filter.
+    </p>
+</div>
+<div id="footer">
+    <div class="content">
+        <p>
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.3</a>,
+            created at 2020-12-19 14:00 +0100
+        </p>
+    </div>
+</div>
+</body>
+</html>

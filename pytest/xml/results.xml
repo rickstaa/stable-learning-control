@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="26" failures="0" skipped="0" tests="26" time="1.889" timestamp="2020-12-19T14:00:46.388100" hostname="ricks-HP-G5-Ubuntu20"><testcase classname="" name="machine_learning_control.run" time="0.000"><error message="collection failure">machine_learning_control/run.py:16: in &lt;module&gt;
+    from machine_learning_control.control.utils.run_utils import ExperimentGrid
+E     File "/home/ricks/miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/utils/run_utils.py", line 19
+E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+E       ^
+E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="machine_learning_control.control.algos.__init__" time="0.000"><error message="collection failure">machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;
+    import tensorflow as tf
+E   ModuleNotFoundError: No module named 'tensorflow'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.lac.inference copy" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:121: in spec
+    return self.env_specs[id]
+E   KeyError: 'Oscillator-v0'
+
+During handling of the above exception, another exception occurred:
+machine_learning_control/control/algos/pytorch/lac/inference copy.py:19: in &lt;module&gt;
+    env = gym.make(ENV_NAME)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:145: in make
+    return registry.make(id, **kwargs)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:89: in make
+    spec = self.spec(path)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:129: in spec
+    raise error.DeprecatedEnv('Env {} not found (valid versions include {})'.format(id, matching_envs))
+E   gym.error.DeprecatedEnv: Env Oscillator-v0 not found (valid versions include ['Oscillator-v1'])</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.lac.inference" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:121: in spec
+    return self.env_specs[id]
+E   KeyError: 'Oscillator-v0'
+
+During handling of the above exception, another exception occurred:
+machine_learning_control/control/algos/pytorch/lac/inference.py:20: in &lt;module&gt;
+    env = gym.make(ENV_NAME)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:145: in make
+    return registry.make(id, **kwargs)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:89: in make
+    spec = self.spec(path)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/gym/envs/registration.py:129: in spec
+    raise error.DeprecatedEnv('Env {} not found (valid versions include {})'.format(id, matching_envs))
+E   gym.error.DeprecatedEnv: Env Oscillator-v0 not found (valid versions include ['Oscillator-v1'])</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.lac.lac copy" time="0.000"><error message="collection failure">machine_learning_control/control/algos/pytorch/lac/lac copy.py:20: in &lt;module&gt;
+    import machine_learning_control.control.algos.lac.core as core
+../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;
+    import tensorflow as tf
+E   ModuleNotFoundError: No module named 'tensorflow'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.lac.lac copy_before_lyapunov_critic_fix" time="0.000"><error message="collection failure">machine_learning_control/control/algos/pytorch/lac/lac copy_before_lyapunov_critic_fix.py:20: in &lt;module&gt;
+    import machine_learning_control.control.algos.lac.core as core
+../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;
+    import tensorflow as tf
+E   ModuleNotFoundError: No module named 'tensorflow'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.lac.lac copy_copy_before_lambda_debug" time="0.000"><error message="collection failure">machine_learning_control/control/algos/pytorch/lac/lac copy_copy_before_lambda_debug.py:20: in &lt;module&gt;
+    import machine_learning_control.control.algos.lac.core as core
+../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;
+    import tensorflow as tf
+E   ModuleNotFoundError: No module named 'tensorflow'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.lac.lac" time="0.000"><error message="collection failure">machine_learning_control/control/algos/pytorch/lac/lac.py:20: in &lt;module&gt;
+    import machine_learning_control.control.algos.pytorch.lac.core as core
+../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;
+    import tensorflow as tf
+E   ModuleNotFoundError: No module named 'tensorflow'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.lac.lac_sac_single_Q" time="0.000"><error message="collection failure">machine_learning_control/control/algos/pytorch/lac/lac_sac_single_Q.py:20: in &lt;module&gt;
+    import machine_learning_control.control.algos.lac.core as core
+../../../miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/algos/__init__.py:12: in &lt;module&gt;
+    import tensorflow as tf
+E   ModuleNotFoundError: No module named 'tensorflow'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.sac.core" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/runner.py:311: in from_call
+    result: Optional[TResult] = func()
+../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/runner.py:341: in &lt;lambda&gt;
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/doctest.py:532: in collect
+    module = import_path(self.fspath)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/pathlib.py:551: in import_path
+    raise ImportPathMismatchError(module_name, module_file, path)
+E   _pytest.pathlib.ImportPathMismatchError: ('core', '/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/pytorch/lac/core.py', PosixPath('/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/pytorch/sac/core.py'))</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.sac.inference copy" time="0.000"><error message="collection failure">machine_learning_control/control/algos/pytorch/sac/inference copy.py:29: in &lt;module&gt;
+    with open(RUN_DB_FILE, "r") as f:
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/cfg/_cfg/sac_last_run.json'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.sac.inference" time="0.000"><error message="collection failure">machine_learning_control/control/algos/pytorch/sac/inference.py:29: in &lt;module&gt;
+    with open(RUN_DB_FILE, "r") as f:
+E   FileNotFoundError: [Errno 2] No such file or directory: '/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/cfg/_cfg/sac_last_run.json'</error></testcase><testcase classname="" name="machine_learning_control.control.algos.pytorch.sac.sac" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:975: in _find_and_load_unlocked
+    ???
+&lt;frozen importlib._bootstrap&gt;:671: in _load_unlocked
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:779: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:916: in get_code
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:846: in source_to_code
+    ???
+&lt;frozen importlib._bootstrap&gt;:219: in _call_with_frames_removed
+    ???
+E     File "/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/algos/pytorch/sac/sac.py", line 20
+E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD:machine_learning_control/control/algos/sac/sac.py
+E       ^
+E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="machine_learning_control.control.tests.test_eg" time="0.000"><error message="collection failure">machine_learning_control/control/tests/test_eg.py:4: in &lt;module&gt;
+    from machine_learning_control.control.utils.run_utils import ExperimentGrid
+E     File "/home/ricks/miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/utils/run_utils.py", line 19
+E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+E       ^
+E   SyntaxError: invalid syntax</error><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/python.py:578: in _importtestmodule
+    mod = import_path(self.fspath, mode=importmode)
+../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/pathlib.py:531: in import_path
+    importlib.import_module(module_name)
+../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:975: in _find_and_load_unlocked
+    ???
+&lt;frozen importlib._bootstrap&gt;:671: in _load_unlocked
+    ???
+../../../miniconda3/envs/test/lib/python3.8/site-packages/_pytest/assertion/rewrite.py:170: in exec_module
+    exec(co, module.__dict__)
+machine_learning_control/control/tests/test_eg.py:4: in &lt;module&gt;
+    from machine_learning_control.control.utils.run_utils import ExperimentGrid
+E     File "/home/ricks/miniconda3/envs/test/lib/python3.8/site-packages/machine_learning_control/control/utils/run_utils.py", line 19
+E       &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+E       ^
+E   SyntaxError: invalid syntax</error></testcase><testcase classname="" name="machine_learning_control.control.utils.gym_utils" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.gym_utils'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.helpers" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.helpers'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.logx" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.logx'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.mpi_pytorch" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.mpi_pytorch'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.mpi_tools" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.mpi_tools'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.plot" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.plot'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.run_entrypoint" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.run_entrypoint'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.run_utils" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.run_utils'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.serialization_utils" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.serialization_utils'; 'utils' is not a package</error></testcase><testcase classname="" name="machine_learning_control.control.utils.test_policy" time="0.000"><error message="collection failure">../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1014: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:991: in _find_and_load
+    ???
+&lt;frozen importlib._bootstrap&gt;:970: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'utils.test_policy'; 'utils' is not a package</error><error message="collection failure">ImportError while importing test module '/home/ricks/Development/work/machine-learning-control/machine_learning_control/control/utils/test_policy.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../miniconda3/envs/test/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+E   ModuleNotFoundError: No module named 'utils.test_policy'; 'utils' is not a package</error></testcase></testsuite></testsuites>

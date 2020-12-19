@@ -22,12 +22,17 @@ import numpy as np
 import torch
 from machine_learning_control.control.algos.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.gym_utils import (
-    is_continuous_space, is_discrete_space)
+    is_continuous_space,
+    is_discrete_space,
+)
 from machine_learning_control.control.utils.helpers import (
-    calc_gamma_lr_decay, calc_linear_lr_decay, clamp, count_vars)
+    calc_gamma_lr_decay,
+    calc_linear_lr_decay,
+    clamp,
+    count_vars,
+)
 from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.run_utils import \
-    setup_logger_kwargs
+from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from torch.optim import Adam
 
 SCALE_lambda_MIN_MAX = (0, 20)
@@ -726,12 +731,10 @@ def lac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer,
-            lr_lambda=lr_decay_c,
+            q_optimizer, lr_lambda=lr_decay_c,
         )
         l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            l_optimizer,
-            lr_lambda=lr_decay_l,
+            l_optimizer, lr_lambda=lr_decay_l,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -828,7 +831,7 @@ def lac(
             **pi_info,
         )
 
-        # Unfreeze Q or l networks so you can optimise it at next DDPG step.
+        # Unfreeze Q or l networks so you can optimize it at next DDPG step.
         if use_lyapunov:
             for p in ac.l.parameters():
                 p.requires_grad = True
@@ -850,7 +853,7 @@ def lac(
             loss_log_alpha.backward()
             log_alpha_optimizer.step()
 
-            # Unfreeze Policy-networks so you can optimise it at next DDPG step.
+            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
             for p in ac.pi.parameters():
                 p.requires_grad = True
 
@@ -863,8 +866,7 @@ def lac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"],
-                Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
             )
 
         # Optimise the lagrance multiplier for the current policy
@@ -881,7 +883,7 @@ def lac(
             loss_log_labda.backward()
             log_labda_optimizer.step()
 
-            # Unfreeze Policy-networks so you can optimise it at next DDPG step.
+            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
             for p in ac.pi.parameters():
                 p.requires_grad = True
 
@@ -957,7 +959,7 @@ def lac(
             a = env.action_space.sample()
 
         # Step the env
-        # QUESTION: Abreviations or action ext next_state etc
+        # QUESTION: Abreviations or action ext next_state ect
         o2, r, d, _ = env.step(a)
         ep_ret += r  # Increase episode reward
         ep_len += 1  # Increase episode length

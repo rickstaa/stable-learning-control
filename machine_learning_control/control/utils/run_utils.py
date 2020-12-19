@@ -16,11 +16,8 @@ import zlib
 from subprocess import CalledProcessError
 from textwrap import dedent
 
-<<<<<<< HEAD
-=======
 import cloudpickle
 import numpy as np
->>>>>>> add_lac_algorithm
 import psutil
 from machine_learning_control.user_config import (
     DEFAULT_DATA_DIR,
@@ -29,7 +26,7 @@ from machine_learning_control.user_config import (
     WAIT_BEFORE_LAUNCH,
 )
 from machine_learning_control.control.utils.logx import colourize
-from machine_learning_control.control.utils.mpi_tools import mpi_fork, msg
+from machine_learning_control.control.utils.mpi_tools import mpi_fork
 from machine_learning_control.control.utils.serialization_utils import convert_json
 from tqdm import trange
 
