@@ -142,7 +142,7 @@ class Logger:
         use_tensorboard=False,
         save_checkpoints=False,
     ):
-        """Initialize a Logger.
+        """Initialise a Logger.
 
         Args:
             output_dir (string, optional): A directory for saving results to. If
@@ -281,7 +281,7 @@ class Logger:
         """Log an experiment configuration.
 
         Call this once at the top of your experiment, passing in all important
-        config vars as a dict. This will serialize the config to JSON, while
+        config vars as a dict. This will serialise the config to JSON, while
         handling anything which can't be serialised in a graceful way (writing
         as informative a string as possible).
 

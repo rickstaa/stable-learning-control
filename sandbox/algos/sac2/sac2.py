@@ -76,7 +76,7 @@ class ReplayBuffer:
 
 
 class NormalizedActions(gym.ActionWrapper):
-    """Normalize actions"""
+    """Normalise actions"""
 
     # def __init__(self, env):
     #     super().__init__(env)

@@ -9,7 +9,7 @@ import seaborn as sns
 
 DIV_LINE_WIDTH = 50
 
-# Global vars for tracking and labeling data at load time.
+# Global vars for tracking and labelling data at load time.
 exp_idx = 0
 units = dict()
 

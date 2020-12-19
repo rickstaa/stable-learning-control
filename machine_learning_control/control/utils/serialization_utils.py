@@ -1,4 +1,4 @@
-"""Module used for serializing json objects.
+"""Module used for serialising json objects.
 
 This module was cloned from the
 `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/serialization_utils.py>`_.
@@ -14,7 +14,7 @@ def convert_json(obj):
         obj (object): Object which you want to convert to json.
 
     Returns:
-        object: Serialized json object.
+        object: Serialised json object.
     """
     if is_json_serializable(obj):
         return obj

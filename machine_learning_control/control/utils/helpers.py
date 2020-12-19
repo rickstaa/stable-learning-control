@@ -1,4 +1,4 @@
-"""A number of usefull helper functions.
+"""A number of useful helper functions.
 """
 
 import decimal

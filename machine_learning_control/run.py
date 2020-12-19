@@ -1,7 +1,7 @@
 """Machine_learning_control run functions.
 
-Responsable for createing the CLI for the machine_learning_control package. It can
-be used to run the control, hardware, modeling packages from the terminal.
+Responsible for createing the CLI for the machine_learning_control package. It can
+be used to run the control, hardware, modelling packages from the terminal.
 """
 
 import os

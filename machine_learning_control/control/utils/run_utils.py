@@ -586,7 +586,7 @@ class ExperimentGrid:
                         """
             Launch delayed to give you a few seconds to review your experiments.
 
-            To customize or disable this behaviour, change WAIT_BEFORE_LAUNCH in
+            To customise or disable this behaviour, change WAIT_BEFORE_LAUNCH in
             spinup/user_config.py.
 
             """

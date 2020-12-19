@@ -16,7 +16,6 @@ jobs:
           github_token: ${{ secrets.github_token }}
           reporter: github-check
           level: warning
-          locale: "UK"
   alex: # Checks docs for inconsiderate writing
     name: runner / alex
     runs-on: ubuntu-latest
