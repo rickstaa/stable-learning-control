@@ -37,7 +37,7 @@ eg:
 
     .. parsed-literal::
 
-        python -m spinup.run ppo --exp_name ppo_ant --env Ant-v2 --clip_ratio 0.1 0.2 
+        python -m spinup.run ppo --exp_name ppo_ant --env Ant-v2 --clip_ratio 0.1 0.2
             --hid[h] [32,32] [64,32] --act torch.nn.Tanh --seed 0 10 20 --dt
             --data_dir path/to/data
 
@@ -68,17 +68,17 @@ eg:
 Choosing PyTorch or Tensorflow from the Command Line
 ----------------------------------------------------
 
-To use a PyTorch version of an algorithm, run with 
+To use a PyTorch version of an algorithm, run with
 
 .. parsed-literal::
 
     python -m spinup.run [algo]_pytorch
 
-To use a Tensorflow version of an algorithm, run with 
+To use a Tensorflow version of an algorithm, run with
 
 .. parsed-literal::
 
-    python -m spinup.run [algo]_tf1 
+    python -m spinup.run [algo]_tf1
 
 If you run ``python -m spinup.run [algo]`` without ``_pytorch`` or ``_tf1``, the runner will look in ``spinup/user_config.py`` for which version it should default to for that algorithm.
 
@@ -115,7 +115,7 @@ to see a readout of the docstring.
 
     .. parsed-literal::
 
-        --key:v1 value_1 --key:v2 value_2 
+        --key:v1 value_1 --key:v2 value_2
 
     to get the same result.
 
@@ -151,11 +151,11 @@ Environment Flag
 Shortcut Flags
 ^^^^^^^^^^^^^^
 
-Some algorithm arguments are relatively long, and we enabled shortcuts for them: 
+Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
 .. option:: --hid, --ac_kwargs:hidden_sizes
 
-    *list of ints*. Sets the sizes of the hidden layers in the neural networks (policies and value functions). 
+    *list of ints*. Sets the sizes of the hidden layers in the neural networks (policies and value functions).
 
 .. option:: --act, --ac_kwargs:activation
 
@@ -194,9 +194,9 @@ Results for a particular experiment (a single run of a configuration of hyperpar
 
     data_dir/[outer_prefix]exp_name[suffix]/[inner_prefix]exp_name[suffix]_s[seed]
 
-where 
+where
 
-* ``data_dir`` is the value of the ``--data_dir`` flag (defaults to ``DEFAULT_DATA_DIR`` from ``spinup/user_config.py`` if ``--data_dir`` is not given), 
+* ``data_dir`` is the value of the ``--data_dir`` flag (defaults to ``DEFAULT_DATA_DIR`` from ``spinup/user_config.py`` if ``--data_dir`` is not given),
 * the ``outer_prefix`` is a ``YY-MM-DD_`` timestamp if the ``--datestamp`` flag is raised, otherwise nothing,
 * the ``inner_prefix`` is a ``YY-MM-DD_HH-MM-SS-`` timestamp if the ``--datestamp`` flag is raised, otherwise nothing,
 * and ``suffix`` is a special string based on the experiment hyperparameters.
@@ -206,7 +206,7 @@ How is Suffix Determined?
 
 Suffixes are only included if you run multiple experiments at once, and they only include references to hyperparameters that differ across experiments, except for random seed. The goal is to make sure that results for similar experiments (ones which share all params except seed) are grouped in the same folder.
 
-Suffixes are constructed by combining *shorthands* for hyperparameters with their values, where a shorthand is either 1) constructed automatically from the hyperparameter name or 2) supplied by the user. The user can supply a shorthand by writing in square brackets after the kwarg flag. 
+Suffixes are constructed by combining *shorthands* for hyperparameters with their values, where a shorthand is either 1) constructed automatically from the hyperparameter name or 2) supplied by the user. The user can supply a shorthand by writing in square brackets after the kwarg flag.
 
 For example, consider:
 
@@ -232,9 +232,9 @@ Extra
 
 .. admonition:: You Don't Actually Need to Know This One
 
-    Each individual algorithm is located in a file ``spinup/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line with a limited set of arguments (some of which differ from what's available to ``spinup/run.py``). The command line support in the individual algorithm files is essentially vestigial, however, and this is **not** a recommended way to perform experiments. 
+    Each individual algorithm is located in a file ``spinup/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line with a limited set of arguments (some of which differ from what's available to ``spinup/run.py``). The command line support in the individual algorithm files is essentially vestigial, however, and this is **not** a recommended way to perform experiments.
 
-    This documentation page will not describe those command line calls, and will *only* describe calls through ``spinup/run.py``. 
+    This documentation page will not describe those command line calls, and will *only* describe calls through ``spinup/run.py``.
 
 Launching from Scripts
 ======================
@@ -263,7 +263,7 @@ See the documentation page for each algorithm for a complete account of possible
 Using ExperimentGrid
 --------------------
 
-It's often useful in machine learning research to run the same algorithm with many possible hyperparameters. Spinning Up ships with a simple tool for facilitating this, called `ExperimentGrid`_. 
+It's often useful in machine learning research to run the same algorithm with many possible hyperparameters. Spinning Up ships with a simple tool for facilitating this, called `ExperimentGrid`_.
 
 
 Consider the example in ``spinup/examples/pytorch/bench_ppo_cartpole.py``:
@@ -309,7 +309,7 @@ After all parameters have been added,
 
 runs all experiments in the grid (one experiment per valid configuration), by providing the configurations as kwargs to the function ``thunk``. ``ExperimentGrid.run`` uses a function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs`` specify behaviors for ``call_experiment``. See `the documentation page`_ for details.
 
-Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behavior of ``ExperimentGrid`` is the same as running things from the command line. (In fact, ``spinup.run`` uses an ``ExperimentGrid`` under the hood.)
+Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behaviour of ``ExperimentGrid`` is the same as running things from the command line. (In fact, ``spinup.run`` uses an ``ExperimentGrid`` under the hood.)
 
 .. _`ExperimentGrid`: ../utils/run_utils.html#experimentgrid
 .. _`the documentation page`: ../utils/run_utils.html#experimentgrid

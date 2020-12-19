@@ -52,13 +52,13 @@ color2num = dict(
 # TODO: Remove tf dependency
 
 
-def colorize(string, color, bold=False, highlight=False):
+def colourize(string, color, bold=False, highlight=False):
     """Colorize a string.
 
     This function was originally written by John Schulman.
 
     Args:
-        string (str): The string you want to colorize.
+        string (str): The string you want to colourize.
 
         color (str): The color you want to use.
 
@@ -101,7 +101,7 @@ def restore_tf_graph(sess, fpath):
 
     if not TF_AVAILABLE:
         print(
-            colorize(
+            colourize(
                 "Warning: restore_tf_graph method could not be used as tensorflow is "
                 "not installed in the current environment. Please install tensorflow if "
                 "you want to use tensorflow related logging methods.",
@@ -179,7 +179,7 @@ class Logger:
             self.output_dir = output_dir or "/tmp/experiments/%i" % int(time.time())
             if osp.exists(self.output_dir):
                 print(
-                    colorize(
+                    colourize(
                         (
                             "WARN: Log dir %s already exists! Storing info there anyway."
                             % self.output_dir
@@ -193,7 +193,7 @@ class Logger:
             self.output_file = open(osp.join(self.output_dir, output_fname), "w")
             atexit.register(self.output_file.close)
             print(
-                colorize(
+                colourize(
                     "Logging data to %s" % self.output_file.name, "green", bold=True
                 )
             )
@@ -229,7 +229,7 @@ class Logger:
                 "green".
         """
         if proc_id() == 0:
-            print(colorize(msg, color, bold=True))
+            print(colourize(msg, color, bold=True))
 
     def log_tabular(
         self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
@@ -282,7 +282,7 @@ class Logger:
 
         Call this once at the top of your experiment, passing in all important
         config vars as a dict. This will serialize the config to JSON, while
-        handling anything which can't be serialized in a graceful way (writing
+        handling anything which can't be serialised in a graceful way (writing
         as informative a string as possible).
 
         Example use:
@@ -299,7 +299,7 @@ class Logger:
             output = json.dumps(
                 config_json, separators=(",", ":\t"), indent=4, sort_keys=True
             )
-            print(colorize("Saving config:\n", color="cyan", bold=True))
+            print(colourize("Saving config:\n", color="cyan", bold=True))
             print(output)
             with open(osp.join(self.output_dir, "config.json"), "w") as out:
                 out.write(output)
@@ -352,7 +352,7 @@ class Logger:
         """
         if not TF_AVAILABLE:
             print(
-                colorize(
+                colourize(
                     "Warning: The Logger.setup_tf_saver could not be set up as "
                     "tensorflow is not installed in the current environment. Please "
                     "install tensorflow if you want to use tensorflow related logging "

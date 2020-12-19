@@ -16,10 +16,10 @@ Deep Deterministic Policy Gradient (DDPG) is an algorithm which concurrently lea
 This approach is closely connected to Q-learning, and is motivated the same way: if you know the optimal action-value function :math:`Q^*(s,a)`, then in any given state, the optimal action :math:`a^*(s)` can be found by solving
 
 .. math::
-    
+
     a^*(s) = \arg \max_a Q^*(s,a).
 
-DDPG interleaves learning an approximator to :math:`Q^*(s,a)` with learning an approximator to :math:`a^*(s)`, and it does so in a way which is specifically adapted for environments with continuous action spaces. But what does it mean that DDPG is adapted *specifically* for environments with continuous action spaces? It relates to how we compute the max over actions in :math:`\max_a Q^*(s,a)`. 
+DDPG interleaves learning an approximator to :math:`Q^*(s,a)` with learning an approximator to :math:`a^*(s)`, and it does so in a way which is specifically adapted for environments with continuous action spaces. But what does it mean that DDPG is adapted *specifically* for environments with continuous action spaces? It relates to how we compute the max over actions in :math:`\max_a Q^*(s,a)`.
 
 When there are a finite number of discrete actions, the max poses no problem, because we can just compute the Q-values for each action separately and directly compare them. (This also immediately gives us the action which maximizes the Q-value.) But when the action space is continuous, we can't exhaustively evaluate the space, and solving the optimization problem is highly non-trivial. Using a normal optimization algorithm would make calculating :math:`\max_a Q^*(s,a)` a painfully expensive subroutine. And since it would need to be run every time the agent wants to take an action in the environment, this is unacceptable.
 
@@ -48,7 +48,7 @@ First, let's recap the Bellman equation describing the optimal action-value func
 
     Q^*(s,a) = \underset{s' \sim P}{{\mathrm E}}\left[r(s,a) + \gamma \max_{a'} Q^*(s', a')\right]
 
-where :math:`s' \sim P` is shorthand for saying that the next state, :math:`s'`, is sampled by the environment from a distribution :math:`P(\cdot| s,a)`. 
+where :math:`s' \sim P` is shorthand for saying that the next state, :math:`s'`, is sampled by the environment from a distribution :math:`P(\cdot| s,a)`.
 
 This Bellman equation is the starting point for learning an approximator to :math:`Q^*(s,a)`. Suppose the approximator is a neural network :math:`Q_{\phi}(s,a)`, with parameters :math:`\phi`, and that we have collected a set :math:`{\mathcal D}` of transitions :math:`(s,a,r,s',d)` (where :math:`d` indicates whether state :math:`s'` is terminal). We can set up a **mean-squared Bellman error (MSBE)** function, which tells us roughly how closely :math:`Q_{\phi}` comes to satisfying the Bellman equation:
 
@@ -62,19 +62,19 @@ Here, in evaluating :math:`(1-d)`, we've used a Python convention of evaluating 
 
 Q-learning algorithms for function approximators, such as DQN (and all its variants) and DDPG, are largely based on minimizing this MSBE loss function. There are two main tricks employed by all of them which are worth describing, and then a specific detail for DDPG.
 
-**Trick One: Replay Buffers.** All standard algorithms for training a deep neural network to approximate :math:`Q^*(s,a)` make use of an experience replay buffer. This is the set :math:`{\mathcal D}` of previous experiences. In order for the algorithm to have stable behavior, the replay buffer should be large enough to contain a wide range of experiences, but it may not always be good to keep everything. If you only use the very-most recent data, you will overfit to that and things will break; if you use too much experience, you may slow down your learning. This may take some tuning to get right.
+**Trick One: Replay Buffers.** All standard algorithms for training a deep neural network to approximate :math:`Q^*(s,a)` make use of an experience replay buffer. This is the set :math:`{\mathcal D}` of previous experiences. In order for the algorithm to have stable behaviour, the replay buffer should be large enough to contain a wide range of experiences, but it may not always be good to keep everything. If you only use the very-most recent data, you will overfit to that and things will break; if you use too much experience, you may slow down your learning. This may take some tuning to get right.
 
 .. admonition:: You Should Know
 
     We've mentioned that DDPG is an off-policy algorithm: this is as good a point as any to highlight why and how. Observe that the replay buffer *should* contain old experiences, even though they might have been obtained using an outdated policy. Why are we able to use these at all? The reason is that the Bellman equation *doesn't care* which transition tuples are used, or how the actions were selected, or what happens after a given transition, because the optimal Q-function should satisfy the Bellman equation for *all* possible transitions. So any transitions that we've ever experienced are fair game when trying to fit a Q-function approximator via MSBE minimization.
 
-**Trick Two: Target Networks.** Q-learning algorithms make use of **target networks**. The term 
+**Trick Two: Target Networks.** Q-learning algorithms make use of **target networks**. The term
 
 .. math::
 
     r + \gamma (1 - d) \max_{a'} Q_{\phi}(s',a')
 
-is called the **target**, because when we minimize the MSBE loss, we are trying to make the Q-function be more like this target. Problematically, the target depends on the same parameters we are trying to train: :math:`\phi`. This makes MSBE minimization unstable. The solution is to use a set of parameters which comes close to :math:`\phi`, but with a time delay---that is to say, a second network, called the target network, which lags the first. The parameters of the target network are denoted :math:`\phi_{\text{targ}}`. 
+is called the **target**, because when we minimise the MSBE loss, we are trying to make the Q-function be more like this target. Problematically, the target depends on the same parameters we are trying to train: :math:`\phi`. This makes MSBE minimization unstable. The solution is to use a set of parameters which comes close to :math:`\phi`, but with a time delay---that is to say, a second network, called the target network, which lags the first. The parameters of the target network are denoted :math:`\phi_{\text{targ}}`.
 
 In DQN-based algorithms, the target network is just copied over from the main network every some-fixed-number of steps. In DDPG-style algorithms, the target network is updated once per main network update by polyak averaging:
 
@@ -85,7 +85,7 @@ In DQN-based algorithms, the target network is just copied over from the main ne
 where :math:`\rho` is a hyperparameter between 0 and 1 (usually close to 1). (This hyperparameter is called ``polyak`` in our code).
 
 
-**DDPG Detail: Calculating the Max Over Actions in the Target.** As mentioned earlier: computing the maximum over actions in the target is a challenge in continuous action spaces. DDPG deals with this by using a **target policy network** to compute an action which approximately maximizes :math:`Q_{\phi_{\text{targ}}}`. The target policy network is found the same way as the target Q-function: by polyak averaging the policy parameters over the course of training. 
+**DDPG Detail: Calculating the Max Over Actions in the Target.** As mentioned earlier: computing the maximum over actions in the target is a challenge in continuous action spaces. DDPG deals with this by using a **target policy network** to compute an action which approximately maximizes :math:`Q_{\phi_{\text{targ}}}`. The target policy network is found the same way as the target Q-function: by polyak averaging the policy parameters over the course of training.
 
 Putting it all together, Q-learning in DDPG is performed by minimizing the following MSBE loss with stochastic gradient descent:
 
@@ -186,7 +186,7 @@ Documentation: PyTorch Version
 Saved Model Contents: PyTorch Version
 -------------------------------------
 
-The PyTorch saved model can be loaded with ``ac = torch.load('path/to/model.pt')``, yielding an actor-critic object (``ac``) that has the properties described in the docstring for ``ddpg_pytorch``. 
+The PyTorch saved model can be loaded with ``ac = torch.load('path/to/model.pt')``, yielding an actor-critic object (``ac``) that has the properties described in the docstring for ``ddpg_pytorch``.
 
 You can get actions from this model with
 
@@ -210,7 +210,7 @@ Key       Value
 ========  ====================================================================
 ``x``     Tensorflow placeholder for state input.
 ``a``     Tensorflow placeholder for action input.
-``pi``    | Deterministically computes an action from the agent, conditioned 
+``pi``    | Deterministically computes an action from the agent, conditioned
           | on states in ``x``.
 ``q``     Gives action-value estimate for states in ``x`` and actions in ``a``.
 ========  ====================================================================
@@ -218,7 +218,7 @@ Key       Value
 This saved model can be accessed either by
 
 * running the trained policy with the `test_policy.py`_ tool,
-* or loading the whole saved graph into a program with `restore_tf_graph`_. 
+* or loading the whole saved graph into a program with `restore_tf_graph`_.
 
 .. _`test_policy.py`: ../user/saving_and_loading.html#loading-and-running-trained-policies
 .. _`restore_tf_graph`: ../utils/logger.html#spinup.utils.logx.restore_tf_graph
@@ -248,8 +248,8 @@ Other Public Implementations
 ----------------------------
 
 - Baselines_
-- rllab_ 
-- `rllib (Ray)`_ 
+- rllab_
+- `rllib (Ray)`_
 - `TD3 release repo`_
 
 .. _Baselines: https://github.com/openai/baselines/tree/master/baselines/ddpg

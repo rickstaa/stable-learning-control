@@ -106,6 +106,6 @@ else:
     )
     sys.exit(0)
 
-# Other paramters
+# Other parameters
 LOG_SIGMA_MIN_MAX = (-20, 2)  # Range of log std coming out of the GA network
 SCALE_lambda_MIN_MAX = (0, 1)  # Range of lambda lagrance multiplier

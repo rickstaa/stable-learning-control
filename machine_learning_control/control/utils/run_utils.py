@@ -28,7 +28,7 @@ from machine_learning_control.user_config import (
     FORCE_DATESTAMP,
     WAIT_BEFORE_LAUNCH,
 )
-from machine_learning_control.control.utils.logx import colorize
+from machine_learning_control.control.utils.logx import colourize
 from machine_learning_control.control.utils.mpi_tools import mpi_fork, msg
 from machine_learning_control.control.utils.serialization_utils import convert_json
 from tqdm import trange
@@ -125,8 +125,8 @@ def call_experiment(
     the ``env_fn`` should make a gym environment with the given ``env_name``.
 
     The way the experiment is actually executed is slightly complicated: the
-    function is serialized to a string, and then ``run_entrypoint.py`` is
-    executed in a subprocess call with the serialized string as an argument.
+    function is serialised to a string, and then ``run_entrypoint.py`` is
+    executed in a subprocess call with the serialised string as an argument.
     ``run_entrypoint.py`` unserializes the function call and executes it.
     We choose to do it this way---instead of just calling the function
     directly here---to avoid leaking state between successive experiments.
@@ -151,9 +151,9 @@ def call_experiment(
     kwargs["seed"] = seed
 
     # Be friendly and print out your kwargs, so we all know what's up
-    print(colorize("Running experiment:\n", color="cyan", bold=True))
+    print(colourize("Running experiment:\n", color="cyan", bold=True))
     print(exp_name + "\n")
-    print(colorize("with kwargs:\n", color="cyan", bold=True))
+    print(colourize("with kwargs:\n", color="cyan", bold=True))
     kwargs_json = convert_json(kwargs)
     print(json.dumps(kwargs_json, separators=(",", ":\t"), indent=4, sort_keys=True))
     print("\n")
@@ -216,10 +216,10 @@ def call_experiment(
     logger_kwargs = kwargs["logger_kwargs"]
 
     plot_cmd = "python -m spinup.run plot " + logger_kwargs["output_dir"]
-    plot_cmd = colorize(plot_cmd, "green")
+    plot_cmd = colourize(plot_cmd, "green")
 
     test_cmd = "python -m spinup.run test_policy " + logger_kwargs["output_dir"]
-    test_cmd = colorize(test_cmd, "green")
+    test_cmd = colourize(test_cmd, "green")
 
     output_msg = (
         "\n" * 5
@@ -324,11 +324,11 @@ class ExperimentGrid:
             msg = base_msg % name_insert
         else:
             msg = base_msg % (name_insert + "\n")
-        print(colorize(msg, color="green", bold=True))
+        print(colourize(msg, color="green", bold=True))
 
         # List off parameters, shorthands, and possible values.
         for k, v, sh in zip(self.keys, self.vals, self.shs):
-            color_k = colorize(k.ljust(40), color="cyan", bold=True)
+            color_k = colourize(k.ljust(40), color="cyan", bold=True)
             print("", color_k, "[" + sh + "]" if sh is not None else "", "\n")
             for i, val in enumerate(v):
                 print("\t" + str(convert_json(val)))
@@ -375,7 +375,7 @@ class ExperimentGrid:
 
         By default, if a shorthand isn't given, one is automatically generated
         from the key using the first three letters of each colon-separated
-        term. To disable this behavior, change ``DEFAULT_SHORTHAND`` in the
+        term. To disable this behaviour, change ``DEFAULT_SHORTHAND`` in the
         ``spinup/user_config.py`` file to ``False``.
 
         Args:
@@ -572,7 +572,7 @@ class ExperimentGrid:
         var_names = set([self.variant_name(var) for var in variants])
         var_names = sorted(list(var_names))
         line = "=" * DIV_LINE_WIDTH
-        preparing = colorize(
+        preparing = colourize(
             "Preparing to run the following experiments...", color="green", bold=True
         )
         joined_var_names = "\n".join(var_names)
@@ -581,12 +581,12 @@ class ExperimentGrid:
 
         if WAIT_BEFORE_LAUNCH > 0:
             delay_msg = (
-                colorize(
+                colourize(
                     dedent(
                         """
             Launch delayed to give you a few seconds to review your experiments.
 
-            To customize or disable this behavior, change WAIT_BEFORE_LAUNCH in
+            To customize or disable this behaviour, change WAIT_BEFORE_LAUNCH in
             spinup/user_config.py.
 
             """

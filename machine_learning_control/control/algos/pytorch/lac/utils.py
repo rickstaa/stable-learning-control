@@ -8,10 +8,10 @@ from variant import ENV_PARAMS, TRAIN_PARAMS
 
 
 def get_env_from_name(name, ENV_SEED):
-    """Initializes the gym environment with the given name
+    """Initialises the gym environment with the given name
 
     Args:
-        name (str): The name of the gym environment you want to initialize.
+        name (str): The name of the gym environment you want to initialise.
 
     Returns:
         gym.Env: The gym environment.

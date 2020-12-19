@@ -55,8 +55,8 @@ Next, let's look at a full training procedure with the logger embedded, to highl
 
 
     # Simple script for training an MLP on MNIST.
-    def train_mnist(steps_per_epoch=100, epochs=5, 
-                    lr=1e-3, layers=2, hidden_size=64, 
+    def train_mnist(steps_per_epoch=100, epochs=5,
+                    lr=1e-3, layers=2, hidden_size=64,
                     logger_kwargs=dict(), save_freq=1):
 
         logger = EpochLogger(**logger_kwargs)
@@ -76,14 +76,14 @@ Next, let's look at a full training procedure with the logger embedded, to highl
         y = tf.one_hot(y_ph, 10)
         loss = tf.losses.softmax_cross_entropy(y, logits)
         acc = tf.reduce_mean(tf.cast(tf.equal(y_ph, predict), tf.float32))
-        train_op = tf.train.AdamOptimizer().minimize(loss)
+        train_op = tf.train.AdamOptimizer().minimise(loss)
 
         # Prepare session
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
 
         # Setup model saving
-        logger.setup_tf_saver(sess, inputs={'x': x_ph}, 
+        logger.setup_tf_saver(sess, inputs={'x': x_ph},
                                     outputs={'logits': logits, 'predict': predict})
 
         start_time = time.time()
@@ -133,7 +133,7 @@ Logging and PyTorch
 
 The preceding example was given in Tensorflow. For PyTorch, everything is the same except for L42-43: instead of ``logger.setup_tf_saver``, you would use ``logger.setup_pytorch_saver``, and you would pass it `a PyTorch module`_ (the network you are training) as an argument.
 
-The behavior of ``logger.save_state`` is the same as in the Tensorflow case: each time it is called, it'll save the latest version of the PyTorch module.
+The behaviour of ``logger.save_state`` is the same as in the Tensorflow case: each time it is called, it'll save the latest version of the PyTorch module.
 
 .. _`a PyTorch module`: https://pytorch.org/docs/stable/nn.html#torch.nn.Module
 

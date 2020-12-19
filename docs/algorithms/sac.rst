@@ -11,9 +11,9 @@ Background
 
 .. _`Background for TD3`: ../algorithms/td3.html#background
 
-Soft Actor Critic (SAC) is an algorithm that optimizes a stochastic policy in an off-policy way, forming a bridge between stochastic policy optimization and DDPG-style approaches. It isn't a direct successor to TD3 (having been published roughly concurrently), but it incorporates the clipped double-Q trick, and due to the inherent stochasticity of the policy in SAC, it also winds up benefiting from something like target policy smoothing. 
+Soft Actor Critic (SAC) is an algorithm that optimizes a stochastic policy in an off-policy way, forming a bridge between stochastic policy optimization and DDPG-style approaches. It isn't a direct successor to TD3 (having been published roughly concurrently), but it incorporates the clipped double-Q trick, and due to the inherent stochasticity of the policy in SAC, it also winds up benefiting from something like target policy smoothing.
 
-A central feature of SAC is **entropy regularization.** The policy is trained to maximize a trade-off between expected return and `entropy`_, a measure of randomness in the policy. This has a close connection to the exploration-exploitation trade-off: increasing entropy results in more exploration, which can accelerate learning later on. It can also prevent the policy from prematurely converging to a bad local optimum. 
+A central feature of SAC is **entropy regularisation.** The policy is trained to maximise a trade-off between expected return and `entropy`_, a measure of randomness in the policy. This has a close connection to the exploration-exploitation trade-off: increasing entropy results in more exploration, which can accelerate learning later on. It can also prevent the policy from prematurely converging to a bad local optimum.
 
 .. _`entropy`: https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
@@ -28,12 +28,12 @@ Quick Facts
 Key Equations
 -------------
 
-To explain Soft Actor Critic, we first have to introduce the entropy-regularized reinforcement learning setting. In entropy-regularized RL, there are slightly-different equations for value functions. 
+To explain Soft Actor Critic, we first have to introduce the entropy-regularised reinforcement learning setting. In entropy-regularised RL, there are slightly-different equations for value functions.
 
 Entropy-Regularized Reinforcement Learning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Entropy is a quantity which, roughly speaking, says how random a random variable is. If a coin is weighted so that it almost always comes up heads, it has low entropy; if it's evenly weighted and has a half chance of either outcome, it has high entropy. 
+Entropy is a quantity which, roughly speaking, says how random a random variable is. If a coin is weighted so that it almost always comes up heads, it has low entropy; if it's evenly weighted and has a half chance of either outcome, it has high entropy.
 
 Let :math:`x` be a random variable with probability mass or density function :math:`P`. The entropy :math:`H` of :math:`x` is computed from its distribution :math:`P` according to
 
@@ -41,7 +41,7 @@ Let :math:`x` be a random variable with probability mass or density function :ma
 
     H(P) = \underE{x \sim P}{-\log P(x)}.
 
-In entropy-regularized reinforcement learning, the agent gets a bonus reward at each time step proportional to the entropy of the policy at that timestep. This changes `the RL problem`_ to:
+In entropy-regularised reinforcement learning, the agent gets a bonus reward at each time step proportional to the entropy of the policy at that timestep. This changes `the RL problem`_ to:
 
 .. math::
 
@@ -76,13 +76,13 @@ and the Bellman equation for :math:`Q^{\pi}` is
 
 .. admonition:: You Should Know
 
-    The way we've set up the value functions in the entropy-regularized setting is a little bit arbitrary, and actually we could have done it differently (eg make :math:`Q^{\pi}` include the entropy bonus at the first timestep). The choice of definition may vary slightly across papers on the subject.
+    The way we've set up the value functions in the entropy-regularised setting is a little bit arbitrary, and actually we could have done it differently (eg make :math:`Q^{\pi}` include the entropy bonus at the first timestep). The choice of definition may vary slightly across papers on the subject.
 
 
 Soft Actor-Critic
 ^^^^^^^^^^^^^^^^^
 
-SAC concurrently learns a policy :math:`\pi_{\theta}` and two Q-functions :math:`Q_{\phi_1}, Q_{\phi_2}`. There are two variants of SAC that are currently standard: one that uses a fixed entropy regularization coefficient :math:`\alpha`, and another that enforces an entropy constraint by varying :math:`\alpha` over the course of training. For simplicity, Spinning Up makes use of the version with a fixed entropy regularization coefficient, but the entropy-constrained variant is generally preferred by practitioners.
+SAC concurrently learns a policy :math:`\pi_{\theta}` and two Q-functions :math:`Q_{\phi_1}, Q_{\phi_2}`. There are two variants of SAC that are currently standard: one that uses a fixed entropy regularisation coefficient :math:`\alpha`, and another that enforces an entropy constraint by varying :math:`\alpha` over the course of training. For simplicity, Spinning Up makes use of the version with a fixed entropy regularisation coefficient, but the entropy-constrained variant is generally preferred by practitioners.
 
 .. admonition:: You Should Know
 
@@ -90,7 +90,7 @@ SAC concurrently learns a policy :math:`\pi_{\theta}` and two Q-functions :math:
 
 
 
-**Learning Q.** The Q-functions are learned in a similar way to TD3, but with a few key differences. 
+**Learning Q.** The Q-functions are learned in a similar way to TD3, but with a few key differences.
 
 First, what's similar?
 
@@ -102,18 +102,18 @@ First, what's similar?
 
 What's different?
 
-1) Unlike in TD3, the target also includes a term that comes from SAC's use of entropy regularization.
+1) Unlike in TD3, the target also includes a term that comes from SAC's use of entropy regularisation.
 
 2) Unlike in TD3, the next-state actions used in the target come from the **current policy** instead of a target policy.
 
 3) Unlike in TD3, there is no explicit target policy smoothing. TD3 trains a deterministic policy, and so it accomplishes smoothing by adding random noise to the next-state actions. SAC trains a stochastic policy, and so the noise from that stochasticity is sufficient to get a similar effect.
 
-Before we give the final form of the Q-loss, let’s take a moment to discuss how the contribution from entropy regularization comes in. We'll start by taking our recursive Bellman equation for the entropy-regularized :math:`Q^{\pi}` from earlier, and rewriting it a little bit by using the definition of entropy:
+Before we give the final form of the Q-loss, let’s take a moment to discuss how the contribution from entropy regularisation comes in. We'll start by taking our recursive Bellman equation for the entropy-regularised :math:`Q^{\pi}` from earlier, and rewriting it a little bit by using the definition of entropy:
 
 .. math::
 
     Q^{\pi}(s,a) &= \underE{s' \sim P \\ a' \sim \pi}{R(s,a,s') + \gamma\left(Q^{\pi}(s',a') + \alpha H\left(\pi(\cdot|s')\right) \right)} \\
-    &= \underE{s' \sim P \\ a' \sim \pi}{R(s,a,s') + \gamma\left(Q^{\pi}(s',a') - \alpha \log \pi(a'|s') \right)} 
+    &= \underE{s' \sim P \\ a' \sim \pi}{R(s,a,s') + \gamma\left(Q^{\pi}(s',a') - \alpha \log \pi(a'|s') \right)}
 
 The RHS is an expectation over next states (which come from the replay buffer) and next actions (which come from the current policy, and **not** the replay buffer). Since it's an expectation, we can approximate it with samples:
 
@@ -125,7 +125,7 @@ The RHS is an expectation over next states (which come from the replay buffer) a
 
     We switch next action notation to :math:`\tilde{a}'`, instead of :math:`a'`, to highlight that the next actions have to be sampled fresh from the policy (whereas by contrast, :math:`r` and :math:`s'` should come from the replay buffer).
 
-SAC sets up the MSBE loss for each Q-function using this kind of sample approximation for the target. The only thing still undetermined here is which Q-function gets used to compute the sample backup: like TD3, SAC uses the clipped double-Q trick, and takes the minimum Q-value between the two Q approximators. 
+SAC sets up the MSBE loss for each Q-function using this kind of sample approximation for the target. The only thing still undetermined here is which Q-function gets used to compute the sample backup: like TD3, SAC uses the clipped double-Q trick, and takes the minimum Q-value between the two Q approximators.
 
 Putting it all together, the loss functions for the Q-networks in SAC are:
 
@@ -142,14 +142,14 @@ where the target is given by
     y(r, s', d) = r + \gamma (1 - d) \left( \min_{j=1,2} Q_{\phi_{\text{targ},j}}(s', \tilde{a}') - \alpha \log \pi_{\theta}(\tilde{a}'|s') \right), \;\;\;\;\; \tilde{a}' \sim \pi_{\theta}(\cdot|s').
 
 
-**Learning the Policy.** The policy should, in each state, act to maximize the expected future return plus expected future entropy. That is, it should maximize :math:`V^{\pi}(s)`, which we expand out into
+**Learning the Policy.** The policy should, in each state, act to maximise the expected future return plus expected future entropy. That is, it should maximise :math:`V^{\pi}(s)`, which we expand out into
 
 .. math::
 
     V^{\pi}(s) &= \underE{a \sim \pi}{Q^{\pi}(s,a)} + \alpha H\left(\pi(\cdot|s)\right) \\
     &= \underE{a \sim \pi}{Q^{\pi}(s,a) - \alpha \log \pi(a|s)}.
 
-The way we optimize the policy makes use of the **reparameterization trick**, in which a sample from :math:`\pi_{\theta}(\cdot|s)` is drawn by computing a deterministic function of state, policy parameters, and independent noise. To illustrate: following the authors of the SAC paper, we use a squashed Gaussian policy, which means that samples are obtained according to
+The way we optimise the policy makes use of the **reparameterization trick**, in which a sample from :math:`\pi_{\theta}(\cdot|s)` is drawn by computing a deterministic function of state, policy parameters, and independent noise. To illustrate: following the authors of the SAC paper, we use a squashed Gaussian policy, which means that samples are obtained according to
 
 .. math::
 
@@ -181,7 +181,7 @@ which is almost the same as the DDPG and TD3 policy optimization, except for the
 Exploration vs. Exploitation
 ----------------------------
 
-SAC trains a stochastic policy with entropy regularization, and explores in an on-policy way. The entropy regularization coefficient :math:`\alpha` explicitly controls the explore-exploit tradeoff, with higher :math:`\alpha` corresponding to more exploration, and lower :math:`\alpha` corresponding to more exploitation. The right coefficient (the one which leads to the stablest / highest-reward learning) may vary from environment to environment, and could require careful tuning.
+SAC trains a stochastic policy with entropy regularisation, and explores in an on-policy way. The entropy regularisation coefficient :math:`\alpha` explicitly controls the explore-exploit tradeoff, with higher :math:`\alpha` corresponding to more exploration, and lower :math:`\alpha` corresponding to more exploitation. The right coefficient (the one which leads to the stablest / highest-reward learning) may vary from environment to environment, and could require careful tuning.
 
 At test time, to see how well the policy exploits what it has learned, we remove stochasticity and use the mean action instead of a sample from the distribution. This tends to improve performance over the original stochastic policy.
 
@@ -253,7 +253,7 @@ Documentation: PyTorch Version
 Saved Model Contents: PyTorch Version
 -------------------------------------
 
-The PyTorch saved model can be loaded with ``ac = torch.load('path/to/model.pt')``, yielding an actor-critic object (``ac``) that has the properties described in the docstring for ``sac_pytorch``. 
+The PyTorch saved model can be loaded with ``ac = torch.load('path/to/model.pt')``, yielding an actor-critic object (``ac``) that has the properties described in the docstring for ``sac_pytorch``.
 
 You can get actions from this model with
 
@@ -277,17 +277,17 @@ Key       Value
 ========  ====================================================================
 ``x``     Tensorflow placeholder for state input.
 ``a``     Tensorflow placeholder for action input.
-``mu``    Deterministically computes mean action from the agent, given states in ``x``. 
+``mu``    Deterministically computes mean action from the agent, given states in ``x``.
 ``pi``    Samples an action from the agent, conditioned on states in ``x``.
 ``q1``    Gives one action-value estimate for states in ``x`` and actions in ``a``.
 ``q2``    Gives the other action-value estimate for states in ``x`` and actions in ``a``.
-``v``     Gives the value estimate for states in ``x``. 
+``v``     Gives the value estimate for states in ``x``.
 ========  ====================================================================
 
 This saved model can be accessed either by
 
 * running the trained policy with the `test_policy.py`_ tool,
-* or loading the whole saved graph into a program with `restore_tf_graph`_. 
+* or loading the whole saved graph into a program with `restore_tf_graph`_.
 
 Note: for SAC, the correct evaluation policy is given by ``mu`` and not by ``pi``. The policy ``pi`` may be thought of as the exploration policy, while ``mu`` is the exploitation policy.
 

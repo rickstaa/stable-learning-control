@@ -12,7 +12,7 @@ In this section we'll cover
 - and how to load and run trained policies.
 
 .. admonition:: You Should Know
-    
+
     Spinning Up implementations currently have no way to resume training for partially-trained agents. If you consider this feature important, please let us know---or consider it a hacking project!
 
 Algorithm Outputs
@@ -34,7 +34,7 @@ Each algorithm is set up to save a training run's hyperparameter configuration, 
 |``config.json`` | | A dict containing an as-complete-as-possible description    |
 |                | | of the args and kwargs you used to launch the training      |
 |                | | function. If you passed in something which can't be         |
-|                | | serialized to JSON, it should get handled gracefully by the |
+|                | | serialised to JSON, it should get handled gracefully by the |
 |                | | logger, and the config file will represent it with a string.|
 |                | | Note: this is meant for record-keeping only. Launching an   |
 |                | | experiment from a config file is not currently supported.   |
@@ -117,7 +117,7 @@ Experiment results will, by default, be saved in the same directory as the Spinn
         LICENSE
         setup.py
 
-You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``. 
+You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``.
 
 
 Loading and Running Trained Policies
@@ -152,7 +152,7 @@ There are a few flags for options:
 
 .. option:: -i I, --itr=I, default=-1
 
-    *int*. This is an option for a special case which is not supported by algorithms in this package as-shipped, but which they are easily modified to do. Use case: Sometimes it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can do this---save snapshots of the agent from those different points, so they can be run and watched later. In this case, you use this flag to specify which iteration to run. But again: spinup algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots. 
+    *int*. This is an option for a special case which is not supported by algorithms in this package as-shipped, but which they are easily modified to do. Use case: Sometimes it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can do this---save snapshots of the agent from those different points, so they can be run and watched later. In this case, you use this flag to specify which iteration to run. But again: spinup algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
 
     The default value of this flag means "use the latest snapshot."
 
@@ -188,10 +188,10 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
       File "spinup/utils/test_policy.py", line 153, in <module>
         run_policy(env, get_action, args.len, args.episodes, not(args.norender))
       File "spinup/utils/test_policy.py", line 114, in run_policy
-        "and we can't run the agent in it. :( \n\n Check out the readthedocs " + 
+        "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
     AssertionError: Environment not found!
 
-     It looks like the environment wasn't saved, and we can't run the agent in it. :( 
+     It looks like the environment wasn't saved, and we can't run the agent in it. :(
 
      Check out the readthedocs page on Experiment Outputs for how to handle this situation.
 

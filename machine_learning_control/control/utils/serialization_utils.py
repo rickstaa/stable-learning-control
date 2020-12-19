@@ -8,7 +8,7 @@ import json
 
 
 def convert_json(obj):
-    """Convert obj to a version which can be serialized with JSON.
+    """Convert obj to a version which can be serialised with JSON.
 
     Args:
         obj (object): Object which you want to convert to json.
@@ -41,13 +41,13 @@ def convert_json(obj):
 
 
 def is_json_serializable(v):
-    """Check if object can be serialized with JSON.
+    """Check if object can be serialised with JSON.
 
     Args:
         v (object): object you want to check.
 
     Returns:
-        bool: Boolean specifying whether the object can be serialized by json.
+        bool: Boolean specifying whether the object can be serialised by json.
     """
     try:
         json.dumps(v)

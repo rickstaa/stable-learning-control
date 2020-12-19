@@ -24,7 +24,7 @@ The only difference between the correct actor-critic code,
     """
     Actor-Critic
     """
-    def mlp_actor_critic(x, a, hidden_sizes=(400,300), activation=tf.nn.relu, 
+    def mlp_actor_critic(x, a, hidden_sizes=(400,300), activation=tf.nn.relu,
                          output_activation=tf.tanh, action_space=None):
         act_dim = a.shape.as_list()[-1]
         act_limit = action_space.high[0]
@@ -44,7 +44,7 @@ and the bugged actor-critic code,
     """
     Bugged Actor-Critic
     """
-    def bugged_mlp_actor_critic(x, a, hidden_sizes=(400,300), activation=tf.nn.relu, 
+    def bugged_mlp_actor_critic(x, a, hidden_sizes=(400,300), activation=tf.nn.relu,
                                 output_activation=tf.tanh, action_space=None):
         act_dim = a.shape.as_list()[-1]
         act_limit = action_space.high[0]
@@ -115,9 +115,9 @@ Consider the excerpt from the part in the code that builds the DDPG computation 
 
 This is where the tensor shape issue comes into play. It's important to know that ``r_ph`` and ``d_ph`` have shape ``[batch size]``.
 
-The line that produces the Bellman backup was written with the assumption that it would add together tensors with the same shape. However, this line can **also** add together tensors with different shapes, as long as they're broadcast-compatible. 
+The line that produces the Bellman backup was written with the assumption that it would add together tensors with the same shape. However, this line can **also** add together tensors with different shapes, as long as they're broadcast-compatible.
 
-Tensors with shapes ``[batch size]`` and ``[batch size, 1]`` are broadcast compatible, but the behavior is not actually what you might expect! Check out this example:
+Tensors with shapes ``[batch size]`` and ``[batch size, 1]`` are broadcast compatible, but the behaviour is not actually what you might expect! Check out this example:
 
 >>> import tensorflow as tf
 >>> import numpy as np
@@ -156,13 +156,13 @@ array([[ 0,  1,  2,  3,  4],
 
 Adding or multiplying a shape ``[5]`` tensor by a shape ``[5,1]`` tensor returns a shape ``[5,5]`` tensor!
 
-When you don't squeeze the Q-functions, ``q_pi_targ`` has shape ``[batch size, 1]``, and the backup---and in turn, the whole Q-loss---gets totally messed up. 
+When you don't squeeze the Q-functions, ``q_pi_targ`` has shape ``[batch size, 1]``, and the backup---and in turn, the whole Q-loss---gets totally messed up.
 
-Broadcast error 1: ``(1 - d_ph) * q_pi_targ`` becomes a ``[batch size, batch size]`` tensor containing the outer product of the mask with the target network Q-values. 
+Broadcast error 1: ``(1 - d_ph) * q_pi_targ`` becomes a ``[batch size, batch size]`` tensor containing the outer product of the mask with the target network Q-values.
 
 Broadcast error 2: ``r_ph`` then gets treated as a row vector and added to each row of ``(1 - d_ph) * q_pi_targ`` separately.
 
-Broadcast error 3: ``q_loss`` depends on ``q - backup``, which involves another bad broadcast between ``q`` (shape ``[batch size, 1]``) and ``backup`` (shape ``[batch size, batch size]``). 
+Broadcast error 3: ``q_loss`` depends on ``q - backup``, which involves another bad broadcast between ``q`` (shape ``[batch size, 1]``) and ``backup`` (shape ``[batch size, batch size]``).
 
 To put it mathematically: let :math:`q`, :math:`q'`, :math:`r`, :math:`d` denote vectors containing the q-values, target q-values, rewards, and dones for a given batch, where there are :math:`n` entries in the batch. The correct backup is
 
@@ -170,10 +170,10 @@ To put it mathematically: let :math:`q`, :math:`q'`, :math:`r`, :math:`d` denote
 
     z_i = r_i + \gamma (1-d_i) q'_i,
 
-and the correct loss function is 
+and the correct loss function is
 
 .. math::
-    
+
     \frac{1}{n} \sum_{i=1}^n (q_i - z_i)^2.
 
 But with these errors, what gets computed is a backup *matrix*,

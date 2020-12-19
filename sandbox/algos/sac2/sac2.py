@@ -86,7 +86,7 @@ class NormalizedActions(gym.ActionWrapper):
         low = self.action_space.low
         high = self.action_space.high
 
-        # Bring normalized data back to original form
+        # Bring normalised data back to original form
         action = low + (action + 1.0) * 0.5 * (high - low)
         action = np.clip(action, low, high)
 
@@ -189,7 +189,7 @@ class PolicyNetwork(nn.Module):
     ):
         super(PolicyNetwork, self).__init__()
 
-        # Clamp log std to be withing bounds
+        # Clamp log std to be within bounds
         self.log_std_min = log_std_min
         self.log_std_max = log_std_max
 
@@ -309,7 +309,7 @@ def update(
     # Calculate policy loss
     policy_loss = (log_prob - predicted_new_q_value).mean()
 
-    # Back propogate policy loss
+    # Back propagate policy loss
     policy_optimizer.zero_grad()
     policy_loss.backward()
     policy_optimizer.step()

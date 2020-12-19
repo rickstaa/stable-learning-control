@@ -5,10 +5,12 @@ import os
 import sys
 
 import gym
+
 # Cuda Settings
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import machine_learning_control.simzoo.simzoo.envs
+
 # import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,8 +23,7 @@ from variant import ALG_PARAMS, ENV_NAME, ENV_PARAMS, ENV_SEED, EVAL_PARAMS
 # from machine_learning_control.control.algos.lac.lac import LAC
 
 
-
-def get_distrubance_function(env_name):
+def get_disturbance_function(env_name):
     """Retrieve disturbance function for a given environment.
 
     Args:
@@ -142,7 +143,7 @@ def evaluation(
 ):
 
     # Retrieve disturber and action space dimention
-    disturbance_step = get_distrubance_function(env_name)
+    disturbance_step = get_disturbance_function(env_name)
     a_dim = env.action_space.shape[0]
     a_upperbound = env.action_space.high
     a_lowerbound = env.action_space.low

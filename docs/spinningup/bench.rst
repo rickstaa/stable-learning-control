@@ -125,7 +125,7 @@ Learning curves are smoothed by averaging over a window of 11 epochs.
 
     By comparison to the literature, the Spinning Up implementations of DDPG, TD3, and SAC are roughly at-parity with the best reported results for these algorithms. As a result, you can use the Spinning Up implementations of these algorithms for research purposes.
 
-    The Spinning Up implementations of VPG, TRPO, and PPO are overall a bit weaker than the best reported results for these algorithms. This is due to the absence of some standard tricks (such as observation normalization and normalized value regression targets) from our implementations. For research comparisons, you should use the implementations of TRPO or PPO from `OpenAI Baselines`_.
+    The Spinning Up implementations of VPG, TRPO, and PPO are overall a bit weaker than the best reported results for these algorithms. This is due to the absence of some standard tricks (such as observation normalization and normalised value regression targets) from our implementations. For research comparisons, you should use the implementations of TRPO or PPO from `OpenAI Baselines`_.
 
 .. _`OpenAI Baselines`: https://github.com/openai/baselines
 

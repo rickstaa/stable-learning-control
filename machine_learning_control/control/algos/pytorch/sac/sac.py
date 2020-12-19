@@ -179,7 +179,7 @@ def sac(
         decaying_lr_type (str, optional): The type of learning rate decay you want to
             use (options: exponential or linear). Defaults to linear.
 
-        alpha (float): Entropy regularization coefficient (Equivalent to
+        alpha (float): Entropy regularisation coefficient (Equivalent to
             inverse of reward scale in the original SAC paper).
 
         target_entropy (str/None/float, optional): Target entropy used while learning
@@ -325,7 +325,7 @@ def sac(
         Returns:
             (torch.Tensor, dict):
                 Tensor containing the q-loss, dictionary with the current q values
-                (Usefull for logging).
+                (Useful for logging).
         """
 
         # Unpack experiences from the data dictionary
@@ -377,7 +377,7 @@ def sac(
         Returns:
             (torch.Tensor, dict):
                 Tensor containing the policy-loss, dictionary with the current
-                log-likelihood value (Usefull for logging).
+                log-likelihood value (Useful for logging).
         """
 
         # Unpack experiences from the data dictionary
@@ -389,7 +389,7 @@ def sac(
         q2_pi = ac.q2(o, pi)
         q_pi = torch.min(q1_pi, q2_pi)
 
-        # Calculate Entropy-regularized policy loss
+        # Calculate Entropy-regularised policy loss
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
         loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
         loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
@@ -410,7 +410,7 @@ def sac(
         Returns:
             (torch.Tensor, dict):
                 Tensor containing the alpha-loss, dictionary with the current
-                log alpha value (Usefull for logging).
+                log alpha value (Useful for logging).
         """
 
         # Return loss of
@@ -433,7 +433,7 @@ def sac(
         # Return alpha losses
         return loss_alpha, log_alpha_info
 
-    # Set up optimizers for policy, q-function and alpha temperature regularization
+    # Set up optimizers for policy, q-function and alpha temperature regularisation
     pi_optimizer = Adam(ac.pi.parameters(), lr=lr_a)
     q_optimizer = Adam(q_params, lr=lr_c)  # Pass both SoftQ networks to optimizer
     log_alpha_optimizer = Adam([log_alpha], lr=lr_a)
@@ -523,7 +523,7 @@ def sac(
         # First run one gradient descent step for Q1 and Q2 (Both network are in the
         # optimizer)
 
-        # Optimize Q-vals
+        # Optimise Q-vals
         q_optimizer.zero_grad()
         loss_q, q_info = compute_loss_q(data)
         loss_q.backward()
@@ -556,11 +556,11 @@ def sac(
             **pi_info,
         )
 
-        # Unfreeze Q-networks so you can optimize it at next DDPG step.
+        # Unfreeze Q-networks so you can optimise it at next DDPG step.
         for p in q_params:
             p.requires_grad = True
 
-        # Optimize the temperature for the current policy
+        # Optimise the temperature for the current policy
         if target_entropy:
 
             # Freeze Policy-networks so you don't waste computational effort
@@ -574,7 +574,7 @@ def sac(
             loss_log_alpha.backward()
             log_alpha_optimizer.step()
 
-            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
+            # Unfreeze Policy-networks so you can optimise it at next DDPG step.
             for p in ac.pi.parameters():
                 p.requires_grad = True
 
@@ -655,7 +655,7 @@ def sac(
             a = env.action_space.sample()
 
         # Step the env
-        # QUESTION: Abreviations or action ext next_state ect
+        # QUESTION: Abreviations or action ext next_state etc
         o2, r, d, _ = env.step(a)
         ep_ret += r  # Increase episode reward
         ep_len += 1  # Increase episode length

@@ -171,7 +171,7 @@ def lac(
         decaying_lr_type (str, optional): The type of learning rate decay you want to
             use (options: exponential or linear). Defaults to linear.
 
-        alpha (float): Entropy regularization coefficient (Equivalent to
+        alpha (float): Entropy regularisation coefficient (Equivalent to
             inverse of reward scale in the original SAC paper).
         TODO: Add alpha 3
 
@@ -340,7 +340,7 @@ def lac(
         Returns:
             (torch.Tensor, dict):
                 Tensor containing the q-loss, dictionary with the current q values
-                (Usefull for logging).
+                (Useful for logging).
         """
 
         # Unpack experiences from the data dictionary
@@ -393,7 +393,7 @@ def lac(
         Returns:
             (torch.Tensor, dict):
                 Tensor containing the q-loss, dictionary with the current q values
-                (Usefull for logging).
+                (Useful for logging).
         """
 
         # Unpack experiences from the data dictionary
@@ -417,12 +417,12 @@ def lac(
 
             # Calculate lyapunov target
 
-            # # Used when agent has to maximize reward is negative deviation (My version)
+            # # Used when agent has to maximise reward is negative deviation (My version)
             # backup = -r + gamma * (1 - d) * l_pi_targ.detach()
 
-            # Used when agent has to minimize reward is positive deviation (Minghoas version)
+            # Used when agent has to minimise reward is positive deviation (Minghoas version)
             backup = r + gamma * (1 - d) * l_pi_targ.detach()
-            # Question: Why no entropy regularization in l?
+            # Question: Why no entropy regularisation in l?
 
         # Calculate lyapunov loss
         error_l = ((l - backup) ** 2).mean()
@@ -443,7 +443,7 @@ def lac(
         Returns:
             (torch.Tensor, dict):
                 Tensor containing the policy-loss, dictionary with the current
-                log-likelihood value (Usefull for logging).
+                log-likelihood value (Useful for logging).
         """
 
         # Unpack experiences from the data dictionary
@@ -458,7 +458,7 @@ def lac(
         # Compute current best action according to policy
         pi, logp_pi = ac.pi(o)
 
-        # Entropy-regularized policy loss
+        # Entropy-regularised policy loss
         # loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
         # TODO: Replace log_labda.exp() with labda --> Make labda property
         if use_lyapunov:
@@ -475,20 +475,20 @@ def lac(
 
             # Calculate lyapunov constraint
 
-            # # Used when agent has to maximize reward is negative deviation (My version)
+            # # Used when agent has to maximise reward is negative deviation (My version)
             # # TODO: Make function out of this
             # l_delta = (
             #     l2 - l - alpha3 * r
             # )
             #
 
-            # Used when agent has to minimize reward is positive deviation (Minghoas version)
+            # Used when agent has to minimise reward is positive deviation (Minghoas version)
             l_delta = l2 - l + alpha3 * r
 
-            # Calculate entropy-regularized policy loss
+            # Calculate entropy-regularised policy loss
             # TODO: Rewrite formula to be consistent with Literature
 
-            # # Used when agent has to maximize reward is negative deviation (My version)
+            # # Used when agent has to maximise reward is negative deviation (My version)
             # loss_pi = (
             #     (
             #         torch.clamp(
@@ -501,7 +501,7 @@ def lac(
             #     + (log_alpha.exp() * logp_pi)
             # ).mean()?
 
-            # Used when agent has to minimize reward is positive deviation (Minghoas version)
+            # Used when agent has to minimise reward is positive deviation (Minghoas version)
             loss_pi = (
                 (
                     torch.clamp(
@@ -534,7 +534,7 @@ def lac(
             q2_pi = ac.q2(o, pi)
             q_pi = torch.min(q1_pi, q2_pi)
 
-            # Calculate Entropy-regularized policy loss
+            # Calculate Entropy-regularised policy loss
 
             # # MY version
             # loss_pi = (log_alpha.exp() * logp_pi - q_pi).mean()
@@ -558,7 +558,7 @@ def lac(
         Returns:
             (torch.Tensor, dict):
                 Tensor containing the alpha-loss, dictionary with the current
-                log alpha value (Usefull for logging).
+                log alpha value (Useful for logging).
         """
 
         # Return loss of
@@ -571,7 +571,7 @@ def lac(
 
         # Entropy tuning
         # QUESTION: LAC_V1 uses log_alpha instead of alpha!
-        # FIXME: Fix wheter it is log or log_alpha
+        # FIXME: Fix whether it is log or log_alpha
         # DEBUG
         loss_alpha = (
             -1.0 * (log_alpha * (logp_pi + target_entropy).detach()).mean()
@@ -581,7 +581,7 @@ def lac(
         #     -1.0 * (log_alpha.exp() * (logp_pi + target_entropy).detach()).mean()
         # )  # THIS IS IN LINE WITH https://github.com/denisyarats/pytorch_sac/blob/master/agent/sac.py AND HAARNOJA
 
-        # # # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        # # # Used when agent has to minimise reward is positive deviation (Minghoas version)
         # loss_alpha = (-1.0 * (log_alpha * (logp_pi + target_entropy).detach())).mean()
 
         # Store log-likelihood
@@ -612,15 +612,15 @@ def lac(
         # Calculate lyapunov constraint
         # TODO: Make function out of this
 
-        # # Used when agent has to maximize reward is negative deviation (My version)
+        # # Used when agent has to maximise reward is negative deviation (My version)
         # l_delta = l2 - l - alpha3 * r
 
-        # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        # Used when agent has to minimise reward is positive deviation (Minghoas version)
         l_delta = l2 - l + alpha3 * r  # Changed
 
         # Calculate labda loss (used for labda tuning)
 
-        # # Used when agent has to maximize reward is negative deviation (My version)
+        # # Used when agent has to maximise reward is negative deviation (My version)
         # # Question: Again why does Han use log labda
         # loss_labda = (
         #     torch.clamp(
@@ -631,7 +631,7 @@ def lac(
 
         # FIXME: NOW IT IS WITHOUT detach THis is different from the alpha implementation
         # FIXME: Check if log_labda or labda
-        # Used when agent has to minimize reward is positive deviation (Minghoas version)
+        # Used when agent has to minimise reward is positive deviation (Minghoas version)
         loss_labda = (
             -1.0
             * (
@@ -665,7 +665,7 @@ def lac(
         # Return alpha losses
         return loss_labda, log_labda_info
 
-    # Set up optimizers for policy, q-function and alpha temperature regularization
+    # Set up optimizers for policy, q-function and alpha temperature regularisation
     pi_optimizer = Adam(ac.pi.parameters(), lr=lr_a)
     if use_lyapunov:
         l_optimizer = Adam(ac.l.parameters(), lr=lr_l)
@@ -828,7 +828,7 @@ def lac(
                 p.requires_grad = False
         else:
 
-            # Optimize Q-vals
+            # Optimise Q-vals
             q_optimizer.zero_grad()
             loss_q, q_info = compute_loss_q(data)
             loss_q.backward()
@@ -861,7 +861,7 @@ def lac(
             **pi_info,
         )  # FIXME: This is wrong the steps are not okay
 
-        # Unfreeze Q or l networks so you can optimize it at next DDPG step.
+        # Unfreeze Q or l networks so you can optimise it at next DDPG step.
         if use_lyapunov:
             for p in ac.l.parameters():
                 p.requires_grad = True
@@ -869,7 +869,7 @@ def lac(
             for p in q_params:
                 p.requires_grad = True
 
-        # Optimize the temperature for the current policy
+        # Optimise the temperature for the current policy
         if target_entropy:
 
             # Freeze Policy-networks so you don't waste computational effort
@@ -883,7 +883,7 @@ def lac(
             loss_log_alpha.backward()
             log_alpha_optimizer.step()
 
-            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
+            # Unfreeze Policy-networks so you can optimise it at next DDPG step.
             for p in ac.pi.parameters():
                 p.requires_grad = True
 
@@ -899,7 +899,7 @@ def lac(
                 tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
             )
 
-        # Optimize the lagrance multiplier for the current policy
+        # Optimise the lagrance multiplier for the current policy
         if use_lyapunov:  # TODO: Update comments
 
             # Freeze Policy-networks so you don't waste computational effort
@@ -913,7 +913,7 @@ def lac(
             loss_log_labda.backward()
             log_labda_optimizer.step()
 
-            # Unfreeze Policy-networks so you can optimize it at next DDPG step.
+            # Unfreeze Policy-networks so you can optimise it at next DDPG step.
             for p in ac.pi.parameters():
                 p.requires_grad = True
 

@@ -6,7 +6,7 @@ Part 3: Intro to Policy Optimization
     :depth: 2
 
 
-In this section, we'll discuss the mathematical foundations of policy optimization algorithms, and connect the material to sample code. We will cover three key results in the theory of **policy gradients**: 
+In this section, we'll discuss the mathematical foundations of policy optimization algorithms, and connect the material to sample code. We will cover three key results in the theory of **policy gradients**:
 
 * `the simplest equation`_ describing the gradient of policy performance with respect to policy parameters,
 * a rule which allows us to `drop useless terms`_ from that expression,
@@ -22,19 +22,19 @@ In the end, we'll tie those results together and describe the advantage-based ex
 Deriving the Simplest Policy Gradient
 =====================================
 
-Here, we consider the case of a stochastic, parameterized policy, :math:`\pi_{\theta}`. We aim to maximize the expected return :math:`J(\pi_{\theta}) = \underE{\tau \sim \pi_{\theta}}{R(\tau)}`. For the purposes of this derivation, we'll take :math:`R(\tau)` to give the `finite-horizon undiscounted return`_, but the derivation for the infinite-horizon discounted return setting is almost identical.
+Here, we consider the case of a stochastic, parameterized policy, :math:`\pi_{\theta}`. We aim to maximise the expected return :math:`J(\pi_{\theta}) = \underE{\tau \sim \pi_{\theta}}{R(\tau)}`. For the purposes of this derivation, we'll take :math:`R(\tau)` to give the `finite-horizon undiscounted return`_, but the derivation for the infinite-horizon discounted return setting is almost identical.
 
 .. _`finite-horizon undiscounted return`: ../spinningup/rl_intro.html#reward-and-return
 
-We would like to optimize the policy by gradient ascent, eg
+We would like to optimise the policy by gradient ascent, eg
 
 .. math::
 
     \theta_{k+1} = \theta_k + \alpha \left. \nabla_{\theta} J(\pi_{\theta}) \right|_{\theta_k}.
 
-The gradient of policy performance, :math:`\nabla_{\theta} J(\pi_{\theta})`, is called the **policy gradient**, and algorithms that optimize the policy this way are called **policy gradient algorithms.** (Examples include Vanilla Policy Gradient and TRPO. PPO is often referred to as a policy gradient algorithm, though this is slightly inaccurate.)
+The gradient of policy performance, :math:`\nabla_{\theta} J(\pi_{\theta})`, is called the **policy gradient**, and algorithms that optimise the policy this way are called **policy gradient algorithms.** (Examples include Vanilla Policy Gradient and TRPO. PPO is often referred to as a policy gradient algorithm, though this is slightly inaccurate.)
 
-To actually use this algorithm, we need an expression for the policy gradient which we can numerically compute. This involves two steps: 1) deriving the analytical gradient of policy performance, which turns out to have the form of an expected value, and then 2) forming a sample estimate of that expected value, which can be computed with data from a finite number of agent-environment interaction steps. 
+To actually use this algorithm, we need an expression for the policy gradient which we can numerically compute. This involves two steps: 1) deriving the analytical gradient of policy performance, which turns out to have the form of an expected value, and then 2) forming a sample estimate of that expected value, which can be computed with data from a finite number of agent-environment interaction steps.
 
 In this subsection, we'll find the simplest form of that expression. In later subsections, we'll show how to improve on the simplest form to get the version we actually use in standard policy gradient implementations.
 
@@ -105,9 +105,9 @@ We give a short PyTorch implementation of this simple version of the policy grad
 
 .. admonition:: You Should Know
 
-    This section was previously written with a Tensorflow example. The old Tensorflow section can be found `here <../spinningup/extra_tf_pg_implementation.html#implementing-the-simplest-policy-gradient>`_. 
+    This section was previously written with a Tensorflow example. The old Tensorflow section can be found `here <../spinningup/extra_tf_pg_implementation.html#implementing-the-simplest-policy-gradient>`_.
 
-**1. Making the Policy Network.** 
+**1. Making the Policy Network.**
 
 .. code-block:: python
     :linenos:
@@ -158,12 +158,12 @@ In this block, we build a "loss" function for the policy gradient algorithm. Whe
 
 
 .. admonition:: You Should Know
-    
+
     Even though we describe this as a loss function, it is **not** a loss function in the typical sense from supervised learning. There are two main differences from standard loss functions.
 
-    **1. The data distribution depends on the parameters.** A loss function is usually defined on a fixed data distribution which is independent of the parameters we aim to optimize. Not so here, where the data must be sampled on the most recent policy. 
+    **1. The data distribution depends on the parameters.** A loss function is usually defined on a fixed data distribution which is independent of the parameters we aim to optimise. Not so here, where the data must be sampled on the most recent policy.
 
-    **2. It doesn't measure performance.** A loss function usually evaluates the performance metric that we care about. Here, we care about expected return, :math:`J(\pi_{\theta})`, but our "loss" function does not approximate this at all, even in expectation. This "loss" function is only useful to us because, when evaluated at the current parameters, with data generated by the current parameters, it has the negative gradient of performance. 
+    **2. It doesn't measure performance.** A loss function usually evaluates the performance metric that we care about. Here, we care about expected return, :math:`J(\pi_{\theta})`, but our "loss" function does not approximate this at all, even in expectation. This "loss" function is only useful to us because, when evaluated at the current parameters, with data generated by the current parameters, it has the negative gradient of performance.
 
     But after that first step of gradient descent, there is no more connection to performance. This means that minimizing this "loss" function, for a given batch of data, has *no* guarantee whatsoever of improving expected return. You can send this loss to :math:`-\infty` and policy performance could crater; in fact, it usually will. Sometimes a deep RL researcher might describe this outcome as the policy "overfitting" to a batch of data. This is descriptive, but should not be taken literally because it does not refer to generalization error.
 
@@ -173,10 +173,10 @@ In this block, we build a "loss" function for the policy gradient algorithm. Whe
 
 
 .. admonition:: You Should Know
-    
-    The approach used here to make the ``logp`` tensor--calling the ``log_prob`` method of a PyTorch ``Categorical`` object--may require some modification to work with other kinds of distribution objects. 
 
-    For example, if you are using a `Normal distribution`_ (for a diagonal Gaussian policy), the output from calling ``policy.log_prob(act)`` will give you a Tensor containing separate log probabilities for each component of each vector-valued action. That is to say, you put in a Tensor of shape ``(batch, act_dim)``, and get out a Tensor of shape ``(batch, act_dim)``, when what you need for making an RL loss is a Tensor of shape ``(batch,)``. In that case, you would sum up the log probabilities of the action components to get the log probabilities of the actions. That is, you would compute: 
+    The approach used here to make the ``logp`` tensor--calling the ``log_prob`` method of a PyTorch ``Categorical`` object--may require some modification to work with other kinds of distribution objects.
+
+    For example, if you are using a `Normal distribution`_ (for a diagonal Gaussian policy), the output from calling ``policy.log_prob(act)`` will give you a Tensor containing separate log probabilities for each component of each vector-valued action. That is to say, you put in a Tensor of shape ``(batch, act_dim)``, and get out a Tensor of shape ``(batch, act_dim)``, when what you need for making an RL loss is a Tensor of shape ``(batch,)``. In that case, you would sum up the log probabilities of the action components to get the log probabilities of the actions. That is, you would compute:
 
     .. code-block:: python
 
@@ -256,17 +256,17 @@ In this block, we build a "loss" function for the policy gradient algorithm. Whe
         optimizer.step()
         return batch_loss, batch_rets, batch_lens
 
-The ``train_one_epoch()`` function runs one "epoch" of policy gradient, which we define to be 
+The ``train_one_epoch()`` function runs one "epoch" of policy gradient, which we define to be
 
-1) the experience collection step (L67-102), where the agent acts for some number of episodes in the environment using the most recent policy, followed by 
+1) the experience collection step (L67-102), where the agent acts for some number of episodes in the environment using the most recent policy, followed by
 
-2) a single policy gradient update step (L104-111). 
+2) a single policy gradient update step (L104-111).
 
-The main loop of the algorithm just repeatedly calls ``train_one_epoch()``. 
+The main loop of the algorithm just repeatedly calls ``train_one_epoch()``.
 
 .. admonition:: You Should Know
 
-    If you aren't already familiar with optimization in PyTorch, observe the pattern for taking one gradient descent step as shown in lines 104-111. First, clear the gradient buffers. Then, compute the loss function. Then, compute a backward pass on the loss function; this accumulates fresh gradients into the gradient buffers. Finally, take a step with the optimizer. 
+    If you aren't already familiar with optimization in PyTorch, observe the pattern for taking one gradient descent step as shown in lines 104-111. First, clear the gradient buffers. Then, compute the loss function. Then, compute a backward pass on the loss function; this accumulates fresh gradients into the gradient buffers. Finally, take a step with the optimizer.
 
 
 Expected Grad-Log-Prob Lemma
@@ -274,7 +274,7 @@ Expected Grad-Log-Prob Lemma
 
 In this subsection, we will derive an intermediate result which is extensively used throughout the theory of policy gradients. We will call it the Expected Grad-Log-Prob (EGLP) lemma. [1]_
 
-**EGLP Lemma.** Suppose that :math:`P_{\theta}` is a parameterized probability distribution over a random variable, :math:`x`. Then: 
+**EGLP Lemma.** Suppose that :math:`P_{\theta}` is a parameterized probability distribution over a random variable, :math:`x`. Then:
 
 .. math::
 
@@ -282,7 +282,7 @@ In this subsection, we will derive an intermediate result which is extensively u
 
 .. admonition:: Proof
 
-    Recall that all probability distributions are *normalized*:
+    Recall that all probability distributions are *normalised*:
 
     .. math::
 
@@ -314,7 +314,7 @@ Examine our most recent expression for the policy gradient:
 
     \nabla_{\theta} J(\pi_{\theta}) = \underE{\tau \sim \pi_{\theta}}{\sum_{t=0}^{T} \nabla_{\theta} \log \pi_{\theta}(a_t |s_t) R(\tau)}.
 
-Taking a step with this gradient pushes up the log-probabilities of each action in proportion to :math:`R(\tau)`, the sum of *all rewards ever obtained*. But this doesn't make much sense. 
+Taking a step with this gradient pushes up the log-probabilities of each action in proportion to :math:`R(\tau)`, the sum of *all rewards ever obtained*. But this doesn't make much sense.
 
 Agents should really only reinforce actions on the basis of their *consequences*. Rewards obtained before taking an action have no bearing on how good that action was: only rewards that come *after*.
 
@@ -324,7 +324,7 @@ It turns out that this intuition shows up in the math, and we can show that the 
 
     \nabla_{\theta} J(\pi_{\theta}) = \underE{\tau \sim \pi_{\theta}}{\sum_{t=0}^{T} \nabla_{\theta} \log \pi_{\theta}(a_t |s_t) \sum_{t'=t}^T R(s_{t'}, a_{t'}, s_{t'+1})}.
 
-In this form, actions are only reinforced based on rewards obtained after they are taken. 
+In this form, actions are only reinforced based on rewards obtained after they are taken.
 
 We'll call this form the "reward-to-go policy gradient," because the sum of rewards after a point in a trajectory,
 
@@ -346,7 +346,7 @@ Implementing Reward-to-Go Policy Gradient
 =========================================
 
 
-We give a short PyTorch implementation of the reward-to-go policy gradient in ``spinup/examples/pytorch/pg_math/2_rtg_pg.py``. (It can also be viewed `on github <https://github.com/openai/spinningup/blob/master/spinup/examples/pytorch/pg_math/2_rtg_pg.py>`_.) 
+We give a short PyTorch implementation of the reward-to-go policy gradient in ``spinup/examples/pytorch/pg_math/2_rtg_pg.py``. (It can also be viewed `on github <https://github.com/openai/spinningup/blob/master/spinup/examples/pytorch/pg_math/2_rtg_pg.py>`_.)
 
 The only thing that has changed from ``1_simple_pg.py`` is that we now use different weights in the loss function. The code modification is very slight: we add a new function, and change two other lines. The new function is:
 
@@ -383,7 +383,7 @@ to:
 
 .. admonition:: You Should Know
 
-    This section was previously written with a Tensorflow example. The old Tensorflow section can be found `here <../spinningup/extra_tf_pg_implementation.html#implementing-reward-to-go-policy-gradient>`_. 
+    This section was previously written with a Tensorflow example. The old Tensorflow section can be found `here <../spinningup/extra_tf_pg_implementation.html#implementing-reward-to-go-policy-gradient>`_.
 
 
 Baselines in Policy Gradients
@@ -401,9 +401,9 @@ This allows us to add or subtract any number of terms like this from our express
 
     \nabla_{\theta} J(\pi_{\theta}) = \underE{\tau \sim \pi_{\theta}}{\sum_{t=0}^{T} \nabla_{\theta} \log \pi_{\theta}(a_t |s_t) \left(\sum_{t'=t}^T R(s_{t'}, a_{t'}, s_{t'+1}) - b(s_t)\right)}.
 
-Any function :math:`b` used in this way is called a **baseline**. 
+Any function :math:`b` used in this way is called a **baseline**.
 
-The most common choice of baseline is the `on-policy value function`_ :math:`V^{\pi}(s_t)`. Recall that this is the average return an agent gets if it starts in state :math:`s_t` and then acts according to policy :math:`\pi` for the rest of its life. 
+The most common choice of baseline is the `on-policy value function`_ :math:`V^{\pi}(s_t)`. Recall that this is the average return an agent gets if it starts in state :math:`s_t` and then acts according to policy :math:`\pi` for the rest of its life.
 
 Empirically, the choice :math:`b(s_t) = V^{\pi}(s_t)` has the desirable effect of reducing variance in the sample estimate for the policy gradient. This results in faster and more stable policy learning. It is also appealing from a conceptual angle: it encodes the intuition that if an agent gets what it expected, it should "feel" neutral about it.
 
@@ -411,12 +411,12 @@ Empirically, the choice :math:`b(s_t) = V^{\pi}(s_t)` has the desirable effect o
 
     In practice, :math:`V^{\pi}(s_t)` cannot be computed exactly, so it has to be approximated. This is usually done with a neural network, :math:`V_{\phi}(s_t)`, which is updated concurrently with the policy (so that the value network always approximates the value function of the most recent policy).
 
-    The simplest method for learning :math:`V_{\phi}`, used in most implementations of policy optimization algorithms (including VPG, TRPO, PPO, and A2C), is to minimize a mean-squared-error objective:
+    The simplest method for learning :math:`V_{\phi}`, used in most implementations of policy optimization algorithms (including VPG, TRPO, PPO, and A2C), is to minimise a mean-squared-error objective:
 
     .. math:: \phi_k = \arg \min_{\phi} \underE{s_t, \hat{R}_t \sim \pi_k}{\left( V_{\phi}(s_t) - \hat{R}_t \right)^2},
 
-    | 
-    where :math:`\pi_k` is the policy at epoch :math:`k`. This is done with one or more steps of gradient descent, starting from the previous value parameters :math:`\phi_{k-1}`. 
+    |
+    where :math:`\pi_k` is the policy at epoch :math:`k`. This is done with one or more steps of gradient descent, starting from the previous value parameters :math:`\phi_{k-1}`.
 
 
 Other Forms of the Policy Gradient
@@ -430,13 +430,13 @@ What we have seen so far is that the policy gradient has the general form
 
 where :math:`\Phi_t` could be any of
 
-.. math:: \Phi_t &= R(\tau), 
+.. math:: \Phi_t &= R(\tau),
 
 or
 
-.. math:: \Phi_t &= \sum_{t'=t}^T R(s_{t'}, a_{t'}, s_{t'+1}), 
+.. math:: \Phi_t &= \sum_{t'=t}^T R(s_{t'}, a_{t'}, s_{t'+1}),
 
-or 
+or
 
 .. math:: \Phi_t &= \sum_{t'=t}^T R(s_{t'}, a_{t'}, s_{t'+1}) - b(s_t).
 

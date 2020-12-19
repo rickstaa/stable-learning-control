@@ -3,8 +3,8 @@ inside the https://github.com/openai/spinningup repository. Based on
 Haarnoja et al. 2019. http://arxiv.org/abs/1812.05905.
 
 Main points:
-    - Doesn't use automatic entropy tuning as was expalined in Haarnoja et al. 2019.
-    - Removed the seperate value network of Haarnoja et al. 2018 by using the soft Q
+    - Doesn't use automatic entropy tuning as was explained in Haarnoja et al. 2019.
+    - Removed the separate value network of Haarnoja et al. 2018 by using the soft Q
     network.
 """
 
@@ -171,7 +171,7 @@ def sac(
 
         lr_c (float): Learning rate (used for both value learning).
 
-        alpha (float): Entropy regularization coefficient. (Equivalent to
+        alpha (float): Entropy regularisation coefficient. (Equivalent to
             inverse of reward scale in the original SAC paper.)
 
         batch_size (int): Minibatch size for SGD.
@@ -286,7 +286,7 @@ def sac(
             backup = r + gamma * (1 - d) * (q_pi_targ - alpha * logp_a2)
 
         # MSE loss against Bellman backup
-        # NOTE: WHy would we want to do this togheter?
+        # NOTE: WHy would we want to do this together?
         # Question: Where did the 1/2 of the paper go? This scaling is because of simplifying the gradient right?
         # Official sac uses 1/2 https://github.com/haarnoja/sac/blob/master/sac/algos/sac.py
         # Can be done since 1/2+1/2?
@@ -310,7 +310,7 @@ def sac(
         q2_pi = ac.q2(o, pi)
         q_pi = torch.min(q1_pi, q2_pi)
 
-        # Entropy-regularized policy loss
+        # Entropy-regularised policy loss
         loss_pi = (alpha * logp_pi - q_pi).mean()
 
         # Useful info for logging
@@ -347,7 +347,7 @@ def sac(
         loss_pi.backward()
         pi_optimizer.step()
 
-        # Unfreeze Q-networks so you can optimize it at next DDPG step.
+        # Unfreeze Q-networks so you can optimise it at next DDPG step.
         for p in q_params:
             p.requires_grad = True
 
@@ -397,7 +397,7 @@ def sac(
             a = env.action_space.sample()
 
         # Step the env
-        # QUESTION: Abreviations or action ext next_state ect
+        # QUESTION: Abreviations or action ext next_state etc
         o2, r, d, _ = env.step(a)
         ep_ret += r  # Increase episode reward
         ep_len += 1  # Increase episode length

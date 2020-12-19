@@ -12,7 +12,7 @@ Welcome to our introduction to reinforcement learning! Here, we aim to acquaint 
 * a high-level explanation of what RL algorithms do (although we mostly avoid the question of *how* they do it),
 * and a little bit of the core math that underlies the algorithms.
 
-In a nutshell, RL is the study of agents and how they learn by trial and error. It formalizes the idea that rewarding or punishing an agent for its behavior makes it more likely to repeat or forego that behavior in the future. 
+In a nutshell, RL is the study of agents and how they learn by trial and error. It formalizes the idea that rewarding or punishing an agent for its behaviour makes it more likely to repeat or forego that behaviour in the future.
 
 
 What Can RL Do?
@@ -48,12 +48,12 @@ Key Concepts and Terminology
 
 .. figure:: ../images/rl_diagram_transparent_bg.png
     :align: center
-    
+
     Agent-environment interaction loop.
 
 The main characters of RL are the **agent** and the **environment**. The environment is the world that the agent lives in and interacts with. At every step of interaction, the agent sees a (possibly partial) observation of the state of the world, and then decides on an action to take. The environment changes when the agent acts on it, but may also change on its own.
 
-The agent also perceives a **reward** signal from the environment, a number that tells it how good or bad the current world state is. The goal of the agent is to maximize its cumulative reward, called **return**. Reinforcement learning methods are ways that the agent can learn behaviors to achieve its goal.
+The agent also perceives a **reward** signal from the environment, a number that tells it how good or bad the current world state is. The goal of the agent is to maximise its cumulative reward, called **return**. Reinforcement learning methods are ways that the agent can learn behaviors to achieve its goal.
 
 To talk more specifically what RL does, we need to introduce additional terminology. We need to talk about
 
@@ -69,9 +69,9 @@ To talk more specifically what RL does, we need to introduce additional terminol
 States and Observations
 -----------------------
 
-A **state** :math:`s` is a complete description of the state of the world. There is no information about the world which is hidden from the state. An **observation** :math:`o` is a partial description of a state, which may omit information. 
+A **state** :math:`s` is a complete description of the state of the world. There is no information about the world which is hidden from the state. An **observation** :math:`o` is a partial description of a state, which may omit information.
 
-In deep RL, we almost always represent states and observations by a `real-valued vector, matrix, or higher-order tensor`_. For instance, a visual observation could be represented by the RGB matrix of its pixel values; the state of a robot might be represented by its joint angles and velocities. 
+In deep RL, we almost always represent states and observations by a `real-valued vector, matrix, or higher-order tensor`_. For instance, a visual observation could be represented by the RGB matrix of its pixel values; the state of a robot might be represented by its joint angles and velocities.
 
 When the agent is able to observe the complete state of the environment, we say that the environment is **fully observed**. When the agent can only see a partial observation, we say that the environment is **partially observed**.
 
@@ -89,7 +89,7 @@ Action Spaces
 
 Different environments allow different kinds of actions. The set of all valid actions in a given environment is often called the **action space**. Some environments, like Atari and Go, have **discrete action spaces**, where only a finite number of moves are available to the agent. Other environments, like where the agent controls a robot in a physical world, have **continuous action spaces**. In continuous spaces, actions are real-valued vectors.
 
-This distinction has some quite-profound consequences for methods in deep RL. Some families of algorithms can only be directly applied in one case, and would have to be substantially reworked for the other. 
+This distinction has some quite-profound consequences for methods in deep RL. Some families of algorithms can only be directly applied in one case, and would have to be substantially reworked for the other.
 
 
 Policies
@@ -107,9 +107,9 @@ or it may be stochastic, in which case it is usually denoted by :math:`\pi`:
 
     a_t \sim \pi(\cdot | s_t).
 
-Because the policy is essentially the agent's brain, it's not uncommon to substitute the word "policy" for "agent", eg saying "The policy is trying to maximize reward."
+Because the policy is essentially the agent's brain, it's not uncommon to substitute the word "policy" for "agent", eg saying "The policy is trying to maximise reward."
 
-In deep RL, we deal with **parameterized policies**: policies whose outputs are computable functions that depend on a set of parameters (eg the weights and biases of a neural network) which we can adjust to change the behavior via some optimization algorithm. 
+In deep RL, we deal with **parameterized policies**: policies whose outputs are computable functions that depend on a set of parameters (eg the weights and biases of a neural network) which we can adjust to change the behaviour via some optimization algorithm.
 
 We often denote the parameters of such a policy by :math:`\theta` or :math:`\phi`, and then write this as a subscript on the policy symbol to highlight the connection:
 
@@ -149,20 +149,20 @@ This builds a multi-layer perceptron (MLP) network with two hidden layers of siz
 Stochastic Policies
 ^^^^^^^^^^^^^^^^^^^
 
-The two most common kinds of stochastic policies in deep RL are **categorical policies** and **diagonal Gaussian policies**. 
+The two most common kinds of stochastic policies in deep RL are **categorical policies** and **diagonal Gaussian policies**.
 
-`Categorical`_ policies can be used in discrete action spaces, while diagonal `Gaussian`_ policies are used in continuous action spaces. 
+`Categorical`_ policies can be used in discrete action spaces, while diagonal `Gaussian`_ policies are used in continuous action spaces.
 
 Two key computations are centrally important for using and training stochastic policies:
 
 * sampling actions from the policy,
 * and computing log likelihoods of particular actions, :math:`\log \pi_{\theta}(a|s)`.
 
-In what follows, we'll describe how to do these for both categorical and diagonal Gaussian policies. 
+In what follows, we'll describe how to do these for both categorical and diagonal Gaussian policies.
 
 .. admonition:: Categorical Policies
 
-    A categorical policy is like a classifier over discrete actions. You build the neural network for a categorical policy the same way you would for a classifier: the input is the observation, followed by some number of layers (possibly convolutional or densely-connected, depending on the kind of input), and then you have one final linear layer that gives you logits for each action, followed by a `softmax`_ to convert the logits into probabilities. 
+    A categorical policy is like a classifier over discrete actions. You build the neural network for a categorical policy the same way you would for a classifier: the input is the observation, followed by some number of layers (possibly convolutional or densely-connected, depending on the kind of input), and then you have one final linear layer that gives you logits for each action, followed by a `softmax`_ to convert the logits into probabilities.
 
     **Sampling.** Given the probabilities for each action, frameworks like PyTorch and Tensorflow have built-in tools for sampling. For example, see the documentation for `Categorical distributions in PyTorch`_, `torch.multinomial`_, `tf.distributions.Categorical`_, or `tf.multinomial`_.
 
@@ -256,9 +256,9 @@ The reward function :math:`R` is critically important in reinforcement learning.
 
     r_t = R(s_t, a_t, s_{t+1})
 
-although frequently this is simplified to just a dependence on the current state, :math:`r_t = R(s_t)`, or state-action pair :math:`r_t = R(s_t,a_t)`. 
+although frequently this is simplified to just a dependence on the current state, :math:`r_t = R(s_t)`, or state-action pair :math:`r_t = R(s_t,a_t)`.
 
-The goal of the agent is to maximize some notion of cumulative reward over a trajectory, but this actually can mean a few things. We'll notate all of these cases with :math:`R(\tau)`, and it will either be clear from context which case we mean, or it won't matter (because the same equations will apply to all cases).
+The goal of the agent is to maximise some notion of cumulative reward over a trajectory, but this actually can mean a few things. We'll notate all of these cases with :math:`R(\tau)`, and it will either be clear from context which case we mean, or it won't matter (because the same equations will apply to all cases).
 
 One kind of return is the **finite-horizon undiscounted return**, which is just the sum of rewards obtained in a fixed window of steps:
 
@@ -277,7 +277,7 @@ Why would we ever want a discount factor, though? Don't we just want to get *all
 
 .. admonition:: You Should Know
 
-    While the line between these two formulations of return are quite stark in RL formalism, deep RL practice tends to blur the line a fair bit---for instance, we frequently set up algorithms to optimize the undiscounted return, but use discount factors in estimating **value functions**. 
+    While the line between these two formulations of return are quite stark in RL formalism, deep RL practice tends to blur the line a fair bit---for instance, we frequently set up algorithms to optimise the undiscounted return, but use discount factors in estimating **value functions**.
 
 .. _`may not converge`: https://en.wikipedia.org/wiki/Convergent_series
 
@@ -286,7 +286,7 @@ The RL Problem
 
 Whatever the choice of return measure (whether infinite-horizon discounted, or finite-horizon undiscounted), and whatever the choice of policy, the goal in RL is to select a policy which maximizes **expected return** when the agent acts according to it.
 
-To talk about expected return, we first have to talk about probability distributions over trajectories. 
+To talk about expected return, we first have to talk about probability distributions over trajectories.
 
 Let's suppose that both the environment transitions and the policy are stochastic. In this case, the probability of a :math:`T` -step trajectory is:
 
@@ -308,7 +308,7 @@ The central optimization problem in RL can then be expressed by
 
     \pi^* = \arg \max_{\pi} J(\pi),
 
-with :math:`\pi^*` being the **optimal policy**. 
+with :math:`\pi^*` being the **optimal policy**.
 
 
 Value Functions
@@ -322,13 +322,13 @@ There are four main functions of note here.
 1. The **On-Policy Value Function**, :math:`V^{\pi}(s)`, which gives the expected return if you start in state :math:`s` and always act according to policy :math:`\pi`:
 
     .. math::
-        
+
         V^{\pi}(s) = \underE{\tau \sim \pi}{R(\tau)\left| s_0 = s\right.}
 
 2. The **On-Policy Action-Value Function**, :math:`Q^{\pi}(s,a)`, which gives the expected return if you start in state :math:`s`, take an arbitrary action :math:`a` (which may not have come from the policy), and then forever after act according to policy :math:`\pi`:
 
     .. math::
-        
+
         Q^{\pi}(s,a) = \underE{\tau \sim \pi}{R(\tau)\left| s_0 = s, a_0 = a\right.}
 
 
@@ -368,7 +368,7 @@ There are four main functions of note here.
 The Optimal Q-Function and the Optimal Action
 ---------------------------------------------
 
-There is an important connection between the optimal action-value function :math:`Q^*(s,a)` and the action selected by the optimal policy. By definition, :math:`Q^*(s,a)` gives the expected return for starting in state :math:`s`, taking (arbitrary) action :math:`a`, and then acting according to the optimal policy forever after. 
+There is an important connection between the optimal action-value function :math:`Q^*(s,a)` and the action selected by the optimal policy. By definition, :math:`Q^*(s,a)` gives the expected return for starting in state :math:`s`, taking (arbitrary) action :math:`a`, and then acting according to the optimal policy forever after.
 
 The optimal policy in :math:`s` will select whichever action maximizes the expected return from starting in :math:`s`. As a result, if we have :math:`Q^*`, we can directly obtain the optimal action, :math:`a^*(s)`, via
 
@@ -376,7 +376,7 @@ The optimal policy in :math:`s` will select whichever action maximizes the expec
 
     a^*(s) = \arg \max_a Q^* (s,a).
 
-Note: there may be multiple actions which maximize :math:`Q^*(s,a)`, in which case, all of them are optimal, and the optimal policy may randomly select any of them. But there is always an optimal policy which deterministically selects an action.
+Note: there may be multiple actions which maximise :math:`Q^*(s,a)`, in which case, all of them are optimal, and the optimal policy may randomly select any of them. But there is always an optimal policy which deterministically selects an action.
 
 
 Bellman Equations
@@ -397,7 +397,7 @@ The Bellman equations for the on-policy value functions are
     Q^{\pi}(s,a) &= \underE{s'\sim P}{r(s,a) + \gamma \underE{a'\sim \pi}{Q^{\pi}(s',a')}},
     \end{align*}
 
-where :math:`s' \sim P` is shorthand for :math:`s' \sim P(\cdot |s,a)`, indicating that the next state :math:`s'` is sampled from the environment's transition rules; :math:`a \sim \pi` is shorthand for :math:`a \sim \pi(\cdot|s)`; and :math:`a' \sim \pi` is shorthand for :math:`a' \sim \pi(\cdot|s')`. 
+where :math:`s' \sim P` is shorthand for :math:`s' \sim P(\cdot |s,a)`, indicating that the next state :math:`s'` is sampled from the environment's transition rules; :math:`a \sim \pi` is shorthand for :math:`a \sim \pi(\cdot|s)`; and :math:`a' \sim \pi` is shorthand for :math:`a' \sim \pi(\cdot|s')`.
 
 The Bellman equations for the optimal value functions are
 
@@ -413,7 +413,7 @@ The crucial difference between the Bellman equations for the on-policy value fun
 
 .. admonition:: You Should Know
 
-    The term "Bellman backup" comes up quite frequently in the RL literature. The Bellman backup for a state, or state-action pair, is the right-hand side of the Bellman equation: the reward-plus-next-value. 
+    The term "Bellman backup" comes up quite frequently in the RL literature. The Bellman backup for a state, or state-action pair, is the right-hand side of the Bellman equation: the reward-plus-next-value.
 
 
 Advantage Functions
@@ -444,7 +444,7 @@ So far, we've discussed the agent's environment in an informal way, but if you t
 * :math:`P : S \times A \to \mathcal{P}(S)` is the transition probability function, with :math:`P(s'|s,a)` being the probability of transitioning into state :math:`s'` if you start in state :math:`s` and take action :math:`a`,
 * and :math:`\rho_0` is the starting state distribution.
 
-The name Markov Decision Process refers to the fact that the system obeys the `Markov property`_: transitions only depend on the most recent state and action, and no prior history.  
+The name Markov Decision Process refers to the fact that the system obeys the `Markov property`_: transitions only depend on the most recent state and action, and no prior history.
 
 
 

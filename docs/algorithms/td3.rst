@@ -33,13 +33,13 @@ Key Equations
 
 TD3 concurrently learns two Q-functions, :math:`Q_{\phi_1}` and :math:`Q_{\phi_2}`, by mean square Bellman error minimization, in almost the same way that DDPG learns its single Q-function. To show exactly how TD3 does this and how it differs from normal DDPG, we'll work from the innermost part of the loss function outwards.
 
-First: **target policy smoothing**. Actions used to form the Q-learning target are based on the target policy, :math:`\mu_{\theta_{\text{targ}}}`, but with clipped noise added on each dimension of the action. After adding the clipped noise, the target action is then clipped to lie in the valid action range (all valid actions, :math:`a`, satisfy :math:`a_{Low} \leq a \leq a_{High}`). The target actions are thus: 
+First: **target policy smoothing**. Actions used to form the Q-learning target are based on the target policy, :math:`\mu_{\theta_{\text{targ}}}`, but with clipped noise added on each dimension of the action. After adding the clipped noise, the target action is then clipped to lie in the valid action range (all valid actions, :math:`a`, satisfy :math:`a_{Low} \leq a \leq a_{High}`). The target actions are thus:
 
 .. math::
 
     a'(s') = \text{clip}\left(\mu_{\theta_{\text{targ}}}(s') + \text{clip}(\epsilon,-c,c), a_{Low}, a_{High}\right), \;\;\;\;\; \epsilon \sim \mathcal{N}(0, \sigma)
 
-Target policy smoothing essentially serves as a regularizer for the algorithm. It addresses a particular failure mode that can happen in DDPG: if the Q-function approximator develops an incorrect sharp peak for some actions, the policy will quickly exploit that peak and then have brittle or incorrect behavior. This can be averted by smoothing out the Q-function over similar actions, which target policy smoothing is designed to do. 
+Target policy smoothing essentially serves as a regularizer for the algorithm. It addresses a particular failure mode that can happen in DDPG: if the Q-function approximator develops an incorrect sharp peak for some actions, the policy will quickly exploit that peak and then have brittle or incorrect behaviour. This can be averted by smoothing out the Q-function over similar actions, which target policy smoothing is designed to do.
 
 Next: **clipped double-Q learning**. Both Q-functions use a single target, calculated using whichever of the two Q-functions gives a smaller target value:
 
@@ -153,7 +153,7 @@ Documentation: PyTorch Version
 Saved Model Contents: PyTorch Version
 -------------------------------------
 
-The PyTorch saved model can be loaded with ``ac = torch.load('path/to/model.pt')``, yielding an actor-critic object (``ac``) that has the properties described in the docstring for ``td3_pytorch``. 
+The PyTorch saved model can be loaded with ``ac = torch.load('path/to/model.pt')``, yielding an actor-critic object (``ac``) that has the properties described in the docstring for ``td3_pytorch``.
 
 You can get actions from this model with
 
@@ -177,7 +177,7 @@ Key       Value
 ========  ====================================================================
 ``x``     Tensorflow placeholder for state input.
 ``a``     Tensorflow placeholder for action input.
-``pi``    | Deterministically computes an action from the agent, conditioned 
+``pi``    | Deterministically computes an action from the agent, conditioned
           | on states in ``x``.
 ``q1``    Gives one action-value estimate for states in ``x`` and actions in ``a``.
 ``q2``    Gives the other action-value estimate for states in ``x`` and actions in ``a``.
@@ -186,7 +186,7 @@ Key       Value
 This saved model can be accessed either by
 
 * running the trained policy with the `test_policy.py`_ tool,
-* or loading the whole saved graph into a program with `restore_tf_graph`_. 
+* or loading the whole saved graph into a program with `restore_tf_graph`_.
 
 .. _`test_policy.py`: ../user/saving_and_loading.html#loading-and-running-trained-policies
 .. _`restore_tf_graph`: ../utils/logger.html#spinup.utils.logx.restore_tf_graph

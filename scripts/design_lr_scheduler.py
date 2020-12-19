@@ -73,7 +73,7 @@ if __name__ == "__main__":
         plt.xlabel("Epoch")
         plt.ylabel("Decay value")
 
-        # Plot learning rate decay function agains initial lr
+        # Plot learning rate decay function against initial lr
         lr_factor_array = []
         for epoch in range(epochs):
             lr_factor_array.append(lr_init * np.longdouble(lambda_function(epoch)))
@@ -160,7 +160,7 @@ if __name__ == "__main__":
         plt.xlabel("Epoch")
         plt.ylabel("Learning rate decay factor")
 
-        # Plot learning rate decay function agains initial lr
+        # Plot learning rate decay function against initial lr
         lr_factor_array = []
         lr = lr_init
         for epoch in range(epochs):
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     # ExponentialLR #########################
     #########################################
     # NOTE: Decays the learning rate of each parameter group by gamma every epoch. For a
-    # visualization see https://www.desmos.com/calculator/3fisjexbvp.
+    # visualisation see https://www.desmos.com/calculator/3fisjexbvp.
     #
     # Function:
     #   lr(epoch) = lr_init * gamma**(epoch)
@@ -223,7 +223,7 @@ if __name__ == "__main__":
         # Create ExponentialLR scheduler
         scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma)
 
-        # Plot learning rate decay function agains initial lr
+        # Plot learning rate decay function against initial lr
         lr_factor_array = []
         lr = lr_init
         for epoch in range(epochs):
