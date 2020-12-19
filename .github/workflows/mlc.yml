@@ -33,9 +33,6 @@ jobs:
     steps:
       - name: Checkout mlc repository
         uses: actions/checkout@v2
-        with:
-          submodules: true
-          fetch-depth: 2
       - name: Check markdown code quality using remark-lint
         uses: reviewdog/action-remark-lint@v1
         with:
@@ -59,8 +56,7 @@ jobs:
       - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
-          submodules: true
-          fetch-depth: 1
+          submodules: recursive
       - name: Install system dependencies
         run: sudo apt-get install libopenmpi-dev
       - name: Set up Python environment
@@ -99,7 +95,7 @@ jobs:
       - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
-          submodules: true
+          submodules: recursive
       - name: Install system dependencies
         run: sudo apt-get install libopenmpi-dev
       - name: Set up Python ${{ matrix.python-version }}
