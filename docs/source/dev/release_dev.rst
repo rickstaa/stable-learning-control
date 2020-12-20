@@ -29,7 +29,6 @@ receive an error/warning when you create a pull request. If you think a code gui
 or your code structure doesn't allow you to respect the guideline, please state so in the
 pull request.
 
-
 .. _`Github Actions`: https://github.com/rickstaa/machine-learning-control/actions
 
 General guidelines
@@ -49,6 +48,11 @@ Before releasing the package, make sure the following steps are performed:
     #. Create a release using the GitHub draft release tool.
 
 .. _`pull request checks`: https://github.com/rickstaa/machine-learning-control/actions
+
+
+.. todo:
+
+    Add gitmoji note.
 
 Versioning guidelines
 ---------------------
