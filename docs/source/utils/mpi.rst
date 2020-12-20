@@ -1,3 +1,9 @@
+.. _`Machine Learning Control`: https://github.com/rickstaa/machine-learning-control
+
+.. todo::
+    Update text
+    Add New Logger Format
+
 =========
 MPI Tools
 =========
@@ -16,7 +22,7 @@ MPI + PyTorch Utilities
 
 ``spinup.utils.mpi_pytorch`` contains a few tools to make it easy to do data-parallel PyTorch optimization across MPI processes. The two main ingredients are syncing parameters and averaging gradients before they are used by the adaptive optimizer. Also there's a hacky fix for a problem where the PyTorch instance in each separate process tries to get too many threads, and they start to clobber each other.
 
-The pattern for using these tools looks something like this: 
+The pattern for using these tools looks something like this:
 
 1) At the beginning of the training script, call ``setup_pytorch_for_mpi()``. (Avoids clobbering problem.)
 

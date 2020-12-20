@@ -1,3 +1,9 @@
+.. _`Machine Learning Control`: https://github.com/rickstaa/machine-learning-control
+
+.. todo::
+    Update text
+    Add New Logger Format
+
 ======
 Logger
 ======
@@ -7,11 +13,15 @@ Logger
 Using a Logger
 ==============
 
-Spinning Up ships with basic logging tools, implemented in the classes `Logger`_ and `EpochLogger`_. The Logger class contains most of the basic functionality for saving diagnostics, hyperparameter configurations, the state of a training run, and the trained model. The EpochLogger class adds a thin layer on top of that to make it easy to track the average, standard deviation, min, and max value of a diagnostic over each epoch and across MPI workers.
+`Machine Learning Control`_ ships with basic logging tools, implemented in the classes `Logger`_
+and `EpochLogger`_. The Logger class contains most of the basic functionality for saving diagnostics,
+hyperparameter configurations, the state of a training run, and the trained model. The EpochLogger
+class adds a thin layer on top of that to make it easy to track the average, standard deviation, min,
+and max value of a diagnostic over each epoch and across MPI workers.
 
 .. admonition:: You Should Know
 
-    All Spinning Up algorithm implementations use an EpochLogger.
+    All `Machine Learning Control`_ algorithm implementations use an EpochLogger.
 
 .. _`Logger`: ../utils/logger.html#spinup.utils.logx.Logger
 .. _`EpochLogger`: ../utils/logger.html#spinup.utils.logx.EpochLogger
@@ -34,9 +44,14 @@ First, let's look at a simple example of how an EpochLogger keeps track of a dia
 |         MinTest |               0 |
 -------------------------------------
 
-The ``store`` method is used to save all values of ``Test`` to the ``epoch_logger``'s internal state. Then, when ``log_tabular`` is called, it computes the average, standard deviation, min, and max of ``Test`` over all of the values in the internal state. The internal state is wiped clean after the call to ``log_tabular`` (to prevent leakage into the statistics at the next epoch). Finally, ``dump_tabular`` is called to write the diagnostics to file and to stdout.
+The ``store`` method is used to save all values of ``Test`` to the ``epoch_logger``'s internal state.
+Then, when ``log_tabular`` is called, it computes the average, standard deviation, min, and max of ``Test``
+over all of the values in the internal state. The internal state is wiped clean after the call to ``log_tabular``
+(to prevent leakage into the statistics at the next epoch). Finally, ``dump_tabular`` is called to write the
+diagnostics to file and to stdout.
 
-Next, let's look at a full training procedure with the logger embedded, to highlight configuration and model saving as well as diagnostic logging:
+Next, let's look at a full training procedure with the logger embedded, to highlight configuration and model
+saving as well as diagnostic logging:
 
 .. code-block:: python
    :linenos:
@@ -131,9 +146,12 @@ In this example, observe that
 Logging and PyTorch
 -------------------
 
-The preceding example was given in Tensorflow. For PyTorch, everything is the same except for L42-43: instead of ``logger.setup_tf_saver``, you would use ``logger.setup_pytorch_saver``, and you would pass it `a PyTorch module`_ (the network you are training) as an argument.
+The preceding example was given in Tensorflow. For PyTorch, everything is the same except for L42-43:
+instead of ``logger.setup_tf_saver``, you would use ``logger.setup_pytorch_saver``, and you would pass
+it `a PyTorch module`_ (the network you are training) as an argument.
 
-The behaviour of ``logger.save_state`` is the same as in the Tensorflow case: each time it is called, it'll save the latest version of the PyTorch module.
+The behaviour of ``logger.save_state`` is the same as in the Tensorflow case: each time it is called,
+it'll save the latest version of the PyTorch module.
 
 .. _`a PyTorch module`: https://pytorch.org/docs/stable/nn.html#torch.nn.Module
 
@@ -142,7 +160,12 @@ Logging and MPI
 
 .. admonition:: You Should Know
 
-    Several algorithms in RL are easily parallelized by using MPI to average gradients and/or other key quantities. The Spinning Up loggers are designed to be well-behaved when using MPI: things will only get written to stdout and to file from the process with rank 0. But information from other processes isn't lost if you use the EpochLogger: everything which is passed into EpochLogger via ``store``, regardless of which process it's stored in, gets used to compute average/std/min/max values for a diagnostic.
+    Several algorithms in RL are easily parallelized by using MPI to average gradients and/or other
+    key quantities. The `Machine Learning Control`_ loggers are designed to be well-behaved when using
+    MPI: things will only get written to stdout and to file from the process with rank 0. But
+    information from other processes isn't lost if you use the EpochLogger: everything which
+    is passed into EpochLogger via ``store``, regardless of which process it's stored in, gets
+    used to compute average/std/min/max values for a diagnostic.
 
 
 Logger Classes
@@ -162,13 +185,14 @@ Logger Classes
 Loading Saved Models (PyTorch Only)
 ===================================
 
-To load an actor-critic model saved by a PyTorch Spinning Up implementation, run:
+To load an actor-critic model saved by a PyTorch `Machine Learning Control`_ implementation, run:
 
 .. code-block:: python
 
     ac = torch.load('path/to/model.pt')
 
-When you use this method to load an actor-critic model, you can minimally expect it to have an ``act`` method that allows you to sample actions from the policy, given observations:
+When you use this method to load an actor-critic model, you can minimally expect it to have an ``act``
+method that allows you to sample actions from the policy, given observations:
 
 .. code-block:: python
 
@@ -180,7 +204,8 @@ Loading Saved Graphs (Tensorflow Only)
 
 .. autofunction:: spinup.utils.logx.restore_tf_graph
 
-When you use this method to restore a graph saved by a Tensorflow Spinning Up implementation, you can minimally expect it to include the following:
+When you use this method to restore a graph saved by a Tensorflow `Machine Learning Control`_ implementation,
+you can minimally expect it to include the following:
 
 ======  ===============================================
 Key     Value
@@ -190,4 +215,5 @@ Key     Value
         | on states in ``x``.
 ======  ===============================================
 
-The relevant value functions for an algorithm are also typically stored. For details of what else gets saved by a given algorithm, see its documentation page.
+The relevant value functions for an algorithm are also typically stored. For details of what else gets
+saved by a given algorithm, see its documentation page.
