@@ -1,4 +1,11 @@
 """Script that can be used to design your learning rate decay scheduler.
+
+It allows you to see the learning rate decay of multiple learning rate decay strategies
+so that you can decide which strategy you want to use with the `Pytorch`_ and
+`Tensorflow`Learning rate schedulers.
+
+.. _`Pytorch`_: https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+.. _`Tensorflow`_: https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler
 """
 
 import decimal
@@ -27,7 +34,7 @@ scheduler_type = 1
 optimizer = optim.Adam([dummy_var], lr=lr_init)
 
 #################################################
-# Choose and tune your scheduler  ################
+# Choose and tune your scheduler  ###############
 #################################################
 
 if __name__ == "__main__":
