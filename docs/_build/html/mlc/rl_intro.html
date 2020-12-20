@@ -1,0 +1,531 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Part 1: Key Concepts in RL &mdash; Machine Learning Control 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/modify.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../control/control.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control/plotting.html">Plotting Results</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/hardware.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/supported.html">Supported hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/deploy.html">Deploy</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Utilities Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/run_utils.html">Run Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Zone</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/release_dev.html">Release package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/doc_dev.html">Release documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../etc/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etc/author.html">About the Author</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Machine Learning Control</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Part 1: Key Concepts in RL</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/mlc/rl_intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="part-1-key-concepts-in-rl">
+<h1><a class="toc-backref" href="#id2">Part 1: Key Concepts in RL</a><a class="headerlink" href="#part-1-key-concepts-in-rl" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#part-1-key-concepts-in-rl" id="id2">Part 1: Key Concepts in RL</a><ul>
+<li><a class="reference internal" href="#what-can-rl-do" id="id3">What Can RL Do?</a></li>
+<li><a class="reference internal" href="#key-concepts-and-terminology" id="id4">Key Concepts and Terminology</a></li>
+<li><a class="reference internal" href="#optional-formalism" id="id5">(Optional) Formalism</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Welcome to our introduction to reinforcement learning! Here, we aim to acquaint you with</p>
+<ul class="simple">
+<li>the language and notation used to discuss the subject,</li>
+<li>a high-level explanation of what RL algorithms do (although we mostly avoid the question of <em>how</em> they do it),</li>
+<li>and a little bit of the core math that underlies the algorithms.</li>
+</ul>
+<p>In a nutshell, RL is the study of agents and how they learn by trial and error. It formalizes the idea that rewarding or punishing an agent for its behaviour makes it more likely to repeat or forego that behaviour in the future.</p>
+<div class="section" id="what-can-rl-do">
+<h2><a class="toc-backref" href="#id3">What Can RL Do?</a><a class="headerlink" href="#what-can-rl-do" title="Permalink to this headline">¶</a></h2>
+<p>RL methods have recently enjoyed a wide variety of successes. For example, it’s been used to teach computers to control robots in simulation…</p>
+<video autoplay="" src="https://d4mucfpksywv.cloudfront.net/openai-baselines-ppo/knocked-over-stand-up.mp4" loop="" controls="" style="display: block; margin-left: auto; margin-right: auto; margin-bottom:1.5em; width: 100%; max-width: 720px; max-height: 80vh;">
+</video><p>…and in the real world…</p>
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+    <iframe src="https://www.youtube.com/embed/jwSbzNHGflM?ecver=1" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+</div>
+<br /><p>It’s also famously been used to create breakthrough AIs for sophisticated strategy games, most notably <a class="reference external" href="https://deepmind.com/research/alphago/">Go</a> and <a class="reference external" href="https://blog.openai.com/openai-five/">Dota</a>, taught computers to <a class="reference external" href="https://deepmind.com/research/dqn/">play Atari games</a> from raw pixels, and trained simulated robots <a class="reference external" href="https://blog.openai.com/deep-reinforcement-learning-from-human-preferences/">to follow human instructions</a>.</p>
+</div>
+<div class="section" id="key-concepts-and-terminology">
+<h2><a class="toc-backref" href="#id4">Key Concepts and Terminology</a><a class="headerlink" href="#key-concepts-and-terminology" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id1">
+<img alt="../_images/rl_diagram_transparent_bg.png" src="../_images/rl_diagram_transparent_bg.png" />
+<p class="caption"><span class="caption-text">Agent-environment interaction loop.</span></p>
+</div>
+<p>The main characters of RL are the <strong>agent</strong> and the <strong>environment</strong>. The environment is the world that the agent lives in and interacts with. At every step of interaction, the agent sees a (possibly partial) observation of the state of the world, and then decides on an action to take. The environment changes when the agent acts on it, but may also change on its own.</p>
+<p>The agent also perceives a <strong>reward</strong> signal from the environment, a number that tells it how good or bad the current world state is. The goal of the agent is to maximise its cumulative reward, called <strong>return</strong>. Reinforcement learning methods are ways that the agent can learn behaviors to achieve its goal.</p>
+<p>To talk more specifically what RL does, we need to introduce additional terminology. We need to talk about</p>
+<ul class="simple">
+<li>states and observations,</li>
+<li>action spaces,</li>
+<li>policies,</li>
+<li>trajectories,</li>
+<li>different formulations of return,</li>
+<li>the RL optimization problem,</li>
+<li>and value functions.</li>
+</ul>
+<div class="section" id="states-and-observations">
+<h3>States and Observations<a class="headerlink" href="#states-and-observations" title="Permalink to this headline">¶</a></h3>
+<p>A <strong>state</strong> <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/> is a complete description of the state of the world. There is no information about the world which is hidden from the state. An <strong>observation</strong> <img class="math" src="../_images/math/ca2d5053d03bd8fd9f399e5afbb834202e2d2f2d.svg" alt="o"/> is a partial description of a state, which may omit information.</p>
+<p>In deep RL, we almost always represent states and observations by a <a class="reference external" href="https://en.wikipedia.org/wiki/Real_coordinate_space">real-valued vector, matrix, or higher-order tensor</a>. For instance, a visual observation could be represented by the RGB matrix of its pixel values; the state of a robot might be represented by its joint angles and velocities.</p>
+<p>When the agent is able to observe the complete state of the environment, we say that the environment is <strong>fully observed</strong>. When the agent can only see a partial observation, we say that the environment is <strong>partially observed</strong>.</p>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p>Reinforcement learning notation sometimes puts the symbol for state, <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/>, in places where it would be technically more appropriate to write the symbol for observation, <img class="math" src="../_images/math/ca2d5053d03bd8fd9f399e5afbb834202e2d2f2d.svg" alt="o"/>. Specifically, this happens when talking about how the agent decides an action: we often signal in notation that the action is conditioned on the state, when in practice, the action is conditioned on the observation because the agent does not have access to the state.</p>
+<p class="last">In our guide, we’ll follow standard conventions for notation, but it should be clear from context which is meant. If something is unclear, though, please raise an issue! Our goal is to teach, not to confuse.</p>
+</div>
+</div>
+<div class="section" id="action-spaces">
+<h3>Action Spaces<a class="headerlink" href="#action-spaces" title="Permalink to this headline">¶</a></h3>
+<p>Different environments allow different kinds of actions. The set of all valid actions in a given environment is often called the <strong>action space</strong>. Some environments, like Atari and Go, have <strong>discrete action spaces</strong>, where only a finite number of moves are available to the agent. Other environments, like where the agent controls a robot in a physical world, have <strong>continuous action spaces</strong>. In continuous spaces, actions are real-valued vectors.</p>
+<p>This distinction has some quite-profound consequences for methods in deep RL. Some families of algorithms can only be directly applied in one case, and would have to be substantially reworked for the other.</p>
+</div>
+<div class="section" id="policies">
+<h3>Policies<a class="headerlink" href="#policies" title="Permalink to this headline">¶</a></h3>
+<p>A <strong>policy</strong> is a rule used by an agent to decide what actions to take. It can be deterministic, in which case it is usually denoted by <img class="math" src="../_images/math/123eb57279cfbea38a65e8e129bda64972fedc3d.svg" alt="\mu"/>:</p>
+<div class="math">
+<p><img src="../_images/math/73fcacd255a221d20d5d9300acf86e4d3bf5ea1b.svg" alt="a_t = \mu(s_t),"/></p>
+</div><p>or it may be stochastic, in which case it is usually denoted by <img class="math" src="../_images/math/1ae2bd722da01b3a89ffc139af2437c28364a966.svg" alt="\pi"/>:</p>
+<div class="math">
+<p><img src="../_images/math/89757355805c4084ac93610e9581c060f2e61610.svg" alt="a_t \sim \pi(\cdot | s_t)."/></p>
+</div><p>Because the policy is essentially the agent’s brain, it’s not uncommon to substitute the word “policy” for “agent”, eg saying “The policy is trying to maximise reward.”</p>
+<p>In deep RL, we deal with <strong>parameterized policies</strong>: policies whose outputs are computable functions that depend on a set of parameters (eg the weights and biases of a neural network) which we can adjust to change the behaviour via some optimization algorithm.</p>
+<p>We often denote the parameters of such a policy by <img class="math" src="../_images/math/ce5edddd490112350f4bd555d9390e0e845f754a.svg" alt="\theta"/> or <img class="math" src="../_images/math/3b22abcadf8773922f8db80011611bad8123a783.svg" alt="\phi"/>, and then write this as a subscript on the policy symbol to highlight the connection:</p>
+<div class="math">
+<p><img src="../_images/math/831f731859658682b2af7e217a76648697c9de46.svg" alt="a_t &amp;= \mu_{\theta}(s_t) \\
+a_t &amp;\sim \pi_{\theta}(\cdot | s_t)."/></p>
+</div><div class="section" id="deterministic-policies">
+<h4>Deterministic Policies<a class="headerlink" href="#deterministic-policies" title="Permalink to this headline">¶</a></h4>
+<p><strong>Example: Deterministic Policies.</strong> Here is a code snippet for building a simple deterministic policy for a continuous action space in PyTorch, using the <code class="docutils literal notranslate"><span class="pre">torch.nn</span></code> package:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pi_net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+              <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">obs_dim</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+              <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+              <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+              <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+              <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">act_dim</span><span class="p">)</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<p>This builds a multi-layer perceptron (MLP) network with two hidden layers of size 64 and <img class="math" src="../_images/math/c65796f3bb56c457e63ebc770e3d775cace08673.svg" alt="\tanh"/> activation functions. If <code class="docutils literal notranslate"><span class="pre">obs</span></code> is a Numpy array containing a batch of observations, <code class="docutils literal notranslate"><span class="pre">pi_net</span></code> can be used to obtain a batch of actions as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obs_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">actions</span> <span class="o">=</span> <span class="n">pi_net</span><span class="p">(</span><span class="n">obs_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">Don’t worry about it if this neural network stuff is unfamiliar to you—this tutorial will focus on RL, and not on the neural network side of things. So you can skip this example and come back to it later. But we figured that if you already knew, it could be helpful.</p>
+</div>
+</div>
+<div class="section" id="stochastic-policies">
+<h4>Stochastic Policies<a class="headerlink" href="#stochastic-policies" title="Permalink to this headline">¶</a></h4>
+<p>The two most common kinds of stochastic policies in deep RL are <strong>categorical policies</strong> and <strong>diagonal Gaussian policies</strong>.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Categorical_distribution">Categorical</a> policies can be used in discrete action spaces, while diagonal <a class="reference external" href="https://en.wikipedia.org/wiki/Multivariate_normal_distribution">Gaussian</a> policies are used in continuous action spaces.</p>
+<p>Two key computations are centrally important for using and training stochastic policies:</p>
+<ul class="simple">
+<li>sampling actions from the policy,</li>
+<li>and computing log likelihoods of particular actions, <img class="math" src="../_images/math/cc2095cba170e09137c55cb4f1786955b3174336.svg" alt="\log \pi_{\theta}(a|s)"/>.</li>
+</ul>
+<p>In what follows, we’ll describe how to do these for both categorical and diagonal Gaussian policies.</p>
+<div class="admonition-categorical-policies admonition">
+<p class="first admonition-title">Categorical Policies</p>
+<p>A categorical policy is like a classifier over discrete actions. You build the neural network for a categorical policy the same way you would for a classifier: the input is the observation, followed by some number of layers (possibly convolutional or densely-connected, depending on the kind of input), and then you have one final linear layer that gives you logits for each action, followed by a <a class="reference external" href="https://developers.google.com/machine-learning/crash-course/multi-class-neural-networks/softmax">softmax</a> to convert the logits into probabilities.</p>
+<p><strong>Sampling.</strong> Given the probabilities for each action, frameworks like PyTorch and Tensorflow have built-in tools for sampling. For example, see the documentation for <a class="reference external" href="https://pytorch.org/docs/stable/distributions.html#categorical">Categorical distributions in PyTorch</a>, <a class="reference external" href="https://pytorch.org/docs/stable/torch.html#torch.multinomial">torch.multinomial</a>, <a class="reference external" href="https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/distributions/Categorical">tf.distributions.Categorical</a>, or <a class="reference external" href="https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/random/multinomial">tf.multinomial</a>.</p>
+<p><strong>Log-Likelihood.</strong> Denote the last layer of probabilities as <img class="math" src="../_images/math/5364a8661022d60da78f14c9bd33124118719454.svg" alt="P_{\theta}(s)"/>. It is a vector with however many entries as there are actions, so we can treat the actions as indices for the vector. The log likelihood for an action <img class="math" src="../_images/math/76a319586cd215c8f2075b938fc6f6e07c81714b.svg" alt="a"/> can then be obtained by indexing into the vector:</p>
+<div class="last math">
+<p><img src="../_images/math/ab8f7f4aaa7f1a3d1039ebdee058f297ed712c5a.svg" alt="\log \pi_{\theta}(a|s) = \log \left[P_{\theta}(s)\right]_a."/></p>
+</div></div>
+<div class="admonition-diagonal-gaussian-policies admonition">
+<p class="first admonition-title">Diagonal Gaussian Policies</p>
+<p>A multivariate Gaussian distribution (or multivariate normal distribution, if you prefer) is described by a mean vector, <img class="math" src="../_images/math/123eb57279cfbea38a65e8e129bda64972fedc3d.svg" alt="\mu"/>, and a covariance matrix, <img class="math" src="../_images/math/f03ec2afde0e994f47df68b273d86e3afbfdce80.svg" alt="\Sigma"/>. A diagonal Gaussian distribution is a special case where the covariance matrix only has entries on the diagonal. As a result, we can represent it by a vector.</p>
+<p>A diagonal Gaussian policy always has a neural network that maps from observations to mean actions, <img class="math" src="../_images/math/6923cb2043e84ea05d3eddbb7436c60659243cb9.svg" alt="\mu_{\theta}(s)"/>. There are two different ways that the covariance matrix is typically represented.</p>
+<p><strong>The first way:</strong> There is a single vector of log standard deviations, <img class="math" src="../_images/math/3276548e12065a40224719e967e02b1538d3c6b2.svg" alt="\log \sigma"/>, which is <strong>not</strong> a function of state: the <img class="math" src="../_images/math/3276548e12065a40224719e967e02b1538d3c6b2.svg" alt="\log \sigma"/> are standalone parameters. (You Should Know: our implementations of VPG, TRPO, and PPO do it this way.)</p>
+<p><strong>The second way:</strong> There is a neural network that maps from states to log standard deviations, <img class="math" src="../_images/math/4015c2b584427ca2a76f50ed03b2c8d0b5b3b350.svg" alt="\log \sigma_{\theta}(s)"/>. It may optionally share some layers with the mean network.</p>
+<p>Note that in both cases we output log standard deviations instead of standard deviations directly. This is because log stds are free to take on any values in <img class="math" src="../_images/math/9954b39a284ca1aa0aed2dc3f769404cc4e9f397.svg" alt="(-\infty, \infty)"/>, while stds must be nonnegative. It’s easier to train parameters if you don’t have to enforce those kinds of constraints. The standard deviations can be obtained immediately from the log standard deviations by exponentiating them, so we do not lose anything by representing them this way.</p>
+<p><strong>Sampling.</strong> Given the mean action <img class="math" src="../_images/math/6923cb2043e84ea05d3eddbb7436c60659243cb9.svg" alt="\mu_{\theta}(s)"/> and standard deviation <img class="math" src="../_images/math/cd6cc1a1e8ed7fc447a2ea0e59ad848707631c94.svg" alt="\sigma_{\theta}(s)"/>, and a vector <img class="math" src="../_images/math/886f88801abbe687ef8480ddd980f4215d2aaa17.svg" alt="z"/> of noise from a spherical Gaussian (<img class="math" src="../_images/math/a5a922f10e8b343418b1600a9a1601183673d126.svg" alt="z \sim \mathcal{N}(0, I)"/>), an action sample can be computed with</p>
+<div class="math">
+<p><img src="../_images/math/b18a4163a861b1fc18c6a6824af3f5540d4e2468.svg" alt="a = \mu_{\theta}(s) + \sigma_{\theta}(s) \odot z,"/></p>
+</div><p>where <img class="math" src="../_images/math/77c323f00609b53862181c31bf0d045c75b29440.svg" alt="\odot"/> denotes the elementwise product of two vectors. Standard frameworks have built-in ways to generate the noise vectors, such as <a class="reference external" href="https://pytorch.org/docs/stable/torch.html#torch.normal">torch.normal</a> or <a class="reference external" href="https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/random/normal">tf.random_normal</a>. Alternatively, you can build distribution objects, eg through <a class="reference external" href="https://pytorch.org/docs/stable/distributions.html#normal">torch.distributions.Normal</a> or <a class="reference external" href="https://www.tensorflow.org/versions/r1.15/api_docs/python/tf/distributions/Normal">tf.distributions.Normal</a>, and use them to generate samples. (The advantage of the latter approach is that those objects can also calculate log-likelihoods for you.)</p>
+<p><strong>Log-Likelihood.</strong> The log-likelihood of a <img class="math" src="../_images/math/a29aa94bd66ac7a6bb3195233fd9a9df8575af86.svg" alt="k"/> -dimensional action <img class="math" src="../_images/math/76a319586cd215c8f2075b938fc6f6e07c81714b.svg" alt="a"/>, for a diagonal Gaussian with mean <img class="math" src="../_images/math/0b9672dcfd65483d710b61a359dcabea32dab1f6.svg" alt="\mu = \mu_{\theta}(s)"/> and standard deviation <img class="math" src="../_images/math/20acc318d574242ee023ecdb36f3651847016480.svg" alt="\sigma = \sigma_{\theta}(s)"/>, is given by</p>
+<div class="last math">
+<p><img src="../_images/math/26f82323a4055444b30fa791238ec90913a12d7b.svg" alt="\log \pi_{\theta}(a|s) = -\frac{1}{2}\left(\sum_{i=1}^k \left(\frac{(a_i - \mu_i)^2}{\sigma_i^2} + 2 \log \sigma_i \right) + k \log 2\pi \right)."/></p>
+</div></div>
+</div>
+</div>
+<div class="section" id="trajectories">
+<h3>Trajectories<a class="headerlink" href="#trajectories" title="Permalink to this headline">¶</a></h3>
+<p>A trajectory <img class="math" src="../_images/math/67a5412645decf6424bdd97aed3e9e7601bd784f.svg" alt="\tau"/> is a sequence of states and actions in the world,</p>
+<div class="math">
+<p><img src="../_images/math/8337d86159a1cd98dfcd0601993d7b6b2fbb54d9.svg" alt="\tau = (s_0, a_0, s_1, a_1, ...)."/></p>
+</div><p>The very first state of the world, <img class="math" src="../_images/math/bf047f4b5c542c1bfbaf4bf411919f5e1f7ecba8.svg" alt="s_0"/>, is randomly sampled from the <strong>start-state distribution</strong>, sometimes denoted by <img class="math" src="../_images/math/2d44ad6f01d4e56266daa8e3b35bd4f298e25788.svg" alt="\rho_0"/>:</p>
+<div class="math">
+<p><img src="../_images/math/eef23a6502b9cec4bc399bcbce93547c3723643c.svg" alt="s_0 \sim \rho_0(\cdot)."/></p>
+</div><p>State transitions (what happens to the world between the state at time <img class="math" src="../_images/math/7ed8f1921a380f7a5f45b87825838fdced658554.svg" alt="t"/>, <img class="math" src="../_images/math/4fcf0bf03c2a691496ce04ade269159d8b89caa5.svg" alt="s_t"/>, and the state at <img class="math" src="../_images/math/55c6e4a64640ac5e7b4da87ff4bcf12da93ef252.svg" alt="t+1"/>, <img class="math" src="../_images/math/4b669c18a22476afbab2c49bb68525256b416cff.svg" alt="s_{t+1}"/>), are governed by the natural laws of the environment, and depend on only the most recent action, <img class="math" src="../_images/math/39079fcebc9eb2aba4ab3fe7359b34807ceccc0e.svg" alt="a_t"/>. They can be either deterministic,</p>
+<div class="math">
+<p><img src="../_images/math/16da6346104894fb6a673473cbfc9ffeba6471fa.svg" alt="s_{t+1} = f(s_t, a_t)"/></p>
+</div><p>or stochastic,</p>
+<div class="math">
+<p><img src="../_images/math/872390af4f5b2541d17e7ef2bfaecbe1e9746d94.svg" alt="s_{t+1} \sim P(\cdot|s_t, a_t)."/></p>
+</div><p>Actions come from an agent according to its policy.</p>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">Trajectories are also frequently called <strong>episodes</strong> or <strong>rollouts</strong>.</p>
+</div>
+</div>
+<div class="section" id="reward-and-return">
+<h3>Reward and Return<a class="headerlink" href="#reward-and-return" title="Permalink to this headline">¶</a></h3>
+<p>The reward function <img class="math" src="../_images/math/1f9d30d011e9fe548e999c9bfcf3fccfa27ec3ff.svg" alt="R"/> is critically important in reinforcement learning. It depends on the current state of the world, the action just taken, and the next state of the world:</p>
+<div class="math">
+<p><img src="../_images/math/6ed565b0911f12c8ef64d93a617d8bb30380d5d5.svg" alt="r_t = R(s_t, a_t, s_{t+1})"/></p>
+</div><p>although frequently this is simplified to just a dependence on the current state, <img class="math" src="../_images/math/4befde40a79499d3655bebda93423e2661036f0d.svg" alt="r_t = R(s_t)"/>, or state-action pair <img class="math" src="../_images/math/3a66e4711a16a69ca64bd10d96985363d6e4bc5c.svg" alt="r_t = R(s_t,a_t)"/>.</p>
+<p>The goal of the agent is to maximise some notion of cumulative reward over a trajectory, but this actually can mean a few things. We’ll notate all of these cases with <img class="math" src="../_images/math/c2d6738c058406ade40dcf870311db157ed80e0f.svg" alt="R(\tau)"/>, and it will either be clear from context which case we mean, or it won’t matter (because the same equations will apply to all cases).</p>
+<p>One kind of return is the <strong>finite-horizon undiscounted return</strong>, which is just the sum of rewards obtained in a fixed window of steps:</p>
+<div class="math">
+<p><img src="../_images/math/b2466507811fc9b9cbe2a0a51fd36034e16f2780.svg" alt="R(\tau) = \sum_{t=0}^T r_t."/></p>
+</div><p>Another kind of return is the <strong>infinite-horizon discounted return</strong>, which is the sum of all rewards <em>ever</em> obtained by the agent, but discounted by how far off in the future they’re obtained. This formulation of reward includes a discount factor <img class="math" src="../_images/math/7c0000152970a235979a501b70bd05c781a8b1ec.svg" alt="\gamma \in (0,1)"/>:</p>
+<div class="math">
+<p><img src="../_images/math/bf49428c66c91a45d7b66a432450ee49a3622348.svg" alt="R(\tau) = \sum_{t=0}^{\infty} \gamma^t r_t."/></p>
+</div><p>Why would we ever want a discount factor, though? Don’t we just want to get <em>all</em> rewards? We do, but the discount factor is both intuitively appealing and mathematically convenient. On an intuitive level: cash now is better than cash later. Mathematically: an infinite-horizon sum of rewards <a class="reference external" href="https://en.wikipedia.org/wiki/Convergent_series">may not converge</a> to a finite value, and is hard to deal with in equations. But with a discount factor and under reasonable conditions, the infinite sum converges.</p>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">While the line between these two formulations of return are quite stark in RL formalism, deep RL practice tends to blur the line a fair bit—for instance, we frequently set up algorithms to optimise the undiscounted return, but use discount factors in estimating <strong>value functions</strong>.</p>
+</div>
+</div>
+<div class="section" id="the-rl-problem">
+<h3>The RL Problem<a class="headerlink" href="#the-rl-problem" title="Permalink to this headline">¶</a></h3>
+<p>Whatever the choice of return measure (whether infinite-horizon discounted, or finite-horizon undiscounted), and whatever the choice of policy, the goal in RL is to select a policy which maximizes <strong>expected return</strong> when the agent acts according to it.</p>
+<p>To talk about expected return, we first have to talk about probability distributions over trajectories.</p>
+<p>Let’s suppose that both the environment transitions and the policy are stochastic. In this case, the probability of a <img class="math" src="../_images/math/844fe92e58a680253626f9b0706a06c578a4e040.svg" alt="T"/> -step trajectory is:</p>
+<div class="math">
+<p><img src="../_images/math/69369e7fae3098a2f05a79680fbecbf48a4e7f66.svg" alt="P(\tau|\pi) = \rho_0 (s_0) \prod_{t=0}^{T-1} P(s_{t+1} | s_t, a_t) \pi(a_t | s_t)."/></p>
+</div><p>The expected return (for whichever measure), denoted by <img class="math" src="../_images/math/89397c4cc47a40c3466507e1330dc380458f762e.svg" alt="J(\pi)"/>, is then:</p>
+<div class="math">
+<p><img src="../_images/math/f0d6e3879540e318df14d2c8b68af828b1b350da.svg" alt="J(\pi) = \int_{\tau} P(\tau|\pi) R(\tau) = \underE{\tau\sim \pi}{R(\tau)}."/></p>
+</div><p>The central optimization problem in RL can then be expressed by</p>
+<div class="math">
+<p><img src="../_images/math/2de61070bf8758d03104b4f15df45c8ff5a86f5a.svg" alt="\pi^* = \arg \max_{\pi} J(\pi),"/></p>
+</div><p>with <img class="math" src="../_images/math/1fbf259ac070c92161e32b93c0f64705a8f18f0a.svg" alt="\pi^*"/> being the <strong>optimal policy</strong>.</p>
+</div>
+<div class="section" id="value-functions">
+<h3>Value Functions<a class="headerlink" href="#value-functions" title="Permalink to this headline">¶</a></h3>
+<p>It’s often useful to know the <strong>value</strong> of a state, or state-action pair. By value, we mean the expected return if you start in that state or state-action pair, and then act according to a particular policy forever after. <strong>Value functions</strong> are used, one way or another, in almost every RL algorithm.</p>
+<p>There are four main functions of note here.</p>
+<ol class="arabic">
+<li><p class="first">The <strong>On-Policy Value Function</strong>, <img class="math" src="../_images/math/a81303323c25fc13cd0652ca46d7596276e5cb7e.svg" alt="V^{\pi}(s)"/>, which gives the expected return if you start in state <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/> and always act according to policy <img class="math" src="../_images/math/1ae2bd722da01b3a89ffc139af2437c28364a966.svg" alt="\pi"/>:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="../_images/math/e043709b46c9aa6811953dabd82461db6308fe19.svg" alt="V^{\pi}(s) = \underE{\tau \sim \pi}{R(\tau)\left| s_0 = s\right.}"/></p>
+</div></div></blockquote>
+</li>
+<li><p class="first">The <strong>On-Policy Action-Value Function</strong>, <img class="math" src="../_images/math/86549c5748a6fdd134970fd88f4842bd862a8b25.svg" alt="Q^{\pi}(s,a)"/>, which gives the expected return if you start in state <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/>, take an arbitrary action <img class="math" src="../_images/math/76a319586cd215c8f2075b938fc6f6e07c81714b.svg" alt="a"/> (which may not have come from the policy), and then forever after act according to policy <img class="math" src="../_images/math/1ae2bd722da01b3a89ffc139af2437c28364a966.svg" alt="\pi"/>:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="../_images/math/85d41c8c383a96e1ed34fc66f14abd61b132dd28.svg" alt="Q^{\pi}(s,a) = \underE{\tau \sim \pi}{R(\tau)\left| s_0 = s, a_0 = a\right.}"/></p>
+</div></div></blockquote>
+</li>
+<li><p class="first">The <strong>Optimal Value Function</strong>, <img class="math" src="../_images/math/6159ad57fb5294b812e76c6260a65dc5ffa2a5f7.svg" alt="V^*(s)"/>, which gives the expected return if you start in state <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/> and always act according to the <em>optimal</em> policy in the environment:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="../_images/math/01d48ea453ecb7b560ea7d42144ae24422fbd0eb.svg" alt="V^*(s) = \max_{\pi} \underE{\tau \sim \pi}{R(\tau)\left| s_0 = s\right.}"/></p>
+</div></div></blockquote>
+</li>
+<li><p class="first">The <strong>Optimal Action-Value Function</strong>, <img class="math" src="../_images/math/cbed396f671d6fb54f6df5c044b82ab3f052d63e.svg" alt="Q^*(s,a)"/>, which gives the expected return if you start in state <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/>, take an arbitrary action <img class="math" src="../_images/math/76a319586cd215c8f2075b938fc6f6e07c81714b.svg" alt="a"/>, and then forever after act according to the <em>optimal</em> policy in the environment:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="../_images/math/bc92e8ce1cf0aaa212e144d5ed74e3b115453cb6.svg" alt="Q^*(s,a) = \max_{\pi} \underE{\tau \sim \pi}{R(\tau)\left| s_0 = s, a_0 = a\right.}"/></p>
+</div></div></blockquote>
+</li>
+</ol>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">When we talk about value functions, if we do not make reference to time-dependence, we only mean expected <strong>infinite-horizon discounted return</strong>. Value functions for finite-horizon undiscounted return would need to accept time as an argument. Can you think about why? Hint: what happens when time’s up?</p>
+</div>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p>There are two key connections between the value function and the action-value function that come up pretty often:</p>
+<div class="math">
+<p><img src="../_images/math/5151391b2cd2bfa909a3b5a057b6c93d4191790b.svg" alt="V^{\pi}(s) = \underE{a\sim \pi}{Q^{\pi}(s,a)},"/></p>
+</div><p>and</p>
+<div class="math">
+<p><img src="../_images/math/4cbd255e1ecc9f7083034be12148e8b98cefc2ee.svg" alt="V^*(s) = \max_a Q^* (s,a)."/></p>
+</div><p class="last">These relations follow pretty directly from the definitions just given: can you prove them?</p>
+</div>
+</div>
+<div class="section" id="the-optimal-q-function-and-the-optimal-action">
+<h3>The Optimal Q-Function and the Optimal Action<a class="headerlink" href="#the-optimal-q-function-and-the-optimal-action" title="Permalink to this headline">¶</a></h3>
+<p>There is an important connection between the optimal action-value function <img class="math" src="../_images/math/cbed396f671d6fb54f6df5c044b82ab3f052d63e.svg" alt="Q^*(s,a)"/> and the action selected by the optimal policy. By definition, <img class="math" src="../_images/math/cbed396f671d6fb54f6df5c044b82ab3f052d63e.svg" alt="Q^*(s,a)"/> gives the expected return for starting in state <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/>, taking (arbitrary) action <img class="math" src="../_images/math/76a319586cd215c8f2075b938fc6f6e07c81714b.svg" alt="a"/>, and then acting according to the optimal policy forever after.</p>
+<p>The optimal policy in <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/> will select whichever action maximizes the expected return from starting in <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/>. As a result, if we have <img class="math" src="../_images/math/c2e969d09ae88d847429eac9a8494cc89cabe4bd.svg" alt="Q^*"/>, we can directly obtain the optimal action, <img class="math" src="../_images/math/baf715aa6a295b7b7d85e1e1123552c5ae705756.svg" alt="a^*(s)"/>, via</p>
+<div class="math">
+<p><img src="../_images/math/42490c4d812c9ca1fc226684577900bc8bdd609b.svg" alt="a^*(s) = \arg \max_a Q^* (s,a)."/></p>
+</div><p>Note: there may be multiple actions which maximise <img class="math" src="../_images/math/cbed396f671d6fb54f6df5c044b82ab3f052d63e.svg" alt="Q^*(s,a)"/>, in which case, all of them are optimal, and the optimal policy may randomly select any of them. But there is always an optimal policy which deterministically selects an action.</p>
+</div>
+<div class="section" id="bellman-equations">
+<h3>Bellman Equations<a class="headerlink" href="#bellman-equations" title="Permalink to this headline">¶</a></h3>
+<p>All four of the value functions obey special self-consistency equations called <strong>Bellman equations</strong>. The basic idea behind the Bellman equations is this:</p>
+<blockquote>
+<div>The value of your starting point is the reward you expect to get from being there, plus the value of wherever you land next.</div></blockquote>
+<p>The Bellman equations for the on-policy value functions are</p>
+<div class="math">
+<p><img src="../_images/math/7e4a2964e190104a669406ca5e1e320a5da8bae0.svg" alt="\begin{align*}
+V^{\pi}(s) &amp;= \underE{a \sim \pi \\ s'\sim P}{r(s,a) + \gamma V^{\pi}(s')}, \\
+Q^{\pi}(s,a) &amp;= \underE{s'\sim P}{r(s,a) + \gamma \underE{a'\sim \pi}{Q^{\pi}(s',a')}},
+\end{align*}"/></p>
+</div><p>where <img class="math" src="../_images/math/411171ab57c4bec0d86c9f4b495106ba5d73decc.svg" alt="s' \sim P"/> is shorthand for <img class="math" src="../_images/math/ed45f9d37dbb092727104773ca3a464d46f892b8.svg" alt="s' \sim P(\cdot |s,a)"/>, indicating that the next state <img class="math" src="../_images/math/6e85fa05d4954e7c1e8037ee1bd163d15bc2e2d6.svg" alt="s'"/> is sampled from the environment’s transition rules; <img class="math" src="../_images/math/e87025074e03131c69c6c5758e873a6224ea5d3a.svg" alt="a \sim \pi"/> is shorthand for <img class="math" src="../_images/math/35c684d9cc672fd0bbacd896f49abdd986f40b02.svg" alt="a \sim \pi(\cdot|s)"/>; and <img class="math" src="../_images/math/b3f46cc6cd6c2fa9068013fafbe1b4b029bb8a58.svg" alt="a' \sim \pi"/> is shorthand for <img class="math" src="../_images/math/6eb25f9175aa0471d7a7728ab237a92fef5009e9.svg" alt="a' \sim \pi(\cdot|s')"/>.</p>
+<p>The Bellman equations for the optimal value functions are</p>
+<div class="math">
+<p><img src="../_images/math/f8ab9b211bc9bb91cde189360051e3bd1f896afa.svg" alt="\begin{align*}
+V^*(s) &amp;= \max_a \underE{s'\sim P}{r(s,a) + \gamma V^*(s')}, \\
+Q^*(s,a) &amp;= \underE{s'\sim P}{r(s,a) + \gamma \max_{a'} Q^*(s',a')}.
+\end{align*}"/></p>
+</div><p>The crucial difference between the Bellman equations for the on-policy value functions and the optimal value functions, is the absence or presence of the <img class="math" src="../_images/math/a52117d0fa54eb8449482447cad9c0ab54c757cc.svg" alt="\max"/> over actions. Its inclusion reflects the fact that whenever the agent gets to choose its action, in order to act optimally, it has to pick whichever action leads to the highest value.</p>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">The term “Bellman backup” comes up quite frequently in the RL literature. The Bellman backup for a state, or state-action pair, is the right-hand side of the Bellman equation: the reward-plus-next-value.</p>
+</div>
+</div>
+<div class="section" id="advantage-functions">
+<h3>Advantage Functions<a class="headerlink" href="#advantage-functions" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes in RL, we don’t need to describe how good an action is in an absolute sense, but only how much better it is than others on average. That is to say, we want to know the relative <strong>advantage</strong> of that action. We make this concept precise with the <strong>advantage function.</strong></p>
+<p>The advantage function <img class="math" src="../_images/math/09f82f133e9f89a59ba22266639c4968b5641c28.svg" alt="A^{\pi}(s,a)"/> corresponding to a policy <img class="math" src="../_images/math/1ae2bd722da01b3a89ffc139af2437c28364a966.svg" alt="\pi"/> describes how much better it is to take a specific action <img class="math" src="../_images/math/76a319586cd215c8f2075b938fc6f6e07c81714b.svg" alt="a"/> in state <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/>, over randomly selecting an action according to <img class="math" src="../_images/math/8d2c2c23f74e7a0cf98b0ee1de016825eb50e2d4.svg" alt="\pi(\cdot|s)"/>, assuming you act according to <img class="math" src="../_images/math/1ae2bd722da01b3a89ffc139af2437c28364a966.svg" alt="\pi"/> forever after. Mathematically, the advantage function is defined by</p>
+<div class="math">
+<p><img src="../_images/math/3748974cc061fb4065fa46dd6271395d59f22040.svg" alt="A^{\pi}(s,a) = Q^{\pi}(s,a) - V^{\pi}(s)."/></p>
+</div><div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">We’ll discuss this more later, but the advantage function is crucially important to policy gradient methods.</p>
+</div>
+</div>
+</div>
+<div class="section" id="optional-formalism">
+<h2><a class="toc-backref" href="#id5">(Optional) Formalism</a><a class="headerlink" href="#optional-formalism" title="Permalink to this headline">¶</a></h2>
+<p>So far, we’ve discussed the agent’s environment in an informal way, but if you try to go digging through the literature, you’re likely to run into the standard mathematical formalism for this setting: <strong>Markov Decision Processes</strong> (MDPs). An MDP is a 5-tuple, <img class="math" src="../_images/math/a7e1a4549f45dc56849b1ff857a19a71f9cc02a6.svg" alt="\langle S, A, R, P, \rho_0 \rangle"/>, where</p>
+<ul class="simple">
+<li><img class="math" src="../_images/math/bbe16bfd192df4894eaef8bfe3133325ba462202.svg" alt="S"/> is the set of all valid states,</li>
+<li><img class="math" src="../_images/math/a236fe76423c33d18465350c1c36cef9aa8fdc31.svg" alt="A"/> is the set of all valid actions,</li>
+<li><img class="math" src="../_images/math/eac18a6e37a9272c1458d3086adb317ecda571e8.svg" alt="R : S \times A \times S \to \mathbb{R}"/> is the reward function, with <img class="math" src="../_images/math/444ffe3079b81e8b1c42e462f0b6d63fbeeec6c6.svg" alt="r_t = R(s_t, a_t, s_{t+1})"/>,</li>
+<li><img class="math" src="../_images/math/3923c00b0df8f8c1003312d5c125275bd10598ba.svg" alt="P : S \times A \to \mathcal{P}(S)"/> is the transition probability function, with <img class="math" src="../_images/math/655bf048edfc8ffd3b4655504e874a622ed888ce.svg" alt="P(s'|s,a)"/> being the probability of transitioning into state <img class="math" src="../_images/math/6e85fa05d4954e7c1e8037ee1bd163d15bc2e2d6.svg" alt="s'"/> if you start in state <img class="math" src="../_images/math/96ac51b9afe79581e48f2f3f0ad3faa0f4402cc7.svg" alt="s"/> and take action <img class="math" src="../_images/math/76a319586cd215c8f2075b938fc6f6e07c81714b.svg" alt="a"/>,</li>
+<li>and <img class="math" src="../_images/math/2d44ad6f01d4e56266daa8e3b35bd4f298e25788.svg" alt="\rho_0"/> is the starting state distribution.</li>
+</ul>
+<p>The name Markov Decision Process refers to the fact that the system obeys the <a class="reference external" href="https://en.wikipedia.org/wiki/Markov_property">Markov property</a>: transitions only depend on the most recent state and action, and no prior history.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Rick Staa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

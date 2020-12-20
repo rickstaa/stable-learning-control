@@ -1,0 +1,517 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Soft Actor-Critic &mdash; Machine Learning Control 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/modify.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">MLC package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../control.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bench/bench.html">Benchmarks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware/hardware.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware/supported.html">Supported hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hardware/deploy.html">Deploy</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Utilities Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/run_utils.html">Run Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Zone</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/api/api.html">Code API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/release_dev.html">Release package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/doc_dev.html">Release documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../etc/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../etc/author.html">About the Author</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Machine Learning Control</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Soft Actor-Critic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/control/algorithms/sac.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="soft-actor-critic">
+<h1><a class="toc-backref" href="#id2">Soft Actor-Critic</a><a class="headerlink" href="#soft-actor-critic" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#soft-actor-critic" id="id2">Soft Actor-Critic</a><ul>
+<li><a class="reference internal" href="#background" id="id3">Background</a><ul>
+<li><a class="reference internal" href="#quick-facts" id="id4">Quick Facts</a></li>
+<li><a class="reference internal" href="#key-equations" id="id5">Key Equations</a><ul>
+<li><a class="reference internal" href="#entropy-regularized-reinforcement-learning" id="id6">Entropy-Regularized Reinforcement Learning</a></li>
+<li><a class="reference internal" href="#id1" id="id7">Soft Actor-Critic</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exploration-vs-exploitation" id="id8">Exploration vs. Exploitation</a></li>
+<li><a class="reference internal" href="#pseudocode" id="id9">Pseudocode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation" id="id10">Documentation</a><ul>
+<li><a class="reference internal" href="#documentation-pytorch-version" id="id11">Documentation: PyTorch Version</a></li>
+<li><a class="reference internal" href="#saved-model-contents-pytorch-version" id="id12">Saved Model Contents: PyTorch Version</a></li>
+<li><a class="reference internal" href="#documentation-tensorflow-version" id="id13">Documentation: Tensorflow Version</a></li>
+<li><a class="reference internal" href="#saved-model-contents-tensorflow-version" id="id14">Saved Model Contents: Tensorflow Version</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references" id="id15">References</a><ul>
+<li><a class="reference internal" href="#relevant-papers" id="id16">Relevant Papers</a></li>
+<li><a class="reference internal" href="#other-public-implementations" id="id17">Other Public Implementations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="background">
+<h2><a class="toc-backref" href="#id3">Background</a><a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>(Previously: <a class="reference external" href="../algorithms/td3.html#background">Background for TD3</a>)</p>
+<p>Soft Actor Critic (SAC) is an algorithm that optimizes a stochastic policy in an off-policy way, forming a bridge between stochastic policy optimization and DDPG-style approaches. It isn’t a direct successor to TD3 (having been published roughly concurrently), but it incorporates the clipped double-Q trick, and due to the inherent stochasticity of the policy in SAC, it also winds up benefiting from something like target policy smoothing.</p>
+<p>A central feature of SAC is <strong>entropy regularisation.</strong> The policy is trained to maximise a trade-off between expected return and <a class="reference external" href="https://en.wikipedia.org/wiki/Entropy_(information_theory)">entropy</a>, a measure of randomness in the policy. This has a close connection to the exploration-exploitation trade-off: increasing entropy results in more exploration, which can accelerate learning later on. It can also prevent the policy from prematurely converging to a bad local optimum.</p>
+<div class="section" id="quick-facts">
+<h3><a class="toc-backref" href="#id4">Quick Facts</a><a class="headerlink" href="#quick-facts" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>SAC is an off-policy algorithm.</li>
+<li>The version of SAC implemented here can only be used for environments with continuous action spaces.</li>
+<li>An alternate version of SAC, which slightly changes the policy update rule, can be implemented to handle discrete action spaces.</li>
+<li>The Spinning Up implementation of SAC does not support parallelization.</li>
+</ul>
+</div>
+<div class="section" id="key-equations">
+<h3><a class="toc-backref" href="#id5">Key Equations</a><a class="headerlink" href="#key-equations" title="Permalink to this headline">¶</a></h3>
+<p>To explain Soft Actor Critic, we first have to introduce the entropy-regularised reinforcement learning setting. In entropy-regularised RL, there are slightly-different equations for value functions.</p>
+<div class="section" id="entropy-regularized-reinforcement-learning">
+<h4><a class="toc-backref" href="#id6">Entropy-Regularized Reinforcement Learning</a><a class="headerlink" href="#entropy-regularized-reinforcement-learning" title="Permalink to this headline">¶</a></h4>
+<p>Entropy is a quantity which, roughly speaking, says how random a random variable is. If a coin is weighted so that it almost always comes up heads, it has low entropy; if it’s evenly weighted and has a half chance of either outcome, it has high entropy.</p>
+<p>Let <img class="math" src="../../_images/math/ea07a4204f1f53321f76d9c7e348199f0d707db1.svg" alt="x"/> be a random variable with probability mass or density function <img class="math" src="../../_images/math/4204ba416334e663d7bd7c6457d737ba3cbbfe46.svg" alt="P"/>. The entropy <img class="math" src="../../_images/math/bf6bcb1745aeab36cdc185e9f75bbfd3998352ce.svg" alt="H"/> of <img class="math" src="../../_images/math/ea07a4204f1f53321f76d9c7e348199f0d707db1.svg" alt="x"/> is computed from its distribution <img class="math" src="../../_images/math/4204ba416334e663d7bd7c6457d737ba3cbbfe46.svg" alt="P"/> according to</p>
+<div class="math">
+<p><img src="../../_images/math/1bf89d5228652e14d82657fe9f1499b136f54094.svg" alt="H(P) = \underE{x \sim P}{-\log P(x)}."/></p>
+</div><p>In entropy-regularised reinforcement learning, the agent gets a bonus reward at each time step proportional to the entropy of the policy at that timestep. This changes <a class="reference external" href="../spinningup/rl_intro.html#the-rl-problem">the RL problem</a> to:</p>
+<div class="math">
+<p><img src="../../_images/math/b86bf499707114c8789946df649871c5b9185b9d.svg" alt="\pi^* = \arg \max_{\pi} \underE{\tau \sim \pi}{ \sum_{t=0}^{\infty} \gamma^t \bigg( R(s_t, a_t, s_{t+1}) + \alpha H\left(\pi(\cdot|s_t)\right) \bigg)},"/></p>
+</div><p>where <img class="math" src="../../_images/math/900375490edee0019a5c54a311bf91de801a1642.svg" alt="\alpha &gt; 0"/> is the trade-off coefficient. (Note: we’re assuming an infinite-horizon discounted setting here, and we’ll do the same for the rest of this page.) We can now define the slightly-different value functions in this setting. <img class="math" src="../../_images/math/fbed8ae629f7512710c5352ca50e8f629d7f34e4.svg" alt="V^{\pi}"/> is changed to include the entropy bonuses from every timestep:</p>
+<div class="math">
+<p><img src="../../_images/math/dda9cebd308c7fe5313f6bf4cbce8d15af046279.svg" alt="V^{\pi}(s) = \underE{\tau \sim \pi}{ \left. \sum_{t=0}^{\infty} \gamma^t \bigg( R(s_t, a_t, s_{t+1}) + \alpha H\left(\pi(\cdot|s_t)\right) \bigg) \right| s_0 = s}"/></p>
+</div><p><img class="math" src="../../_images/math/2bbd8ab5668fe92f59056f58c9f75a01c929e37d.svg" alt="Q^{\pi}"/> is changed to include the entropy bonuses from every timestep <em>except the first</em>:</p>
+<div class="math">
+<p><img src="../../_images/math/3c1b1d100a914b01d2f537fd11bdd1159921cad2.svg" alt="Q^{\pi}(s,a) = \underE{\tau \sim \pi}{ \left. \sum_{t=0}^{\infty} \gamma^t  R(s_t, a_t, s_{t+1}) + \alpha \sum_{t=1}^{\infty} \gamma^t H\left(\pi(\cdot|s_t)\right)\right| s_0 = s, a_0 = a}"/></p>
+</div><p>With these definitions, <img class="math" src="../../_images/math/fbed8ae629f7512710c5352ca50e8f629d7f34e4.svg" alt="V^{\pi}"/> and <img class="math" src="../../_images/math/2bbd8ab5668fe92f59056f58c9f75a01c929e37d.svg" alt="Q^{\pi}"/> are connected by:</p>
+<div class="math">
+<p><img src="../../_images/math/46d0852616c131f3d5aa2d1798328141904a764d.svg" alt="V^{\pi}(s) = \underE{a \sim \pi}{Q^{\pi}(s,a)} + \alpha H\left(\pi(\cdot|s)\right)"/></p>
+</div><p>and the Bellman equation for <img class="math" src="../../_images/math/2bbd8ab5668fe92f59056f58c9f75a01c929e37d.svg" alt="Q^{\pi}"/> is</p>
+<div class="math">
+<p><img src="../../_images/math/8010672f1e8269ce985f901728e7224faa07731e.svg" alt="Q^{\pi}(s,a) &amp;= \underE{s' \sim P \\ a' \sim \pi}{R(s,a,s') + \gamma\left(Q^{\pi}(s',a') + \alpha H\left(\pi(\cdot|s')\right) \right)} \\
+&amp;= \underE{s' \sim P}{R(s,a,s') + \gamma V^{\pi}(s')}."/></p>
+</div><div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">The way we’ve set up the value functions in the entropy-regularised setting is a little bit arbitrary, and actually we could have done it differently (eg make <img class="math" src="../../_images/math/2bbd8ab5668fe92f59056f58c9f75a01c929e37d.svg" alt="Q^{\pi}"/> include the entropy bonus at the first timestep). The choice of definition may vary slightly across papers on the subject.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h4><a class="toc-backref" href="#id7">Soft Actor-Critic</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>SAC concurrently learns a policy <img class="math" src="../../_images/math/6a71f04b65d9524fb656715cda85d7540a9ddf9f.svg" alt="\pi_{\theta}"/> and two Q-functions <img class="math" src="../../_images/math/a4f90f64839041d3c84ac2dde832e76f9d6db7b6.svg" alt="Q_{\phi_1}, Q_{\phi_2}"/>. There are two variants of SAC that are currently standard: one that uses a fixed entropy regularisation coefficient <img class="math" src="../../_images/math/d8316e40b1057b06d31c2cad3a0d4cc9e75fa2c1.svg" alt="\alpha"/>, and another that enforces an entropy constraint by varying <img class="math" src="../../_images/math/d8316e40b1057b06d31c2cad3a0d4cc9e75fa2c1.svg" alt="\alpha"/> over the course of training. For simplicity, Spinning Up makes use of the version with a fixed entropy regularisation coefficient, but the entropy-constrained variant is generally preferred by practitioners.</p>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">The SAC algorithm has changed a little bit over time. An older version of SAC also learns a value function <img class="math" src="../../_images/math/f8b8aa6de09a776f6aa37138d773730ba9e623c7.svg" alt="V_{\psi}"/> in addition to the Q-functions; this page will focus on the modern version that omits the extra value function.</p>
+</div>
+<p><strong>Learning Q.</strong> The Q-functions are learned in a similar way to TD3, but with a few key differences.</p>
+<p>First, what’s similar?</p>
+<ol class="arabic simple">
+<li>Like in TD3, both Q-functions are learned with MSBE minimization, by regressing to a single shared target.</li>
+<li>Like in TD3, the shared target is computed using target Q-networks, and the target Q-networks are obtained by polyak averaging the Q-network parameters over the course of training.</li>
+<li>Like in TD3, the shared target makes use of the <strong>clipped double-Q</strong> trick.</li>
+</ol>
+<p>What’s different?</p>
+<ol class="arabic simple">
+<li>Unlike in TD3, the target also includes a term that comes from SAC’s use of entropy regularisation.</li>
+<li>Unlike in TD3, the next-state actions used in the target come from the <strong>current policy</strong> instead of a target policy.</li>
+<li>Unlike in TD3, there is no explicit target policy smoothing. TD3 trains a deterministic policy, and so it accomplishes smoothing by adding random noise to the next-state actions. SAC trains a stochastic policy, and so the noise from that stochasticity is sufficient to get a similar effect.</li>
+</ol>
+<p>Before we give the final form of the Q-loss, let’s take a moment to discuss how the contribution from entropy regularisation comes in. We’ll start by taking our recursive Bellman equation for the entropy-regularised <img class="math" src="../../_images/math/2bbd8ab5668fe92f59056f58c9f75a01c929e37d.svg" alt="Q^{\pi}"/> from earlier, and rewriting it a little bit by using the definition of entropy:</p>
+<div class="math">
+<p><img src="../../_images/math/1557c0c7205cbb2928eb3305b2df207e79bc70fe.svg" alt="Q^{\pi}(s,a) &amp;= \underE{s' \sim P \\ a' \sim \pi}{R(s,a,s') + \gamma\left(Q^{\pi}(s',a') + \alpha H\left(\pi(\cdot|s')\right) \right)} \\
+&amp;= \underE{s' \sim P \\ a' \sim \pi}{R(s,a,s') + \gamma\left(Q^{\pi}(s',a') - \alpha \log \pi(a'|s') \right)}"/></p>
+</div><p>The RHS is an expectation over next states (which come from the replay buffer) and next actions (which come from the current policy, and <strong>not</strong> the replay buffer). Since it’s an expectation, we can approximate it with samples:</p>
+<div class="math">
+<p><img src="../../_images/math/aa74b233b0820048f096edb81f0b3321730d71a8.svg" alt="Q^{\pi}(s,a) &amp;\approx r + \gamma\left(Q^{\pi}(s',\tilde{a}') - \alpha \log \pi(\tilde{a}'|s') \right), \;\;\;\;\;  \tilde{a}' \sim \pi(\cdot|s')."/></p>
+</div><div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">We switch next action notation to <img class="math" src="../../_images/math/f1523bc2b6ea2ca935e184990079e62313c3321f.svg" alt="\tilde{a}'"/>, instead of <img class="math" src="../../_images/math/3200e4a6949b896a76b0e83a40edb16602433fd0.svg" alt="a'"/>, to highlight that the next actions have to be sampled fresh from the policy (whereas by contrast, <img class="math" src="../../_images/math/5a3ac7a81362ac174d142bab198b4bd5a9e2dcee.svg" alt="r"/> and <img class="math" src="../../_images/math/6e85fa05d4954e7c1e8037ee1bd163d15bc2e2d6.svg" alt="s'"/> should come from the replay buffer).</p>
+</div>
+<p>SAC sets up the MSBE loss for each Q-function using this kind of sample approximation for the target. The only thing still undetermined here is which Q-function gets used to compute the sample backup: like TD3, SAC uses the clipped double-Q trick, and takes the minimum Q-value between the two Q approximators.</p>
+<p>Putting it all together, the loss functions for the Q-networks in SAC are:</p>
+<div class="math">
+<p><img src="../../_images/math/0bd81fc5d1cb03a33d6477f5ff10ed879ea393ec.svg" alt="L(\phi_i, {\mathcal D}) = \underset{(s,a,r,s',d) \sim {\mathcal D}}{{\mathrm E}}\left[
+    \Bigg( Q_{\phi_i}(s,a) - y(r,s',d) \Bigg)^2
+    \right],"/></p>
+</div><p>where the target is given by</p>
+<div class="math">
+<p><img src="../../_images/math/fc03ff9e9f818fb31b7724907e2b43d5101d2ab8.svg" alt="y(r, s', d) = r + \gamma (1 - d) \left( \min_{j=1,2} Q_{\phi_{\text{targ},j}}(s', \tilde{a}') - \alpha \log \pi_{\theta}(\tilde{a}'|s') \right), \;\;\;\;\; \tilde{a}' \sim \pi_{\theta}(\cdot|s')."/></p>
+</div><p><strong>Learning the Policy.</strong> The policy should, in each state, act to maximise the expected future return plus expected future entropy. That is, it should maximise <img class="math" src="../../_images/math/a81303323c25fc13cd0652ca46d7596276e5cb7e.svg" alt="V^{\pi}(s)"/>, which we expand out into</p>
+<div class="math">
+<p><img src="../../_images/math/5ff58df73caef07f6309a1460fe57b1c34e3b374.svg" alt="V^{\pi}(s) &amp;= \underE{a \sim \pi}{Q^{\pi}(s,a)} + \alpha H\left(\pi(\cdot|s)\right) \\
+&amp;= \underE{a \sim \pi}{Q^{\pi}(s,a) - \alpha \log \pi(a|s)}."/></p>
+</div><p>The way we optimise the policy makes use of the <strong>reparameterization trick</strong>, in which a sample from <img class="math" src="../../_images/math/e57f13375048b8f7343f9066b6553bc282afa326.svg" alt="\pi_{\theta}(\cdot|s)"/> is drawn by computing a deterministic function of state, policy parameters, and independent noise. To illustrate: following the authors of the SAC paper, we use a squashed Gaussian policy, which means that samples are obtained according to</p>
+<div class="math">
+<p><img src="../../_images/math/dac3ddc2ea35e8233b8bc0a905273712793ab1cb.svg" alt="\tilde{a}_{\theta}(s, \xi) = \tanh\left( \mu_{\theta}(s) + \sigma_{\theta}(s) \odot \xi \right), \;\;\;\;\; \xi \sim \mathcal{N}(0, I)."/></p>
+</div><div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p>This policy has two key differences from the policies we use in the other policy optimization algorithms:</p>
+<p><strong>1. The squashing function.</strong> The <img class="math" src="../../_images/math/c65796f3bb56c457e63ebc770e3d775cace08673.svg" alt="\tanh"/> in the SAC policy ensures that actions are bounded to a finite range. This is absent in the VPG, TRPO, and PPO policies. It also changes the distribution: before the <img class="math" src="../../_images/math/c65796f3bb56c457e63ebc770e3d775cace08673.svg" alt="\tanh"/> the SAC policy is a factored Gaussian like the other algorithms’ policies, but after the <img class="math" src="../../_images/math/c65796f3bb56c457e63ebc770e3d775cace08673.svg" alt="\tanh"/> it is not. (You can still compute the log-probabilities of actions in closed form, though: see the paper appendix for details.)</p>
+<p class="last"><strong>2. The way standard deviations are parameterized.</strong> In VPG, TRPO, and PPO, we represent the log std devs with state-independent parameter vectors. In SAC, we represent the log std devs as outputs from the neural network, meaning that they depend on state in a complex way. SAC with state-independent log std devs, in our experience, did not work. (Can you think of why? Or better yet: run an experiment to verify?)</p>
+</div>
+<p>The reparameterization trick allows us to rewrite the expectation over actions (which contains a pain point: the distribution depends on the policy parameters) into an expectation over noise (which removes the pain point: the distribution now has no dependence on parameters):</p>
+<div class="math">
+<p><img src="../../_images/math/5713f9f99ea3532e3cbde89eac91328eb8549409.svg" alt="\underE{a \sim \pi_{\theta}}{Q^{\pi_{\theta}}(s,a) - \alpha \log \pi_{\theta}(a|s)} = \underE{\xi \sim \mathcal{N}}{Q^{\pi_{\theta}}(s,\tilde{a}_{\theta}(s,\xi)) - \alpha \log \pi_{\theta}(\tilde{a}_{\theta}(s,\xi)|s)}"/></p>
+</div><p>To get the policy loss, the final step is that we need to substitute <img class="math" src="../../_images/math/9c39112fd52e66e3062f93c502ade0eb9381d957.svg" alt="Q^{\pi_{\theta}}"/> with one of our function approximators. Unlike in TD3, which uses <img class="math" src="../../_images/math/8795d42bd263dcbe55d123e7466b2dd5091490a7.svg" alt="Q_{\phi_1}"/> (just the first Q approximator), SAC uses <img class="math" src="../../_images/math/e5d14ed1b7128d64d43af73b7d0b189c6afda8ec.svg" alt="\min_{j=1,2} Q_{\phi_j}"/> (the minimum of the two Q approximators). The policy is thus optimized according to</p>
+<div class="math">
+<p><img src="../../_images/math/bdbe4cabbba4687b310d99e8fa67ed314339bd31.svg" alt="\max_{\theta} \underE{s \sim \mathcal{D} \\ \xi \sim \mathcal{N}}{\min_{j=1,2} Q_{\phi_j}(s,\tilde{a}_{\theta}(s,\xi)) - \alpha \log \pi_{\theta}(\tilde{a}_{\theta}(s,\xi)|s)},"/></p>
+</div><p>which is almost the same as the DDPG and TD3 policy optimization, except for the min-double-Q trick, the stochasticity, and the entropy term.</p>
+</div>
+</div>
+<div class="section" id="exploration-vs-exploitation">
+<h3><a class="toc-backref" href="#id8">Exploration vs. Exploitation</a><a class="headerlink" href="#exploration-vs-exploitation" title="Permalink to this headline">¶</a></h3>
+<p>SAC trains a stochastic policy with entropy regularisation, and explores in an on-policy way. The entropy regularisation coefficient <img class="math" src="../../_images/math/d8316e40b1057b06d31c2cad3a0d4cc9e75fa2c1.svg" alt="\alpha"/> explicitly controls the explore-exploit tradeoff, with higher <img class="math" src="../../_images/math/d8316e40b1057b06d31c2cad3a0d4cc9e75fa2c1.svg" alt="\alpha"/> corresponding to more exploration, and lower <img class="math" src="../../_images/math/d8316e40b1057b06d31c2cad3a0d4cc9e75fa2c1.svg" alt="\alpha"/> corresponding to more exploitation. The right coefficient (the one which leads to the stablest / highest-reward learning) may vary from environment to environment, and could require careful tuning.</p>
+<p>At test time, to see how well the policy exploits what it has learned, we remove stochasticity and use the mean action instead of a sample from the distribution. This tends to improve performance over the original stochastic policy.</p>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">Our SAC implementation uses a trick to improve exploration at the start of training. For a fixed number of steps at the beginning (set with the <code class="docutils literal notranslate"><span class="pre">start_steps</span></code> keyword argument), the agent takes actions which are sampled from a uniform random distribution over valid actions. After that, it returns to normal SAC exploration.</p>
+</div>
+</div>
+<div class="section" id="pseudocode">
+<h3><a class="toc-backref" href="#id9">Pseudocode</a><a class="headerlink" href="#pseudocode" title="Permalink to this headline">¶</a></h3>
+<div class="math">
+<p><img src="../../_images/math/c01f4994ae4aacf299a6b3ceceedfe0a14d4b874.svg" alt="\begin{algorithm}[H]
+    \caption{Soft Actor-Critic}
+    \label{alg1}
+\begin{algorithmic}[1]
+    \STATE Input: initial policy parameters $\theta$, Q-function parameters $\phi_1$, $\phi_2$, empty replay buffer $\mathcal{D}$
+    \STATE Set target parameters equal to main parameters $\phi_{\text{targ},1} \leftarrow \phi_1$, $\phi_{\text{targ},2} \leftarrow \phi_2$
+    \REPEAT
+        \STATE Observe state $s$ and select action $a \sim \pi_{\theta}(\cdot|s)$
+        \STATE Execute $a$ in the environment
+        \STATE Observe next state $s'$, reward $r$, and done signal $d$ to indicate whether $s'$ is terminal
+        \STATE Store $(s,a,r,s',d)$ in replay buffer $\mathcal{D}$
+        \STATE If $s'$ is terminal, reset environment state.
+        \IF{it's time to update}
+            \FOR{$j$ in range(however many updates)}
+                \STATE Randomly sample a batch of transitions, $B = \{ (s,a,r,s',d) \}$ from $\mathcal{D}$
+                \STATE Compute targets for the Q functions:
+                \begin{align*}
+                    y (r,s',d) &amp;= r + \gamma (1-d) \left(\min_{i=1,2} Q_{\phi_{\text{targ}, i}} (s', \tilde{a}') - \alpha \log \pi_{\theta}(\tilde{a}'|s')\right), &amp;&amp; \tilde{a}' \sim \pi_{\theta}(\cdot|s')
+                \end{align*}
+                \STATE Update Q-functions by one step of gradient descent using
+                \begin{align*}
+                    &amp; \nabla_{\phi_i} \frac{1}{|B|}\sum_{(s,a,r,s',d) \in B} \left( Q_{\phi_i}(s,a) - y(r,s',d) \right)^2 &amp;&amp; \text{for } i=1,2
+                \end{align*}
+                \STATE Update policy by one step of gradient ascent using
+                \begin{equation*}
+                    \nabla_{\theta} \frac{1}{|B|}\sum_{s \in B} \Big(\min_{i=1,2} Q_{\phi_i}(s, \tilde{a}_{\theta}(s)) - \alpha \log \pi_{\theta} \left(\left. \tilde{a}_{\theta}(s) \right| s\right) \Big),
+                \end{equation*}
+                where $\tilde{a}_{\theta}(s)$ is a sample from $\pi_{\theta}(\cdot|s)$ which is differentiable wrt $\theta$ via the reparametrization trick.
+                \STATE Update target networks with
+                \begin{align*}
+                    \phi_{\text{targ},i} &amp;\leftarrow \rho \phi_{\text{targ}, i} + (1-\rho) \phi_i &amp;&amp; \text{for } i=1,2
+                \end{align*}
+            \ENDFOR
+        \ENDIF
+    \UNTIL{convergence}
+\end{algorithmic}
+\end{algorithm}"/></p>
+</div></div>
+</div>
+<div class="section" id="documentation">
+<h2><a class="toc-backref" href="#id10">Documentation</a><a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">In what follows, we give documentation for the PyTorch and Tensorflow implementations of SAC in Spinning Up. They have nearly identical function calls and docstrings, except for details relating to model construction. However, we include both full docstrings for completeness.</p>
+</div>
+<div class="section" id="documentation-pytorch-version">
+<h3><a class="toc-backref" href="#id11">Documentation: PyTorch Version</a><a class="headerlink" href="#documentation-pytorch-version" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="saved-model-contents-pytorch-version">
+<h3><a class="toc-backref" href="#id12">Saved Model Contents: PyTorch Version</a><a class="headerlink" href="#saved-model-contents-pytorch-version" title="Permalink to this headline">¶</a></h3>
+<p>The PyTorch saved model can be loaded with <code class="docutils literal notranslate"><span class="pre">ac</span> <span class="pre">=</span> <span class="pre">torch.load('path/to/model.pt')</span></code>, yielding an actor-critic object (<code class="docutils literal notranslate"><span class="pre">ac</span></code>) that has the properties described in the docstring for <code class="docutils literal notranslate"><span class="pre">sac_pytorch</span></code>.</p>
+<p>You can get actions from this model with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">actions</span> <span class="o">=</span> <span class="n">ac</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="documentation-tensorflow-version">
+<h3><a class="toc-backref" href="#id13">Documentation: Tensorflow Version</a><a class="headerlink" href="#documentation-tensorflow-version" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="saved-model-contents-tensorflow-version">
+<h3><a class="toc-backref" href="#id14">Saved Model Contents: Tensorflow Version</a><a class="headerlink" href="#saved-model-contents-tensorflow-version" title="Permalink to this headline">¶</a></h3>
+<p>The computation graph saved by the logger includes:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="91%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">x</span></code></td>
+<td>Tensorflow placeholder for state input.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">a</span></code></td>
+<td>Tensorflow placeholder for action input.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">mu</span></code></td>
+<td>Deterministically computes mean action from the agent, given states in <code class="docutils literal notranslate"><span class="pre">x</span></code>.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">pi</span></code></td>
+<td>Samples an action from the agent, conditioned on states in <code class="docutils literal notranslate"><span class="pre">x</span></code>.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">q1</span></code></td>
+<td>Gives one action-value estimate for states in <code class="docutils literal notranslate"><span class="pre">x</span></code> and actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">q2</span></code></td>
+<td>Gives the other action-value estimate for states in <code class="docutils literal notranslate"><span class="pre">x</span></code> and actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">v</span></code></td>
+<td>Gives the value estimate for states in <code class="docutils literal notranslate"><span class="pre">x</span></code>.</td>
+</tr>
+</tbody>
+</table>
+<p>This saved model can be accessed either by</p>
+<ul class="simple">
+<li>running the trained policy with the <a class="reference external" href="../user/saving_and_loading.html#loading-and-running-trained-policies">test_policy.py</a> tool,</li>
+<li>or loading the whole saved graph into a program with <a class="reference external" href="../utils/logger.html#spinup.utils.logx.restore_tf_graph">restore_tf_graph</a>.</li>
+</ul>
+<p>Note: for SAC, the correct evaluation policy is given by <code class="docutils literal notranslate"><span class="pre">mu</span></code> and not by <code class="docutils literal notranslate"><span class="pre">pi</span></code>. The policy <code class="docutils literal notranslate"><span class="pre">pi</span></code> may be thought of as the exploration policy, while <code class="docutils literal notranslate"><span class="pre">mu</span></code> is the exploitation policy.</p>
+</div>
+</div>
+<div class="section" id="references">
+<h2><a class="toc-backref" href="#id15">References</a><a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="relevant-papers">
+<h3><a class="toc-backref" href="#id16">Relevant Papers</a><a class="headerlink" href="#relevant-papers" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://arxiv.org/abs/1801.01290">Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor</a>, Haarnoja et al, 2018</li>
+<li><a class="reference external" href="https://arxiv.org/abs/1812.05905">Soft Actor-Critic Algorithms and Applications</a>, Haarnoja et al, 2018</li>
+<li><a class="reference external" href="https://arxiv.org/abs/1812.11103">Learning to Walk via Deep Reinforcement Learning</a>, Haarnoja et al, 2018</li>
+</ul>
+</div>
+<div class="section" id="other-public-implementations">
+<h3><a class="toc-backref" href="#id17">Other Public Implementations</a><a class="headerlink" href="#other-public-implementations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/haarnoja/sac">SAC release repo</a> (original “official” codebase)</li>
+<li><a class="reference external" href="https://github.com/rail-berkeley/softlearning">Softlearning repo</a> (current “official” codebase)</li>
+<li><a class="reference external" href="https://github.com/denisyarats/pytorch_sac">Yarats and Kostrikov repo</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Rick Staa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

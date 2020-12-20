@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Twin Delayed DDPG &mdash; Machine Learning Control  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/modify.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/mlc_favicon.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Soft Actor-Critic" href="sac.html" />
+    <link rel="prev" title="Deep Deterministic Policy Gradient" href="ddpg.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/TUD_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/algorithms.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/plotting.html">Plotting Results</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Algorithms Docs</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vpg.html">Vanilla Policy Gradient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trpo.html">Trust Region Policy Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ppo.html">Proximal Policy Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ddpg.html">Deep Deterministic Policy Gradient</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Twin Delayed DDPG</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quick-facts">Quick Facts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-equations">Key Equations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exploration-vs-exploitation">Exploration vs. Exploitation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pseudocode">Pseudocode</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-pytorch-version">Documentation: PyTorch Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#saved-model-contents-pytorch-version">Saved Model Contents: PyTorch Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-tensorflow-version">Documentation: Tensorflow Version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#saved-model-contents-tensorflow-version">Saved Model Contents: Tensorflow Version</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relevant-papers">Relevant Papers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-public-implementations">Other Public Implementations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sac.html">Soft Actor-Critic</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Utilities Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/run_utils.html">Run Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../etc/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etc/author.html">About the Author</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Machine Learning Control</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Twin Delayed DDPG</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/algorithms/td3.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="twin-delayed-ddpg">
+<h1><a class="toc-backref" href="#id1">Twin Delayed DDPG</a><a class="headerlink" href="#twin-delayed-ddpg" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#twin-delayed-ddpg" id="id1">Twin Delayed DDPG</a><ul>
+<li><a class="reference internal" href="#background" id="id2">Background</a><ul>
+<li><a class="reference internal" href="#quick-facts" id="id3">Quick Facts</a></li>
+<li><a class="reference internal" href="#key-equations" id="id4">Key Equations</a></li>
+<li><a class="reference internal" href="#exploration-vs-exploitation" id="id5">Exploration vs. Exploitation</a></li>
+<li><a class="reference internal" href="#pseudocode" id="id6">Pseudocode</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation" id="id7">Documentation</a><ul>
+<li><a class="reference internal" href="#documentation-pytorch-version" id="id8">Documentation: PyTorch Version</a></li>
+<li><a class="reference internal" href="#saved-model-contents-pytorch-version" id="id9">Saved Model Contents: PyTorch Version</a></li>
+<li><a class="reference internal" href="#documentation-tensorflow-version" id="id10">Documentation: Tensorflow Version</a></li>
+<li><a class="reference internal" href="#saved-model-contents-tensorflow-version" id="id11">Saved Model Contents: Tensorflow Version</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references" id="id12">References</a><ul>
+<li><a class="reference internal" href="#relevant-papers" id="id13">Relevant Papers</a></li>
+<li><a class="reference internal" href="#other-public-implementations" id="id14">Other Public Implementations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="background">
+<h2><a class="toc-backref" href="#id2">Background</a><a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>(Previously: <a class="reference external" href="../algorithms/ddpg.html#background">Background for DDPG</a>)</p>
+<p>While DDPG can achieve great performance sometimes, it is frequently brittle with respect to hyperparameters and other kinds of tuning. A common failure mode for DDPG is that the learned Q-function begins to dramatically overestimate Q-values, which then leads to the policy breaking, because it exploits the errors in the Q-function. Twin Delayed DDPG (TD3) is an algorithm that addresses this issue by introducing three critical tricks:</p>
+<p><strong>Trick One: Clipped Double-Q Learning.</strong> TD3 learns <em>two</em> Q-functions instead of one (hence “twin”), and uses the smaller of the two Q-values to form the targets in the Bellman error loss functions.</p>
+<p><strong>Trick Two: “Delayed” Policy Updates.</strong> TD3 updates the policy (and target networks) less frequently than the Q-function. The paper recommends one policy update for every two Q-function updates.</p>
+<p><strong>Trick Three: Target Policy Smoothing.</strong> TD3 adds noise to the target action, to make it harder for the policy to exploit Q-function errors by smoothing out Q along changes in action.</p>
+<p>Together, these three tricks result in substantially improved performance over baseline DDPG.</p>
+<div class="section" id="quick-facts">
+<h3><a class="toc-backref" href="#id3">Quick Facts</a><a class="headerlink" href="#quick-facts" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>TD3 is an off-policy algorithm.</li>
+<li>TD3 can only be used for environments with continuous action spaces.</li>
+<li>The Spinning Up implementation of TD3 does not support parallelization.</li>
+</ul>
+</div>
+<div class="section" id="key-equations">
+<h3><a class="toc-backref" href="#id4">Key Equations</a><a class="headerlink" href="#key-equations" title="Permalink to this headline">¶</a></h3>
+<p>TD3 concurrently learns two Q-functions, <span class="math">Q_{\phi_1}</span> and <span class="math">Q_{\phi_2}</span>, by mean square Bellman error minimization, in almost the same way that DDPG learns its single Q-function. To show exactly how TD3 does this and how it differs from normal DDPG, we’ll work from the innermost part of the loss function outwards.</p>
+<p>First: <strong>target policy smoothing</strong>. Actions used to form the Q-learning target are based on the target policy, <span class="math">\mu_{\theta_{\text{targ}}}</span>, but with clipped noise added on each dimension of the action. After adding the clipped noise, the target action is then clipped to lie in the valid action range (all valid actions, <span class="math">a</span>, satisfy <span class="math">a_{Low} \leq a \leq a_{High}</span>). The target actions are thus:</p>
+<div class="math">
+<p><span class="math">a'(s') = \text{clip}\left(\mu_{\theta_{\text{targ}}}(s') + \text{clip}(\epsilon,-c,c), a_{Low}, a_{High}\right), \;\;\;\;\; \epsilon \sim \mathcal{N}(0, \sigma)</span></p>
+</div><p>Target policy smoothing essentially serves as a regularizer for the algorithm. It addresses a particular failure mode that can happen in DDPG: if the Q-function approximator develops an incorrect sharp peak for some actions, the policy will quickly exploit that peak and then have brittle or incorrect behaviour. This can be averted by smoothing out the Q-function over similar actions, which target policy smoothing is designed to do.</p>
+<p>Next: <strong>clipped double-Q learning</strong>. Both Q-functions use a single target, calculated using whichever of the two Q-functions gives a smaller target value:</p>
+<div class="math">
+<p><span class="math">y(r,s',d) = r + \gamma (1 - d) \min_{i=1,2} Q_{\phi_{i, \text{targ}}}(s', a'(s')),</span></p>
+</div><p>and then both are learned by regressing to this target:</p>
+<div class="math">
+<p><span class="math">L(\phi_1, {\mathcal D}) = \underE{(s,a,r,s',d) \sim {\mathcal D}}{
+    \Bigg( Q_{\phi_1}(s,a) - y(r,s',d) \Bigg)^2
+    },</span></p>
+</div><div class="math">
+<p><span class="math">L(\phi_2, {\mathcal D}) = \underE{(s,a,r,s',d) \sim {\mathcal D}}{
+    \Bigg( Q_{\phi_2}(s,a) - y(r,s',d) \Bigg)^2
+    }.</span></p>
+</div><p>Using the smaller Q-value for the target, and regressing towards that, helps fend off overestimation in the Q-function.</p>
+<p>Lastly: the policy is learned just by maximizing <span class="math">Q_{\phi_1}</span>:</p>
+<div class="math">
+<p><span class="math">\max_{\theta} \underset{s \sim {\mathcal D}}{{\mathrm E}}\left[ Q_{\phi_1}(s, \mu_{\theta}(s)) \right],</span></p>
+</div><p>which is pretty much unchanged from DDPG. However, in TD3, the policy is updated less frequently than the Q-functions are. This helps damp the volatility that normally arises in DDPG because of how a policy update changes the target.</p>
+</div>
+<div class="section" id="exploration-vs-exploitation">
+<h3><a class="toc-backref" href="#id5">Exploration vs. Exploitation</a><a class="headerlink" href="#exploration-vs-exploitation" title="Permalink to this headline">¶</a></h3>
+<p>TD3 trains a deterministic policy in an off-policy way. Because the policy is deterministic, if the agent were to explore on-policy, in the beginning it would probably not try a wide enough variety of actions to find useful learning signals. To make TD3 policies explore better, we add noise to their actions at training time, typically uncorrelated mean-zero Gaussian noise. To facilitate getting higher-quality training data, you may reduce the scale of the noise over the course of training. (We do not do this in our implementation, and keep noise scale fixed throughout.)</p>
+<p>At test time, to see how well the policy exploits what it has learned, we do not add noise to the actions.</p>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">Our TD3 implementation uses a trick to improve exploration at the start of training. For a fixed number of steps at the beginning (set with the <code class="docutils literal notranslate"><span class="pre">start_steps</span></code> keyword argument), the agent takes actions which are sampled from a uniform random distribution over valid actions. After that, it returns to normal TD3 exploration.</p>
+</div>
+</div>
+<div class="section" id="pseudocode">
+<h3><a class="toc-backref" href="#id6">Pseudocode</a><a class="headerlink" href="#pseudocode" title="Permalink to this headline">¶</a></h3>
+<div class="math">
+<p><span class="math">\begin{algorithm}[H]
+    \caption{Twin Delayed DDPG}
+    \label{alg1}
+\begin{algorithmic}[1]
+    \STATE Input: initial policy parameters $\theta$, Q-function parameters $\phi_1$, $\phi_2$, empty replay buffer $\mathcal{D}$
+    \STATE Set target parameters equal to main parameters $\theta_{\text{targ}} \leftarrow \theta$, $\phi_{\text{targ},1} \leftarrow \phi_1$, $\phi_{\text{targ},2} \leftarrow \phi_2$
+    \REPEAT
+        \STATE Observe state $s$ and select action $a = \text{clip}(\mu_{\theta}(s) + \epsilon, a_{Low}, a_{High})$, where $\epsilon \sim \mathcal{N}$
+        \STATE Execute $a$ in the environment
+        \STATE Observe next state $s'$, reward $r$, and done signal $d$ to indicate whether $s'$ is terminal
+        \STATE Store $(s,a,r,s',d)$ in replay buffer $\mathcal{D}$
+        \STATE If $s'$ is terminal, reset environment state.
+        \IF{it's time to update}
+            \FOR{$j$ in range(however many updates)}
+                \STATE Randomly sample a batch of transitions, $B = \{ (s,a,r,s',d) \}$ from $\mathcal{D}$
+                \STATE Compute target actions
+                \begin{equation*}
+                    a'(s') = \text{clip}\left(\mu_{\theta_{\text{targ}}}(s') + \text{clip}(\epsilon,-c,c), a_{Low}, a_{High}\right), \;\;\;\;\; \epsilon \sim \mathcal{N}(0, \sigma)
+                \end{equation*}
+                \STATE Compute targets
+                \begin{equation*}
+                    y(r,s',d) = r + \gamma (1-d) \min_{i=1,2} Q_{\phi_{\text{targ},i}}(s', a'(s'))
+                \end{equation*}
+                \STATE Update Q-functions by one step of gradient descent using
+                \begin{align*}
+                    &amp; \nabla_{\phi_i} \frac{1}{|B|}\sum_{(s,a,r,s',d) \in B} \left( Q_{\phi_i}(s,a) - y(r,s',d) \right)^2 &amp;&amp; \text{for } i=1,2
+                \end{align*}
+                \IF{ $j \mod$ \texttt{policy\_delay} $ = 0$}
+                    \STATE Update policy by one step of gradient ascent using
+                    \begin{equation*}
+                        \nabla_{\theta} \frac{1}{|B|}\sum_{s \in B}Q_{\phi_1}(s, \mu_{\theta}(s))
+                    \end{equation*}
+                    \STATE Update target networks with
+                    \begin{align*}
+                        \phi_{\text{targ},i} &amp;\leftarrow \rho \phi_{\text{targ}, i} + (1-\rho) \phi_i &amp;&amp; \text{for } i=1,2\\
+                        \theta_{\text{targ}} &amp;\leftarrow \rho \theta_{\text{targ}} + (1-\rho) \theta
+                    \end{align*}
+                \ENDIF
+            \ENDFOR
+        \ENDIF
+    \UNTIL{convergence}
+\end{algorithmic}
+\end{algorithm}</span></p>
+</div></div>
+</div>
+<div class="section" id="documentation">
+<h2><a class="toc-backref" href="#id7">Documentation</a><a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-you-should-know admonition">
+<p class="first admonition-title">You Should Know</p>
+<p class="last">In what follows, we give documentation for the PyTorch and Tensorflow implementations of TD3 in Spinning Up. They have nearly identical function calls and docstrings, except for details relating to model construction. However, we include both full docstrings for completeness.</p>
+</div>
+<div class="section" id="documentation-pytorch-version">
+<h3><a class="toc-backref" href="#id8">Documentation: PyTorch Version</a><a class="headerlink" href="#documentation-pytorch-version" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="saved-model-contents-pytorch-version">
+<h3><a class="toc-backref" href="#id9">Saved Model Contents: PyTorch Version</a><a class="headerlink" href="#saved-model-contents-pytorch-version" title="Permalink to this headline">¶</a></h3>
+<p>The PyTorch saved model can be loaded with <code class="docutils literal notranslate"><span class="pre">ac</span> <span class="pre">=</span> <span class="pre">torch.load('path/to/model.pt')</span></code>, yielding an actor-critic object (<code class="docutils literal notranslate"><span class="pre">ac</span></code>) that has the properties described in the docstring for <code class="docutils literal notranslate"><span class="pre">td3_pytorch</span></code>.</p>
+<p>You can get actions from this model with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">actions</span> <span class="o">=</span> <span class="n">ac</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="documentation-tensorflow-version">
+<h3><a class="toc-backref" href="#id10">Documentation: Tensorflow Version</a><a class="headerlink" href="#documentation-tensorflow-version" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="saved-model-contents-tensorflow-version">
+<h3><a class="toc-backref" href="#id11">Saved Model Contents: Tensorflow Version</a><a class="headerlink" href="#saved-model-contents-tensorflow-version" title="Permalink to this headline">¶</a></h3>
+<p>The computation graph saved by the logger includes:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="91%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Key</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">x</span></code></td>
+<td>Tensorflow placeholder for state input.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">a</span></code></td>
+<td>Tensorflow placeholder for action input.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">pi</span></code></td>
+<td><div class="first last line-block">
+<div class="line">Deterministically computes an action from the agent, conditioned</div>
+<div class="line">on states in <code class="docutils literal notranslate"><span class="pre">x</span></code>.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">q1</span></code></td>
+<td>Gives one action-value estimate for states in <code class="docutils literal notranslate"><span class="pre">x</span></code> and actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">q2</span></code></td>
+<td>Gives the other action-value estimate for states in <code class="docutils literal notranslate"><span class="pre">x</span></code> and actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>.</td>
+</tr>
+</tbody>
+</table>
+<p>This saved model can be accessed either by</p>
+<ul class="simple">
+<li>running the trained policy with the <a class="reference external" href="../user/saving_and_loading.html#loading-and-running-trained-policies">test_policy.py</a> tool,</li>
+<li>or loading the whole saved graph into a program with <a class="reference external" href="../utils/logger.html#spinup.utils.logx.restore_tf_graph">restore_tf_graph</a>.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="references">
+<h2><a class="toc-backref" href="#id12">References</a><a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="relevant-papers">
+<h3><a class="toc-backref" href="#id13">Relevant Papers</a><a class="headerlink" href="#relevant-papers" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://arxiv.org/abs/1802.09477">Addressing Function Approximation Error in Actor-Critic Methods</a>, Fujimoto et al, 2018</li>
+</ul>
+</div>
+<div class="section" id="other-public-implementations">
+<h3><a class="toc-backref" href="#id14">Other Public Implementations</a><a class="headerlink" href="#other-public-implementations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/sfujim/TD3">TD3 release repo</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sac.html" class="btn btn-neutral float-right" title="Soft Actor-Critic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ddpg.html" class="btn btn-neutral float-left" title="Deep Deterministic Policy Gradient" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Rick Staa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

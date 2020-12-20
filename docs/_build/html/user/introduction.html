@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; Machine Learning Control 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/modify.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Welcome to Machine Learning Control!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">MLC package</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-this-is">What This Is</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-we-built-this">Why We Built This</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-this-serves-our-mission">How This Serves Our Mission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-design-philosophy">Code Design Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#long-term-support-and-support-history">Long-Term Support and Support History</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Control</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../control/control.html">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../control/bench/bench.html">Benchmarks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Hardware</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/hardware.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/supported.html">Supported hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hardware/deploy.html">Deploy</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Utilities Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/run_utils.html">Run Utils</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Zone</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api/api.html">Code API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/release_dev.html">Release package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/doc_dev.html">Release documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../etc/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../etc/author.html">About the Author</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Machine Learning Control</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/user/introduction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<h1><a class="toc-backref" href="#id1">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id1">Introduction</a><ul>
+<li><a class="reference internal" href="#what-this-is" id="id2">What This Is</a></li>
+<li><a class="reference internal" href="#why-we-built-this" id="id3">Why We Built This</a></li>
+<li><a class="reference internal" href="#how-this-serves-our-mission" id="id4">How This Serves Our Mission</a></li>
+<li><a class="reference internal" href="#code-design-philosophy" id="id5">Code Design Philosophy</a></li>
+<li><a class="reference internal" href="#long-term-support-and-support-history" id="id6">Long-Term Support and Support History</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="what-this-is">
+<h2><a class="toc-backref" href="#id2">What This Is</a><a class="headerlink" href="#what-this-is" title="Permalink to this headline">¶</a></h2>
+<p>Welcome to the <a class="reference external" href="https://github.com/rickstaa/machine-learning-control">Machine Learning Control</a> (MLC) framework! The Machine Learning Control framework that enables
+you to create automatically, train and deploy RL control algorithms from data. This framework is made up of four main modules:</p>
+<ul class="simple">
+<li><a class="reference external" href="./modeling/modeling.html">Modeling</a>: Module that can be used to create an Openai gym environment out of real data.</li>
+<li><a class="reference external" href="./simzoo/simzoo.html">Simzoo</a>: Module that contains several already created <a class="reference external" href="https://github.com/rickstaa/machine-learning-control">Machine Learning Control</a> Openai gym environments.</li>
+<li><a class="reference external" href="./control/control.html">Control</a>: Module used to train several <a class="reference external" href="https://github.com/rickstaa/machine-learning-control">Machine Learning Control</a> RL learning agents on the built gym environments.</li>
+<li><a class="reference external" href="./hardware/hardware.html">Hardware</a>: Module that can be used to deploy the trained RL agents onto the hardware of your choice.</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The Machine Learning Control framework is still in its development state. We can therefore not guarantee that it is bug free.
+Please open <cite>an issue</cite> if you experience problems or something is unclear.</p>
+</div>
+</div>
+<div class="section" id="why-we-built-this">
+<h2><a class="toc-backref" href="#id3">Why We Built This</a><a class="headerlink" href="#why-we-built-this" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add short explanation.</p>
+</div>
+</div>
+<div class="section" id="how-this-serves-our-mission">
+<h2><a class="toc-backref" href="#id4">How This Serves Our Mission</a><a class="headerlink" href="#how-this-serves-our-mission" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add short explanation.</p>
+</div>
+</div>
+<div class="section" id="code-design-philosophy">
+<h2><a class="toc-backref" href="#id5">Code Design Philosophy</a><a class="headerlink" href="#code-design-philosophy" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add short explanation.</p>
+</div>
+</div>
+<div class="section" id="long-term-support-and-support-history">
+<h2><a class="toc-backref" href="#id6">Long-Term Support and Support History</a><a class="headerlink" href="#long-term-support-and-support-history" title="Permalink to this headline">¶</a></h2>
+<div class="admonition-todo admonition" id="index-3">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add short explanation.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to Machine Learning Control!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Rick Staa
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
