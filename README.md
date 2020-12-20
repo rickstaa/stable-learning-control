@@ -1,53 +1,14 @@
 # Machine Learning Control
 
-Repository for the machine learning control framework.
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/rickstaa/machine-learning-control)](https://github.com/rickstaa/panda-autograsp/releases)
+[![Python 3](https://img.shields.io/badge/Python-3.8%20%7C%203.7%20%7C%203.6%20%7C%203.5%20-green)](https://www.python.org/)
+[![Windows CI](https://github.com/rickstaa/machine-learning-control/workflows/MLC%20CI/badge.svg)](https://github.com/rickstaa/machine-learning-control/actions?query=workflow%3A%22MLC+CI%22)
 
-## Clone the repository
+## Package Overview
 
-Since the repository contains several git submodules to use all the features, it needs
-to be cloned using the `--recurse-submodules` argument:
+Welcome to the Machine Learning Control (MLC) framework! The Machine Learning Control framework that enables you to create automatically, train and deploy RL control algorithms from data. This framework is made up of four main modules:
 
-```bash
-git clone --recurse-submodules https://github.com/rickstaa/machine_learning_control.git
-```
+## Installation and Usage
 
-If you already cloned the repository and forgot the `--recurse-submodule` argument you
-can pull the submodules using the following git command:
+Please see the [docs](https://rickstaa.github.io/panda-autograsp/) for installation and usage instructions.
 
-```bash
-git submodule update --init --recursive
-```
-
-## Create conda environment
-
-From the general python package sanity perspective, it is a good idea to use conda environments to make sure packages from different projects do not interfere with each other.
-
-To create a conda env with python3, one runs
-
-```bash
-conda create -n mlc python=3.6
-```
-
-To activate the env:
-
-```bash
-conda activate mlc
-```
-
-## Installation Environment
-
-```bash
-pip install .
-```
-
-## Run the experiments
-
-After the environment has been successfully set up you can run the algorithms as follows:
-
-### SAC
-
-```bash
-python "./machine_learning_control/control/algos/sac/sac.py" --env="Oscillator-v1" --lr_a="1e-4" --lr_c="3e-4" --gamma="0.995" --batch-size="256" --replay-size="1000000" --l_a="2" --l_c="2" --hid_c="256" --hid_a="256"
-```
-
-### LAC
