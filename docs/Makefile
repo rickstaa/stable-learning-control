@@ -6,7 +6,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = Machine Learning Control
 SOURCEDIR     = source
 BUILDDIR      = build
-GH_PAGES_SOURCES = docs panda_autograsp
+GH_PAGES_SOURCES = docs machine_learning_control
 
 # Put it first so that "make" without argument is like "make help".
 .PHONY: help Makefile
