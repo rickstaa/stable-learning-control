@@ -10,5 +10,4 @@ Welcome to the Machine Learning Control (MLC) framework! The Machine Learning Co
 
 ## Installation and Usage
 
-Please see the [docs](https://rickstaa.github.io/panda-autograsp/) for installation and usage instructions.
-
+Please see the [docs](https://rickstaa.github.io/machine-learning-control/) for installation and usage instructions.
