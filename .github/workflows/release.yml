@@ -1,4 +1,4 @@
-name: MLC release CI
+name: Release CI
 
 on:
   push:
