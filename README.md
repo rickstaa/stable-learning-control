@@ -6,7 +6,16 @@
 
 ## Package Overview
 
-Welcome to the Machine Learning Control (MLC) framework! The Machine Learning Control framework that enables you to create automatically, train and deploy RL control algorithms from data. This framework is made up of four main modules:
+Welcome to the `Machine Learning Control`_ (MLC) framework! The Machine Learning Control framework enables
+you to automatically create, train and deploy various Reinforcement Learning (RL) and
+Imitation learning (IL) control algorithms directly from real-world data. This framework
+is made up of four main modules:
+
+* [Modeling](./machine_learning_control/modeling): Module that uses state of the art System Identification and State Estimation techniques to create an Openai gym environment out of real data.
+* [Simzoo](https://github.com/rickstaa/simzoo): Module that contains several already created [Machine Learning Control](https://rickstaa.github.io/machine-learning-control/simzoo/simzoo.html) Openai gym environments.
+* [Control](./machine_learning_control/control): Module used to train several [Machine Learning Control](https://rickstaa.github.io/machine-learning-control/control/control.html) RL/IL agents on the built gym environments.
+* [Hardware](./machine_learning_control/hardware): Module that can be used to deploy the trained RL/IL agents onto the hardware of your choice.
+
 
 ## Installation and Usage
 
