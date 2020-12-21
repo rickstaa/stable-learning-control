@@ -75,6 +75,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.extlinks",
 ]
 
 # 'sphinx.ext.mathjax', ??
@@ -270,6 +271,13 @@ texinfo_documents = [
     ),
 ]
 
+# -- External links dictionary -----------------------------------------------
+# Here you will find some often used global url definitions.
+extlinks = {
+    "mlc": ("https://github.com/rickstaa/panda_openai_sim/%s", None),
+    "issue": ("https://github.com/rickstaa/machine-learning-control/issues/%s", None),
+}
 
+# -- Add extra style sheets --------------------------------------------------
 def setup(app):
     app.add_stylesheet("css/modify.css")

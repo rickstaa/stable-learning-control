@@ -927,7 +927,6 @@ if __name__ == "__main__":
         json.dump(run_name, outfile)
 
     # Run SAC algorithm
-    # TODO: Reinable arguments
     sac(
         lambda: gym.make(args.env),
         actor_critic=core.MLPActorCritic,
@@ -945,3 +944,5 @@ if __name__ == "__main__":
         logger_kwargs=logger_kwargs,
     )
     print("done")
+
+# TODO: Add all input arguments

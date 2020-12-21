@@ -9,8 +9,8 @@ Release documentation
 Install requirements
 --------------------
 
-Building the `Machine Learning Control`_'s `HTML`_ documentation requires `sphinx`_,
-the `Machine Learning Control`_ package and several plugins. All of the above can be
+Building the :mlc:`Machine Learning Control <>`'s `HTML`_ documentation requires `sphinx`_,
+the :mlc:`Machine Learning Control <>` package and several plugins. All of the above can be
 installed using the following `pip`_ command:
 
 .. code-block:: bash

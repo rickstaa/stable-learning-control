@@ -57,4 +57,5 @@ LOG_IGNORE = {
     "MaxLogPi",
     "MinLogPi",
     "StdAlpha"
+    "StdLabda"
 }

@@ -1,23 +1,21 @@
-.. _`Machine Learning Control`: https://github.com/rickstaa/machine-learning-control
-
 ============
 Installation
 ============
 
 .. contents:: Table of Contents
 
-`Machine Learning Control`_ requires `Python3`_ and `OpenAI Gym`_ to work. It is
+:mlc:`Machine Learning Control <>` requires `Python3`_ and `OpenAI Gym`_ to work. It is
 currently only supported on Linux and OSX.
 
 .. admonition:: You Should Know
 
-    Many examples and benchmarks in `Machine Learning Control`_ refer to RL environments that use the `MuJoCo`_ physics engine.
+    Many examples and benchmarks in :mlc:`Machine Learning Control <>` refer to RL environments that use the `MuJoCo`_ physics engine.
     MuJoCo is proprietary software that requires a license, which is free to trial and free for students, but otherwise is not free.
     As a result, installing it is optional, but because of its importance to the research community---it is the de facto standard for
     benchmarking deep RL algorithms in continuous control---it is preferred.
 
     Don't worry if you decide not to install MuJoCo, though. You can definitely get started using the Machine Learning Framework by running RL
-    algorithms with the included `Machine Learning Control`_ `simzoo`_ gym environments. Additionally, you can also provide your own gym environments
+    algorithms with the included :mlc:`Machine Learning Control <>` `simzoo`_ gym environments. Additionally, you can also provide your own gym environments
     or use the `MuJoCo`_ the `Classic Control`_ and `Box2d`_ environments in Gym, which are totally free to use.
 
 
@@ -69,7 +67,7 @@ To use Python from the environment you just created, activate the environment wi
 Installing the MLC package
 ==========================
 
-After you successfully setup your python environment, you can install the `Machine Learning Control`_ package and its dependencies using the
+After you successfully setup your python environment, you can install the :mlc:`Machine Learning Control <>` package and its dependencies using the
 `pip package manager`_. This is done by running the following command in your terminal:
 
 .. code-block:: bash

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1280"
+   height="499.98334"
+   viewBox="0 0 1280 499.98334"
+   version="1.1"
+   id="svg21"
+   sodipodi:docname="logo_big.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   inkscape:export-filename="/home/ricks/Development/work/machine-learning-control/docs/source/images/logo_big.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <metadata
+     id="metadata25">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Logo White Copy</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="995"
+     id="namedview23"
+     showgrid="false"
+     inkscape:pagecheckerboard="true"
+     inkscape:zoom="0.41309524"
+     inkscape:cx="103.5237"
+     inkscape:cy="316.22962"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Logo-White-Copy"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title2">Logo White Copy</title>
+  <desc
+     id="desc4">Created with Sketch.</desc>
+  <defs
+     id="defs6" />
+  <g
+     id="Final"
+     sketch:type="MSPage"
+     style="fill:none;fill-rule:evenodd;stroke:none;stroke-width:1"
+     transform="translate(-0.30249548,459.35333)">
+    <g
+       id="Contentpage"
+       sketch:type="MSArtboardGroup"
+       transform="translate(-30,-20)"
+       style="fill:#ffffff">
+      <g
+         id="header-nav-copy"
+         sketch:type="MSLayerGroup"
+         transform="translate(29,19)">
+        <g
+           id="Logo-White-Copy"
+           sketch:type="MSShapeGroup">
+          <g
+             id="Imported-Layers"
+             transform="translate(0.714626,0.315)">
+            <path
+               d="m 372.37715,-6.696056 c 32.1671,0 49.6145,-21.3957 49.6145,-51.408762 V -211.16161 h 68.40116 v 156.479115 c -0.68806,68.877403 -55.75794,95.948251 -118.01566,95.948251 -62.25772,0 -117.30304,-27.070848 -117.9911,-95.948251 V -211.16161 h 68.38888 v 153.056792 c 0,30.013062 17.4474,51.408762 49.60222,51.408762"
+               id="Fill-1"
+               style="fill:#00adef;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+            <path
+               d="m 946.93709,-43.664572 v -16.11448 c 0,-47.617118 -26.92058,-81.212548 -75.6258,-81.212548 -54.35728,0 -79.68056,42.151244 -79.68056,92.525919 0,50.719379 21.91982,89.780681 76.96512,89.780681 41.06284,0 71.14112,-19.524498 76.2771,-58.5858 h -34.18216 c -3.78442,24.990372 -16.41534,34.937276 -41.72636,34.937276 -33.21148,0 -44.22052,-29.582196 -44.22052,-61.331048 z M 825.48113,-66.279014 c 0.24564,-26.83695 16.4399,-51.051756 43.4833,-51.051756 31.42992,0 43.72908,21.580354 43.72908,51.051756 z"
+               id="Fill-2"
+               style="fill:#000000;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+            <path
+               d="m 986.30435,-211.16161 h 32.52335 V 36.169198 h -32.52335 z"
+               id="Fill-3"
+               style="fill:#000000;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+            <path
+               d="m 77.20897,36.169198 h 68.37659 V -163.16286 h 76.62111 v -47.97413 H 0.58786948 v 47.97413 H 77.20897 V 36.169198"
+               id="Fill-4"
+               style="fill:#000000;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+            <path
+               d="m 241.48481,-331.5955 c -16.68562,5.24428 -33.89956,1.04638 -33.8504,-21.29722 0.0366,-34.06322 79.87712,-62.63596 90.9722,-92.40282 2.75226,-7.44786 2.8997,-13.54158 -0.62664,-13.36922 -2.55568,0.1724 -0.5529,3.8655 -6.16802,9.4914 -33.06404,33.15226 -88.50254,33.0907 -131.03978,52.18434 -27.89126,12.55672 -109.635998,51.08868 -90.800186,137.04078 0.872376,4.0871 3.317468,17.75178 5.799418,17.75178 2.911994,0 2.887424,-8.12494 2.801414,-17.97336 -0.626632,-51.18718 59.886344,-65.4797 79.557674,-98.9274 2.35908,-3.9763 6.42605,-9.5899 7.38442,-6.99238 0.4669,1.2803 0.172,3.12688 -0.62663,6.68462 -6.15573,27.4771 -34.85793,45.11808 -26.724,64.76568 10.54216,25.4828 40.95223,6.48764 50.29028,-9.90998 2.50652,-4.50564 3.89494,-7.3863 5.56596,-6.80772 1.27784,0.43088 1.22869,5.6013 0.43002,10.2793 -4.9762,29.56988 -11.78314,46.17678 -33.37122,63.00527 -6.91752,5.39202 -17.77915,6.51227 -16.35386,10.64861 0.35633,1.08333 5.04991,0.97253 8.78513,0.5909 57.51498,-3.69315 105.64276,-71.65958 118.37198,-116.06366 1.35156,-3.10224 1.74474,-6.04446 0.34402,-7.1401 -1.74474,-1.34184 -4.26356,1.7358 -6.8438,4.02554 -6.5612,5.77364 -15.5798,11.81812 -23.89802,14.41564"
+               id="Fill-5"
+               style="fill:#000000;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+            <path
+               d="M 1120.6862,36.169198 V -113.13288 h 39.6497 v -22.65137 h -39.6497 v -27.78486 c 0,-19.8815 9.5591,-23.2669 28.0509,-23.2669 5.4554,0 10.9477,0.68939 16.403,1.00946 v -27.03391 c -7.5933,-1.72348 -15.3709,-3.44695 -23.2591,-3.44695 -30.7664,0 -53.6937,15.46202 -53.6937,48.38037 v 32.14279 h -33.4818 v 22.65137 h 33.4818 V 36.169198 h 32.4989"
+               id="Fill-6"
+               style="fill:#000000;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+            <path
+               d="m 1178.9997,-135.78425 v 22.65137 h 29.4026 V -3.569182 c 0,22.885268 0.3316,44.87187 48.5947,44.87187 7.5073,0 14.56,-0.714008 22.227,-2.043544 V 14.244152 c -5.2834,1.280292 -11.9675,2.055856 -17.1279,2.055856 -11.6112,0 -21.1704,-5.859808 -21.1704,-18.145718 v -111.28717 h 39.6622 v -22.65137 h -39.6622 v -46.92773 l -32.5234,10.26698 v 36.68537 l -29.4026,-0.0244"
+               id="Fill-7"
+               style="fill:#000000;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+            <path
+               d="m 593.02527,-181.70252 h 50.5606 c 57.06034,0 80.73722,43.12378 80.73722,94.22478 0,51.101001 -23.67688,94.212468 -80.73722,94.212468 h -50.5606 z M 558.76941,36.169198 h 84.81646 c 105.56904,0 116.63952,-89.534469 116.63952,-123.646938 0,-34.12478 -11.07048,-123.68387 -116.63952,-123.68387 h -84.81646 z"
+               id="Fill-8"
+               style="fill:#000000;fill-opacity:1;stroke-width:12.3105278"
+               inkscape:connector-curvature="0"
+               inkscape:export-xdpi="96"
+               inkscape:export-ydpi="96" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

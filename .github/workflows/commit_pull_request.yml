@@ -1,5 +1,5 @@
 # MAin MLC github action. Performs linting and formatting checks. It also runs tests.
-name: MLC CI
+name: MLC commit/pull CI
 on:
   push:
     branches:
