@@ -1,10 +1,12 @@
 # MAin MLC github action. Performs linting and formatting checks. It also runs tests.
-name: Commit/pull CI
+name: MLC CI
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 jobs:
   spell-check:
     name: runner / misspell

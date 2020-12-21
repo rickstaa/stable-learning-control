@@ -1,5 +1,5 @@
 # Action used to update the major and minor tags automatically.
-name: Update symver
+name: Update symver CI
 on:
   push:
     branches-ignore:
