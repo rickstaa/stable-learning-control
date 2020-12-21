@@ -1,5 +1,5 @@
 # Github action that checks if the documentation still builds
-name: "Pull Request Docs Check"
+name: Pull docs check
 on:
   pull_request:
     paths:
@@ -7,7 +7,7 @@ on:
     branches:
       - main
 jobs:
-  docs:
+  docs-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout mlc repository
