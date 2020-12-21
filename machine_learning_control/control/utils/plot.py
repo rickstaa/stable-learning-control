@@ -209,7 +209,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("logdir", nargs="*")
     parser.add_argument("--legend", "-l", nargs="*")
-    parser.add_argument("--xaxis", "-x", default="TotalEnvInteracts")
+    parser.add_argument("--xaxis", "-x", default="Step")
     parser.add_argument("--value", "-y", default="Performance", nargs="*")
     parser.add_argument("--count", action="store_true")
     parser.add_argument("--smooth", "-s", type=int, default=1)
@@ -237,7 +237,7 @@ def main():
             rules (below).)
 
         xaxis (string): Pick what column from data is used for the x-axis.
-             Defaults to ``TotalEnvInteracts``.
+             Defaults to ``Step``.
 
         value (strings): Pick what columns from data to graph on the y-axis.
             Submitting multiple values will produce multiple graphs. Defaults

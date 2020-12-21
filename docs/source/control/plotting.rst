@@ -35,7 +35,7 @@ Spinning Up ships with a simple plotting utility for interpreting results. Run i
 
         .. parsed-literal::
 
-            python machine_learning_control/utils/plot.py data/bench_algo
+            python machine_learning_control/control/utils/plot.py data/bench_algo
 
         relying on the autocomplete to find both ``data/bench_algo1`` and ``data/bench_algo2``.
 
@@ -45,7 +45,7 @@ Spinning Up ships with a simple plotting utility for interpreting results. Run i
 
     *strings*. Optional way to specify legend for the plot. The plotter legend will automatically use the ``exp_name`` from the ``config.json`` file, unless you tell it otherwise through this flag. This only works if you provide a name for each directory that will get plotted. (Note: this may not be the same as the number of logdir args you provide! Recall that the plotter looks for autocompletes of the logdir args: there may be more than one match for a given logdir prefix, and you will need to provide a legend string for each one of those matches---unless you have removed some of them as candidates via selection or exclusion rules (below).)
 
-.. option:: -x, --xaxis=XAXIS, default='TotalEnvInteracts'
+.. option:: -x, --xaxis=XAXIS, default='step'
 
     *string*. Pick what column from data is used for the x-axis.
 

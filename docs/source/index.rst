@@ -17,6 +17,12 @@ Welcome to Machine Learning Control!
 
 .. toctree::
    :maxdepth: 2
+   :caption: Modeling
+
+   modeling/modeling
+
+.. toctree::
+   :maxdepth: 2
    :caption: Control
 
    control/control
@@ -26,7 +32,6 @@ Welcome to Machine Learning Control!
    control/plotting
    control/bench/bench
 
-
 .. toctree::
    :maxdepth: 2
    :caption: Hardware
@@ -34,6 +39,13 @@ Welcome to Machine Learning Control!
    hardware/hardware
    hardware/supported
    hardware/deploy
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Simzoo
+
+   simzoo/simzoo
+
 
 
 .. toctree::

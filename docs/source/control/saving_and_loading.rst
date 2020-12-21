@@ -185,9 +185,9 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
 .. parsed-literal::
 
     Traceback (most recent call last):
-      File "machine_learning_control/utils/test_policy.py", line 153, in <module>
+      File "machine_learning_control/control/utils/test_policy.py", line 153, in <module>
         run_policy(env, get_action, args.len, args.episodes, not(args.norender))
-      File "machine_learning_control/utils/test_policy.py", line 114, in run_policy
+      File "machine_learning_control/control/utils/test_policy.py", line 114, in run_policy
         "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
     AssertionError: Environment not found!
 

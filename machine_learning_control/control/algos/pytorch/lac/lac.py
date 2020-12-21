@@ -1117,9 +1117,9 @@ def lac(
                         average_only=True,
                         tb_write=logger_kwargs["use_tensorboard"],
                     )
-            if "TotalEnvInteracts" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["TotalEnvInteracts"]) > 0:
-                    logger.log_tabular("TotalEnvInteracts", t)
+            if "Step" in logger.epoch_dict.keys():
+                if len(logger.epoch_dict["Step"]) > 0:
+                    logger.log_tabular("Step", t)
             if "Q1Vals" in logger.epoch_dict.keys():
                 if len(logger.epoch_dict["Q1Vals"]) > 0:
                     logger.log_tabular("Q1Vals", with_min_and_max=True)

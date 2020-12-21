@@ -443,7 +443,7 @@ def sac(
             logger.log_tabular("TestEpRet", with_min_and_max=True)
             logger.log_tabular("EpLen", average_only=True)
             logger.log_tabular("TestEpLen", average_only=True)
-            logger.log_tabular("TotalEnvInteracts", t)
+            logger.log_tabular("Step", t)
             logger.log_tabular("Q1Vals", with_min_and_max=True)
             logger.log_tabular("Q2Vals", with_min_and_max=True)
             logger.log_tabular("LogPi", with_min_and_max=True)

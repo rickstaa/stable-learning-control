@@ -4,6 +4,8 @@ This module is based on the algos module found in the the
 `Spinning Up repository <https://github.com/openai/spinningup>`_.
 """
 
+from machine_learning_control.version import __version__
+
 # Disable TF deprecation warnings.
 # Syntax from tf1 is not expected to be compatible with tf2.
 # FIXME: Move to top folder

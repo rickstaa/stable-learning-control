@@ -41,6 +41,7 @@ BASE_ALGO_NAMES = ["sac", "lac"]
 
 # TODO: Store control algorithsm in control sub folder (Needed when we add hardware and modeling commands.)
 
+
 def add_with_backends(algo_list):
     # helper function to build lists with backend-specific function names
     algo_list_with_backends = deepcopy(algo_list)
@@ -263,7 +264,9 @@ def run(input_args):
 
     elif cmd in valid_utils:
         # Execute the correct utility file.
-        runfile = osp.join(osp.abspath(osp.dirname(__file__)), "utils", cmd + ".py")
+        runfile = osp.join(
+            osp.abspath(osp.dirname(__file__)), "control", "utils", cmd + ".py"
+        )
         args = [sys.executable if sys.executable else "python", runfile] + input_args[
             2:
         ]

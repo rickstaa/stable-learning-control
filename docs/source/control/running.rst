@@ -311,6 +311,6 @@ runs all experiments in the grid (one experiment per valid configuration), by pr
 
 Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behaviour of ``ExperimentGrid`` is the same as running things from the command line. (In fact, ``machine_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
 
-.. _`ExperimentGrid`: ../utils/run_utils.html#experimentgrid
+.. _`ExperimentGrid`: ..utils/run_utils.html#experimentgrid
 .. _`the documentation page`: ../utils/run_utils.html#experimentgrid
-.. _`call_experiment`: ../utils/run_utils.html#machine_learning_control.control.utils.run_utils.call_experiment
+.. _`call_experiment`: ..utils/run_utils.html#machine_learning_control.control.utils.run_utils.call_experiment
