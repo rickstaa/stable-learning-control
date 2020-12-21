@@ -25,7 +25,7 @@ from machine_learning_control.user_config import (
     FORCE_DATESTAMP,
     WAIT_BEFORE_LAUNCH,
 )
-from machine_learning_control.control.utils.logx import colourize
+from machine_learning_control.control.utils.logx import colorize
 from machine_learning_control.control.utils.mpi_tools import mpi_fork
 from machine_learning_control.control.utils.serialization_utils import convert_json
 from tqdm import trange
@@ -62,7 +62,7 @@ def setup_logger_kwargs(
         output_dir = data_dir/YY-MM-DD_exp_name/YY-MM-DD_HH-MM-SS_exp_name_s[seed]
 
     You can force datestamp=True by setting ``FORCE_DATESTAMP=True`` in
-    ``spinup/user_config.py``.
+    ``machine_learning_control/user_config.py``.
 
     Args:
         exp_name (string): Name for experiment.
@@ -72,7 +72,7 @@ def setup_logger_kwargs(
         use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
             to True.
         data_dir (string, optional): Path to folder where results should be saved.
-            Default is the ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``. Defaults
+            Default is the ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``. Defaults
             to None.
         datestamp (bool, optional): Whether to include a date and timestamp in the
             name of the save directory. Defaults to False.
@@ -137,7 +137,7 @@ def call_experiment(
             the machine.
         data_dir (string): Used in configuring the logger, to decide where
             to store experiment results. Note: if left as None, data_dir will
-            default to ``DEFAULT_DATA_DIR`` from ``spinup/user_config.py``.
+            default to ``DEFAULT_DATA_DIR`` from ``machine_learning_control/user_config.py``.
         **kwargs: All kwargs to pass to thunk.
     """
 
@@ -148,9 +148,9 @@ def call_experiment(
     kwargs["seed"] = seed
 
     # Be friendly and print out your kwargs, so we all know what's up
-    print(colourize("Running experiment:\n", color="cyan", bold=True))
+    print(colorize("Running experiment:\n", color="cyan", bold=True))
     print(exp_name + "\n")
-    print(colourize("with kwargs:\n", color="cyan", bold=True))
+    print(colorize("with kwargs:\n", color="cyan", bold=True))
     kwargs_json = convert_json(kwargs)
     print(json.dumps(kwargs_json, separators=(",", ":\t"), indent=4, sort_keys=True))
     print("\n")
@@ -167,6 +167,8 @@ def call_experiment(
         # Make 'env_fn' from 'env_name'
         if "env_name" in kwargs:
             import gym
+            import machine_learning_control.simzoo.simzoo
+            # FIXME: Make sure that all custom environments that are already imported are available.
 
             env_name = kwargs["env_name"]
             kwargs["env_fn"] = lambda: gym.make(env_name)
@@ -212,11 +214,11 @@ def call_experiment(
     # Tell the user about where results are, and how to check them
     logger_kwargs = kwargs["logger_kwargs"]
 
-    plot_cmd = "python -m spinup.run plot " + logger_kwargs["output_dir"]
-    plot_cmd = colourize(plot_cmd, "green")
+    plot_cmd = "python -m machine_learning_control.run plot " + logger_kwargs["output_dir"]
+    plot_cmd = colorize(plot_cmd, "green")
 
-    test_cmd = "python -m spinup.run test_policy " + logger_kwargs["output_dir"]
-    test_cmd = colourize(test_cmd, "green")
+    test_cmd = "python -m machine_learning_control.run test_policy " + logger_kwargs["output_dir"]
+    test_cmd = colorize(test_cmd, "green")
 
     output_msg = (
         "\n" * 5
@@ -321,11 +323,11 @@ class ExperimentGrid:
             msg = base_msg % name_insert
         else:
             msg = base_msg % (name_insert + "\n")
-        print(colourize(msg, color="green", bold=True))
+        print(colorize(msg, color="green", bold=True))
 
         # List off parameters, shorthands, and possible values.
         for k, v, sh in zip(self.keys, self.vals, self.shs):
-            color_k = colourize(k.ljust(40), color="cyan", bold=True)
+            color_k = colorize(k.ljust(40), color="cyan", bold=True)
             print("", color_k, "[" + sh + "]" if sh is not None else "", "\n")
             for i, val in enumerate(v):
                 print("\t" + str(convert_json(val)))
@@ -373,7 +375,7 @@ class ExperimentGrid:
         By default, if a shorthand isn't given, one is automatically generated
         from the key using the first three letters of each colon-separated
         term. To disable this behaviour, change ``DEFAULT_SHORTHAND`` in the
-        ``spinup/user_config.py`` file to ``False``.
+        ``machine_learning_control/user_config.py`` file to ``False``.
 
         Args:
             key (string): Name of parameter.
@@ -569,7 +571,7 @@ class ExperimentGrid:
         var_names = set([self.variant_name(var) for var in variants])
         var_names = sorted(list(var_names))
         line = "=" * DIV_LINE_WIDTH
-        preparing = colourize(
+        preparing = colorize(
             "Preparing to run the following experiments...", color="green", bold=True
         )
         joined_var_names = "\n".join(var_names)
@@ -578,13 +580,13 @@ class ExperimentGrid:
 
         if WAIT_BEFORE_LAUNCH > 0:
             delay_msg = (
-                colourize(
+                colorize(
                     dedent(
                         """
             Launch delayed to give you a few seconds to review your experiments.
 
             To customise or disable this behaviour, change WAIT_BEFORE_LAUNCH in
-            spinup/user_config.py.
+            ``machine_learning_control/user_config.py``.
 
             """
                     ),

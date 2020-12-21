@@ -23,15 +23,15 @@ and max value of a diagnostic over each epoch and across MPI workers.
 
     All `Machine Learning Control`_ algorithm implementations use an EpochLogger.
 
-.. _`Logger`: ../utils/logger.html#spinup.utils.logx.Logger
-.. _`EpochLogger`: ../utils/logger.html#spinup.utils.logx.EpochLogger
+.. _`Logger`: ../utils/logger.html#machine_learning_control.control.utils.logx.Logger
+.. _`EpochLogger`: ../utils/logger.html#machine_learning_control.control.utils.logx.EpochLogger
 
 Examples
 --------
 
 First, let's look at a simple example of how an EpochLogger keeps track of a diagnostic value:
 
->>> from spinup.utils.logx import EpochLogger
+>>> from machine_learning_control.control.utils.logx import EpochLogger
 >>> epoch_logger = EpochLogger()
 >>> for i in range(10):
         epoch_logger.store(Test=i)
@@ -60,7 +60,7 @@ saving as well as diagnostic logging:
     import numpy as np
     import tensorflow as tf
     import time
-    from spinup.utils.logx import EpochLogger
+    from machine_learning_control.control.utils.logx import EpochLogger
 
 
     def mlp(x, hidden_sizes=(32,), activation=tf.tanh, output_activation=None):
@@ -135,12 +135,12 @@ In this example, observe that
 * On line 58, the computation graph is saved once per epoch via `logger.save_state`_.
 * On lines 61-66, `logger.log_tabular`_ and `logger.dump_tabular`_ are used to write the epoch diagnostics to file. Note that the keys passed into `logger.log_tabular`_ are the same as the keys passed into `logger.store`_.
 
-.. _`logger.save_config`: ../utils/logger.html#spinup.utils.logx.Logger.save_config
-.. _`logger.setup_tf_saver`: ../utils/logger.html#spinup.utils.logx.Logger.setup_tf_saver
-.. _`logger.store`: ../utils/logger.html#spinup.utils.logx.EpochLogger.store
-.. _`logger.save_state`: ../utils/logger.html#spinup.utils.logx.Logger.save_state
-.. _`logger.log_tabular`: ../utils/logger.html#spinup.utils.logx.EpochLogger.log_tabular
-.. _`logger.dump_tabular`: ../utils/logger.html#spinup.utils.logx.Logger.dump_tabular
+.. _`logger.save_config`: ../utils/logger.html#machine_learning_control.control.utils.logx.Logger.save_config
+.. _`logger.setup_tf_saver`: ../utils/logger.html#machine_learning_control.control.utils.logx.Logger.setup_tf_saver
+.. _`logger.store`: ../utils/logger.html#machine_learning_control.control.utils.logx.EpochLogger.store
+.. _`logger.save_state`: ../utils/logger.html#machine_learning_control.control.utils.logx.Logger.save_state
+.. _`logger.log_tabular`: ../utils/logger.html#machine_learning_control.control.utils.logx.EpochLogger.log_tabular
+.. _`logger.dump_tabular`: ../utils/logger.html#machine_learning_control.control.utils.logx.Logger.dump_tabular
 
 
 Logging and PyTorch
@@ -172,12 +172,12 @@ Logger Classes
 ==============
 
 
-.. autoclass:: spinup.utils.logx.Logger
+.. autoclass:: machine_learning_control.control.utils.logx.Logger
     :members:
 
-    .. automethod:: spinup.utils.logx.Logger.__init__
+    .. automethod:: machine_learning_control.control.utils.logx.Logger.__init__
 
-.. autoclass:: spinup.utils.logx.EpochLogger
+.. autoclass:: machine_learning_control.control.utils.logx.EpochLogger
     :show-inheritance:
     :members:
 
@@ -202,7 +202,7 @@ method that allows you to sample actions from the policy, given observations:
 Loading Saved Graphs (Tensorflow Only)
 ======================================
 
-.. autofunction:: spinup.utils.logx.restore_tf_graph
+.. autofunction:: machine_learning_control.control.utils.logx.restore_tf_graph
 
 When you use this method to restore a graph saved by a Tensorflow `Machine Learning Control`_ implementation,
 you can minimally expect it to include the following:

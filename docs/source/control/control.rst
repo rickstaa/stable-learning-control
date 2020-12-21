@@ -28,7 +28,7 @@ Machine Learning Control has two implementations for each algorithm: one that us
 .. _`MLP`: https://en.wikipedia.org/wiki/Multilayer_perceptron
 .. _`Gym Mujoco`: https://gym.openai.com/envs/#mujoco
 .. _`PyTorch`: https://pytorch.org/
-.. _`Tensorflow v1`: https://www.tensorflow.org/api_docs/python/tf
+.. _`Tensorflow v2`: https://www.tensorflow.org/api_docs/python/tf
 
 
 Why These Algorithms?

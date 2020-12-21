@@ -16,8 +16,8 @@ from torch.optim import Adam
 import gym
 import time
 import os
-import spinup.algos.pytorch.sac.core as core
-from spinup.utils.logx import EpochLogger
+import machine_learning_control.control.algos.pytorch.sac.core as core
+from machine_learning_control.control.utils.logx import EpochLogger
 
 # from tensorboardX import SummaryWriter
 import argparse
@@ -487,7 +487,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Setup output dir for logger and return output kwargs
-    from spinup.utils.run_utils import setup_logger_kwargs
+    from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 
     logger_kwargs = setup_logger_kwargs(args.exp_name, args.seed)
     logger_kwargs["output_dir"] = (

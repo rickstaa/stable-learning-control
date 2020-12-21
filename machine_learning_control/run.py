@@ -13,6 +13,10 @@ from textwrap import dedent
 
 import gym
 
+# Import mlc algorihtms and environments
+import machine_learning_control
+import machine_learning_control.simzoo.simzoo
+
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
 from machine_learning_control.user_config import DEFAULT_BACKEND
 
@@ -30,11 +34,12 @@ SUBSTITUTIONS = {
 }
 
 # Only some algorithms can be parallelized (have num_cpu > 1):
-MPI_COMPATIBLE_ALGOS = ["vpg", "elpg"]
+MPI_COMPATIBLE_ALGOS = []
 
 # Algo names (used in a few places)
-BASE_ALGO_NAMES = ["vpg", "elpg", "elpg_random", "ppo", "elppo"]
+BASE_ALGO_NAMES = ["sac", "lac"]
 
+# TODO: Store control algorithsm in control sub folder (Needed when we add hardware and modeling commands.)
 
 def add_with_backends(algo_list):
     # helper function to build lists with backend-specific function names
@@ -57,12 +62,13 @@ def parse_and_execute_grid_search(cmd, args):
         print("\n\nUsing default backend (%s) for %s.\n" % (backend, cmd))
         cmd = cmd + "_" + backend
 
-    algo = eval("elpg_pack." + cmd)
+    # TODO: Add check if machine_learning_control module exists -> More informative warning
+    algo = eval("machine_learning_control.control." + cmd)
 
     # Before all else, check to see if any of the flags is 'help'.
     valid_help = ["--help", "-h", "help"]
     if any([arg in valid_help for arg in args]):
-        print("\n\nShowing docstring for spinup." + cmd + ":\n")
+        print("\n\nShowing docstring for machine_learning_control." + cmd + ":\n")
         print(algo.__doc__)
         sys.exit()
 
@@ -113,7 +119,7 @@ def parse_and_execute_grid_search(cmd, args):
 
     # Penultimate pass: sugar. Allow some special shortcuts in arg naming,
     # eg treat "env" the same as "env_name". This is super specific
-    # to Spinning Up implementations, and may be hard to maintain.
+    # to Machine Learning Control implementations, and may be hard to maintain.
     # These special shortcuts are described by SUBSTITUTIONS.
     for special_name, true_name in SUBSTITUTIONS.items():
         if special_name in arg_dict:
@@ -191,7 +197,7 @@ def parse_and_execute_grid_search(cmd, args):
 
 def run(input_args):
     """Function that is used to run the experiments. I modified this component
-    compared to the Spinningup implementation such that I can import it in other
+    compared to the Machine Learning Control such that I can import it in other
     modules.
 
     Args:
@@ -215,9 +221,9 @@ def run(input_args):
         help_msg = (
             dedent(
                 """
-            Experiment in Spinning Up from the command line with
+            Experiment in Machine Learning Control from the command line with
 
-            \tpython -m elpg_pack.run CMD [ARGS...]
+            \tpython -m machine_learning_control.run CMD [ARGS...]
 
             where CMD is a valid command. Current valid commands are:
             """
@@ -238,12 +244,12 @@ def run(input_args):
             FYI: When running an algorithm, any keyword argument to the
             algorithm function can be used as a flag, eg
 
-            \tpython -m elpg_pack.run ppo --env HalfCheetah-v2 --clip_ratio 0.1
+            \tpython -m machine_learning_control.run sac --env HalfCheetah-v2 --clip_ratio 0.1
 
             If you need a quick refresher on valid kwargs, get the docstring
             with
 
-            \tpython -m elpg_pack.run [algo] --help
+            \tpython -m machine_learning_control.run [algo] --help
 
             See the "Running Experiments" docs page for more details.
 

@@ -37,6 +37,10 @@ else:
     TF_AVAILABLE = False
 
 
+# IMPORT LOGGER FORMAT
+# FIXME: Replace with input argument
+from machine_learning_control.user_config import LOG_FMT, LOG_IGNORE
+
 color2num = dict(
     gray=30,
     red=31,
@@ -49,16 +53,16 @@ color2num = dict(
     crimson=38,
 )
 
-# TODO: Remove tf dependency
+# TODO: Remove tf dependency if tf is not installed
 
 
-def colourize(string, color, bold=False, highlight=False):
+def colorize(string, color, bold=False, highlight=False):
     """Colorize a string.
 
     This function was originally written by John Schulman.
 
     Args:
-        string (str): The string you want to colourize.
+        string (str): The string you want to colorize.
 
         color (str): The color you want to use.
 
@@ -101,10 +105,10 @@ def restore_tf_graph(sess, fpath):
 
     if not TF_AVAILABLE:
         print(
-            colourize(
+            colorize(
                 "Warning: restore_tf_graph method could not be used as tensorflow is "
-                "not installed in the current environment. Please install tensorflow if "
-                "you want to use tensorflow related logging methods.",
+                "not installed in the current environment. Please install tensorflow "
+                "if you want to use tensorflow related logging methods.",
                 color="yellow",
                 bold=True,
             )
@@ -137,8 +141,8 @@ class Logger:
         output_dir=None,
         output_fname="progress.txt",
         exp_name=None,
-        log_ignore={},
-        log_fmt="tab",
+        log_ignore=LOG_IGNORE,
+        log_fmt=LOG_FMT,
         use_tensorboard=False,
         save_checkpoints=False,
     ):
@@ -179,7 +183,7 @@ class Logger:
             self.output_dir = output_dir or "/tmp/experiments/%i" % int(time.time())
             if osp.exists(self.output_dir):
                 print(
-                    colourize(
+                    colorize(
                         (
                             "WARN: Log dir %s already exists! Storing info there anyway."
                             % self.output_dir
@@ -193,7 +197,7 @@ class Logger:
             self.output_file = open(osp.join(self.output_dir, output_fname), "w")
             atexit.register(self.output_file.close)
             print(
-                colourize(
+                colorize(
                     "Logging data to %s" % self.output_file.name, "green", bold=True
                 )
             )
@@ -229,7 +233,7 @@ class Logger:
                 "green".
         """
         if proc_id() == 0:
-            print(colourize(msg, color, bold=True))
+            print(colorize(msg, color, bold=True))
 
     def log_tabular(
         self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
@@ -299,7 +303,7 @@ class Logger:
             output = json.dumps(
                 config_json, separators=(",", ":\t"), indent=4, sort_keys=True
             )
-            print(colourize("Saving config:\n", color="cyan", bold=True))
+            print(colorize("Saving config:\n", color="cyan", bold=True))
             print(output)
             with open(osp.join(self.output_dir, "config.json"), "w") as out:
                 out.write(output)
@@ -352,7 +356,7 @@ class Logger:
         """
         if not TF_AVAILABLE:
             print(
-                colourize(
+                colorize(
                     "Warning: The Logger.setup_tf_saver could not be set up as "
                     "tensorflow is not installed in the current environment. Please "
                     "install tensorflow if you want to use tensorflow related logging "

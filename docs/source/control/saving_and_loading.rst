@@ -112,12 +112,12 @@ Experiment results will, by default, be saved in the same directory as the Spinn
             ...
         docs/
             ...
-        spinup/
+        machine_learning_control/
             ...
         LICENSE
         setup.py
 
-You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``.
+You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``.
 
 
 Loading and Running Trained Policies
@@ -132,7 +132,7 @@ For cases where the environment is successfully saved alongside the agent, it's 
 
 .. parsed-literal::
 
-    python -m spinup.run test_policy path/to/output_directory
+    python -m machine_learning_control.run test_policy path/to/output_directory
 
 
 There are a few flags for options:
@@ -152,7 +152,7 @@ There are a few flags for options:
 
 .. option:: -i I, --itr=I, default=-1
 
-    *int*. This is an option for a special case which is not supported by algorithms in this package as-shipped, but which they are easily modified to do. Use case: Sometimes it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can do this---save snapshots of the agent from those different points, so they can be run and watched later. In this case, you use this flag to specify which iteration to run. But again: spinup algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
+    *int*. This is an option for a special case which is not supported by algorithms in this package as-shipped, but which they are easily modified to do. Use case: Sometimes it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can do this---save snapshots of the agent from those different points, so they can be run and watched later. In this case, you use this flag to specify which iteration to run. But again: machine_learning_control algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
 
     The default value of this flag means "use the latest snapshot."
 
@@ -185,9 +185,9 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
 .. parsed-literal::
 
     Traceback (most recent call last):
-      File "spinup/utils/test_policy.py", line 153, in <module>
+      File "machine_learning_control/utils/test_policy.py", line 153, in <module>
         run_policy(env, get_action, args.len, args.episodes, not(args.norender))
-      File "spinup/utils/test_policy.py", line 114, in run_policy
+      File "machine_learning_control/utils/test_policy.py", line 114, in run_policy
         "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
     AssertionError: Environment not found!
 
@@ -198,7 +198,7 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
 
 In this case, watching your agent perform is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
 
->>> from spinup.utils.test_policy import load_policy_and_env, run_policy
+>>> from machine_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
 >>> import your_env
 >>> _, get_action = load_policy_and_env('/path/to/output_directory')
 >>> env = your_env.make()
@@ -214,4 +214,4 @@ Using Trained Value Functions
 
 The ``test_policy.py`` tool doesn't help you look at trained value functions, and if you want to use those, you will have to do some digging by hand. For the PyTorch case, load the saved model file with ``torch.load`` and check the documentation for each algorithm to see what modules the ActorCritic object has. For the Tensorflow case, load the saved computation graph with the `restore_tf_graph`_ function, and check the documentation for each algorithm to see what functions were saved.
 
-.. _`restore_tf_graph`: ../utils/logger.html#spinup.utils.logx.restore_tf_graph
+.. _`restore_tf_graph`: ../utils/logger.html#machine_learning_control.control.utils.logx.restore_tf_graph

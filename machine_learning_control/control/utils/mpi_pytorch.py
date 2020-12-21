@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 import torch
-from machine_learning_control.utils.mpi_tools import (
+from machine_learning_control.control.utils.mpi_tools import (
     broadcast,
     mpi_avg,
     num_procs,

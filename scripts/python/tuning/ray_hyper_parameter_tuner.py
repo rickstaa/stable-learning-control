@@ -24,7 +24,7 @@ from ray.tune.schedulers import ASHAScheduler
 from ray.tune.suggest.hyperopt import HyperOptSearch
 
 # Import the algorithm we want to tune
-from elpg_pack.algos.elpg.elpg import train_elpg
+from machine_learning_control.contro.algos.sac.sac import train_sac
 
 if __name__ == "__main__":
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # pause trials, clone trials, and alter hyperparameters of a running trial. For
     # more information see https://docs.ray.io/en/master/tune/api_docs/schedulers.html.
     analysis = tune.run(
-        train_elpg,
+        train_sac,
         name="tune_elpg_oscillator_1",
         num_samples=200,
         scheduler=ASHAScheduler(

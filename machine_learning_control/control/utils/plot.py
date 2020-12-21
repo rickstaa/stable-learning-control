@@ -79,7 +79,7 @@ def plot_data(
 def get_datasets(logdir, condition=None):
     """
     Recursively look through logdir for output files produced by
-    spinup.logx.Logger.
+    machine_learning_control.control.utils.logx.Logger.
 
     Assumes that any file "progress.txt" is a valid hit.
     """

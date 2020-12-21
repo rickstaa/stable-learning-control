@@ -12,19 +12,19 @@ Launching from the Command Line
 ===============================
 
 
-Spinning Up ships with ``spinup/run.py``, a convenient tool that lets you easily launch any algorithm (with any choices of hyperparameters) from the command line. It also serves as a thin wrapper over the utilities for watching trained policies and plotting, although we will not discuss that functionality on this page (for those details, see the pages on `experiment outputs`_ and `plotting`_).
+Spinning Up ships with ``machine_learning_control/run.py``, a convenient tool that lets you easily launch any algorithm (with any choices of hyperparameters) from the command line. It also serves as a thin wrapper over the utilities for watching trained policies and plotting, although we will not discuss that functionality on this page (for those details, see the pages on `experiment outputs`_ and `plotting`_).
 
 The standard way to run a Spinning Up algorithm from the command line is
 
 .. parsed-literal::
 
-    python -m spinup.run [algo name] [experiment flags]
+    python -m machine_learning_control.run [algo name] [experiment flags]
 
 eg:
 
 .. parsed-literal::
 
-    python -m spinup.run ppo --env Walker2d-v2 --exp_name walker
+    python -m machine_learning_control.run sac --env Walker2d-v2 --exp_name walker
 
 .. _`experiment outputs`: ../user/saving_and_loading.html
 .. _`plotting`: ../user/plotting.html
@@ -37,31 +37,31 @@ eg:
 
     .. parsed-literal::
 
-        python -m spinup.run ppo --exp_name ppo_ant --env Ant-v2 --clip_ratio 0.1 0.2
+        python -m machine_learning_control.run sac --exp_name sac_ant --env Ant-v2 --clip_ratio 0.1 0.2
             --hid[h] [32,32] [64,32] --act torch.nn.Tanh --seed 0 10 20 --dt
             --data_dir path/to/data
 
-    runs PPO in the ``Ant-v2`` Gym environment, with various settings controlled by the flags.
+    runs SAC in the ``Ant-v2`` Gym environment, with various settings controlled by the flags.
 
-    By default, the PyTorch version will run (except for with TRPO, since Spinning Up doesn't have a PyTorch TRPO yet). Substitute ``ppo`` with ``ppo_tf1`` for the Tensorflow version.
+    By default, the PyTorch version will run (except for with TRPO, since Spinning Up doesn't have a PyTorch TRPO yet). Substitute ``sac`` with ``sac_tf2`` for the Tensorflow version.
 
-    ``clip_ratio``, ``hid``, and ``act`` are flags to set some algorithm hyperparameters. You can provide multiple values for hyperparameters to run multiple experiments. Check the docs to see what hyperparameters you can set (click here for the `PPO documentation`_).
+    ``clip_ratio``, ``hid``, and ``act`` are flags to set some algorithm hyperparameters. You can provide multiple values for hyperparameters to run multiple experiments. Check the docs to see what hyperparameters you can set (click here for the `SAC documentation`_).
 
     ``hid`` and ``act`` are `special shortcut flags`_ for setting the hidden sizes and activation function for the neural networks trained by the algorithm.
 
     The ``seed`` flag sets the seed for the random number generator. RL algorithms have high variance, so try multiple seeds to get a feel for how performance varies.
 
-    The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in ``spinup/user_config.py``).
+    The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in ``machine_learning_control/user_config.py``).
 
-    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py``, which will be a subfolder ``data`` in the ``spinningup`` folder (unless you change it).
+    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``, which will be a subfolder ``data`` in the ``spinningup`` folder (unless you change it).
 
     `Save directory names`_ are based on ``exp_name`` and any flags which have multiple values. Instead of the full flag, a shorthand will appear in the directory name. Shorthands can be provided by the user in square brackets after the flag, like ``--hid[h]``; otherwise, shorthands are substrings of the flag (``clip_ratio`` becomes ``cli``). To illustrate, the save directory for the run with ``clip_ratio=0.1``, ``hid=[32,32]``, and ``seed=10`` will be:
 
     .. parsed-literal::
 
-        path/to/data/YY-MM-DD_ppo_ant_cli0-1_h32-32/YY-MM-DD_HH-MM-SS-ppo_ant_cli0-1_h32-32_seed10
+        path/to/data/YY-MM-DD_sac_ant_cli0-1_h32-32/YY-MM-DD_HH-MM-SS-sac_ant_cli0-1_h32-32_seed10
 
-.. _`PPO documentation`: ../algorithms/ppo.html#spinup.ppo
+.. _`SAC documentation`: ../algorithms/sac.html#machine_learning_control.sac
 .. _`special shortcut flags`: ../user/running.html#shortcut-flags
 .. _`Save directory names`: ../user/running.html#where-results-are-saved
 
@@ -72,15 +72,15 @@ To use a PyTorch version of an algorithm, run with
 
 .. parsed-literal::
 
-    python -m spinup.run [algo]_pytorch
+    python -m machine_learning_control.run [algo]_pytorch
 
 To use a Tensorflow version of an algorithm, run with
 
 .. parsed-literal::
 
-    python -m spinup.run [algo]_tf1
+    python -m machine_learning_control.run [algo]_tf1
 
-If you run ``python -m spinup.run [algo]`` without ``_pytorch`` or ``_tf1``, the runner will look in ``spinup/user_config.py`` for which version it should default to for that algorithm.
+If you run ``python -m machine_learning_control.run [algo]`` without ``_pytorch`` or ``_tf1``, the runner will look in ``machine_learning_control/user_config.py`` for which version it should default to for that algorithm.
 
 Setting Hyperparameters from the Command Line
 ---------------------------------------------
@@ -89,7 +89,7 @@ Every hyperparameter in every algorithm can be controlled directly from the comm
 
 .. parsed-literal::
 
-    python -m spinup.run [algo name] --help
+    python -m machine_learning_control.run [algo name] --help
 
 to see a readout of the docstring.
 
@@ -99,9 +99,9 @@ to see a readout of the docstring.
 
     .. parsed-literal::
 
-        python -m spinup.run ppo --env Walker2d-v2 --exp_name walker --act torch.nn.ELU
+        python -m machine_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ELU
 
-    sets ``torch.nn.ELU`` as the activation function. (Tensorflow equivalent: run ``ppo_tf1`` with ``--act tf.nn.elu``.)
+    sets ``torch.nn.ELU`` as the activation function. (Tensorflow equivalent: run ``sac_tf2`` with ``--act tf.nn.elu``.)
 
 .. admonition:: You Should Know
 
@@ -128,7 +128,7 @@ For example, to launch otherwise-equivalent runs with different random seeds (0,
 
 .. parsed-literal::
 
-    python -m spinup.run ppo --env Walker2d-v2 --exp_name walker --seed 0 10 20
+    python -m machine_learning_control.run sac --env Walker2d-v2 --exp_name walker --seed 0 10 20
 
 Experiments don't launch in parallel because they soak up enough resources that executing several at the same time wouldn't get a speedup.
 
@@ -178,7 +178,7 @@ These flags are not hyperparameters of any algorithm, but change the experimenta
 
 .. option:: --data_dir
 
-    *path*. Set the base save directory for this experiment or set of experiments. If none is given, the ``DEFAULT_DATA_DIR`` in ``spinup/user_config.py`` will be used.
+    *path*. Set the base save directory for this experiment or set of experiments. If none is given, the ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py`` will be used.
 
 .. option:: --datestamp
 
@@ -196,7 +196,7 @@ Results for a particular experiment (a single run of a configuration of hyperpar
 
 where
 
-* ``data_dir`` is the value of the ``--data_dir`` flag (defaults to ``DEFAULT_DATA_DIR`` from ``spinup/user_config.py`` if ``--data_dir`` is not given),
+* ``data_dir`` is the value of the ``--data_dir`` flag (defaults to ``DEFAULT_DATA_DIR`` from ``machine_learning_control/user_config.py`` if ``--data_dir`` is not given),
 * the ``outer_prefix`` is a ``YY-MM-DD_`` timestamp if the ``--datestamp`` flag is raised, otherwise nothing,
 * the ``inner_prefix`` is a ``YY-MM-DD_HH-MM-SS-`` timestamp if the ``--datestamp`` flag is raised, otherwise nothing,
 * and ``suffix`` is a special string based on the experiment hyperparameters.
@@ -212,7 +212,7 @@ For example, consider:
 
 .. parsed-literal::
 
-    python -m spinup.run ddpg_tf1 --env Hopper-v2 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
+    python -m machine_learning_control.run sac_tf2 --env Hopper-v2 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
 
 Here, the ``--hid`` flag is given a **user-supplied shorthand**, ``h``. The ``--act`` flag is not given a shorthand by the user, so one will be constructed for it automatically.
 
@@ -232,22 +232,22 @@ Extra
 
 .. admonition:: You Don't Actually Need to Know This One
 
-    Each individual algorithm is located in a file ``spinup/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line with a limited set of arguments (some of which differ from what's available to ``spinup/run.py``). The command line support in the individual algorithm files is essentially vestigial, however, and this is **not** a recommended way to perform experiments.
+    Each individual algorithm is located in a file ``machine_learning_control/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line with a limited set of arguments (some of which differ from what's available to ``machine_learning_control/run.py``). The command line susacrt in the individual algorithm files is essentially vestigial, however, and this is **not** a recommended way to perform experiments.
 
-    This documentation page will not describe those command line calls, and will *only* describe calls through ``spinup/run.py``.
+    This documentation page will not describe those command line calls, and will *only* describe calls through ``machine_learning_control/run.py``.
 
 Launching from Scripts
 ======================
 
-Each algorithm is implemented as a python function, which can be imported directly from the ``spinup`` package, eg
+Each algorithm is implemented as a python function, which can be imported directly from the ``machine_learning_control`` package, eg
 
->>> from spinup import ppo_pytorch as ppo
+>>> from machine_learning_control.control import sac_pytorch as sac
 
 See the documentation page for each algorithm for a complete account of possible arguments. These methods can be used to set up specialized custom experiments, for example:
 
 .. code-block:: python
 
-    from spinup import ppo_tf1 as ppo
+    from machine_learning_control.control import sac_tf2 as sac
     import tensorflow as tf
     import gym
 
@@ -257,7 +257,7 @@ See the documentation page for each algorithm for a complete account of possible
 
     logger_kwargs = dict(output_dir='path/to/output_dir', exp_name='experiment_name')
 
-    ppo(env_fn=env_fn, ac_kwargs=ac_kwargs, steps_per_epoch=5000, epochs=250, logger_kwargs=logger_kwargs)
+    sac(env_fn=env_fn, ac_kwargs=ac_kwargs, steps_per_epoch=5000, epochs=250, logger_kwargs=logger_kwargs)
 
 
 Using ExperimentGrid
@@ -266,13 +266,13 @@ Using ExperimentGrid
 It's often useful in machine learning research to run the same algorithm with many possible hyperparameters. Spinning Up ships with a simple tool for facilitating this, called `ExperimentGrid`_.
 
 
-Consider the example in ``spinup/examples/pytorch/bench_ppo_cartpole.py``:
+Consider the example in ``machine_learning_control/examples/pytorch/bench_sac_cartpole.py``:
 
 .. code-block:: python
    :linenos:
 
-    from spinup.utils.run_utils import ExperimentGrid
-    from spinup import ppo_pytorch
+    from machine_learning_control.control.utils.run_utils import ExperimentGrid
+    from machine_learning_controlcontrol import sac_pytorch
     import torch
 
     if __name__ == '__main__':
@@ -282,16 +282,16 @@ Consider the example in ``spinup/examples/pytorch/bench_ppo_cartpole.py``:
         parser.add_argument('--num_runs', type=int, default=3)
         args = parser.parse_args()
 
-        eg = ExperimentGrid(name='ppo-pyt-bench')
+        eg = ExperimentGrid(name='sac-pyt-bench')
         eg.add('env_name', 'CartPole-v0', '', True)
         eg.add('seed', [10*i for i in range(args.num_runs)])
         eg.add('epochs', 10)
         eg.add('steps_per_epoch', 4000)
         eg.add('ac_kwargs:hidden_sizes', [(32,), (64,64)], 'hid')
         eg.add('ac_kwargs:activation', [torch.nn.Tanh, torch.nn.ReLU], '')
-        eg.run(ppo_pytorch, num_cpu=args.cpu)
+        eg.run(sac_pytorch, num_cpu=args.cpu)
 
-(An equivalent Tensorflow example is available in ``spinup/examples/tf1/bench_ppo_cartpole.py``.)
+(An equivalent Tensorflow example is available in ``machine_learning_control/examples/tf1/bench_sac_cartpole.py``.)
 
 After making the ExperimentGrid object, parameters are added to it with
 
@@ -309,8 +309,8 @@ After all parameters have been added,
 
 runs all experiments in the grid (one experiment per valid configuration), by providing the configurations as kwargs to the function ``thunk``. ``ExperimentGrid.run`` uses a function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs`` specify behaviors for ``call_experiment``. See `the documentation page`_ for details.
 
-Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behaviour of ``ExperimentGrid`` is the same as running things from the command line. (In fact, ``spinup.run`` uses an ``ExperimentGrid`` under the hood.)
+Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behaviour of ``ExperimentGrid`` is the same as running things from the command line. (In fact, ``machine_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
 
 .. _`ExperimentGrid`: ../utils/run_utils.html#experimentgrid
 .. _`the documentation page`: ../utils/run_utils.html#experimentgrid
-.. _`call_experiment`: ../utils/run_utils.html#spinup.utils.run_utils.call_experiment
+.. _`call_experiment`: ../utils/run_utils.html#machine_learning_control.control.utils.run_utils.call_experiment

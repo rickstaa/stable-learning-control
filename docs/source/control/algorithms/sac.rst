@@ -248,7 +248,7 @@ Documentation
 Documentation: PyTorch Version
 ------------------------------
 
-.. autofunction:: spinup.sac_pytorch
+.. autofunction:: machine_learning_control.control.sac_pytorch
 
 Saved Model Contents: PyTorch Version
 -------------------------------------
@@ -265,7 +265,7 @@ You can get actions from this model with
 Documentation: Tensorflow Version
 ---------------------------------
 
-.. autofunction:: spinup.sac_tf1
+.. autofunction:: machine_learning_control.control.sac_tf2
 
 Saved Model Contents: Tensorflow Version
 ----------------------------------------
@@ -292,7 +292,7 @@ This saved model can be accessed either by
 Note: for SAC, the correct evaluation policy is given by ``mu`` and not by ``pi``. The policy ``pi`` may be thought of as the exploration policy, while ``mu`` is the exploitation policy.
 
 .. _`test_policy.py`: ../user/saving_and_loading.html#loading-and-running-trained-policies
-.. _`restore_tf_graph`: ../utils/logger.html#spinup.utils.logx.restore_tf_graph
+.. _`restore_tf_graph`: ../utils/logger.html#machine_learning_control.control.utils.logx.restore_tf_graph
 
 
 References

@@ -6,7 +6,7 @@ Spinning Up ships with a simple plotting utility for interpreting results. Run i
 
 .. parsed-literal::
 
-    python -m spinup.run plot [path/to/output_directory ...] [--legend [LEGEND ...]] 
+    python -m machine_learning_control.run plot [path/to/output_directory ...] [--legend [LEGEND ...]]
         [--xaxis XAXIS] [--value [VALUE ...]] [--count] [--smooth S]
         [--select [SEL ...]] [--exclude [EXC ...]]
 
@@ -35,7 +35,7 @@ Spinning Up ships with a simple plotting utility for interpreting results. Run i
 
         .. parsed-literal::
 
-            python spinup/utils/plot.py data/bench_algo
+            python machine_learning_control/utils/plot.py data/bench_algo
 
         relying on the autocomplete to find both ``data/bench_algo1`` and ``data/bench_algo2``.
 
@@ -58,7 +58,7 @@ Spinning Up ships with a simple plotting utility for interpreting results. Run i
     Optional flag. By default, the plotter shows y-values which are averaged across all results that share an ``exp_name``, which is typically a set of identical experiments that only vary in random seed. But if you'd like to see all of those curves separately, use the ``--count`` flag.
 
 .. option:: -s, --smooth=S, default=1
-    
+
     *int*. Smooth data by averaging it over a fixed window. This parameter says how wide the averaging window will be.
 
 .. option:: --select=[SEL ...]

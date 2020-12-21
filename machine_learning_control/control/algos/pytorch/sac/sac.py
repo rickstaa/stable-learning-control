@@ -19,15 +19,18 @@ import gym
 import machine_learning_control.control.algos.pytorch.sac.core as core
 import numpy as np
 import torch
-from machine_learning_control.control.algos.pytorch.common.buffers import \
-    ReplayBuffer
+from machine_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
 from machine_learning_control.control.utils.gym_utils import (
-    is_continuous_space, is_discrete_space)
+    is_continuous_space,
+    is_discrete_space,
+)
 from machine_learning_control.control.utils.helpers import (
-    calc_gamma_lr_decay, calc_linear_lr_decay, count_vars)
+    calc_gamma_lr_decay,
+    calc_linear_lr_decay,
+    count_vars,
+)
 from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.run_utils import \
-    setup_logger_kwargs
+from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from torch.optim import Adam
 
 global t  # TODO: Make attribute out of this
@@ -42,6 +45,10 @@ global t  # TODO: Make attribute out of this
 # Better to set to mujoco because that is more often used
 # TODO: Add additional config file that can be loaded from argument
 # FIXME: The learning rate became negative!
+# TODO: Change logger argument order
+# TODO: Ability to pass arguments to environment
+# TODO: Add discrete environments
+# TODO: Fix OPT_TYPE
 
 # TODO: Distinction between pytorch and tf
 RUN_DB_FILE = os.path.abspath(
@@ -58,7 +65,7 @@ def sac(
     seed=0,
     epochs=50,
     steps_per_epoch=2048,
-    max_ep_len=100,
+    max_ep_len=500,
     replay_size=int(1e6),
     gamma=0.995,
     polyak=0.995,
@@ -68,7 +75,7 @@ def sac(
     lr_c_final=1e-10,
     decaying_lr=True,
     decaying_lr_type="linear",
-    alpha=1.0,
+    alpha=0.99,
     target_entropy="auto",
     batch_size=256,
     start_steps=0,
@@ -77,6 +84,7 @@ def sac(
     num_test_episodes=10,
     logger_kwargs=dict(),
     save_freq=1,
+    opt_type="maximize",
 ):
     """
     Soft Actor-Critic (SAC)
@@ -185,6 +193,8 @@ def sac(
         save_freq (int): How often (in terms of gap between epochs) to save
             the current policy and value function.
 
+        opt_type (str): The optimization type you want to use. Options "maximize" and
+            "minimize". Defaults to maximize
     """
 
     def heuristic_target_entropy(action_space):
@@ -290,8 +300,6 @@ def sac(
     logger.log("\nNumber of parameters: \t pi: %d, \t q1: %d, \t q2: %d\n" % var_counts)
 
     # Set up function for computing SAC Q-losses
-    # QUESTION: WHY not inside class or one update function? Since it is spinning up
-    # I guess redability
     def compute_loss_q(data):
         """Function computes the loss for the soft-Q networks
 
@@ -326,10 +334,15 @@ def sac(
             # Target Q-values
             q1_pi_targ = ac_targ.q1(o2, a2)
             q2_pi_targ = ac_targ.q2(o2, a2)
-            q_pi_targ = torch.min(
-                q1_pi_targ, q2_pi_targ
-            )  # Use min clipping to prevent overestimation bias (Replaced V by E(Q-H))
-            # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
+            if opt_type.lower() == "minimize":
+                q_pi_targ = torch.max(
+                    q1_pi_targ, q2_pi_targ
+                )  # Use max clipping to prevent overestimation bias (Replaced V by E(Q-H))
+            else:
+                q_pi_targ = torch.min(
+                    q1_pi_targ, q2_pi_targ
+                )  # Use min clipping to prevent overestimation bias (Replaced V by E(Q-H))
+            # TODO: Replace log_alpha.exp() with alpha --> Make alpha property
             backup = r + gamma * (1 - d) * (q_pi_targ - log_alpha.exp() * logp_a2)
 
         # MSE loss against Bellman backup
@@ -363,7 +376,10 @@ def sac(
         pi, logp_pi = ac.pi(o)
         q1_pi = ac.q1(o, pi)
         q2_pi = ac.q2(o, pi)
-        q_pi = torch.min(q1_pi, q2_pi)
+        if opt_type.lower() == "minimize":
+            q_pi = torch.max(q1_pi, q2_pi)
+        else:
+            q_pi = torch.min(q1_pi, q2_pi)
 
         # Calculate Entropy-regularised policy loss
         # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
@@ -390,18 +406,18 @@ def sac(
         """
 
         # Return loss of
-        if not isinstance(target_entropy, Number):  # DEBUG: Is this really neeeded?
+        if not isinstance(target_entropy, Number):  # QUESTION: Is this really neeeded?
             return torch.tensor(0.0)
 
         # Get log from observations
         o = data["obs"]
-        pi, logp_pi = ac.pi(o)
+        _, logp_pi = ac.pi(o)
 
         # Entropy tuning
-        # FIXME: Replace log_alpha.exp() with alpha --> Make alpha property
+        # TODO: Replace log_alpha.exp() with alpha --> Make alpha property
         loss_alpha = (
             -1.0 * (log_alpha.exp() * (logp_pi + target_entropy).detach())
-        ).mean()  # DEBUG: Shouldn't this be loss_log_alpha? check Dont' think so
+        ).mean()  # See Haarnoja eq. 17
 
         # Store log-likelihood
         log_alpha_info = dict(LogAlpha=log_alpha.detach())
@@ -477,7 +493,7 @@ def sac(
 
     # Store initial learning rates
     if logger_kwargs["use_tensorboard"]:
-        # FIXME: Add to csv logger
+        # TODO: Add to csv logger
         logger.add_scalar("LearningRates/Lr_a", pi_optimizer.param_groups[0]["lr"], 0)
         logger.add_scalar("LearningRates/Lr_c", q_optimizer.param_groups[0]["lr"], 0)
         if target_entropy:
@@ -699,11 +715,19 @@ def sac(
             # TODO: Fails if step per epoch is 50 This is because the replay buffer is
             # FIXME: This needs to be fixed
             # TODO: Add loss alpha
+            # TODO: Clean up
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("Step", t)
-            logger.log_tabular("L_a", pi_optimizer.param_groups[0]["lr"])
-            logger.log_tabular("L_c", q_optimizer.param_groups[0]["lr"])
-            logger.log_tabular("L_alpha", log_alpha_optimizer.param_groups[0]["lr"])
+            logger.log_tabular("Lr_a", pi_optimizer.param_groups[0]["lr"])
+            logger.log_tabular("Lr_alpha", log_alpha_optimizer.param_groups[0]["lr"])
+            logger.log_tabular("Lr_c", q_optimizer.param_groups[0]["lr"])
+            if "Alpha" in logger.epoch_dict.keys():
+                if len(logger.epoch_dict["Alpha"]) > 0:
+                    logger.log_tabular(
+                        "Alpha",
+                        with_min_and_max=False,
+                        tb_write=logger_kwargs["use_tensorboard"],
+                    )
             if "EpRet" in logger.epoch_dict.keys():
                 if len(logger.epoch_dict["EpRet"]) > 0:
                     logger.log_tabular(
@@ -755,13 +779,6 @@ def sac(
                         average_only=True,
                         tb_write=logger_kwargs["use_tensorboard"],
                     )
-            if "LossQ" in logger.epoch_dict.keys():
-                if len(logger.epoch_dict["LossQ"]) > 0:
-                    logger.log_tabular(
-                        "LossQ",
-                        average_only=True,
-                        tb_write=logger_kwargs["use_tensorboard"],
-                    )
             if target_entropy:
                 if "LossAlpha" in logger.epoch_dict.keys():
                     if len(logger.epoch_dict["LossAlpha"]) > 0:
@@ -770,8 +787,36 @@ def sac(
                             average_only=True,
                             tb_write=logger_kwargs["use_tensorboard"],
                         )
+            if "LossQ" in logger.epoch_dict.keys():
+                if len(logger.epoch_dict["LossQ"]) > 0:
+                    logger.log_tabular(
+                        "LossQ",
+                        average_only=True,
+                        tb_write=logger_kwargs["use_tensorboard"],
+                    )
             logger.log_tabular("Time", time.time() - start_time)
             logger.dump_tabular()
+
+
+def train_sac(config):
+    """Function used by the ray tuner package to tune our algorithm."""
+
+    # Unpack trainable arguments
+    env_name = (
+        config.pop("env_name")
+        if config.__contains__("env_name")
+        else "Oscillator-v1"
+    )
+    hid = config.pop("hid") if config.__contains__("hid") else 64
+    l = config.pop("l") if config.__contains__("l") else 2
+
+    # Run algorithm training
+    sac(
+        lambda: gym.make(env_name),
+        actor_critic=core.MLPLyapunovActorCritic,
+        ac_kwargs=dict(hidden_sizes=[hid] * l),
+        **config,
+    )
 
 
 if __name__ == "__main__":
@@ -852,6 +897,7 @@ if __name__ == "__main__":
         default=False,
         help="use model checkpoints (default: False)",
     )
+    parser.add_argument("--opt_type", type=str, default="maximize")
     parser.add_argument(
         "--use-tensorboard",
         type=bool,
@@ -870,13 +916,12 @@ if __name__ == "__main__":
     logger_kwargs["output_dir"] = os.path.abspath(
         os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            f"../../../../data/sac/{args.env.lower()}/runs/run_{int(time.time())}",
+            f"../../../../../data/sac/{args.env.lower()}/runs/run_{int(time.time())}",
         )
     )
     torch.set_num_threads(torch.get_num_threads())
 
     # Update last run in json database
-    # TODO: I'm here
     run_name = os.path.split(logger_kwargs["output_dir"])[-1]
     with open(RUN_DB_FILE, "w") as outfile:
         json.dump(run_name, outfile)
@@ -887,7 +932,7 @@ if __name__ == "__main__":
         lambda: gym.make(args.env),
         actor_critic=core.MLPActorCritic,
         ac_kwargs=dict(
-            hidden_sizes_actor=[args.hid_a] * args.l_c,
+            hidden_sizes_actor=[args.hid_a] * args.l_a,
             hidden_sizes_critic=[args.hid_c] * args.l_c,
         ),
         # replay_size=args.replay_size,
@@ -896,6 +941,7 @@ if __name__ == "__main__":
         # lr_c=args.lrc,
         # seed=args.seed,
         # epochs=args.epochs,
+        opt_type=args.opt_type,
         logger_kwargs=logger_kwargs,
     )
     print("done")
