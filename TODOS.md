@@ -12,3 +12,4 @@
 -   [ ] Add sphinx github repo link.
 -   [ ] Add https://github.com/peaceiris/actions-gh-pages to make documentation deploy easier.
 -   [ ] Fix robustness eval.
+-   [ ] Upgrade tensorflow -> python 3.8  (also in ci actions).
