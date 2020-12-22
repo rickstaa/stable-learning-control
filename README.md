@@ -1,7 +1,7 @@
 # Machine Learning Control
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rickstaa/machine-learning-control)](https://github.com/rickstaa/panda-autograsp/releases)
-[![Python 3](https://img.shields.io/badge/Python-3.8%20%7C%203.7%20%7C%203.6%20%7C%203.5%20-green)](https://www.python.org/)
+[![Python 3](https://img.shields.io/badge/Python-3.9%20%7C%203.8%20%7C%203.7%20%7C%203.6-green)](https://www.python.org/)
 ![Win CI](https://github.com/rickstaa/machine-learning-control/workflows/Win%20CI/badge.svg)
 ![Linux CI](https://github.com/rickstaa/machine-learning-control/workflows/Linux%20CI/badge.svg)
 ![Mac CI](https://github.com/rickstaa/machine-learning-control/workflows/Mac%20CI/badge.svg)
