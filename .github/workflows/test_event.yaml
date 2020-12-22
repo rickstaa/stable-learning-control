@@ -10,5 +10,4 @@ jobs:
     steps:
       - name: Cat event file
         run: |
-          cat $GITHUB_EVENT_PATH
-          echo :rocket: Deploy docs ${GITHUB_REF##*/} using $GITHUB_EVENT_PATH
+          echo ":rocket: Deploys documentation ${{ github.event.head_commit.id }}"
