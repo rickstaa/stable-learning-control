@@ -1,7 +1,16 @@
-name: Docs release CI
-
+# Github action that checks if the documentation still builds
+# NOTE: Runs when changes were made to the docs folder. This is used to check if the
+# documentation still builds
+name: Docs build check CI
 on:
   push:
+    paths:
+      - "docs/**"
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "docs/**"
     branches:
       - main
 jobs:
@@ -13,6 +22,7 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
+          fetch-depth: 0
       - name: Install system dependencies
         run: sudo apt-get install libopenmpi-dev
       - name: Set up Python environment
@@ -32,6 +42,7 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
             pip install -e .[docs]
+            pip install bump2version
       - name: Build documentation
         working-directory: ./docs
         run: make html
@@ -40,29 +51,3 @@ jobs:
         with:
           name: html-docs
           path: docs/build/html/
-  deploy-docs:
-    runs-on: ubuntu-latest
-    needs: build-docs
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: 'Get Previous tag'
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      - name: Download the build documentation
-        uses: actions/download-artifact@v2
-        with:
-          name: html-docs
-          path: docs/build/html
-      - name: Deploy Sphinx documentation
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build/html
-          force_orphan: true
-          commit_message: ":rocket: Deploys documentation ${{ steps.previoustag.outputs.tag }} - ${{ github.event.head_commit.id }}"
-      - uses: actions/upload-artifact@v2
-        with:
-          name: documentation
-          path: ./docs/build/html

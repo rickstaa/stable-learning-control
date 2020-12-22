@@ -1,0 +1,78 @@
+# Github action that build the documentation when you publish a new version.
+# NOTE: Runs when a new version is published.
+name: Docs publish CI
+on:
+  release:
+    types: [released, prereleased]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mlc repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GA_SUB }}
+          fetch-depth: 0
+      - name: Install system dependencies
+        run: sudo apt-get install libopenmpi-dev
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Cache python environment
+        uses: actions/cache@v2
+        id: cache-python-env
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-docs
+      - name: Update pip
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install the mlc package with its dependencies
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
+        run: |
+            pip install -e .[docs]
+            pip install bump2version
+      - name: 'Get Previous tag'
+        id: previous_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      - name: Make sure the documentation version is correct
+        run: |
+          bumpversion --new-version ${{ steps.previous_tag.outputs.tag }} patch
+      - name: Build documentation
+        working-directory: ./docs
+        run: make html
+      - name: Upload build documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: html-docs
+          path: docs/build/html/
+  deploy-docs:
+    runs-on: ubuntu-latest
+    needs: build-docs
+    steps:
+      - name: Checkout mlc repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: 'Get Previous tag'
+        id: previous_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      - name: Download the build documentation
+        uses: actions/download-artifact@v2
+        with:
+          name: html-docs
+          path: docs/build/html
+      - name: Deploy Sphinx documentation
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html
+          force_orphan: true
+          commit_message: ":rocket: Deploys documentation ${{ steps.previous_tag.outputs.tag }} - ${{ github.event.head_commit.id }}"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: documentation
+          path: ./docs/build/html

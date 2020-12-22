@@ -1,0 +1,82 @@
+# Github action that makes sure that all the version tags are up to date when
+# A new version is released.
+# NOTE: Runs when a new version is released (not published).
+name: Mlc release CI
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  release:
+    if: github.event.action != 'labeled'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mlc repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GA_SUB }}
+          fetch-depth: 0
+
+      # Use bumpversion to update version in code
+      # See. https://pypi.org/project/bump2version/
+      - name: Retrieve next_version
+        id: bumpr_dry
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: haya14busa/action-bumpr@v1
+        with:
+          dry_run: true
+      - name: Set up Python environment
+        if: "!steps.bumpr_dry.outputs.skip"
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Cache python environment
+        if: "!steps.bumpr_dry.outputs.skip"
+        uses: actions/cache@v2
+        id: cache-python-env
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-release
+      - name: Update pip
+        if: "!steps.bumpr_dry.outputs.skip"
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install bump2version
+        if: steps.cache-python-env.outputs.cache-hit != 'true' && "!steps.bumpr_dry.outputs.skip"
+        run: |
+            pip install bump2version
+      - name: Use bumpversion to update version in code
+        if: "!steps.bumpr_dry.outputs.skip"
+        run: |
+          bumpversion --new-version ${{ steps.bumpr_dry.outputs.next_version }} patch
+
+      # Bump version on merging Pull Requests with specific labels.
+      # (bump:major,bump:minor,bump:patch)
+      - name: Bump version on merging Pull Requests with specific labels.
+        id: bumpr
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: haya14busa/action-bumpr@v1
+
+      # Update corresponding major and minor tag.
+      # e.g. Update v1 and v1.2 when releasing v1.2.3
+      - name: Update corresponding major and minor tag.
+        uses: haya14busa/action-update-semver@v1
+        if: "!steps.bumpr.outputs.skip"
+        with:
+          github_token: ${{ secrets.github_token }}
+          tag: ${{ steps.bumpr.outputs.next_version }}
+
+  release-check:
+    if: github.event.action == 'labeled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Post bumpr status comment
+        uses: haya14busa/action-bumpr@v1
