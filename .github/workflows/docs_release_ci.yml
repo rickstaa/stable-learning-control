@@ -38,6 +38,8 @@ jobs:
             pip install -e .[docs]
       - name: Build documentation
         run: |
+          pwd
+          ls
           make html
       - name: Deploy Sphinx documentation
         uses: peaceiris/actions-gh-pages@v3
