@@ -1,6 +1,6 @@
 # Github action that build the documentation when you publish a new version.
 # NOTE: Runs when a new version is published.
-name: Docs publish CI
+name: Docs CI
 on:
   release:
     types: [released, prereleased]
