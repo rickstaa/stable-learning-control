@@ -8,6 +8,8 @@ jobs:
   test-event:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout mlc repository
+        uses: actions/checkout@v2
       - name: Get latest tag
         id: get-latest-tag
         run: |
