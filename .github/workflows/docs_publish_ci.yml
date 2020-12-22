@@ -37,7 +37,7 @@ jobs:
             pip install bump2version
       - name: 'Get Previous tag'
         id: previous_tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        uses: WyriHaximus/github-action-get-previous-tag@v1
       - name: Make sure the documentation version is correct
         run: |
           bumpversion --new-version ${{ steps.previous_tag.outputs.tag }} patch
