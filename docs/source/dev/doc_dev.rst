@@ -1,5 +1,3 @@
-.. _`Machine Learning Control`: https://github.com/rickstaa/machine-learning-control
-
 =====================
 Release documentation
 =====================

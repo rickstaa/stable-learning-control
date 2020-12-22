@@ -160,44 +160,7 @@ htmlhelp_basename = "MachineLearningControldoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
-# imgmath_latex_preamble = r"\input{latex/imgmath_latex_preamble.tex}"
-imgmath_latex_preamble = r"""
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{amsmath}
-\usepackage{cancel}
-
-\usepackage[verbose=true,letterpaper]{geometry}
-\geometry{
-    textheight=12in,
-    textwidth=6.5in,
-    top=1in,
-    headheight=12pt,
-    headsep=25pt,
-    footskip=30pt
-    }
-
-\newcommand{\E}{{\mathrm E}}
-
-\newcommand{\underE}[2]{\underset{\begin{subarray}{c}#1 \end{subarray}}{\E}\left[ #2 \right]}
-
-\newcommand{\Epi}[1]{\underset{\begin{subarray}{c}\tau \sim \pi \end{subarray}}{\E}\left[ #1 \right]}
-"""
-
-# latex_elements = {
-#     # The paper size ('letterpaper' or 'a4paper').
-#     #
-#     # 'papersize': 'letterpaper',
-#     # The font size ('10pt', '11pt' or '12pt').
-#     #
-#     # 'pointsize': '10pt',
-#     # Additional stuff for the LaTeX preamble.
-#     #
-#     "preamble": r"\input{latex/latex_elements.tex}",
-#     # Latex figure (float) alignment
-#     #
-#     # 'figure_align': 'htbp',
-# }
+imgmath_latex_preamble = r'\input{_latex/img_math_latex_preabmle.tex.txt'
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
@@ -208,19 +171,7 @@ latex_elements = {
     # 'pointsize': '10pt',
     # Additional stuff for the LaTeX preamble.
     #
-    "preamble": r"""
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{amsmath}
-\usepackage{cancel}
-
-
-\newcommand{\E}{{\mathrm E}}
-
-\newcommand{\underE}[2]{\underset{\begin{subarray}{c}#1 \end{subarray}}{\E}\left[ #2 \right]}
-
-\newcommand{\Epi}[1]{\underset{\begin{subarray}{c}\tau \sim \pi \end{subarray}}{\E}\left[ #1 \right]}
-""",
+    "preamble": r'\input{_latex/latex_elements_preamble.tex.txt'
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
