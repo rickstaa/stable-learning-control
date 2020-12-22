@@ -11,3 +11,4 @@ jobs:
       - name: Cat event file
         run: |
           cat $GITHUB_EVENT_PATH
+          echo :rocket: Deploy docs ${GITHUB_REF##*/} using $GITHUB_EVENT_PATH

@@ -55,7 +55,7 @@
 #           github_token: ${{ secrets.GITHUB_TOKEN }}
 #           publish_dir: ./docs/build/html
 #           force_orphan: true
-#           commit_message: ${{ github.event.head_commit.message }}
+#           commit_message: :rocket: Deploy docs for ${{ github.event.head_commit.id }}
 #       - uses: actions/upload-artifact@v2
 #         with:
 #           name: documentation
