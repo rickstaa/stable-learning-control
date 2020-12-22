@@ -13,7 +13,8 @@ jobs:
       - name: Get latest tag
         id: get-latest-tag
         run: |
-          # LATEST_TAG=$(git tag | grep v* | sort --version-sort --reverse | head -n1)
+          LATEST_TAG=$(git tag | grep v* | sort --version-sort --reverse | head -n1)
+          echo $LATEST_TAG
           LATEST_TAG="test"
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
       - name: Cat event file
