@@ -36,6 +36,9 @@ jobs:
         uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"
+      - name: Build documentation
+        working-directory: ./docs
+        run: make html
       - name: Upload build documentation
         uses: actions/upload-artifact@v2
         with:
