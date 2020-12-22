@@ -10,13 +10,9 @@ jobs:
     steps:
       - name: Checkout mlc repository
         uses: actions/checkout@v2
-      - name: Get latest tag
-        id: get-latest-tag
-        run: |
-          LATEST_TAG=$(git tag | sort --version-sort --reverse | head -n1)
-          echo ${LATEST_TAG}
-          # LATEST_TAG="test"
-          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_ENV
+      - name: Get Previous tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@master"
       - name: Cat event file
         run: |
-          echo ":rocket: Deploys documentation $LATEST_TAG - ${{ github.event.head_commit.id }}"
+          echo ":rocket: Deploys documentation ${{ steps.previoustag.outputs.tag }} - ${{ github.event.head_commit.id }}"
