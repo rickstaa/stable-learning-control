@@ -8,9 +8,6 @@ on:
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./docs
     steps:
       - name: Checkout mlc repository
         uses: actions/checkout@v2
@@ -38,11 +35,10 @@ jobs:
             pip install -e .[docs]
       - name: Build documentation
         run: |
-          pwd
-          ls
+          cd docs
           make html
       - name: Deploy Sphinx documentation
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/html
+          publish_dir: ./docs/build/html
