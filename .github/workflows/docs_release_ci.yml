@@ -43,3 +43,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
           force_orphan: true
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: documentation
+          path: ./docs/build/html
