@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: html-docs
-          path: docs/_build/html/
+          path: docs/build/html/
   deploy-docs:
     runs-on: ubuntu-latest
     needs: build-docs
@@ -49,6 +49,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: html-docs
+          path: docs/build/html
       - name: Deploy Sphinx documentation
         uses: peaceiris/actions-gh-pages@v3
         with:
