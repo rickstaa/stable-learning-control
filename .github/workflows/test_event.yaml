@@ -1,0 +1,13 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-event:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cat event file
+        run: |
+          cat $GITHUB_EVENT_PATH
