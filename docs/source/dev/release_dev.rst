@@ -40,7 +40,7 @@ Before releasing the package, make sure the following steps are performed:
     #. Make sure that all the `pull request checks`_ were successful.
     #. Squash and merge your branch with the main branch.
     #. Update the documentation according to :doc:`doc_dev` if needed.
-    #. Bump the version using the `bump2version tool <https://pypi.org/project/bump2version/>`_.
+    #. Bump the version using the `bumpversion tool <https://pypi.org/project/bump2version/>`_.
     #. Check the version of the current branch using the ``bumpversion --list`` command.
     #. Add a tag equal to the version specified in the last step (Check versioning guidelines below).
     #. Update the changelog using the `auto-changelog <https://github.com/CookPete/auto-changelog>`_ tool.
