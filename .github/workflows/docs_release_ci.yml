@@ -32,10 +32,6 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
             pip install -e .[docs]
-      - name: Check if documentation builds
-        uses: ammaraskar/sphinx-action@master
-        with:
-          docs-folder: "docs/"
       - name: Build documentation
         working-directory: ./docs
         run: make html
