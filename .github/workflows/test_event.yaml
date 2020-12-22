@@ -11,8 +11,7 @@ jobs:
       - name: Get latest tag
         id: get-latest-tag
         run: |
-          export LATEST_TAG=$(git tag | grep v* | sort --version-sort --reverse | head -n1)
-          echo "::set-env name=LATEST_TAG::$LATEST_TAG"
+          echo "LATEST_TAG=$(git tag | grep v* | sort --version-sort --reverse | head -n1)" >> $GITHUB_ENV
       - name: Cat event file
         run: |
           echo ":rocket: Deploys documentation $LATEST_TAG - ${{ github.event.head_commit.id }}"
