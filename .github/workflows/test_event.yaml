@@ -8,6 +8,8 @@ jobs:
   test-event:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
       - name: Cat event file
         run: |
-          echo ":rocket: Deploys documentation ${{ github.event.head_commit.id }}"
+          echo ":rocket: Deploys documentation ${{ steps.get-latest-tag.outputs.tag }} - ${{ github.event.head_commit.id }}"
