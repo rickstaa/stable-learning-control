@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - main
-
 jobs:
-  deploy-docs:
+  build-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout mlc repository
@@ -25,7 +24,7 @@ jobs:
         id: cache-python-env
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-docs
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}
       - name: Update pip
         run: |
           python -m pip install --upgrade pip
@@ -33,10 +32,23 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
             pip install -e .[docs]
-      - name: Build documentation
-        run: |
-          cd docs
-          make html
+      - name: Check if documentation builds
+        uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+      - name: Upload build documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: html-docs
+          path: docs/_build/html/
+  deploy-docs:
+    runs-on: ubuntu-latest
+    needs: build-docs
+    steps:
+      - name: Download the build documentation
+        uses: actions/download-artifact@v2
+        with:
+          name: html-docs
       - name: Deploy Sphinx documentation
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -44,7 +56,6 @@ jobs:
           publish_dir: ./docs/build/html
           force_orphan: true
           commit_message: ${{ github.event.head_commit.message }}
-
       - uses: actions/upload-artifact@v2
         with:
           name: documentation
