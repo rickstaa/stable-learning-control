@@ -1,0 +1,2 @@
+# Requirement file needed for the https://github.com/rickstaa/sphinx-action github action
+-e ../[docs]
