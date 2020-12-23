@@ -3,7 +3,7 @@
 name: Docs CI
 on:
   release:
-    types: [released, prereleased]
+    types: [released]
 
 jobs:
   build-docs:
@@ -35,12 +35,12 @@ jobs:
         run: |
             pip install -e .[docs]
             pip install bump2version
-      - name: 'Get Previous tag'
+      - name: Get Previous tag
         id: previous_tag
-        uses: WyriHaximus/github-action-get-previous-tag@master
+        uses: rickstaa/action-get-semver@v1
       - name: Make sure the documentation version is correct
         run: |
-          bumpversion --new-version ${{ steps.previous_tag.outputs.tag }} patch
+          bumpversion --new-version ${{ steps.previous_tag.outputs.next_version }} patch
       - name: Build documentation
         working-directory: ./docs
         run: make html

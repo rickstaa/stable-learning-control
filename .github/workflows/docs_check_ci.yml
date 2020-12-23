@@ -24,7 +24,7 @@ jobs:
           token: ${{ secrets.GA_SUB }}
           fetch-depth: 0
       - name: Install system dependencies
-        run: sudo apt-get install libopenmpi-dev
+        run: sudo apt-get install libopenmpi-dev # TODO: Check if thi scan be removed
       - name: Set up Python environment
         uses: actions/setup-python@v2
         with:
@@ -42,7 +42,6 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
             pip install -e .[docs]
-            pip install bump2version
       - name: Build documentation
         working-directory: ./docs
         run: make html

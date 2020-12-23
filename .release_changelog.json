@@ -1,0 +1,16 @@
+{
+    "categories": [
+      {
+        "title": "## 🚀 Features",
+        "labels": [":sparkles:"]
+      },
+      {
+        "title": "## 🐛 Fixes",
+        "labels": [":bug:"]
+      },
+      {
+        "title": "## 🧪 Tests",
+        "labels": [":white_check_mark:"]
+      }
+    ]
+}
