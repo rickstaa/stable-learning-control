@@ -3,7 +3,7 @@
 name: Docs CI
 on:
   release:
-    types: [released, prereleased]
+    types: [released]
 
 jobs:
   build-docs:
