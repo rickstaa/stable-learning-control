@@ -49,6 +49,7 @@ jobs:
       - name: Check files using black formatter
         uses: reviewdog/action-black@v1.1.2
         with:
+          ref: ${{ github.head_ref }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: error
@@ -77,11 +78,22 @@ jobs:
         if: failure()
         run: |
           black .
-      - name: Commit black formatting results
+      # - name: Commit black formatting results  # Commit changes back to pull request
+      #   if: failure()
+      #   uses: stefanzweifel/git-auto-commit-action@v4
+      #   with:
+      #     commit_message: ":art: Format Python code with psf/black push"
+      - name: Create Pull Request  # Create pull request
         if: failure()
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: peter-evans/create-pull-request@v3
         with:
-          commit_message: ":art: Format Python code with psf/black push"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: ":art: Format Python code with psf/black push}"
+          commit-message: ":art: Format Python code with psf/black"
+          body: |
+            There appear to be some formatting errors in ${{ GITHUB_SHA }}. This pull request
+            fixes these errors.
+
   flake8: # Lints python code
     name: runner / flake8
     runs-on: ubuntu-latest

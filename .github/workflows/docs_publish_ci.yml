@@ -57,9 +57,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: 'Get Previous tag'
+      - name: Get Previous tag
         id: previous_tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        uses: rickstaa/action-get-semver@v1
       - name: Download the build documentation
         uses: actions/download-artifact@v2
         with:
@@ -71,7 +71,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
           force_orphan: true
-          commit_message: ":rocket: Deploys documentation ${{ steps.previous_tag.outputs.tag }} - ${{ github.event.head_commit.id }}"
+          commit_message: ":rocket: Deploys documentation ${{ steps.previous_tag.outputs.current_version }} - ${{ github.event.head_commit.id }}"
       - uses: actions/upload-artifact@v2
         with:
           name: documentation
