@@ -28,11 +28,11 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-docs
       - name: Update pip
-        if: "steps.cache-python-env.outputs.cache-hit != 'true'"
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
       - name: Install the mlc package with its dependencies
-        if: "steps.cache-python-env.outputs.cache-hit != 'true'"
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
             pip install -e .[docs]
             pip install bump2version

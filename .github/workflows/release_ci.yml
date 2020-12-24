@@ -14,7 +14,7 @@ on:
 
 jobs:
   release:
-    if: "github.event.action != 'labeled'"
+    if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout mlc repository
@@ -108,7 +108,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release-check:
-    if: "github.event.action == 'labeled'"
+    if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
