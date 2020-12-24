@@ -21,8 +21,8 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
-      - name: Install system dependencies
-        run: sudo apt-get install libopenmpi-dev
+      # - name: Install system dependencies
+      #   run: sudo apt-get install libopenmpi-dev # NOTE: Might need to install microsoft MPI
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:

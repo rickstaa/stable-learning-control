@@ -35,7 +35,7 @@ jobs:
       - name: Checkout mlc repository
         uses: actions/checkout@v2
       - name: Check markdown code quality using remark-lint
-        uses: reviewdog/action-remark-lint@v1
+        uses: reviewdog/action-remark-lint@v1.0.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
@@ -46,12 +46,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: reviewdog/action-black@v1
+      - name: Check files using black formatter
+        uses: reviewdog/action-black@v1.1.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
-          level: warning
+          level: error
           fail_on_error: true
+      - name: Apply black formatting if reviewdog found formatting errors
+        if: failure()
+        run: |
+          black .
+      - name: Commit black formatting results
+        uses: stefanzweifel/git-auto-commit-action@v4
+        if: failure()
+        with:
+          commit_message: ":art: Format Python code with psf/black push"
   flake8: # Lints python code
     name: runner / flake8
     runs-on: ubuntu-latest

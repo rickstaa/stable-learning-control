@@ -15,3 +15,4 @@
 -   [ ] Upgrade tensorflow -> python 3.8  (also in ci actions).
 -   [ ] Create windows/mac/ubuntu tests
 -   [ ] Check if libopenmpi-dev is still needed.
+-   [ ] Remove pinned torch dependency
