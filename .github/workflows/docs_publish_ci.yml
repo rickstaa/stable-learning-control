@@ -26,7 +26,7 @@ jobs:
         id: cache-python-env
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-docs
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-all
       - name: Update pip
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
@@ -34,8 +34,7 @@ jobs:
       - name: Install the mlc package with its dependencies
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-            pip install -e .[docs]
-            pip install bump2version
+            pip install -e .[all]
       - name: Get Previous tag
         id: previous_tag
         uses: rickstaa/action-get-semver@v1
