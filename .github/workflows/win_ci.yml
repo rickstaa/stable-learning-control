@@ -22,7 +22,7 @@ jobs:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
       # - name: Install system dependencies
-      #   run: sudo apt-get install libopenmpi-dev # NOTE: Might need to install microsoft MPI
+      #   run: sudo apt-get install libopenmpi-dev # FIXME: Needed when we add MPI support
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -34,20 +34,21 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-dev
       - name: Update pip
+        if: "steps.cache-python-env.outputs.cache-hit != 'true'"
         run: |
           python -m pip install --upgrade pip
       - name: Install the mlc package with its dependencies
-        if: steps.cache-python-env.outputs.cache-hit != 'true'
+        if: "steps.cache-python-env.outputs.cache-hit != 'true'"
         run: |
           pip install -e .[dev]
       - name: Test with Pytest
         run: pytest ./machine_learning_control --doctest-modules --html=pytest/${{ matrix.python-version }}/html/results.html --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml --cov=./machine_learning_control --cov-report=html:pytest/${{ matrix.python-version }}/cov/
       - name: Upload Pytest test results to artifacts
+        if: "${{ always() }}"
         uses: actions/upload-artifact@v2
         with:
           name: pytest-results-${{ matrix.python-version }}
           path: pytest/
-        if: ${{ always() }}
       - name: Comment coverage
+        if: "${{ always() }}"
         uses: coroo/pytest-coverage-commentator@v1.0.2
-        if: ${{ always() }}

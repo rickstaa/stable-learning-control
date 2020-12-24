@@ -14,7 +14,7 @@ on:
 
 jobs:
   release:
-    if: github.event.action != 'labeled'
+    if: "github.event.action != 'labeled'"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout mlc repository
@@ -27,15 +27,15 @@ jobs:
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
       - name: Bump version on merging Pull Requests with specific labels.
-        id: bumpr
         if: "!startsWith(github.ref, 'refs/tags/')"
+        id: bumpr
         uses: rickstaa/action-bumpr/@master # TODO: Change when pull request has been merged
 
       # Update corresponding major and minor tag.
       # e.g. Update v1 and v1.2 when releasing v1.2.3
       - name: Update corresponding major and minor tag.
-        uses: haya14busa/action-update-semver@v1
         if: "!steps.bumpr.outputs.skip"
+        uses: haya14busa/action-update-semver@v1
         with:
           github_token: ${{ secrets.github_token }}
           tag: ${{ steps.bumpr.outputs.next_version }}
@@ -46,7 +46,7 @@ jobs:
         if: "!steps.bumpr.outputs.skip"
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.8
       - name: Cache python environment
         if: "!steps.bumpr.outputs.skip"
         uses: actions/cache@v2
@@ -55,7 +55,7 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-release
       - name: Update pip
-        if: "!steps.bumpr.outputs.skip"
+        if: "steps.cache-python-env.outputs.cache-hit != 'true' && !steps.bumpr.outputs.skip"
         run: |
           python -m pip install --upgrade pip
       - name: Install bump2version
@@ -83,8 +83,8 @@ jobs:
         run: |
           auto-changelog
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
         if: "!steps.bumpr.outputs.skip"
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: ":memo: Updates CHANGELOG.md"
 
@@ -108,7 +108,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release-check:
-    if: github.event.action == 'labeled'
+    if: "github.event.action == 'labeled'"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
