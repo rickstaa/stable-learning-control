@@ -34,7 +34,7 @@ jobs:
       - name: Install the mlc package with its dependencies
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-            pip install -e .[all]
+          pip install -e .[all]
       - name: Get Previous tag
         id: previous_tag
         uses: rickstaa/action-get-semver@v1
