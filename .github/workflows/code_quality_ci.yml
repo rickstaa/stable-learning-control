@@ -87,14 +87,14 @@ jobs:
       - name: Create Pull Request  # Create pull request
         if: failure()
         uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: ":art: Format Python code with psf/black push}"
-          commit-message: ":art: Format Python code with psf/black"
-          body: |
-            There appear to be some formatting errors in ${{ github.sha }}. This pull request
-            fixes these errors.
-          branch: depup/black
+        # with:
+          # token: ${{ secrets.GITHUB_TOKEN }}
+          # title: ":art: Format Python code with psf/black push}"
+          # commit-message: ":art: Format Python code with psf/black"
+          # # body: |
+          # #   There appear to be some formatting errors in ${{ github.sha }}. This pull request
+          # #   fixes these errors.
+          # branch: depup/black
 
   flake8: # Lints python code
     name: runner / flake8
