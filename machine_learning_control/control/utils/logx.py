@@ -22,9 +22,10 @@ import numpy as np
 import torch
 from machine_learning_control.control.utils.helpers import is_scalar
 from machine_learning_control.control.utils.mpi_tools import (
-    mpi_statistics_scalar, proc_id)
-from machine_learning_control.control.utils.serialization_utils import \
-    convert_json
+    mpi_statistics_scalar,
+    proc_id,
+)
+from machine_learning_control.control.utils.serialization_utils import convert_json
 from torch.utils.tensorboard import SummaryWriter
 
 # Import tensorflow is it is installed
@@ -236,7 +237,12 @@ class Logger:
             print(colorize(msg, color, bold=True))
 
     def log_tabular(
-        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
+        self,
+        key,
+        val,
+        tb_write=False,
+        tb_prefix=None,
+        tb_alias=None,
     ):
         """Log a value of some diagnostic.
 

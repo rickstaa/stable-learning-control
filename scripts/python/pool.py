@@ -66,8 +66,7 @@ class Pool(object):
         self.min_memory_size = min_memory_size
 
     def reset(self):
-        """Reset memory buffer.
-        """
+        """Reset memory buffer."""
         self.current_path = {
             "s": torch.tensor([], dtype=torch.float32),
             "a": torch.tensor([], dtype=torch.float32),
@@ -135,12 +134,14 @@ class Pool(object):
         else:
 
             # Sample a random batch of experiences
-            indices = np.random.choice(
-                min(self.memory_pointer, self.memory_capacity) - 1,
-                size=batch_size,
-                replace=False,
-            ) + max(1, 1 + self.memory_pointer - self.memory_capacity) * np.ones(
-                [batch_size], np.int
+            indices = (
+                np.random.choice(
+                    min(self.memory_pointer, self.memory_capacity) - 1,
+                    size=batch_size,
+                    replace=False,
+                )
+                + max(1, 1 + self.memory_pointer - self.memory_capacity)
+                * np.ones([batch_size], np.int)
             )
             batch = {}
             for key in self.memory.keys():

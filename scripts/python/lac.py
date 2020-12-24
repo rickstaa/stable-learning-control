@@ -328,7 +328,7 @@ class LAC(object):
                 l_backup = (
                     batch["r"]
                     + self._gamma * (1 - batch["terminal"]) * l_pi_targ.detach()
-                )  
+                )
 
             # Get current Lyapunov value
             l1 = self.lc(batch["s"], batch["a"])
@@ -360,7 +360,8 @@ class LAC(object):
                 q1_pi_targ = self.q_1_(batch["s_"], a2)
                 q2_pi_targ = self.q_2_(batch["s_"], a2)
                 q_pi_targ = torch.max(
-                    q1_pi_targ, q2_pi_targ,
+                    q1_pi_targ,
+                    q2_pi_targ,
                 )  # Use max clipping  to prevent overestimation bias.
                 q_backup = batch["r"] + self._gamma * (1 - batch["terminal"]) * (
                     q_pi_targ - self.alpha * logp_a2
@@ -836,7 +837,9 @@ def train(log_dir):
     # Create train and test environments
     print(
         colorize(
-            f"INFO: You are training in the {ENV_NAME} environment.", "cyan", bold=True,
+            f"INFO: You are training in the {ENV_NAME} environment.",
+            "cyan",
+            bold=True,
         )
     )
     env = get_env_from_name(ENV_NAME, ENV_SEED)

@@ -53,22 +53,22 @@ def get_log_path(env_name=ENV_NAME, agent_name=None):
         # while 1:
         agent_folder = osp.join(log_folder, agent_name)
 
-            # # Check if created agent_name is valid
-            # if not osp.isdir(agent_folder):
-            #     break
-            # else:  # Also add seconds if folder already exists
-            #     # agent_name = alg_prefix + time.strftime("%Y%m%d_%H%M%S")
-            #     agent_name = alg_prefix
+        # # Check if created agent_name is valid
+        # if not osp.isdir(agent_folder):
+        #     break
+        # else:  # Also add seconds if folder already exists
+        #     # agent_name = alg_prefix + time.strftime("%Y%m%d_%H%M%S")
+        #     agent_name = alg_prefix
     else:
         # while 1:
         agent_folder = osp.join(log_folder, agent_name)
 
-            # # Check if supplied agent_name is valid
-            # if not osp.isdir(agent_folder):
-            #     break
-            # else:  # Also add seconds if folder already exists
-            #     # agent_name = agent_name + "_" + time.strftime("%Y%m%d_%H%M%S")
-            #     agent_name = agent_name
+        # # Check if supplied agent_name is valid
+        # if not osp.isdir(agent_folder):
+        #     break
+        # else:  # Also add seconds if folder already exists
+        #     # agent_name = agent_name + "_" + time.strftime("%Y%m%d_%H%M%S")
+        #     agent_name = agent_name
 
     # Create log_path
     if REL_PATH:

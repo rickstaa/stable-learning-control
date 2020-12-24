@@ -160,7 +160,7 @@ htmlhelp_basename = "MachineLearningControldoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
-imgmath_latex_preamble = r'\input{_latex/img_math_latex_preabmle.tex.txt'
+imgmath_latex_preamble = r"\input{_latex/img_math_latex_preabmle.tex.txt"
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
@@ -171,7 +171,7 @@ latex_elements = {
     # 'pointsize': '10pt',
     # Additional stuff for the LaTeX preamble.
     #
-    "preamble": r'\input{_latex/latex_elements_preamble.tex.txt'
+    "preamble": r"\input{_latex/latex_elements_preamble.tex.txt"
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -201,7 +201,7 @@ man_pages = [
         "machine_learning_control",
         "Machine Learning Control documentation",
         [author],
-        1
+        1,
     ),
 ]
 

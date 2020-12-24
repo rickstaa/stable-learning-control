@@ -484,7 +484,8 @@ def sac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer, lr_lambda=lr_decay_c,
+            q_optimizer,
+            lr_lambda=lr_decay_c,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -578,7 +579,8 @@ def sac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"],
+                Alpha=alpha,
             )
 
         # Finally, update target networks by polyak averaging.
@@ -803,9 +805,7 @@ def train_sac(config):
 
     # Unpack trainable arguments
     env_name = (
-        config.pop("env_name")
-        if config.__contains__("env_name")
-        else "Oscillator-v1"
+        config.pop("env_name") if config.__contains__("env_name") else "Oscillator-v1"
     )
     hid = config.pop("hid") if config.__contains__("hid") else 64
     l = config.pop("l") if config.__contains__("l") else 2

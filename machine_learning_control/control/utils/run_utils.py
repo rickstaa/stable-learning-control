@@ -168,6 +168,7 @@ def call_experiment(
         if "env_name" in kwargs:
             import gym
             import machine_learning_control.simzoo.simzoo
+
             # FIXME: Make sure that all custom environments that are already imported are available.
 
             env_name = kwargs["env_name"]
@@ -214,10 +215,15 @@ def call_experiment(
     # Tell the user about where results are, and how to check them
     logger_kwargs = kwargs["logger_kwargs"]
 
-    plot_cmd = "python -m machine_learning_control.run plot " + logger_kwargs["output_dir"]
+    plot_cmd = (
+        "python -m machine_learning_control.run plot " + logger_kwargs["output_dir"]
+    )
     plot_cmd = colorize(plot_cmd, "green")
 
-    test_cmd = "python -m machine_learning_control.run test_policy " + logger_kwargs["output_dir"]
+    test_cmd = (
+        "python -m machine_learning_control.run test_policy "
+        + logger_kwargs["output_dir"]
+    )
     test_cmd = colorize(test_cmd, "green")
 
     eval_cmd = "python -m elpg_pack.run eval_robustness " + logger_kwargs["output_dir"]
@@ -293,8 +299,7 @@ def valid_str(v):
 
 
 class ExperimentGrid:
-    """Tool for running many experiments given hyperparameter ranges.
-    """
+    """Tool for running many experiments given hyperparameter ranges."""
 
     def __init__(self, name=""):
         """Initiate object.
