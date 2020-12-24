@@ -46,10 +46,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        # with:
+        #   ref: ${{ github.head_ref }} # NOTE: Uncomment if you want to commit the black changes
       - name: Check files using black formatter
         uses: reviewdog/action-black@v1.1.2
         with:
-          ref: ${{ github.head_ref }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: error
@@ -93,6 +94,7 @@ jobs:
           body: |
             There appear to be some formatting errors in ${{ github.sha }}. This pull request
             fixes these errors.
+          branch: depup/black
 
   flake8: # Lints python code
     name: runner / flake8
