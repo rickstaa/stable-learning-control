@@ -91,7 +91,7 @@ jobs:
           title: ":art: Format Python code with psf/black push}"
           commit-message: ":art: Format Python code with psf/black"
           body: |
-            There appear to be some formatting errors in ${{ GITHUB_SHA }}. This pull request
+            There appear to be some formatting errors in ${{ github.sha }}. This pull request
             fixes these errors.
 
   flake8: # Lints python code
