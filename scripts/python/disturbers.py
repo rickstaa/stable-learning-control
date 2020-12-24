@@ -7,8 +7,7 @@ import numpy as np
 def cartpole_disturber(
     time, s, action, env, eval_params, form_of_eval, disturber=None, initial_pos=0.0
 ):
-    """Disturber used for disturbing the cartpole environment.
-    """
+    """Disturber used for disturbing the cartpole environment."""
     if form_of_eval == "impulse":
         if time == eval_params["impulse_instant"]:
             d = eval_params["magnitude"] * np.sign(s[0])

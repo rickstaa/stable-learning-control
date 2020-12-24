@@ -16,6 +16,7 @@ from lac import LAC
 from utils import get_env_from_name, colorize, get_log_path, validate_indices
 from variant import EVAL_PARAMS, ENVS_PARAMS, ENV_NAME, ENV_SEED, REL_PATH
 
+
 def validate_req_policies(req_policies, policies):
     """Validates whether the requested policies are valid.
 
@@ -116,7 +117,8 @@ def validate_req_sio(req_sio, sio_array, refs_array):
         print(colorize(warning_str, "yellow"))
     elif invalid_refs:
         warning_str = "WARN: {} {}".format(
-            "References" if len(invalid_refs) > 1 else "Reference", invalid_refs,
+            "References" if len(invalid_refs) > 1 else "Reference",
+            invalid_refs,
         ) + " {} not be plotted as {} does not exist.".format(
             "could" if len(invalid_refs) > 1 else "can",
             "they" if len(invalid_refs) > 1 else "it",
@@ -150,7 +152,8 @@ def validate_req_obs(req_obs, obs_array):
     if invalid_obs:
         warning_str = (
             "WARN: {} {}".format(
-                "Observations" if len(invalid_obs) > 1 else "Observations", invalid_obs,
+                "Observations" if len(invalid_obs) > 1 else "Observations",
+                invalid_obs,
             )
             + " could not be plotted as they does not exist."
         )
@@ -183,7 +186,8 @@ def validate_req_costs(req_costs, costs_array):
     if invalid_costs:
         warning_str = (
             "WARN: {} {}".format(
-                "Costs" if len(invalid_costs) > 1 else "Cost", invalid_costs,
+                "Costs" if len(invalid_costs) > 1 else "Cost",
+                invalid_costs,
             )
             + " could not be plotted as they does not exist."
         )
@@ -209,9 +213,11 @@ def get_distrubance_function(env_name):
 
     if "cartpole_cost" in env_name:
         from disturbers import cartpole_disturber
+
         disturbance_step = cartpole_disturber
     elif "oscillator" in env_name:
         from disturbers import oscillator_disturber
+
         disturbance_step = oscillator_disturber
     else:
         print("no disturber designed for " + env_name)
@@ -1002,11 +1008,13 @@ if __name__ == "__main__":
                     )
                     if not EVAL_PARAMS["sio_merged"]
                     else osp.join(
-                        log_path, "Quatonians" + "." + EVAL_PARAMS["fig_file_type"],
+                        log_path,
+                        "Quatonians" + "." + EVAL_PARAMS["fig_file_type"],
                     )
                 )
                 fig.savefig(
-                    save_path, bbox_inches="tight",
+                    save_path,
+                    bbox_inches="tight",
                 )
             for index, fig in enumerate(figs["states"]):
                 save_path = (
@@ -1016,11 +1024,13 @@ if __name__ == "__main__":
                     )
                     if not EVAL_PARAMS["obs_merged"]
                     else osp.join(
-                        log_path, "States" + "." + EVAL_PARAMS["fig_file_type"],
+                        log_path,
+                        "States" + "." + EVAL_PARAMS["fig_file_type"],
                     )
                 )
                 fig.savefig(
-                    save_path, bbox_inches="tight",
+                    save_path,
+                    bbox_inches="tight",
                 )
             for index, fig in enumerate(figs["costs"]):
                 fig.savefig(

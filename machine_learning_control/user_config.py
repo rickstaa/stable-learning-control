@@ -45,17 +45,16 @@ LOG_IGNORE = {
     "MaxTestEpRet",
     "MinTestEpRet",
     "AverageQ1Vals",
-    'AverageQ1Vals',
+    "AverageQ1Vals",
     "StdQ1Vals",
     "MaxQ1Vals",
     "MinQ1Vals",
-    'AverageQ2Vals',
+    "AverageQ2Vals",
     "StdQ2Vals",
     "MaxQ2Vals",
     "MinQ2Vals",
     "StdLogPi",
     "MaxLogPi",
     "MinLogPi",
-    "StdAlpha"
-    "StdLabda"
+    "StdAlpha" "StdLabda",
 }
