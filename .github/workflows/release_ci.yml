@@ -55,17 +55,17 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-release
       - name: Update pip
-        if: "steps.cache-python-env.outputs.cache-hit != 'true' && !steps.bumpr.outputs.skip"
+        if: steps.cache-python-env.outputs.cache-hit != 'true' && !steps.bumpr.outputs.skip
         run: |
           python -m pip install --upgrade pip
       - name: Install bump2version
-        if: "steps.cache-python-env.outputs.cache-hit != 'true' && !steps.bumpr.outputs.skip"
+        if: steps.cache-python-env.outputs.cache-hit != 'true' && !steps.bumpr.outputs.skip
         run: |
             pip install bump2version
       - name: Use bumpversion to update version in code
         if: "!steps.bumpr.outputs.skip"
         run: |
-          bumpversion --new-version ${{ steps.bumpr.outputs.next_version }} patch
+          "bumpversion --new-version ${{ steps.bumpr.outputs.next_version}} patch"
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         if: "!steps.bumpr.outputs.skip"
