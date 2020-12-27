@@ -9,8 +9,7 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout mlc repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
@@ -40,7 +39,7 @@ jobs:
         uses: rickstaa/action-get-semver@v1
       - name: Make sure the documentation version is correct
         run: |
-          bumpversion --no-tag --no-commit --new-version ${{ steps.previous_tag.outputs.next_version }} patch
+          bumpversion --no-tag --no-commit --new-version ${{ steps.previous_tag.outputs.current_version }} patch
       - name: Build documentation
         working-directory: ./docs
         run: make html
@@ -53,8 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-docs
     steps:
-      - name: Checkout mlc repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Get Previous tag
@@ -72,7 +70,3 @@ jobs:
           publish_dir: ./docs/build/html
           force_orphan: true
           commit_message: ":rocket: Deploys documentation ${{ steps.previous_tag.outputs.current_version }} - ${{ github.event.head_commit.id }}"
-      - uses: actions/upload-artifact@v2
-        with:
-          name: documentation
-          path: ./docs/build/html

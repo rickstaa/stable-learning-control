@@ -8,39 +8,37 @@ on:
     branches:
       - main
 jobs:
-  # spell-check:
-  #   name: runner / misspell
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: reviewdog/action-misspell@v1
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         reporter: github-check
-  #         level: warning
-  # alex: # Checks docs for inconsiderate writing
-  #   name: runner / alex
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: reviewdog/action-alex@v1
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         reporter: github-check
-  #         level: warning
-  # markdown-lint: # Lints the markdown code
-  #   name: runner / remark-lint
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout mlc repository
-  #       uses: actions/checkout@v2
-  #     - name: Check markdown code quality using remark-lint
-  #       uses: reviewdog/action-remark-lint@v1.0.2
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         reporter: github-check
-  #         level: warning
-  #         fail_on_error: true
+  spell-check:
+    name: runner / misspell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-misspell@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
+  alex: # Checks docs for inconsiderate writing
+    name: runner / alex
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-alex@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
+  markdown-lint:
+    name: runner / remark-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-remark-lint@v1.0.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
+          fail_on_error: true
   black: # Check python code format
     name: runner / black
     runs-on: ubuntu-latest
@@ -48,7 +46,7 @@ jobs:
       - uses: actions/checkout@v2
         # with:
         #   ref: ${{ github.head_ref }} # NOTE: Uncomment if you want to commit the black changes
-      - name: Check files using black formatter
+      - name: Black formatter with reviewdog
         uses: reviewdog/action-black@v1.1.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -79,12 +77,12 @@ jobs:
         if: failure()
         run: |
           black .
-      - name: Commit black formatting results  # Commit changes back to pull request
-        if: failure()
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: ":art: Format Python code with psf/black push"
-      - name: Create Pull Request  # Create pull request
+      # - name: Commit black formatting results  # Commit changes back to pull request
+      #   if: failure()
+      #   uses: stefanzweifel/git-auto-commit-action@v4
+      #   with:
+      #     commit_message: ":art: Format Python code with psf/black push"
+      - name: Create Pull Request for the made changes # Create pull request
         if: failure()
         uses: peter-evans/create-pull-request@v3
         with:
@@ -95,13 +93,11 @@ jobs:
             There appear to be some python formatting errors in ${{ github.sha }}. This pull request
             uses the [psf/black](https://github.com/psf/black) formatter to fix these issues.
           branch: depup/black
-
   flake8: # Lints python code
     name: runner / flake8
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout mlc repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
@@ -126,7 +122,7 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install -e .[dev]
-      - name: flake8 Lint
+      - name: Flake8 Lint with reviewdog
         uses: reviewdog/action-flake8@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
