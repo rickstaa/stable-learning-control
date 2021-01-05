@@ -47,7 +47,7 @@ jobs:
         # with:
         #   ref: ${{ github.head_ref }} # NOTE: Uncomment if you want to commit the black changes
       - name: Black formatter with reviewdog
-        uses: reviewdog/action-black@v1.1.2
+        uses: reviewdog/action-black@v1.4.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
