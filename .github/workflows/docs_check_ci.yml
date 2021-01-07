@@ -23,7 +23,7 @@ jobs:
           token: ${{ secrets.GA_SUB }}
           fetch-depth: 0
       - name: Install system dependencies
-        run: sudo apt-get install libopenmpi-dev # TODO: Check if thi scan be removed
+        run: sudo apt-get install libopenmpi-dev # TODO: Check if this can be removed
       - name: Set up Python environment
         uses: actions/setup-python@v2
         with:
