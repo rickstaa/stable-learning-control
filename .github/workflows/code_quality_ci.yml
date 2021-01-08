@@ -38,7 +38,7 @@ jobs:
         with:
           remark_args: ". -o"
       - name: Annotate diff changes using reviewdog
-        if: steps.remark_lint.outputs.is_formatted == 'true'
+        if: github.event_name == 'pull_request' && steps.remark_lint.outputs.is_formatted == 'true'
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: remarkfmt
@@ -52,9 +52,13 @@ jobs:
           body: |
             There appear to be some python formatting errors in ${{ github.sha }}. This pull request
             uses the [remark-lint](https://github.com/remarkjs/remark-lint) linter to fix these issues.
-          base: ${{ github.head_ref }} # Creates pull request onto pull request or commit branch
-          branch: actions/remark-lint
-
+          branch: actions/code_quality_ci/remark-lint
+          labels: python
+      - name: Print pull request info
+        if: steps.black_format.outputs.is_formatted == 'true'
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
   black: # Check python code format
     name: runner / black
     runs-on: ubuntu-latest
@@ -65,7 +69,7 @@ jobs:
         with:
           black_args: "."
       - name: Annotate diff changes using reviewdog
-        if: steps.black_format.outputs.is_formatted == 'true'
+        if: github.event_name == 'pull_request' && steps.black_format.outputs.is_formatted == 'true'
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: blackfmt
@@ -73,15 +77,20 @@ jobs:
         if: steps.black_format.outputs.is_formatted == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
-          base: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Format Python code with psf/black push"
           commit-message: ":art: Format Python code with psf/black"
           body: |
             There appear to be some python formatting errors in ${{ github.sha }}. This pull request
             uses the [psf/black](https://github.com/psf/black) formatter to fix these issues.
-          branch: actions/black
-
+          branch: actions/code_quality_ci/black
+          delete-branch: true
+          labels: python
+      - name: Print pull request info
+        if: steps.black_format.outputs.is_formatted == 'true'
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
   flake8: # Lints python code
     name: runner / flake8
     runs-on: ubuntu-latest
