@@ -12,7 +12,7 @@ tempor incididunt ut **labore et dolore magna aliqua**. Ut enim ad minim veniam,
 quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
 consequat.
 
----
+* * *
 
 **_Duis aute irure dolor_** in reprehenderit in voluptate velit esse
 cillum dolore eu fugiat nulla pariatur. ~~Excepteur sint occaecat~~ cupidatat non
@@ -22,27 +22,29 @@ proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 unordered list:
 
-- item-1
-  - sub-item-1
-  - sub-item-2
+-   item-1
+    -   sub-item-1
+    -   sub-item-2
 
-* item-2
-  - sub-item-3
-  - sub-item-4
 
-- item-3
-  - sub-item-5
-  - sub-item-6
+-   item-2
+    -   sub-item-3
+    -   sub-item-4
+
+
+-   item-3
+    -   sub-item-5
+    -   sub-item-6
 
 ordered list:
 
-1. item-1
-   1. sub-item-1
-   2. sub-item-2
-2. item-2
-   1. sub-item-3
-   2. sub-item-4
-3. item-3
+1.  item-1
+    1.  sub-item-1
+    2.  sub-item-2
+2.  item-2
+    1.  sub-item-3
+    2.  sub-item-4
+3.  item-3
 
 ##### Header4 ?
 
@@ -60,6 +62,6 @@ you can do that but I would recommend you to use the component "image" and simpl
 
 ## Header6
 
-Let us do some links - this for example: https://github.com/MinhasKamal/github-markdown-syntax
+Let us do some links - this for example: <https://github.com/MinhasKamal/github-markdown-syntax>
 
 is **NOT** a link but this: is [GitHub](https://github.com/MinhasKamal/github-markdown-syntax)
