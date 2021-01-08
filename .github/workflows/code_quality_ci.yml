@@ -47,13 +47,13 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Format Python code with remark-lint linter"
-          commit-message: ":art: Format Python code with remark-lint"
+          title: "Format markdown code with remark-lint linter"
+          commit-message: ":art: Format markdown code with remark-lint"
           body: |
-            There appear to be some python formatting errors in ${{ github.sha }}. This pull request
+            There appear to be some markdown formatting warning in ${{ github.sha }}. This pull request
             uses the [remark-lint](https://github.com/remarkjs/remark-lint) linter to fix these issues.
           branch: actions/code_quality_ci/remark-lint
-          labels: python
+          labels: markdown
       - name: Print pull request info
         if: steps.black_format.outputs.is_formatted == 'true'
         run: |
