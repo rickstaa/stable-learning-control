@@ -23,7 +23,7 @@ jobs:
         with:
           cond: "${{ !startsWith(github.ref, 'refs/tags/') }}"
           if_true: ${{ github.ref }}
-          if_false: "master"
+          if_false: "main"
 
       - name: Checkout mlc repository
         uses: actions/checkout@v2
