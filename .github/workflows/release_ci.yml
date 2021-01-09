@@ -78,7 +78,7 @@ jobs:
             pip install bump2version
       - name: Use bumpversion to update version in code
         run: |
-          "bumpversion --no-tag --no-commit --new-version ${{ ${{ steps.tag.outputs.value }} patch"
+          "bumpversion --no-tag --no-commit --new-version ${{ steps.tag.outputs.value }} patch"
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
