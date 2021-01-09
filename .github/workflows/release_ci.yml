@@ -67,11 +67,11 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-release
       - name: Update pip
-        if: steps.cache-python-env.outputs.cache-hit
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
       - name: Install bump2version
-        if: steps.cache-python-env.outputs.cache-hit
+        if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
             pip install bump2version
       - name: Use bumpversion to update version in code
