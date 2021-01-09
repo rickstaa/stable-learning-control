@@ -41,7 +41,7 @@ jobs:
       - uses: rickstaa/action-remark-lint@v1
         id: remark_lint
         with:
-          remark_args: ". -o"
+          remark_args: ". -o --ignore-pattern  CHANGELOG.md"
       - name: Annotate diff changes using reviewdog
         if: github.event_name == 'pull_request' && steps.remark_lint.outputs.is_formatted == 'true'
         uses: reviewdog/action-suggester@v1
