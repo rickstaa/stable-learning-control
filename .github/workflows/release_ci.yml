@@ -31,7 +31,6 @@ jobs:
           ref: ${{ steps.get_ref.outputs.value }}
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
-          fetch-depth: 0
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
       - name: Bump version on merging Pull Requests with specific labels.
