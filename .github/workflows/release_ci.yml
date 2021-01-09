@@ -17,10 +17,18 @@ jobs:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     steps:
+      - name: Check if triggered by tag or by label
+        id: get_ref
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: "${{ !startsWith(github.ref, 'refs/tags/') }}"
+          if_true: ${{ github.ref }}
+          if_false: "master"
+
       - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ steps.get_ref.outputs.value }}
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
           fetch-depth: 0
@@ -79,6 +87,7 @@ jobs:
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
+          branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":bookmark: Updates documentation version: ${{ steps.get_prev_version.outputs.current_version }} → ${{ steps.get_setmver.outputs.current_version }}"
 
       # Update CHANGELOG.md
@@ -94,6 +103,7 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
+          branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":memo: Updates CHANGELOG.md"
 
       # Create release changelog
