@@ -19,6 +19,14 @@
     {
       "title": "## 💚 CI",
       "labels": ["CI"]
+    },
+    {
+      "title": "## 🔒 Security",
+      "labels": ["security"]
+    },
+    {
+      "title": "## 🔄 Dependency updates",
+      "labels": ["dependencies"]
     }
   ]
 }
