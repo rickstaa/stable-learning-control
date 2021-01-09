@@ -25,9 +25,10 @@ jobs:
           fetch-depth: 0
 
       # Get current version
-      - name: Get current semver tag
+      - name: Get previous version
         id: get_prev_version
         uses: rickstaa/action-get-semver@v1
+          verbose: "true"
 
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
@@ -46,9 +47,10 @@ jobs:
           tag: ${{ steps.bumpr.outputs.next_version }}
 
       # Get new version in case it is bumped
-      - name: Get current semver tag
+      - name: Get current version
         id: get_new_version
         uses: rickstaa/action-get-semver@v1
+          verbose: "true"
 
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
