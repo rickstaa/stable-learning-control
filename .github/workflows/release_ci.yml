@@ -65,7 +65,7 @@ jobs:
       - name: Use bumpversion to update version in code
         if: "!steps.bumpr.outputs.skip"
         run: |
-          "bumpversion --no-tag --no-commit --new-version ${{ steps.bumpr.outputs.next_version}} patch"
+          "bumpversion --no-tag --no-commit --new-version ${{ steps.bumpr.outputs.next_version }} patch"
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         if: "!steps.bumpr.outputs.skip"
