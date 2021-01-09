@@ -34,14 +34,14 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install -e .[all]
-      - name: Get Previous tag
-        id: previous_tag
+      - name: Get current semver tag
+        id: get_setmver
         uses: rickstaa/action-get-semver@v1
         with:
           verbose: "true"
       - name: Make sure the documentation version is correct
         run: |
-          bumpversion --no-tag --no-commit --new-version ${{ steps.previous_tag.outputs.current_version }} patch
+          bumpversion --no-tag --no-commit --new-version ${{ steps.get_setmver.outputs.current_version }} patch
       - name: Build documentation
         working-directory: ./docs
         run: make html
