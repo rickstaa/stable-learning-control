@@ -58,128 +58,131 @@ jobs:
       - name: Post bumpr status comment
         uses: haya14busa/action-bumpr@v1
 
-# # Github action that makes sure that all the version tags are up to date when
-# # A new version is released.
-# # NOTE: Runs when a new version is released (not published).
-# name: MLC release CI
-# on:
-#   push:
-#     branches:
-#       - master
-#     tags:
-#       - 'v*.*.*'
-#   pull_request:
-#     types:
-#       - labeled
+# Github action that makes sure that all the version tags are up to date when
+# A new version is released.
+# NOTE: Runs when a new version is released (not published).
+name: MLC release CI
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    types:
+      - labeled
 
-# jobs:
-#   release:
-#     if: github.event.action != 'labeled'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout mlc repository
-#         uses: actions/checkout@v2
-#         with:
-#           submodules: recursive
-#           token: ${{ secrets.GA_SUB }}
-#           fetch-depth: 0
+jobs:
+  release:
+    if: github.event.action != 'labeled'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout mlc repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GA_SUB }}
+          fetch-depth: 0
 
-#       # Bump version on merging Pull Requests with specific labels.
-#       # (bump:major,bump:minor,bump:patch)
-#       - name: Bump version on merging Pull Requests with specific labels.
-#         if: "!startsWith(github.ref, 'refs/tags/')"
-#         id: bumpr
-#         uses: haya14busa/action-bumpr@v1
+      # Get current version
+      - name: Get current semver tag
+        id: get_setmver
+        uses: rickstaa/action-get-semver@v1
+        with:
+          verbose: "true"
 
-#       # Update corresponding major and minor tag.
-#       # e.g. Update v1 and v1.2 when releasing v1.2.3
-#       - name: Update corresponding major and minor tag.
-#         if: "!steps.bumpr.outputs.skip"
-#         uses: haya14busa/action-update-semver@v1
-#         with:
-#           github_token: ${{ secrets.github_token }}
-#           tag: ${{ steps.bumpr.outputs.next_version }}
+      # Bump version on merging Pull Requests with specific labels.
+      # (bump:major,bump:minor,bump:patch)
+      - name: Bump version on merging Pull Requests with specific labels.
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        id: bumpr
+        uses: haya14busa/action-bumpr@v1
 
-#       # Get tag name.
-#       - name: Get current tag name
-#         id: tag
-#         uses: haya14busa/action-cond@v1
-#         with:
-#           cond: "${{ startsWith(github.ref, 'refs/tags/') }}"
-#           if_true: ${{ github.ref }}
-#           if_false: ${{ steps.bumpr.outputs.next_version }}
+      # Update corresponding major and minor tag.
+      # e.g. Update v1 and v1.2 when releasing v1.2.3
+      - name: Update corresponding major and minor tag.
+        if: "!steps.bumpr.outputs.skip"
+        uses: haya14busa/action-update-semver@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          tag: ${{ steps.bumpr.outputs.next_version }}
 
-#       # Use bumpversion to update version in code
-#       # See. https://pypi.org/project/bump2version/
-#       - name: Set up Python environment
-#         if: "!steps.bumpr.outputs.skip"
-#         uses: actions/setup-python@v2
-#         with:
-#           python-version: 3.7
-#       - name: Cache python environment
-#         if: "!steps.bumpr.outputs.skip"
-#         uses: actions/cache@v2
-#         id: cache-python-env
-#         with:
-#           path: ${{ env.pythonLocation }}
-#           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-release
-#       - name: Update pip
-#         if: steps.cache-python-env.outputs.cache-hit != 'true' && !steps.bumpr.outputs.skip
-#         run: |
-#           python -m pip install --upgrade pip
-#       - name: Install bump2version
-#         if: steps.cache-python-env.outputs.cache-hit != 'true' && !steps.bumpr.outputs.skip
-#         run: |
-#             pip install bump2version
-#       - name: Use bumpversion to update version in code
-#         if: "!steps.bumpr.outputs.skip"
-#         run: |
-#           "bumpversion --no-tag --no-commit --new-version ${{ steps.bumpr.outputs.next_version }} patch"
-#       - name: Commit version related changes
-#         uses: stefanzweifel/git-auto-commit-action@v4
-#         if: "!steps.bumpr.outputs.skip"
-#         with:
-#           commit_message: ":bookmark: Bump version: ${{ steps.bumpr.outputs.current_version }} → ${{ steps.bumpr.outputs.next_version }}"
+      # Get tag name.
+      - name: Get current tag name
+        id: tag
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: "${{ startsWith(github.ref, 'refs/tags/') }}"
+          if_true: ${{ github.ref }}
+          if_false: ${{ steps.bumpr.outputs.next_version }}
 
-#       # Update CHANGELOG.md
-#       - uses: actions/setup-node@v2
-#         with:
-#           node-version: '12'
-#       - name: Install auto-changelog
-#         run: |
-#           npm install auto-changelog
-#       - name: Create CHANGELOG.md file using auto-changelog
-#         run: |
-#           auto-changelog
-#       - name: Commit changes
-#         if: "!steps.bumpr.outputs.skip"
-#         uses: stefanzweifel/git-auto-commit-action@v4
-#         with:
-#           commit_message: ":memo: Updates CHANGELOG.md"
+      # Use bumpversion to update version in code
+      # See. https://pypi.org/project/bump2version/
+      - name: Set up Python environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Cache python environment
+        uses: actions/cache@v2
+        id: cache-python-env
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-release
+      - name: Update pip
+        if: steps.cache-python-env.outputs.cache-hit
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install bump2version
+        if: steps.cache-python-env.outputs.cache-hit
+        run: |
+            pip install bump2version
+      - name: Use bumpversion to update version in code
+        run: |
+          "bumpversion --no-tag --no-commit --new-version ${{ ${{ steps.tag.outputs.value }} patch"
+      - name: Commit version related changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: ":bookmark: Bump version: ${{ steps.get_setmver.outputs.current_version }} → ${{ steps.tag.outputs.value }}"
 
-#       # Create release changelog
-#       - name: Build release changelog
-#         id: github_release
-#         uses: mikepenz/release-changelog-builder-action@main
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#           configuration: "configuration.json"
+      # Update CHANGELOG.md
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+      - name: Install auto-changelog
+        run: |
+          npm install auto-changelog
+      - name: Create CHANGELOG.md file using auto-changelog
+        run: |
+          auto-changelog
+      - name: Commit changes
+        if: "!steps.bumpr.outputs.skip"
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: ":memo: Updates CHANGELOG.md"
 
-#       # Create pre-release with changelog
-#       - name: Create pre-release
-#         uses: actions/create-release@v1
-#         with:
-#           tag_name: ${{ github.ref }}
-#           release_name: ${{ github.ref }}
-#           body: ${{steps.github_release.outputs.changelog}}
-#           prerelease: true
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Create release changelog
+      - name: Build release changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          configuration: "configuration.json"
 
-#   release-check:
-#     if: github.event.action == 'labeled'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Post bumpr status comment
-#         uses: haya14busa/action-bumpr@v1
+      # Create pre-release with changelog
+      - name: Create pre-release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: ${{steps.github_release.outputs.changelog}}
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-check:
+    if: github.event.action == 'labeled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Post bumpr status comment
+        uses: haya14busa/action-bumpr@v1
