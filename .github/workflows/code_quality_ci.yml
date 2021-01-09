@@ -32,7 +32,12 @@ jobs:
     name: runner / remark-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - if: github.event_name == 'push'
+        uses: actions/checkout@v2
+      - if: github.event_name == 'pull_request'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - uses: rickstaa/action-remark-lint@v1
         id: remark_lint
         with:
@@ -53,6 +58,7 @@ jobs:
             There appear to be some markdown formatting warning in ${{ github.sha }}. This pull request
             uses the [remark-lint](https://github.com/remarkjs/remark-lint) linter to fix these issues.
           branch: actions/code_quality_ci/remark-lint
+          delete-branch: true
           labels: markdown
       - name: Print pull request info
         if: steps.black_format.outputs.is_formatted == 'true'
@@ -63,7 +69,12 @@ jobs:
     name: runner / black
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - if: github.event_name == 'push'
+        uses: actions/checkout@v2
+      - if: github.event_name == 'pull_request'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - uses: rickstaa/action-black@v1
         id: black_format
         with:

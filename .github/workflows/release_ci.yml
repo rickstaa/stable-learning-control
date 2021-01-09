@@ -7,7 +7,7 @@ on:
     branches:
       - master
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
     types:
       - labeled
@@ -33,14 +33,12 @@ jobs:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
           fetch-depth: 0
-
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
       - name: Bump version on merging Pull Requests with specific labels.
         if: "!startsWith(github.ref, 'refs/tags/')"
         id: bumpr
         uses: haya14busa/action-bumpr@v1
-
       # Update corresponding major and minor tag.
       # e.g. Update v1 and v1.2 when releasing v1.2.3
       - name: Update corresponding major and minor tag.
@@ -49,7 +47,6 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           tag: ${{ steps.bumpr.outputs.next_version }}
-
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
       - name: Set up Python environment
@@ -83,11 +80,10 @@ jobs:
         with:
           branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":bookmark: Updates documentation version to ${{ steps.get_setmver.outputs.current_version }}"
-
       # Update CHANGELOG.md
       - uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: "12"
       - name: Install auto-changelog
         run: |
           npm install -g auto-changelog
@@ -99,14 +95,13 @@ jobs:
         with:
           branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":memo: Updates CHANGELOG.md"
-
       # Create release changelog
       - name: Build release changelog
         id: github_release
         uses: mikepenz/release-changelog-builder-action@main
         env:
+          configuration: ".github/workflows/configuration_complex.json"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       # Create pre-release with changelog
       - name: Create pre-release
         uses: actions/create-release@v1
@@ -117,7 +112,6 @@ jobs:
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   release-check:
     if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
