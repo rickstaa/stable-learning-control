@@ -17,6 +17,8 @@ jobs:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     steps:
+      # Checkout repository
+      # NOTE: Fix detached head state when triggered on tag such that we can commit changes
       - name: Check if triggered by tag or by label
         id: get_ref
         uses: haya14busa/action-cond@v1
@@ -24,7 +26,6 @@ jobs:
           cond: "${{ !startsWith(github.ref, 'refs/tags/') }}"
           if_true: ${{ github.ref }}
           if_false: "main"
-
       - name: Checkout mlc repository
         uses: actions/checkout@v2
         with:
@@ -32,13 +33,6 @@ jobs:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
           fetch-depth: 0
-
-      # Get current version
-      - name: Get previous version
-        id: get_prev_version
-        uses: rickstaa/action-get-semver@v1
-        with:
-          verbose: "true"
 
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
@@ -88,7 +82,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: ${{ steps.get_ref.outputs.value }}
-          commit_message: ":bookmark: Updates documentation version: ${{ steps.get_prev_version.outputs.current_version }} → ${{ steps.get_setmver.outputs.current_version }}"
+          commit_message: ":bookmark: Updates documentation version to ${{ steps.get_setmver.outputs.current_version }}"
 
       # Update CHANGELOG.md
       - uses: actions/setup-node@v2
@@ -96,7 +90,7 @@ jobs:
           node-version: '12'
       - name: Install auto-changelog
         run: |
-          npm install auto-changelog
+          npm install -g auto-changelog
       - name: Create CHANGELOG.md file using auto-changelog
         run: |
           auto-changelog
@@ -112,7 +106,6 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          configuration: "configuration.json"
 
       # Create pre-release with changelog
       - name: Create pre-release
