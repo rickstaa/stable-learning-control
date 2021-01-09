@@ -37,6 +37,8 @@ jobs:
       - name: Get Previous tag
         id: previous_tag
         uses: rickstaa/action-get-semver@v1
+        with:
+          verbose: "true"
       - name: Make sure the documentation version is correct
         run: |
           bumpversion --no-tag --no-commit --new-version ${{ steps.previous_tag.outputs.current_version }} patch
