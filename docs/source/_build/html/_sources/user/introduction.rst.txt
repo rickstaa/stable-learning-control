@@ -31,15 +31,12 @@ and readability. You can find a list of the main differences in `remarks section
 .. _`Hardware`: ./hardware/hardware.html
 .. _`SpinningUp`: ./hardware/hardware.html
 .. _`Openai gym`: https://gym.openai.com/
-.. _`remarks section of this document`: ../etc/remarks
+.. _`remarks section of this document`: ../etc/remarks.html
 
 .. warning::
 
     The Machine Learning Control framework is still in its development state. We can therefore not guarantee that it is bug free.
-    Please open `an issue` if you experience problems or something is unclear.
-
-.. _`an issue`: https://github.com/rickstaa/machine-learning-control/issues
-
+    Please open :issue:`an issue<>` if you experience problems or something is unclear.
 
 Why We Built This
 =================

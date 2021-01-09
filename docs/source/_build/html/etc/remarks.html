@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Plotter &mdash; Machine Learning Control 0.1.1 documentation</title>
+  <title>Remarks &mdash; Machine Learning Control 0.1.1 documentation</title>
   
 
   
@@ -39,8 +39,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="MPI Tools" href="mpi.html" />
-    <link rel="prev" title="Logger" href="logger.html" /> 
+    <link rel="next" title="Acknowledgements" href="acknowledgements.html" />
+    <link rel="prev" title="Release documentation" href="../dev/doc_dev.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -120,11 +120,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../simzoo/simzoo.html">Simzoo</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Utilities Docs</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="logger.html">Logger</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mpi.html">MPI Tools</a></li>
-<li class="toctree-l1"><a class="reference internal" href="run_utils.html">Run Utils</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/logger.html">Logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/run_utils.html">Run Utils</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Zone</span></p>
 <ul>
@@ -133,10 +133,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../dev/doc_dev.html">Release documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Etc.</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../etc/remarks.html">Remarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../etc/acknowledgements.html">Acknowledgements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../etc/author.html">About the Author</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Remarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#implementation-differences-with-spinningup">Implementation differences with SpinningUp</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#epochlogger">EpochLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-cli">Run (CLI)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="author.html">About the Author</a></li>
 </ul>
 
             
@@ -183,13 +190,13 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Plotter</li>
+      <li>Remarks</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/utils/plotter.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/etc/remarks.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -202,9 +209,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="plotter">
-<h1>Plotter<a class="headerlink" href="#plotter" title="Permalink to this headline">¶</a></h1>
-<p>See the page on <a class="reference external" href="../user/plotting.html">plotting results</a> for documentation of the plotter.</p>
+  <div class="section" id="remarks">
+<h1>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="implementation-differences-with-spinningup">
+<h2>Implementation differences with SpinningUp<a class="headerlink" href="#implementation-differences-with-spinningup" title="Permalink to this headline">¶</a></h2>
+<p>While developing this framework we tried to stay close to the structure of the <a class="reference external" href="./hardware/hardware.html">SpinningUp</a>
+package. Below are the main changes we made to this structure:</p>
+<ul class="simple">
+<li>We translated the function based algorithms to Class based equivalents.</li>
+</ul>
+<p>Additionally the functionalities of several components was extended.</p>
+<div class="section" id="epochlogger">
+<h3>EpochLogger<a class="headerlink" href="#epochlogger" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Our version also supports <a class="reference external" href="https://www.tensorflow.org/tensorboard/">Tensorboard</a> logging through the <code class="docutils literal notranslate"><span class="pre">use_tensorboard</span></code> argument.</li>
+<li>Our version allows you to set the logger output format.</li>
+</ul>
+</div>
+<div class="section" id="run-cli">
+<h3>Run (CLI)<a class="headerlink" href="#run-cli" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Our version also contains a <code class="docutils literal notranslate"><span class="pre">robustness_evaluation</span></code> module.</li>
+<li>Our version also allows you to specify your algorithm input arguments using a configuration file. This can be done by supplying the <cite>–exp_cfg</cite> argument.</li>
+</ul>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add module references.
+Clean up text</p>
+</div>
+</div>
+</div>
 </div>
 
 
@@ -215,10 +249,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mpi.html" class="btn btn-neutral float-right" title="MPI Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="acknowledgements.html" class="btn btn-neutral float-right" title="Acknowledgements" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="logger.html" class="btn btn-neutral float-left" title="Logger" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../dev/doc_dev.html" class="btn btn-neutral float-left" title="Release documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

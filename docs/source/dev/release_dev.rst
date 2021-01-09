@@ -21,38 +21,47 @@ Markdown guidelines:
 
 .. _`remark-lint`: https://github.com/remarkjs/remark-lint
 
-The :mlc:`Machine Learning Control <>` package contains several `GitHub actions`_, which check code changes
-against these coding guidelines. As a result, when the above guidelines are not met, you will
-receive an error/warning when you create a pull request. If you think a code guideline is not correct
-or your code structure doesn't allow you to respect the guideline, please state so in the
-pull request.
+.. note::
+    The :mlc:`Machine Learning Control <>` framework contains several `GitHub actions`_, which check code changes
+    against these coding guidelines. As a result, when the above guidelines are not met, you will
+    receive an error/warning when you create a pull request. Some of these actions will create pull requests
+    which you can use to fix some of these violations. For other errors/warning, you are expected to handle
+    them yourself before merging them into the master branch. If you think a code guideline is not correct
+    or your code structure doesn't allow you to respect the guideline, please state so in the
+    pull request.
 
 .. _`Github Actions`: https://github.com/rickstaa/machine-learning-control/actions
 
 General guidelines
 ------------------
 
+Release guidelines
+~~~~~~~~~~~~~~~~~~
+
 Before releasing the package, make sure the following steps are performed:
 
+    #. Create a new branch on which you implement your changes.
+    #. Commit your changes.
     #. Create a pull request to pull the changes of your development branch onto the master branch.
     #. Make sure that all the `pull request checks`_ were successful.
+    #. Add a version label to (``bump:patch``, ``bump:minor`` or ``bump:major``) to the pull request.
     #. Squash and merge your branch with the main branch.
-    #. Update the documentation according to :doc:`doc_dev` if needed.
-    #. Bump the version using the `bumpversion tool <https://pypi.org/project/bump2version/>`_.
-    #. Check the version of the current branch using the ``bumpversion --list`` command.
-    #. Add a tag equal to the version specified in the last step (Check versioning guidelines below).
-    #. Update the changelog using the `auto-changelog <https://github.com/CookPete/auto-changelog>`_ tool.
-    #. Commit and push the changes to the remote.
     #. Create a release using the GitHub draft release tool.
 
 .. _`pull request checks`: https://github.com/rickstaa/machine-learning-control/actions
 
+Commit guidelines
+~~~~~~~~~~~~~~~~~
 
-.. todo:
+Make sure you add a good descriptive commit messages while committing to this repository. A
+good guide can be found `here`_. To make searching to commits even easier your welcome to
+replace the ``scope`` attribute with `gitmojis`_.
 
-    Add gitmoji note.
+
+.. _`here`: https://www.conventionalcommits.org/en/v1.0.0/
+.. _`gitmojis`: https://gitmoji.dev/
 
 Versioning guidelines
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 Additionally please use the `versioning guidelines specified at semver.org <https://semver.org/>`_.

@@ -121,7 +121,7 @@ jobs:
         run: |
           pip install -e .[dev]
       - name: Flake8 Lint with reviewdog
-        uses: reviewdog/action-flake8@v2
+        uses: reviewdog/action-flake8@create_composite_action # TODO: Change to version after pull request
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
