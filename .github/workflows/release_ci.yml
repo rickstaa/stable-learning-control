@@ -47,13 +47,6 @@ jobs:
           github_token: ${{ secrets.github_token }}
           tag: ${{ steps.bumpr.outputs.next_version }}
 
-      # Get new version in case it is bumped
-      - name: Get current version
-        id: get_new_version
-        uses: rickstaa/action-get-semver@v1
-        with:
-          verbose: "true"
-
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
       - name: Set up Python environment
@@ -65,22 +58,27 @@ jobs:
         id: cache-python-env
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-release
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-bumpversion
       - name: Update pip
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
-      - name: Install bump2version
+      - name: Install the mlc package with its dependencies
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-            pip install bump2version
-      - name: Use bumpversion to update version in code
+          pip install bump2version
+      - name: Get current semver tag
+        id: get_setmver
+        uses: rickstaa/action-get-semver@v1
+        with:
+          verbose: "true"
+      - name: Make sure the version in all code files is correct
         run: |
-          "bumpversion --no-tag --no-commit --new-version ${{ steps.get_new_version.outputs.current_version }} patch"
+          bumpversion --no-tag --no-commit --new-version ${{ steps.get_setmver.outputs.current_version }} patch
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: ":bookmark: Bump version: ${{ steps.get_prev_version.outputs.current_version }} → ${{ steps.get_new_version.outputs.current_version }}"
+          commit_message: ":bookmark: Bump version: ${{ steps.get_prev_version.outputs.current_version }} → ${{ steps.get_setmver.outputs.current_version }}"
 
       # Update CHANGELOG.md
       - uses: actions/setup-node@v2
