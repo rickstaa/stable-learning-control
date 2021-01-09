@@ -7,7 +7,7 @@ on:
     branches:
       - master
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   pull_request:
     types:
       - labeled
@@ -83,7 +83,7 @@ jobs:
       # Update CHANGELOG.md
       - uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: "12"
       - name: Install auto-changelog
         run: |
           npm install -g auto-changelog
@@ -100,6 +100,7 @@ jobs:
         id: github_release
         uses: mikepenz/release-changelog-builder-action@main
         env:
+          configuration: ".github/workflows/configuration_complex.json"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Create pre-release with changelog
       - name: Create pre-release
