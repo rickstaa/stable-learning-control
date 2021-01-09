@@ -1,5 +1,5 @@
 # Makes sure the package build on linux.
-name: Linux CI
+name: Mac CI
 on:
   push:
     branches:
