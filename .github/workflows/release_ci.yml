@@ -5,13 +5,12 @@ name: MLC release CI
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - "v*.*.*"
   pull_request:
     types:
       - labeled
-
 jobs:
   release:
     if: github.event.action != 'labeled'
