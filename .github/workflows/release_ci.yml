@@ -28,6 +28,7 @@ jobs:
       - name: Get previous version
         id: get_prev_version
         uses: rickstaa/action-get-semver@v1
+        with:
           verbose: "true"
 
       # Bump version on merging Pull Requests with specific labels.
@@ -50,6 +51,7 @@ jobs:
       - name: Get current version
         id: get_new_version
         uses: rickstaa/action-get-semver@v1
+        with:
           verbose: "true"
 
       # Use bumpversion to update version in code
