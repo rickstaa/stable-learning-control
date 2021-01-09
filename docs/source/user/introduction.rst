@@ -14,7 +14,7 @@ you to automatically create, train and deploy various Reinforcement Learning (RL
 Imitation learning (IL) control algorithms directly from real-world data. This framework
 is made up of four main modules:
 
-* `Modeling`_: Module that uses state of the art System Identification and State Estimation techniques to create an Openai gym environment out of real data.
+* `Modeling`_: Module that uses state of the art System Identification and State Estimation techniques to create an `Openai gym`_ environment out of real data.
 * `Simzoo`_: Module that contains several already created :mlc:`Machine Learning Control <>` `Openai gym`_ environments.
 * `Control`_: Module used to train several :mlc:`Machine Learning Control <>` RL/IL agents on the built gym environments.
 * `Hardware`_: Module that can be used to deploy the trained RL/IL agents onto the hardware of your choice.
