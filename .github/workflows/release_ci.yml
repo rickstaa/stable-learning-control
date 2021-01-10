@@ -16,9 +16,6 @@ jobs:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     steps:
-if: github.event.action != 'labeled'
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/checkout@v2
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
