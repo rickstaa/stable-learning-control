@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: main
           fetch-depth: 0
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
