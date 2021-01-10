@@ -1,0 +1,100 @@
+# # Github action that makes sure that the version inside code files and the changelog are
+# # up to date. If this is the case it creates a pre-release.
+# # NOTE: Runs when a new version is released (not published).
+# name: MLC release CI
+# on:
+#   workflow_run:
+#     workflows: ["Autotag CI"]
+#     branches: [main]
+#     types:
+#       - completed
+# jobs:
+#   release_version:
+#     runs-on: ubuntu-latest
+#     steps:
+#       # NOTE: Updates the version that is specified in the code files.
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+#         with:
+#           ref: main
+#           fetch-depth: 0
+#       # Use bumpversion to update version in code
+#       # See. https://pypi.org/project/bump2version/
+#       - name: Set up Python environment
+#         uses: actions/setup-python@v2
+#         with:
+#           python-version: 3.7
+#       - name: Cache python environment
+#         uses: actions/cache@v2
+#         id: cache-python-env
+#         with:
+#           path: ${{ env.pythonLocation }}
+#           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-bumpversion
+#       - name: Update pip
+#         if: steps.cache-python-env.outputs.cache-hit != 'true'
+#         run: |
+#           python -m pip install --upgrade pip
+#       - name: Install bump2version
+#         if: steps.cache-python-env.outputs.cache-hit != 'true'
+#         run: |
+#           pip install bump2version
+#       - name: Get current semver tag
+#         id: get_setmver
+#         uses: rickstaa/action-get-semver@v1
+#         with:
+#           verbose: "true"
+#       - name: Make sure the version in all code files is correct
+#         run: |
+#           bumpversion --no-tag --no-commit --new-version ${{ steps.get_setmver.outputs.current_version }} patch
+#       - name: Commit version related changes
+#         uses: stefanzweifel/git-auto-commit-action@v4
+#         with:
+#           branch: ${{ steps.get_ref.outputs.value }}
+#           commit_message: ":bookmark: Updates documentation version to ${{ steps.get_setmver.outputs.current_version }}"
+#   release-changelog:
+#     runs-on: ubuntu-latest
+#     steps:
+#       # NOTE: Makes sure the changelog is up to date.
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+#         with:
+#           ref: main
+#           fetch-depth: 0
+#       - uses: actions/setup-node@v2
+#         with:
+#           node-version: "12"
+#       - name: Install auto-changelog
+#         run: |
+#           npm install -g auto-changelog
+#       - name: Create CHANGELOG.md file using auto-changelog
+#         run: |
+#           auto-changelog
+#       - name: Commit changes
+#         uses: stefanzweifel/git-auto-commit-action@v4
+#         with:
+#           branch: main
+#           commit_message: ":memo: Updates CHANGELOG.md"
+#   release-pre-release:
+#     # NOTE: Creates a pre-release for the tag
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+#         with:
+#           ref: main
+#           fetch-depth: 0
+#       - name: Build release changelog
+#         id: build_changelog
+#         uses: mikepenz/release-changelog-builder-action@main
+#         env:
+#           configuration: ".github/workflows/configuration_complex.json"
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - name: Create pre-release
+#         uses: actions/create-release@v1
+#         with:
+#           tag_name: ${{ github.ref }}
+#           release_name: ${{ github.ref }}
+#           body: ${{steps.build_changelog.outputs.changelog}}
+#           prerelease: true
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

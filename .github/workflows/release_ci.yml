@@ -1,22 +1,43 @@
-# Github action that makes sure that the version inside code files and the changelog are
-# up to date. If this is the case it creates a pre-release.
-# NOTE: Runs when a new version is released (not published).
+# Github action that makes sure that all the version tags are up to date when
+# A new version tag is added.
 name: MLC release CI
 on:
-  workflow_run:
-    workflows: ["Autotag CI"]
-    branches: [main]
+  push:
+    branches:
+      - main
+    tags:
+      - "v*.*.*"
+  pull_request:
     types:
-      - completed
+      - labeled
 jobs:
-  release_version:
+  release-tag:
+    if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
+    steps:
+      # NOTE: Makes sure the new version also contains the right major and minor tags.
+      - uses: actions/checkout@v2
+      # Bump version on merging Pull Requests with specific labels.
+      # (bump:major,bump:minor,bump:patch)
+      - id: bumpr
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: haya14busa/action-bumpr@v1
+      # Update corresponding major and minor tag.
+      # e.g. Update v1 and v1.2 when releasing v1.2.3
+      - uses: haya14busa/action-update-semver@v1
+        if: "!steps.bumpr.outputs.skip"
+        with:
+          tag: ${{ steps.bumpr.outputs.next_version }}
+  release-version:
+    runs-on: ubuntu-latest
+    needs: release-tag
+    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/master'"
     steps:
       # NOTE: Updates the version that is specified in the code files.
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: main
+          ref: ${{ github.ref }}
           fetch-depth: 0
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
@@ -39,62 +60,23 @@ jobs:
         run: |
           pip install bump2version
       - name: Get current semver tag
-        id: get_setmver
+        id: get_semver
         uses: rickstaa/action-get-semver@v1
         with:
           verbose: "true"
       - name: Make sure the version in all code files is correct
         run: |
-          bumpversion --no-tag --no-commit --new-version ${{ steps.get_setmver.outputs.current_version }} patch
+          bumpversion --no-tag --no-commit --new-version ${{ steps.get_semver.outputs.current_version }} patch
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          branch: ${{ steps.get_ref.outputs.value }}
-          commit_message: ":bookmark: Updates documentation version to ${{ steps.get_setmver.outputs.current_version }}"
-  release-changelog:
+          branch: ${{ github.ref }}
+          commit_message: ":bookmark: Updates documentation version to ${{ steps.get_semver.outputs.current_version }}"
+  release-check:
+    # NOTE: Used to check if the bump:version label is working
+    if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
     steps:
-      # NOTE: Makes sure the changelog is up to date.
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: main
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "12"
-      - name: Install auto-changelog
-        run: |
-          npm install -g auto-changelog
-      - name: Create CHANGELOG.md file using auto-changelog
-        run: |
-          auto-changelog
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          branch: main
-          commit_message: ":memo: Updates CHANGELOG.md"
-  release-pre-release:
-    # NOTE: Creates a pre-release for the tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: main
-          fetch-depth: 0
-      - name: Build release changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@main
-        env:
-          configuration: ".github/workflows/configuration_complex.json"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create pre-release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: ${{steps.build_changelog.outputs.changelog}}
-          prerelease: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Post bumpr status comment
+        uses: haya14busa/action-bumpr@v1
