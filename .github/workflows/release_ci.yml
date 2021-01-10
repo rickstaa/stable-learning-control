@@ -19,15 +19,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: main
+          ref: ${{ github.ref }}
           fetch-depth: 0
-      # Bump version on merging Pull Requests with specific labels.
+      # Get bump version from merged Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
       - id: bumpr_dry
         if: "!startsWith(github.ref, 'refs/tags/')"
         uses: haya14busa/action-bumpr@v1
         with:
-          dry-run: "true"
+          dry_run: "true"
       - name: Get pushed tag
         if: "startsWith(github.ref, 'refs/tags/')"
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -57,11 +57,6 @@ jobs:
       - name: Make sure the version in all code files is correct
         run: |
           bumpversion --no-tag --no-commit --new-version ${{ env.RELEASE_VERSION }} patch
-      - name: Commit version related changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          branch: main
-          commit_message: ":bookmark: Updates documentation version to ${{ env.RELEASE_VERSION }}"
       # NOTE: Makes sure the changelog is up to date.
       - uses: actions/setup-node@v2
         with:
@@ -72,30 +67,19 @@ jobs:
       - name: Create CHANGELOG.md file using auto-changelog
         run: |
           auto-changelog
-      - name: Commit changes
+      - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          commit_message: ":memo: Updates CHANGELOG.md"
-      # Bump version on merging Pull Requests with specific labels.
-      # (bump:major,bump:minor,bump:patch)
-      - name: Apply labeled version tag
-        id: bumpr
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        uses: haya14busa/action-bumpr@v1
-      - name: Apply tag
-        if: "startsWith(github.ref, 'refs/tags/')"
-        uses: richardsimko/update-tag@v1
+          commit_message: ":bookmark: Updates version ${{ env.RELEASE_VERSION }} documentation and changelog."
+          push_options: "--force"
+          tagging_message: ${{ env.RELEASE_VERSION }}
+      # Update corresponding major and minor tag.
+      # e.g. Update v1 and v1.2 when releasing v1.2.3
+      - uses: haya14busa/action-update-semver@v1
+        if: "!steps.bumpr.outputs.skip"
         with:
-          tag_name: ${{ env.RELEASE_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # # Update corresponding major and minor tag.
-      # # e.g. Update v1 and v1.2 when releasing v1.2.3
-      # - uses: haya14busa/action-update-semver@v1
-      #   if: "!steps.bumpr.outputs.skip"
-      #   with:
-      #     tag: ${{ steps.bumpr.outputs.next_version }}
+          tag: ${{ steps.bumpr.outputs.next_version }}
 
       # NOTE: Updates the version that is specified in the code files.
   # release-pre-release:
