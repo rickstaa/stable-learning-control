@@ -4,7 +4,7 @@
 name: MLC release CI
 on:
   workflow_run:
-    workflows: ["MLC bump CI"]
+    workflows: ["Autotag CI"]
     branches: [main]
     types:
       - completed
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: main
           fetch-depth: 0
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
@@ -58,7 +58,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: main
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
@@ -72,7 +72,7 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          branch: ${{ steps.get_ref.outputs.value }}
+          branch: main
           commit_message: ":memo: Updates CHANGELOG.md"
   release-pre-release:
     # NOTE: Creates a pre-release for the tag
@@ -81,7 +81,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: main
           fetch-depth: 0
       - name: Build release changelog
         id: build_changelog

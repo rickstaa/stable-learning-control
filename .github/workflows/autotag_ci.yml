@@ -1,7 +1,6 @@
 # Github action that makes sure that all the version tags are up to date when
-# A new version is released.
-# NOTE: Runs when a new version is released (not published).
-name: MLC bump CI
+# A new version tag is added.
+name: Autotag CI
 on:
   push:
     branches:
