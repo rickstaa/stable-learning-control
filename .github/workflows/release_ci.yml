@@ -31,7 +31,7 @@ jobs:
   release-version:
     runs-on: ubuntu-latest
     needs: release-tag
-    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/main'"
+    if: "github.event.action != 'labeled'"
     steps:
       # NOTE: Updates the version that is specified in the code files.
       - name: Checkout repository
@@ -70,8 +70,33 @@ jobs:
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          branch: ${{ github.ref }}
+          branch: main
           commit_message: ":bookmark: Updates documentation version to ${{ steps.get_semver.outputs.current_version }}"
+  release-changelog:
+    runs-on: ubuntu-latest
+    needs: release-tag
+    if: "github.event.action != 'labeled'"
+    steps:
+      # NOTE: Makes sure the changelog is up to date.
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12"
+      - name: Install auto-changelog
+        run: |
+          npm install -g auto-changelog
+      - name: Create CHANGELOG.md file using auto-changelog
+        run: |
+          auto-changelog
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
+          commit_message: ":memo: Updates CHANGELOG.md"
   release-check:
     # NOTE: Used to check if the bump:version label is working
     if: github.event.action == 'labeled'
