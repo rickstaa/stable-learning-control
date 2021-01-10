@@ -9,22 +9,15 @@ on:
     types:
       - completed
 jobs:
-  version-release:
+  release_version:
     runs-on: ubuntu-latest
     steps:
       # NOTE: Updates the version that is specified in the code files.
-      - name: Check if triggered by tag or by label
-        id: get_ref
-        uses: haya14busa/action-cond@v1
-        with:
-          cond: "${{ !startsWith(github.ref, 'refs/tags/') }}"
-          if_true: ${{ github.ref }} # Fix detached head
-          if_false: "main"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ steps.get_ref.outputs.value }}
-          depth: 0
+          ref: ${{ github.ref }}
+          fetch-depth: 0
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
       - name: Set up Python environment
@@ -58,22 +51,15 @@ jobs:
         with:
           branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":bookmark: Updates documentation version to ${{ steps.get_setmver.outputs.current_version }}"
-  changelog-release:
+  release-changelog:
     runs-on: ubuntu-latest
     steps:
       # NOTE: Makes sure the changelog is up to date.
-      - name: Check if triggered by tag or by label
-        id: get_ref
-        uses: haya14busa/action-cond@v1
-        with:
-          cond: "${{ !startsWith(github.ref, 'refs/tags/') }}"
-          if_true: ${{ github.ref }}
-          if_false: "main"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ steps.get_ref.outputs.value }}
-          depth: 0
+          ref: ${{ github.ref }}
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: "12"
@@ -88,10 +74,15 @@ jobs:
         with:
           branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":memo: Updates CHANGELOG.md"
-  create-pre-release:
+  release-pre-release:
     # NOTE: Creates a pre-release for the tag
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
       - name: Build release changelog
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@main
