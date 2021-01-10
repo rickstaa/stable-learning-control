@@ -16,29 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # NOTE: Makes sure the new version also contains the right major and minor tags.
-      - uses: actions/checkout@v2
-      # Bump version on merging Pull Requests with specific labels.
-      # (bump:major,bump:minor,bump:patch)
-      - id: bumpr
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        uses: haya14busa/action-bumpr@v1
-      # Update corresponding major and minor tag.
-      # e.g. Update v1 and v1.2 when releasing v1.2.3
-      - uses: haya14busa/action-update-semver@v1
-        if: "!steps.bumpr.outputs.skip"
-        with:
-          tag: ${{ steps.bumpr.outputs.next_version }}
-  release-version:
-    runs-on: ubuntu-latest
-    needs: release-tag
-    if: "github.event.action != 'labeled' && ${{ always() }}"
-    steps:
-      # NOTE: Updates the version that is specified in the code files.
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
+      # Bump version on merging Pull Requests with specific labels.
+      # (bump:major,bump:minor,bump:patch)
+      - id: bumpr
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: haya14busa/action-bumpr@v1
+        with:
+          dry-run: "true"
+      - name: Get pushed tag
+        if: "startsWith(github.ref, 'refs/tags/')"
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Retrieve labeled tag
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        run: echo "RELEASE_VERSION=${{ steps.bumpr.outputs.next_version }}" >> $GITHUB_ENV
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
       - name: Set up Python environment
@@ -59,70 +54,76 @@ jobs:
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
           pip install bump2version
-      - name: Get current semver tag
-        id: get_semver
-        uses: rickstaa/action-get-semver@v1
-        with:
-          verbose: "true"
       - name: Make sure the version in all code files is correct
         run: |
-          bumpversion --no-tag --no-commit --new-version ${{ steps.get_semver.outputs.current_version }} patch
+          bumpversion --no-tag --no-commit --new-version ${{ env.RELEASE_VERSION }} patch
       - name: Commit version related changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          commit_message: ":bookmark: Updates documentation version to ${{ steps.get_semver.outputs.current_version }}"
-  # release-changelog:
+          commit_message: ":bookmark: Updates documentation version to ${{ env.RELEASE_VERSION }}"
+      # NOTE: Makes sure the changelog is up to date.
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12"
+      - name: Install auto-changelog
+        run: |
+          npm install -g auto-changelog
+      - name: Create CHANGELOG.md file using auto-changelog
+        run: |
+          auto-changelog
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
+          commit_message: ":memo: Updates CHANGELOG.md"
+      # Bump version on merging Pull Requests with specific labels.
+      # (bump:major,bump:minor,bump:patch)
+      - name: Apply labeled version tag
+        id: bumpr
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: haya14busa/action-bumpr@v1
+      - name: U
+        if: "startsWith(github.ref, 'refs/tags/')"
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Update corresponding major and minor tag.
+      # e.g. Update v1 and v1.2 when releasing v1.2.3
+      - uses: haya14busa/action-update-semver@v1
+        if: "!steps.bumpr.outputs.skip"
+        with:
+          tag: ${{ steps.bumpr.outputs.next_version }}
+
+      # NOTE: Updates the version that is specified in the code files.
+  # release-pre-release:
+  #   # NOTE: Creates a pre-release for the tag
   #   runs-on: ubuntu-latest
   #   needs: release-version
   #   if: "github.event.action != 'labeled' && ${{ always() }}"
   #   steps:
-  #     # NOTE: Makes sure the changelog is up to date.
   #     - name: Checkout repository
   #       uses: actions/checkout@v2
   #       with:
   #         ref: ${{ github.ref }}
   #         fetch-depth: 0
-  #     - uses: actions/setup-node@v2
+  #     - name: Build release changelog
+  #       id: build_changelog
+  #       uses: mikepenz/release-changelog-builder-action@main
+  #       env:
+  #         configuration: ".github/workflows/configuration_complex.json"
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Create pre-release
+  #       uses: actions/create-release@v1
   #       with:
-  #         node-version: "12"
-  #     - name: Install auto-changelog
-  #       run: |
-  #         npm install -g auto-changelog
-  #     - name: Create CHANGELOG.md file using auto-changelog
-  #       run: |
-  #         auto-changelog
-  #     - name: Commit changes
-  #       uses: stefanzweifel/git-auto-commit-action@v4
-  #       with:
-  #         branch: main
-  #         commit_message: ":memo: Updates CHANGELOG.md"
-  release-pre-release:
-    # NOTE: Creates a pre-release for the tag
-    runs-on: ubuntu-latest
-    needs: release-version
-    if: "github.event.action != 'labeled' && ${{ always() }}"
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: main
-          fetch-depth: 0
-      - name: Build release changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@main
-        env:
-          configuration: ".github/workflows/configuration_complex.json"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create pre-release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: ${{steps.build_changelog.outputs.changelog}}
-          prerelease: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         tag_name: ${{ github.ref }}
+  #         release_name: ${{ github.ref }}
+  #         body: ${{steps.build_changelog.outputs.changelog}}
+  #         prerelease: true
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release-check:
     # NOTE: Used to check if the bump:version label is working
     if: github.event.action == 'labeled'
