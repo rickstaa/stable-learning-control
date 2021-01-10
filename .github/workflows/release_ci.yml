@@ -31,7 +31,7 @@ jobs:
   release-version:
     runs-on: ubuntu-latest
     needs: release-tag
-    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/master'"
+    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/main'"
     steps:
       # NOTE: Updates the version that is specified in the code files.
       - name: Checkout repository
