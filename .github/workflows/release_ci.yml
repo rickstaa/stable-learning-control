@@ -12,39 +12,40 @@ on:
     types:
       - labeled
 jobs:
-  release:
+  tag-release:
     if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     steps:
-      # Checkout repository
-      # NOTE: Fix detached head state when triggered on tag such that we can commit changes
+      # NOTE: Makes sure the new version also contains the right major and minor tags.
+      - uses: actions/checkout@v2
+      # Bump version on merging Pull Requests with specific labels.
+      # (bump:major,bump:minor,bump:patch)
+      - id: bumpr
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: haya14busa/action-bumpr@v1
+      # Update corresponding major and minor tag.
+      # e.g. Update v1 and v1.2 when releasing v1.2.3
+      - uses: haya14busa/action-update-semver@v1
+        if: "!steps.bumpr.outputs.skip"
+        with:
+          tag: ${{ steps.bumpr.outputs.next_version }}
+  version-release:
+    if: github.event.action != 'labeled'
+    needs: tag-release
+    runs-on: ubuntu-latest
+    steps:
+      # NOTE: Updates the version that is specified in the code files.
       - name: Check if triggered by tag or by label
         id: get_ref
         uses: haya14busa/action-cond@v1
         with:
           cond: "${{ !startsWith(github.ref, 'refs/tags/') }}"
-          if_true: ${{ github.ref }}
+          if_true: ${{ github.ref }} # Fix detached head
           if_false: "main"
-      - name: Checkout mlc repository
+      - name: Checkout repository
         uses: actions/checkout@v2
         with:
           ref: ${{ steps.get_ref.outputs.value }}
-          submodules: recursive
-          token: ${{ secrets.GA_SUB }}
-      # Bump version on merging Pull Requests with specific labels.
-      # (bump:major,bump:minor,bump:patch)
-      - name: Bump version on merging Pull Requests with specific labels.
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        id: bumpr
-        uses: haya14busa/action-bumpr@v1
-      # Update corresponding major and minor tag.
-      # e.g. Update v1 and v1.2 when releasing v1.2.3
-      - name: Update corresponding major and minor tag.
-        if: "!steps.bumpr.outputs.skip"
-        uses: haya14busa/action-update-semver@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          tag: ${{ steps.bumpr.outputs.next_version }}
       # Use bumpversion to update version in code
       # See. https://pypi.org/project/bump2version/
       - name: Set up Python environment
@@ -78,7 +79,23 @@ jobs:
         with:
           branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":bookmark: Updates documentation version to ${{ steps.get_setmver.outputs.current_version }}"
-      # Update CHANGELOG.md
+  changelog-release:
+    if: github.event.action != 'labeled'
+    runs-on: ubuntu-latest
+    needs: tag-release
+    steps:
+      # NOTE: Makes sure the changelog is up to date.
+      - name: Check if triggered by tag or by label
+        id: get_ref
+        uses: haya14busa/action-cond@v1
+        with:
+          cond: "${{ !startsWith(github.ref, 'refs/tags/') }}"
+          if_true: ${{ github.ref }}
+          if_false: "main"
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.get_ref.outputs.value }}
       - uses: actions/setup-node@v2
         with:
           node-version: "12"
@@ -93,14 +110,19 @@ jobs:
         with:
           branch: ${{ steps.get_ref.outputs.value }}
           commit_message: ":memo: Updates CHANGELOG.md"
-      # Create release changelog
+  create-pre-release:
+    # NOTE: Creates a pre-release for the tag
+    if: github.event.action != 'labeled'
+    runs-on: ubuntu-latest
+    needs: tag-release
+    steps:
+      - uses: actions/checkout@v2
       - name: Build release changelog
         id: github_release
         uses: mikepenz/release-changelog-builder-action@main
         env:
           configuration: ".github/workflows/configuration_complex.json"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # Create pre-release with changelog
       - name: Create pre-release
         uses: actions/create-release@v1
         with:
@@ -111,6 +133,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release-check:
+    # NOTE: Used to check if the bump:version label is working
     if: github.event.action == 'labeled'
     runs-on: ubuntu-latest
     steps:

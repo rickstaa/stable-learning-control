@@ -18,7 +18,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
-  alex: # Checks docs for inconsiderate writing
+  alex: # NOTE: Checks code for inconsiderate writing
     name: runner / alex
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
-  markdown-lint:
+  markdown-lint: # NOTE: Checks markdown code and creates pull request if needed
     name: runner / remark-lint
     runs-on: ubuntu-latest
     steps:
@@ -65,7 +65,7 @@ jobs:
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
-  black: # Check python code format
+  black: # NOTE: Checks python code and creates pull request if needed
     name: runner / black
     runs-on: ubuntu-latest
     steps:
@@ -102,7 +102,7 @@ jobs:
         run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
-  flake8: # Lints python code
+  flake8: # NOTE: Lints python code to see if there are any errors
     name: runner / flake8
     runs-on: ubuntu-latest
     steps:
@@ -132,7 +132,7 @@ jobs:
         run: |
           pip install -e .[dev]
       - name: Flake8 Lint with reviewdog
-        uses: reviewdog/action-flake8@create_composite_action # TODO: Change to version after pull request
+        uses: reviewdog/action-flake8@create_composite_action # TODO: Change to version after pull request and version release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
