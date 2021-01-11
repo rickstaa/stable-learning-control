@@ -103,14 +103,8 @@ jobs:
         uses: rickstaa/action-get-semver@v1
         with:
           verbose: "true"
-      - name: Retag version
-        uses: richardsimko/update-tag@v1
-        with:
-          tag_name: "${{ steps.get_semver.outputs.current_version }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Updates major and minor version tags
-        uses: haya14busa/action-update-semver@v1
+        uses: rickstaa/action-update-semver@master
         with:
           tag: "${{ steps.get_semver.outputs.current_version }}"
   # create-pre-release:
