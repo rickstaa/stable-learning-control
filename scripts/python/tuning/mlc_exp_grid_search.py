@@ -10,7 +10,7 @@ Taken almost without modification from the Spinning Up example script in the
 documentation `spinup_docs`_.
 
 .. _`spinup_docs`: https://spinningup.openai.com/en/latest/user/running.html#using-experimentgrid
-"""
+"""  # noqa
 
 import argparse
 

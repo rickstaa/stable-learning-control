@@ -2,7 +2,7 @@
 
 This module was based on the `user_config` module of the
 `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/user_config.py>`_.
-"""
+"""  # noqa: E501
 
 import os.path as osp
 
