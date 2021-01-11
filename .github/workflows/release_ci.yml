@@ -5,23 +5,9 @@ on:
   push:
     tags:
       - v*.*.*
-  pull_request:
-    types:
-      - labeled
 jobs:
-  add-labeled-tag:
-    runs-on: ubuntu-latest
-    if: github.event.action != 'labeled'
-    steps:
-      # NOTE: Bump version on merging Pull Requests with specific labels.
-      # (bump:major,bump:minor,bump:patch)
-      - uses: actions/checkout@v2
-      - id: bumpr
-        if: "!startsWith(github.ref, 'refs/tags/')"
-        uses: haya14busa/action-bumpr@v1
   update-code-version:
     runs-on: ubuntu-latest
-    needs: add-labeled-tag
     if: github.event.action != 'labeled'
     steps:
       # NOTE: Updates the version that is specified in the code files.
@@ -78,11 +64,9 @@ jobs:
         with:
           node-version: "12"
       - name: Install auto-changelog
-        run: |
-          npm install -g auto-changelog
+        run: npm install
       - name: Create CHANGELOG.md file using auto-changelog
-        run: |
-          auto-changelog
+        run: npm run auto-changelog
       - name: Commit changelog changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -104,7 +88,7 @@ jobs:
         with:
           verbose: "true"
       - name: Updates major and minor version tags
-        uses: rickstaa/action-update-semver@master
+        uses: rickstaa/action-update-semver@v1
         with:
           tag: "${{ steps.get_semver.outputs.current_version }}"
   create-pre-release:
@@ -138,11 +122,3 @@ jobs:
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  release-check:
-    # NOTE: Used to check if the bump:version label is working
-    if: github.event.action == 'labeled'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Post bumpr status comment
-        uses: haya14busa/action-bumpr@v1
