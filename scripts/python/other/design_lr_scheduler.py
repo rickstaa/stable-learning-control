@@ -6,12 +6,11 @@ so that you can decide which strategy you want to use with the `Pytorch`_ and
 
 .. _`Pytorch`_: https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
 .. _`Tensorflow`_: https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler
-"""
+"""  # noqa: E501
 
 import decimal
 
 import numpy as np
-from numpy import log as ln
 import matplotlib.pyplot as plt
 import torch
 from torch import optim
@@ -52,8 +51,8 @@ if __name__ == "__main__":
 
         # Create lambda learning rate decay function
         def lambda_function(epoch):
-            """Returns the current value of the factor by which the learning rate is multiplied
-            when scheduler.step is called.
+            """Returns the current value of the factor by which the learning rate is
+            multiplied when scheduler.step is called.
 
             Args:
                 epoch (int): The current epoch.
@@ -122,7 +121,7 @@ if __name__ == "__main__":
         )
         plt.xlabel("Epoch")
         plt.ylabel("Learning rate")
-        plt.title(f"Learning rate (LabmdaLR decay)")
+        plt.title("Learning rate (LabmdaLR decay)")
         plt.show()
 
     #########################################
@@ -137,8 +136,8 @@ if __name__ == "__main__":
 
         # Create learning rate factor multiplication function
         def lr_factor(epoch):
-            """Returns the current value of the factor by which the learning rate is multiplied
-            when scheduler.step is called.
+            """Returns the current value of the factor by which the learning rate is
+            multiplied when scheduler.step is called.
 
             Args:
                 epoch (int): The current epoch.
@@ -203,7 +202,7 @@ if __name__ == "__main__":
         plt.plot(
             range(0, epochs), lr_array, color="blue", marker=".", linestyle="solid"
         )
-        plt.title(f"Learning rate (Multiplicative decay)")
+        plt.title("Learning rate (Multiplicative decay)")
         plt.xlabel("Epoch")
         plt.ylabel("Learning Rate")
         plt.show()

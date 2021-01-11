@@ -13,7 +13,7 @@ from textwrap import dedent
 
 import gym
 
-# Import mlc algorihtms and environments
+# Import mlc algorithms and environments
 import machine_learning_control
 import machine_learning_control.simzoo.simzoo
 
@@ -39,7 +39,8 @@ MPI_COMPATIBLE_ALGOS = []
 # Algo names (used in a few places)
 BASE_ALGO_NAMES = ["sac", "lac"]
 
-# TODO: Store control algorithsm in control sub folder (Needed when we add hardware and modeling commands.)
+# TODO: Store control algorithms in control sub folder (Needed when we add hardware and
+# modeling commands.)
 
 
 def add_with_backends(algo_list):
@@ -63,7 +64,8 @@ def parse_and_execute_grid_search(cmd, args):
         print("\n\nUsing default backend (%s) for %s.\n" % (backend, cmd))
         cmd = cmd + "_" + backend
 
-    # TODO: Add check if machine_learning_control module exists -> More informative warning
+    # TODO: Add check if machine_learning_control module exists -> More informative
+    # warning
     algo = eval("machine_learning_control.control." + cmd)
 
     # Before all else, check to see if any of the flags is 'help'.
@@ -256,7 +258,7 @@ def run(input_args):
 
             Also: Some common but long flags can be substituted for shorter
             ones. Valid substitutions are:
-            """
+            """  # noqa: E501
             )
             + str_valid_subs
         )

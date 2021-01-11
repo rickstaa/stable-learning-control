@@ -12,6 +12,9 @@ dist/
 data/
 pytest/
 
+# node related
+node_modules/
+
 # Files to ignore
 .coverage
 *.pyc

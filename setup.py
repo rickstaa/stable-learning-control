@@ -33,6 +33,5 @@ for ns in redundant_namespaces:
 
 # Run python setup
 setup(
-    packages=PACKAGES,
-    package_dir=PACKAGE_DIR,
+    packages=PACKAGES, package_dir=PACKAGE_DIR,
 )

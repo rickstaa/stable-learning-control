@@ -7,5 +7,6 @@ exclude =
     docs/source/conf.py,
     old,
     build,
-    dist
+    dist,
+    sandbox
 max-complexity = 10
