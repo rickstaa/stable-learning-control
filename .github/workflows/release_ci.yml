@@ -3,8 +3,6 @@
 name: MLC release CI
 on:
   push:
-    branches:
-      - main
     tags:
       - "v*.*.*"
   pull_request:
@@ -13,7 +11,7 @@ on:
 jobs:
   add-labeled-tag:
     runs-on: ubuntu-latest
-    if: github.event.action != 'labeled'
+    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/main'"
     steps:
       # NOTE: Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
@@ -24,7 +22,7 @@ jobs:
   update-code-version:
     runs-on: ubuntu-latest
     needs: add-labeled-tag
-    if: "github.event.action != 'labeled'"
+    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/main'"
     steps:
       # NOTE: Updates the version that is specified in the code files.
       - name: Checkout repository
@@ -68,7 +66,7 @@ jobs:
   release-changelog:
     runs-on: ubuntu-latest
     needs: update-code-version
-    if: "github.event.action != 'labeled'"
+    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/main'"
     steps:
       # NOTE: Makes sure the changelog is up to date.
       - name: Checkout repository
@@ -93,7 +91,7 @@ jobs:
   update-major-minor-version-tags:
     runs-on: ubuntu-latest
     needs: release-changelog
-    if: "github.event.action != 'labeled'"
+    if: "github.event.action != 'labeled' && github.ref == 'refs/heads/main'"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -108,18 +106,18 @@ jobs:
       - name: Retag version
         uses: richardsimko/update-tag@v1
         with:
-          tag_name: "${{ steps.get_semver_outputs.current_version }}"
+          tag_name: "${{ steps.get_semver.outputs.current_version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Updates major and minor version tags
         uses: haya14busa/action-update-semver@v1
         with:
-          tag: "${{ steps.get_semver_outputs.current_version }}"
+          tag: "${{ steps.get_semver.outputs.current_version }}"
   # create-pre-release:
   #     # NOTE: Creates a pre-release for the tag
   #     runs-on: ubuntu-latest
   #     needs: update-major-minor-version-tags
-  #     if: "github.event.action != 'labeled' && ${{ always() }}"
+  #     if: "github.event.action != 'labeled' && github.ref == 'refs/heads/main'"
   #     steps:
   #       - name: Checkout repository
   #         uses: actions/checkout@v2
