@@ -1,13 +1,13 @@
 {
   "name": "Machine-learning-control",
-  "version": "0.2.9",
+  "version": "0.2.11",
   "repository": {
     "type": "git",
     "url": "git@github.com:rickstaa/machine-learning-control.git"
   },
   "license": "UNLICENSED",
   "devDependencies": {
-    "auto-changelog": "^2.2.1"
+    "auto-changelog": "2.2.1"
   },
   "scripts": {
     "auto-changelog": "auto-changelog -p && git add CHANGELOG.md"

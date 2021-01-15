@@ -18,11 +18,12 @@ dist/
 .eggs/
 *.egg-info/
 
-# Node
+# node related
 node_modules/
 
-# IDEA
-.vscode/
+# Files to ignore
+.coverage
+*.pyc
 *.code-workspace
 
 # Other
