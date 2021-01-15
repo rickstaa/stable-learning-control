@@ -18,6 +18,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-check
           level: warning
+          exclude: README.md
   alex: # NOTE: Checks code for inconsiderate writing
     name: runner / alex
     runs-on: ubuntu-latest
