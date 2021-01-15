@@ -21,6 +21,22 @@ is made up of four main modules:
 
 This framework follows a code structure similar to the [Spinningup](https://spinningup.openai.com/en/latest/) educational package. By doing this, we hope to make it easier for new researchers to get started with our Algorithms. If you are new to RL, you are therefore highly encouraged first to check out the SpinningUp documentation and play with before diving into our codebase. Our implementation sometimes deviates from the [Spinningup](https://spinningup.openai.com/en/latest/) version to increase code maintainability, extensibility and readability. You can find a list of the main differences in the documentations.
 
+## Clone the repository
+
+Since the repository contains several git submodules to use all the features, it needs
+to be cloned using the `--recurse-submodules` argument:
+
+```bash
+git clone --recurse-submodules https://github.com/rickstaa/machine-learning-control.git
+```
+
+If you already cloned the repository and forgot the `--recurse-submodule` argument you
+can pull the submodules using the following git command:
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Installation and Usage
 
 Please see the [docs](https://rickstaa.github.io/machine-learning-control/) for installation and usage instructions.

@@ -13,7 +13,7 @@
       "labels": ["test"]
     },
     {
-      "title": "## 📝 Tests",
+      "title": "## 📝 Docs",
       "labels": ["docs"]
     },
     {
@@ -32,5 +32,7 @@
       "title": "## 💬 Other",
       "labels": ["other"]
     }
-  ]
+  ],
+  "ignore_labels": ["ignore"],
+  "template": "${{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n${{UNCATEGORIZED}}\n</details>"
 }
