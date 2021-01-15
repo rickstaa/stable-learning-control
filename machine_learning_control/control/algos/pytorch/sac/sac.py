@@ -295,7 +295,7 @@ def sac(
     # Experience buffer
     replay_buffer = ReplayBuffer(obs_dim=obs_dim, act_dim=act_dim, size=replay_size)
 
-    # Count variables (protip: try to get a feel for how different size networks behave!)
+    # Count variables
     var_counts = tuple(count_vars(module) for module in [ac.pi, ac.q1, ac.q2])
     logger.log("\nNumber of parameters: \t pi: %d, \t q1: %d, \t q2: %d\n" % var_counts)
 
@@ -337,11 +337,11 @@ def sac(
             if opt_type.lower() == "minimize":
                 q_pi_targ = torch.max(
                     q1_pi_targ, q2_pi_targ
-                )  # Use max clipping to prevent overestimation bias (Replaced V by E(Q-H))
+                )  # Use max clipping to prevent overestimation bias
             else:
                 q_pi_targ = torch.min(
                     q1_pi_targ, q2_pi_targ
-                )  # Use min clipping to prevent overestimation bias (Replaced V by E(Q-H))
+                )  # Use min clipping to prevent overestimation bias
             # TODO: Replace log_alpha.exp() with alpha --> Make alpha property
             backup = r + gamma * (1 - d) * (q_pi_targ - log_alpha.exp() * logp_a2)
 
@@ -484,8 +484,7 @@ def sac(
             pi_optimizer, lr_lambda=lr_decay_a
         )
         q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-            q_optimizer,
-            lr_lambda=lr_decay_c,
+            q_optimizer, lr_lambda=lr_decay_c,
         )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -579,8 +578,7 @@ def sac(
             )
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"],
-                Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
             )
 
         # Finally, update target networks by polyak averaging.
@@ -822,6 +820,7 @@ def train_sac(config):
 if __name__ == "__main__":
 
     # Import additional gym environments
+    # FIXME: Check where this should be imported
     import machine_learning_control.simzoo.simzoo.envs
 
     # Parse Arguments

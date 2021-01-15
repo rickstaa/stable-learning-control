@@ -2,7 +2,7 @@
 
 This module was cloned from the
 `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/run_utils.py>`_.
-"""
+"""  # noqa
 
 import base64
 import json
@@ -72,8 +72,8 @@ def setup_logger_kwargs(
         use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
             to True.
         data_dir (string, optional): Path to folder where results should be saved.
-            Default is the ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``. Defaults
-            to None.
+            Default is the ``DEFAULT_DATA_DIR`` in
+            ``machine_learning_control/user_config.py``. Defaults to None.
         datestamp (bool, optional): Whether to include a date and timestamp in the
             name of the save directory. Defaults to False.
 
@@ -137,7 +137,8 @@ def call_experiment(
             the machine.
         data_dir (string): Used in configuring the logger, to decide where
             to store experiment results. Note: if left as None, data_dir will
-            default to ``DEFAULT_DATA_DIR`` from ``machine_learning_control/user_config.py``.
+            default to ``DEFAULT_DATA_DIR`` from
+            ``machine_learning_control/user_config.py``.
         **kwargs: All kwargs to pass to thunk.
     """
 
@@ -169,8 +170,8 @@ def call_experiment(
             import gym
             import machine_learning_control.simzoo.simzoo
 
-            # FIXME: Make sure that all custom environments that are already imported are available.
-
+            # FIXME: Make sure that all custom environments that are already imported
+            # are available.
             env_name = kwargs["env_name"]
             kwargs["env_fn"] = lambda: gym.make(env_name)
             del kwargs["env_name"]

@@ -2,7 +2,7 @@
 
 This module was cloned from the
 `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/mpi_tools.py>`_.
-"""
+"""  # noqa
 
 import os
 import subprocess
@@ -25,7 +25,7 @@ def mpi_fork(n, bind_to_core=False):
     Args:
         n (int): Number of process to split into.
         bind_to_core (bool, optional): Bind each MPI process to a core. Defaults to False.
-    """
+    """  # noqa
     if n <= 1:
         return
     if os.getenv("IN_MPI") is None:

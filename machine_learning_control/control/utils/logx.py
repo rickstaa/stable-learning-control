@@ -5,7 +5,7 @@ This module extends the logx module of
 so that besides logging to tab-separated-values file
 (path/to/output_directory/progress.txt)
 it also logs the data to a tensorboard file.
-"""
+"""  # noqa
 
 import atexit
 import importlib
@@ -186,8 +186,8 @@ class Logger:
                 print(
                     colorize(
                         (
-                            "WARN: Log dir %s already exists! Storing info there anyway."
-                            % self.output_dir
+                            "WARN: Log dir %s already exists! Storing info there "
+                            "anyway." % self.output_dir
                         ),
                         "yellow",
                         bold=True,
@@ -237,12 +237,7 @@ class Logger:
             print(colorize(msg, color, bold=True))
 
     def log_tabular(
-        self,
-        key,
-        val,
-        tb_write=False,
-        tb_prefix=None,
-        tb_alias=None,
+        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
     ):
         """Log a value of some diagnostic.
 
@@ -272,8 +267,8 @@ class Logger:
             # DEBUG: CHANGED THIS!
             pass
             # assert key in self._log_headers, (
-            #     "Trying to introduce a new key %s that you didn't include in the first "
-            #     "iteration" % key
+            #     "Trying to introduce a new key %s that you didn't include in the "
+            #     "first iteration" % key
             # )
         assert key not in self._log_current_row, (
             "You already set %s this iteration. Maybe you forgot to call dump_tabular()"
