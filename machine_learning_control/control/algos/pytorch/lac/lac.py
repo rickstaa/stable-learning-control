@@ -412,11 +412,13 @@ def lac(
         )
         if use_lyapunov:
             l_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                l_optimizer, lr_lambda=lr_decay_l,
+                l_optimizer,
+                lr_lambda=lr_decay_l,
             )
         else:
             q_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
-                q_optimizer, lr_lambda=lr_decay_c,
+                q_optimizer,
+                lr_lambda=lr_decay_c,
             )
         log_alpha_opt_scheduler = torch.optim.lr_scheduler.LambdaLR(
             log_alpha_optimizer, lr_lambda=lr_decay_a
@@ -543,7 +545,8 @@ def lac(
                 q2_pi_targ = ac_targ.q2(o2, a2)
                 if opt_type.lower() == "minimize":
                     q_pi_targ = torch.max(
-                        q1_pi_targ, q2_pi_targ,
+                        q1_pi_targ,
+                        q2_pi_targ,
                     )  # Use max clipping  to prevent overestimation bias.
                 else:
                     q_pi_targ = torch.min(
@@ -657,7 +660,8 @@ def lac(
             log_alpha_optimizer.step()
         else:
             logger.store(
-                tb_write=logger_kwargs["use_tensorboard"], Alpha=alpha,
+                tb_write=logger_kwargs["use_tensorboard"],
+                Alpha=alpha,
             )
 
         ################################################

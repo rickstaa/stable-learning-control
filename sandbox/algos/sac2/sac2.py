@@ -250,7 +250,9 @@ class PolicyNetwork(nn.Module):
 
 
 def update(
-    batch_size, gamma=0.99, soft_tau=1e-2,
+    batch_size,
+    gamma=0.99,
+    soft_tau=1e-2,
 ):
     """Update networks"""
 
