@@ -1,14 +1,28 @@
-# Github action that makes sure that all the version tags are up to date when
-# A new version tag is added.
+# Github action that updates the code version tags, adds a changelog and drafts a release when
+# a new version tag is added.
 name: MLC release CI
 on:
   push:
     tags:
       - v*.*.*
 jobs:
+  on-main-branch-check:
+    runs-on: ubuntu-latest
+    outputs:
+      on_main: ${{ steps.contains_tag.outputs.retval }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: rickstaa/action-contains-tag@v1
+        id: contains_tag
+        with:
+          reference: "main"
+          tag: "${{ github.ref }}"
   update-code-version:
     runs-on: ubuntu-latest
-    if: github.event.action != 'labeled'
+    needs: on-main-branch-check
+    if: ${{ needs.on-main-branch-check.outputs.on_main == 'true' }}
     steps:
       # NOTE: Updates the version that is specified in the code files.
       - name: Checkout repository
@@ -48,11 +62,11 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          commit_message: ":bookmark: Updates documentation version to ${{ steps.get_semver.outputs.current_version }}"
+          file_pattern: machine_learning_control/version.py docs/source/conf.py setup.cfg .bumpversion.cfg package.json package-lock.json
+          commit_message: ":bookmark: Updates code version to ${{ steps.get_semver.outputs.current_version }}"
   release-changelog:
     runs-on: ubuntu-latest
     needs: update-code-version
-    if: github.event.action != 'labeled'
     steps:
       # NOTE: Makes sure the changelog is up to date.
       - name: Checkout repository
@@ -71,11 +85,11 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
+          file_pattern: CHANGELOG.md
           commit_message: ":memo: Updates CHANGELOG.md"
   move-semver-tags:
     runs-on: ubuntu-latest
     needs: release-changelog
-    if: github.event.action != 'labeled'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -91,11 +105,11 @@ jobs:
         uses: rickstaa/action-update-semver@v1
         with:
           tag: "${{ steps.get_semver.outputs.current_version }}"
-  create-pre-release:
-    # NOTE: Creates a pre-release for the new tag
+          move_patch_tag: "true"
+  create-release-draft:
+    # NOTE: Drafts a release for the new tag
     runs-on: ubuntu-latest
     needs: move-semver-tags
-    if: github.event.action != 'labeled'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -110,15 +124,16 @@ jobs:
       - name: Build release changelog
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@main
+        with:
+          configuration: ".github/workflows/release_changelog_config.json"
         env:
-          configuration: ".github/workflows/configuration_complex.json"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create pre-release
+      - name: Draft release
         uses: actions/create-release@v1
         with:
           tag_name: ${{ steps.get_semver.outputs.current_version }}
           release_name: ${{ steps.get_semver.outputs.current_version }}
-          body: ${{steps.build_changelog.outputs.changelog}}
-          prerelease: true
+          body: ${{ steps.build_changelog.outputs.changelog }}
+          draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
