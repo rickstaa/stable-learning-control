@@ -1,3 +1,9 @@
+"""Module used for ploting the training results.
+
+This module was cloned from the
+`spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/plot.py>`_.
+"""  # noqa
+
 import json
 import os
 import os.path as osp
@@ -70,7 +76,7 @@ def plot_data(
 
     xscale = np.max(np.asarray(data[xaxis])) > 5e3
     if xscale:
-        # Just some formatting niceness: x-axis scale in scientific notation if max x is large
+        # x-axis scale in scientific notation if max x is large
         plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
 
     plt.tight_layout(pad=0.5)

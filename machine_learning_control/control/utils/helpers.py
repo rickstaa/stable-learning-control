@@ -189,7 +189,7 @@ def calc_gamma_lr_decay(lr_init, lr_final, epoch):
 
     Returns:
         decimal.Decimal: Exponential learning rate decay factor (gamma).
-    """
+    """  # noqa: W605
     gamma_a = (decimal.Decimal(lr_final) / decimal.Decimal(lr_init)) ** (
         decimal.Decimal(1.0) / decimal.Decimal(epoch)
     )
@@ -212,7 +212,7 @@ def calc_linear_lr_decay(lr_init, lr_final, epoch):
 
     Returns:
         decimal.Decimal: Linear learning rate decay factor (G)
-    """
+    """  # noqa: W605
     return -(
         ((decimal.Decimal(lr_final) / decimal.Decimal(lr_init)) - decimal.Decimal(1.0))
         / (decimal.Decimal(epoch) - decimal.Decimal(1.0))
