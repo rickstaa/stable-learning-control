@@ -27,6 +27,10 @@
     {
       "title": "## 🔄 Dependency updates",
       "labels": ["dependencies"]
+    },
+    {
+      "title": "## 💬 Other",
+      "labels": ["other"]
     }
   ]
 }
