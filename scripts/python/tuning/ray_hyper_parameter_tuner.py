@@ -9,7 +9,8 @@ in tensorboard using the `tensorboard --logdir="./data/ray_results` command.
 .. `ray tuning documentation`: https://docs.ray.io/en/latest/tune/index.html
 """
 
-# IMPROVE: Add command line wrapper
+# TODO: Write down in documentation 30m
+
 import os.path as osp
 import sys
 

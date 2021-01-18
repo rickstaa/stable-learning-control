@@ -36,7 +36,7 @@ from torch.optim import Adam
 
 SCALE_lambda_MIN_MAX = (0, 20)
 
-global t  # TODO: Make attribute out of this\
+global t  # TODO: Make attribute out of this
 # TODO: Add nograd torch.no_grad for some tensors
 # TODO: Replace alphas with property!
 # TODO: Add detach methods for faster computation
@@ -178,7 +178,7 @@ def lac(
         decaying_lr_type (str, optional): The type of learning rate decay you want to
             use (options: exponential or linear). Defaults to linear.
 
-        alpha (float): Entropy regularisation coefficient (Equivalent to
+        alpha (float): Entropy regularization coefficient (Equivalent to
             inverse of reward scale in the original SAC paper).
 
         alpha (float: The Lyapunov lagrance multiplier.

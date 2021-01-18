@@ -443,7 +443,6 @@ class Logger:
 
             # Save model
             with warnings.catch_warnings():
-                # FIXME: Improve saving!
                 warnings.simplefilter("ignore")
                 # We are using a non-recommended way of saving PyTorch models,
                 # by pickling whole objects (which are dependent on the exact

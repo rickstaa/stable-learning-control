@@ -33,24 +33,28 @@ from machine_learning_control.control.utils.logx import EpochLogger
 from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from torch.optim import Adam
 
-global t  # TODO: Make attribute out of this
+global t
+
+# === CREATE CLASS === [4h]
+# TODO: Translate to class (Don't forget to update docstring)
+# TODO: Make attribute out of this
 # TODO: Replace alphas with property!
 # TODO: Add detach methods for faster computation
-# TODO: Translate to class (Don't forget to update docstring)
-# TODO: Add run folder by index creation see panda_openai_sim script
+
+# === LOGGER === [3h]
 # TODO: Add verbose option to log more data with logger (Remove averages from log std)
 # TODO: FIX LOGGER (See fixme in logger)
-# FIXME: Make sure the right hyperparameters are here (Do we want the ones for
-# oscillator or mujoco)
-# Better to set to mujoco because that is more often used
+
+# === Configuration === [3h]
 # TODO: Add additional config file that can be loaded from argument
-# FIXME: The learning rate became negative!
 # TODO: Change logger argument order
 # TODO: Ability to pass arguments to environment
-# TODO: Add discrete environments
 # TODO: Fix OPT_TYPE
 
+# === Checkes === [3h]
+# FIXME: The learning rate became negative!
 # TODO: Distinction between pytorch and tf
+
 RUN_DB_FILE = os.path.abspath(
     os.path.join(
         os.path.dirname(os.path.dirname(__file__)), "../../cfg/_cfg/sac_last_run.json"
@@ -216,6 +220,7 @@ def sac(
                 action_space.shape
             )  # Maximum information (bits) contained in action space
         elif is_discrete_space(action_space):
+            # TODO: General warning for discrete environments.
             raise NotImplementedError(
                 "The heuristic target entropy is not yet implement for discrete spaces."
             )

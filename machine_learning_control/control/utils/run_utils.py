@@ -170,7 +170,7 @@ def call_experiment(
             import gym
             import machine_learning_control.simzoo.simzoo
 
-            # FIXME: Make sure that all custom environments that are already imported
+            # FIXME: Make sure that all custom environments that are already imported [20m]
             # are available.
             env_name = kwargs["env_name"]
             kwargs["env_fn"] = lambda: gym.make(env_name)

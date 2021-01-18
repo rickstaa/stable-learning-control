@@ -33,7 +33,9 @@ WAIT_BEFORE_LAUNCH = 5
 # which prints them in one line. Defaults to "tab".
 # NOTE (rickstaa): LOG_IGNORE - Dictionary containing the keys for which you don't want
 # the statistics to be printed to the terminal.
-# IMPROVE: Replace by commmand line arguments
+
+# === Logger ===
+# IMPROVE: Replace by commmand line arguments --> Config
 # IMPROVE: Ability to turn of and one std, avg, max, min
 LOG_FMT = "line"
 LOG_IGNORE = {

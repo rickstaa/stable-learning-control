@@ -1,19 +1,17 @@
 {
     "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#f541be",
-        "activityBar.activeBorder": "#415b05",
-        "activityBar.background": "#f541be",
+        "activityBar.activeBackground": "#8ee1fe",
+        "activityBar.activeBorder": "#fd41cd",
+        "activityBar.background": "#8ee1fe",
         "activityBar.foreground": "#15202b",
         "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#415b05",
-        "activityBarBadge.foreground": "#e7e7e7",
-        "tab.activeBorder": "#f541be",
-        "titleBar.activeBackground": "#f211ad",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveBackground": "#f211ad99",
-        "titleBar.inactiveForeground": "#e7e7e799"
+        "activityBarBadge.background": "#fd41cd",
+        "activityBarBadge.foreground": "#15202b",
+        "tab.activeBorder": "#8ee1fe",
+        "titleBar.activeBackground": "#5cd3fd",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.inactiveBackground": "#5cd3fd99",
+        "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#f211ad",
-    "python.pythonPath": "/home/ricks/miniconda3/envs/mlc/bin/python",
-    "restructuredtext.confPath": "${workspaceFolder}/docs/source"
+    "peacock.color": "#5cd3fd"
 }
