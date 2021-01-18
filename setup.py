@@ -32,7 +32,6 @@ for ns in redundant_namespaces:
         if short_child not in PACKAGES:
             PACKAGES.append(short_child)
 
-# Run python setup
 setup(
     packages=PACKAGES, package_dir=PACKAGE_DIR,
 )
