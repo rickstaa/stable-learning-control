@@ -11,7 +11,8 @@ stand_alone_ns_pkgs = ["simzoo"]
 # NOTE: This only works if you don't have a __init__.py file in your parent folder and
 # stand alone_ns_pkgs folder.
 PACKAGES = find_namespace_packages(
-    include=["machine_learning_control*"], exclude=["*tests"]
+    include=["machine_learning_control*"],
+    exclude=["*.tests*", "*.pytest*", "*.node_modules*"],
 )
 redundant_namespaces = [
     pkg
@@ -33,6 +34,5 @@ for ns in redundant_namespaces:
 
 # Run python setup
 setup(
-    packages=PACKAGES,
-    package_dir=PACKAGE_DIR,
+    packages=PACKAGES, package_dir=PACKAGE_DIR,
 )
