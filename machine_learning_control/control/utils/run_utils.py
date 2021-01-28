@@ -38,6 +38,9 @@ def setup_logger_kwargs(
     seed=None,
     save_checkpoints=False,
     use_tensorboard=False,
+    verbose=True,
+    verbose_fmt="line",
+    verbose_vars=[],
     data_dir=None,
     datestamp=False,
 ):
@@ -71,6 +74,13 @@ def setup_logger_kwargs(
             Defaults to False.
         use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
             to True.
+        verbose (bool, optional): Whether you want to log to the std_out. Defaults
+            to ``True``.
+        verbose_fmt (string, optional): The format in which the statistics are
+            displayed to the terminal. Options are "table" which supplies them as a
+            table and "line" which prints them in one line. Defaults to "line".
+        verbose_vars (list, optional): A list of variables you want to log to the
+            std_out. By default all variables are logged.
         data_dir (string, optional): Path to folder where results should be saved.
             Default is the ``DEFAULT_DATA_DIR`` in
             ``machine_learning_control/user_config.py``. Defaults to None.
@@ -103,6 +113,9 @@ def setup_logger_kwargs(
         exp_name=exp_name,
         save_checkpoints=save_checkpoints,
         use_tensorboard=use_tensorboard,
+        verbose=verbose,
+        verbose_fmt=verbose_fmt,
+        verbose_vars=verbose_vars,
     )
     return logger_kwargs
 

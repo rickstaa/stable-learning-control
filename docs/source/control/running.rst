@@ -53,7 +53,7 @@ eg:
 
     The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in ``machine_learning_control/user_config.py``).
 
-    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``, which will be a subfolder ``data`` in the ``spinningup`` folder (unless you change it).
+    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``, which will be a subfolder ``data`` in the ``machine_learning_control`` folder (unless you change it).
 
     `Save directory names`_ are based on ``exp_name`` and any flags which have multiple values. Instead of the full flag, a shorthand will appear in the directory name. Shorthands can be provided by the user in square brackets after the flag, like ``--hid[h]``; otherwise, shorthands are substrings of the flag (``clip_ratio`` becomes ``cli``). To illustrate, the save directory for the run with ``clip_ratio=0.1``, ``hid=[32,32]``, and ``seed=10`` will be:
 

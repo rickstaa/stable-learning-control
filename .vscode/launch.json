@@ -1,0 +1,78 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Module (spinup)",
+      "type": "python",
+      "python": "/home/ricks/miniconda3/envs/spinup/bin/python",
+      "request": "launch",
+      "module": "machine_learning_control.run",
+      "console": "internalConsole",
+      "args": [
+        "sac",
+        "--exp_name",
+        "sac_test",
+        "--env",
+        "Ant-v2",
+        "--act",
+        "os.getcwd()",
+      ]
+    },
+    {
+      "name": "Python: Module (mlc)",
+      "type": "python",
+      "python": "/home/ricks/miniconda3/envs/mlc/bin/python",
+      "request": "launch",
+      "module": "machine_learning_control.run",
+      "console": "internalConsole",
+      "args": [
+        "lac",
+        "--exp_name",
+        "sac_test",
+        "--env",
+        "Ant-v2",
+        // "--act_a",
+        // "nn.Identity",
+        // "--act_out_a",
+        // "nn.Identity",
+      ]
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Current File (mlc)",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "python": "/home/ricks/miniconda3/envs/mlc/bin/python"
+    },
+    {
+      "name": "Python: Current File (spinup)",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "python": "/home/ricks/miniconda3/envs/spinup/bin/python"
+    },
+    {
+      "name": "Python: Current File (mlc - setup.py)",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "python": "/home/ricks/miniconda3/envs/mlc/bin/python",
+      "args": [
+        "install"
+      ]
+    }
+  ]
+}

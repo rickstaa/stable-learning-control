@@ -16,3 +16,4 @@
 -   [ ] Create windows/mac/ubuntu tests
 -   [ ] Check if libopenmpi-dev is still needed.
 -   [ ] Remove pinned torch dependency
+-   [ ] Add torch and tensorflow install options.

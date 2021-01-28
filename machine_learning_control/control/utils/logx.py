@@ -29,6 +29,8 @@ from machine_learning_control.control.utils.serialization_utils import convert_j
 from torch.utils.tensorboard import SummaryWriter
 
 # Import tensorflow is it is installed
+# TODO: Check this
+# TODO: Add for torch aswell
 if "tensorflow" in sys.modules:
     TF_AVAILABLE = True
 elif importlib.util.find_spec("tensorflow") is not None:
@@ -36,11 +38,6 @@ elif importlib.util.find_spec("tensorflow") is not None:
     TF_AVAILABLE = True
 else:
     TF_AVAILABLE = False
-
-
-# IMPORT LOGGER FORMAT
-# FIXME: Replace with input argument
-from machine_learning_control.user_config import LOG_FMT, LOG_IGNORE
 
 color2num = dict(
     gray=30,
@@ -140,10 +137,11 @@ class Logger:
     def __init__(
         self,
         output_dir=None,
-        output_fname="progress.txt",
+        output_fname="progress.csv",
         exp_name=None,
-        log_ignore=LOG_IGNORE,
-        log_fmt=LOG_FMT,
+        verbose=True,
+        verbose_fmt="line",
+        verbose_vars=[],
         use_tensorboard=False,
         save_checkpoints=False,
     ):
@@ -153,17 +151,21 @@ class Logger:
             output_dir (string, optional): A directory for saving results to. If
                 ``None``, defaults to a temp directory of the form
                 ``/tmp/experiments/somerandomnumber``.
-            output_fname (string, optional): Name for the tab-separated-value file
-                containing metrics logged throughout a training run.
-                Defaults to ``progress.txt``.
-            exp_name (string.optional): Experiment name. If you run multiple training
+            output_fname (string, optional): Name for the (tab/comma) separated-value
+                file containing metrics logged throughout a training run. Defaults to
+                to ``progress.csv``.
+            exp_name (string, optional): Experiment name. If you run multiple training
                 runs and give them all the same ``exp_name``, the plotter
                 will know to group them. (Use case: if you run the same
                 hyperparameter configuration with multiple random seeds, you
                 should give them all the same ``exp_name``.)
-            log_fmt (string): The format in which the statistics are displayed to the
-                terminal. Options are "tab" which supplies them as a table and "line"
-                which prints them in one line. Defaults to "tab".
+            verbose (bool, optional): Whether you want to log to the std_out. Defaults
+                to ``True``.
+            verbose_fmt (string, optional): The format in which the statistics are
+                displayed to the terminal. Options are "tab" which supplies them as a
+                table and "line" which prints them in one line. Defaults to "line".
+            verbose_vars (list, optional): A list of variables you want to log to the
+                std_out. By default all variables are logged.
             save_checkpoints (bool, optional): Save checkpoints during training.
                 Defaults to False.
             log_ignore (string): Dictionary containing the keys for which you don't want
@@ -179,6 +181,10 @@ class Logger:
             exp_name (str): Experiment name.
         """
         if proc_id() == 0:
+
+            # Parse output_fname to see if csv was requested
+            extension = os.path.splitext(output_fname)[1]
+            self._output_csv = True if extension.lower() == ".csv" else False
 
             # Create log directory
             self.output_dir = output_dir or "/tmp/experiments/%i" % int(time.time())
@@ -202,13 +208,17 @@ class Logger:
                     "Logging data to %s" % self.output_file.name, "green", bold=True
                 )
             )
-            self.log_fmt = log_fmt
-            self.log_ignore = log_ignore
+            self.verbose = verbose
+            self.verbose_table = verbose_fmt.lower() != "line"
+            self.verbose_vars = [
+                item.replace("Avg", "Average") for item in verbose_vars
+            ]
         else:
             self.output_dir = None
             self.output_file = None
-            self.log_fmt = None
-            self.log_ignore = None
+            self.verbose = None
+            self.verbose_table = None
+            self.verbose_vars = None
         self.exp_name = exp_name
         self._first_row = True
         self._log_headers = []
@@ -237,12 +247,7 @@ class Logger:
             print(colorize(msg, color, bold=True))
 
     def log_tabular(
-        self,
-        key,
-        val,
-        tb_write=False,
-        tb_prefix=None,
-        tb_alias=None,
+        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
     ):
         """Log a value of some diagnostic.
 
@@ -269,12 +274,10 @@ class Logger:
         if self._first_row:
             self._log_headers.append(key)
         else:
-            # DEBUG: CHANGED THIS!
-            pass
-            # assert key in self._log_headers, (
-            #     "Trying to introduce a new key %s that you didn't include in the "
-            #     "first iteration" % key
-            # )
+            assert key in self._log_headers, (
+                "Trying to introduce a new key %s that you didn't include in the "
+                "first iteration" % key
+            )
         assert key not in self._log_current_row, (
             "You already set %s this iteration. Maybe you forgot to call dump_tabular()"
             % key
@@ -291,8 +294,8 @@ class Logger:
         """Log an experiment configuration.
 
         Call this once at the top of your experiment, passing in all important
-        config vars as a dict. This will serialise the config to JSON, while
-        handling anything which can't be serialised in a graceful way (writing
+        config vars as a dict. This will serialize the config to JSON, while
+        handling anything which can't be serialized in a graceful way (writing
         as informative a string as possible).
 
         Example use:
@@ -476,61 +479,75 @@ class Logger:
             counter if global step is not supplied.
         """
         if proc_id() == 0:
-            global_step = global_step if global_step else self._global_step
             vals = []
-            key_lens = [len(key) for key in self._log_headers]
-            max_key_len = max(15, max(key_lens))
-            keystr = "%" + "%d" % max_key_len
-            fmt = "| " + keystr + "s | %15s |"
-            n_slashes = 22 + max_key_len
+            print_dict = {}
+            print_keys = []
+            print_vals = []
 
-            # Print results to terminal based on the set format
-            if self.log_fmt.lower() == "line":  # Use row format
-                valstr = [
-                    key
-                    + (
-                        ":" + "%.3g" % self._log_current_row[key]
-                        if hasattr(self._log_current_row[key], "__float__")
-                        else self._log_current_row[key]
-                    )
-                    + "|"
-                    for key in self._log_current_row.keys()
-                    if key not in self.log_ignore
-                ]
-                print("".join(valstr)[:-1])
-                vals.extend(self._log_current_row.values())
-            else:
-                print("-" * n_slashes)
+            # Retrieve data from current row
             for key in self._log_headers:
+                val = self._log_current_row.get(key, "")
+                valstr = (
+                    ("%8.3g" if self.verbose_table else "%.3g") % val
+                    if hasattr(val, "__float__")
+                    else val
+                )
+                print_keys.append(key)
+                print_vals.append(valstr)
+                print_dict[key] = valstr
+                vals.append(val)
 
-                # Print tabular to stdout
-                if self.log_fmt.lower() != "line":  # Use tabular format
-                    val = self._log_current_row.get(key, "")
-                    valstr = (
-                        ("%8.3g" % val if hasattr(val, "__float__") else val)
-                        if key not in self.log_ignore
-                        else ""
+            # Log to stdout
+            if self.verbose:
+                key_filter = self.verbose_vars if self.verbose_vars else print_keys
+                if self.verbose_table:
+                    key_lens = [len(key) for key in self._log_headers]
+                    max_key_len = max(15, max(key_lens))
+                    keystr = "%" + "%d" % max_key_len
+                    fmt = "| " + keystr + "s | %15s |"
+                    n_slashes = 22 + max_key_len
+                    print("-" * n_slashes)
+                    print_str = "\n".join(
+                        [
+                            fmt % (key, val)
+                            for key, val in zip(print_keys, print_vals)
+                            if key in key_filter
+                        ]
                     )
-                    print(fmt % (key, valstr))
-                    vals.append(val)
+                    print(print_str)
+                    print("-" * n_slashes, flush=True)
+                else:
+                    print_str = "|".join(
+                        [
+                            "%s:%s"
+                            % (
+                                "Steps"
+                                if key == "TotalEnvInteracts"
+                                else key.replace("Average", "Avg"),
+                                val,
+                            )
+                            for key, val in zip(print_keys, print_vals)
+                            if key in key_filter
+                        ]
+                    )
+                    print(print_str)
+            else:  # Increase epoch steps and time on the same line
+                print(
+                    colorize(
+                        "\r{}: {:8.3G}, {}: {:8.3g}, {}: {:8.3G} s".format(
+                            "Epoch",
+                            float(print_dict["Epoch"]),
+                            "Step",
+                            float(print_dict["TotalEnvInteracts"]),
+                            "Time",
+                            float(print_dict["Time"]),
+                        ),
+                        "green",
+                    ),
+                    end="",
+                )
 
-                # Write tabular to tensorboard log
-                if self._tabular_to_tb_dict[key]["tb_write"]:
-                    var_name = (
-                        self._tabular_to_tb_dict[key]["tb_alias"]
-                        if self._tabular_to_tb_dict[key]["tb_alias"]
-                        else key
-                    )
-                    var_name = (
-                        self._tabular_to_tb_dict[key]["tb_prefix"] + "/" + var_name
-                        if self._tabular_to_tb_dict[key]["tb_prefix"]
-                        else var_name
-                    )
-                    self._write_to_tb(var_name, val, global_step=global_step)
-            if self.log_fmt.lower() != "line":
-                print("-" * n_slashes, flush=True)
-
-            # Write tabular to output file
+            # Log to file
             if self.output_file is not None:
                 if self._first_row:
                     self.output_file.write("\t".join(self._log_headers) + "\n")
@@ -538,6 +555,8 @@ class Logger:
                 self.output_file.flush()
         self._log_current_row.clear()
         self._first_row = False
+
+        # TODO: Add tb write
 
     def _write_to_tb(self, var_name, data, global_step=None):
         """Writes data to tensorboard log file.
@@ -993,7 +1012,14 @@ class EpochLogger(Logger):
         super().__init__(*args, **kwargs)
         self.epoch_dict = dict()
 
-    def store(self, tb_write=False, global_step=None, tb_aliases=dict(), **kwargs):
+    def store(
+        self,
+        tb_write=False,
+        global_step=None,
+        tb_aliases=dict(),
+        extend=False,
+        **kwargs,
+    ):
         """Save something into the epoch_logger's current state.
 
         Provide an arbitrary number of keyword arguments with numerical
@@ -1006,6 +1032,9 @@ class EpochLogger(Logger):
                 counter if global step is not supplied.
             tb_aliases (dict, optional): Dictionary that can be used to set aliases for
                 the variables you want to store. Defaults to empty dict().
+            extend (bool, optional): Boolean specifying whether you want to extend the
+                values to the log buffer. By default ``false`` meaning the values are
+                appended to the buffer.
         """
         for k, v in kwargs.items():
 
@@ -1013,7 +1042,10 @@ class EpochLogger(Logger):
             if not (k in self.epoch_dict.keys()):
                 self.epoch_dict[k] = []
                 self._step_count_dict[k] = 0
-            self.epoch_dict[k].append(v)
+            if extend:
+                self.epoch_dict[k].extend(v)
+            else:
+                self.epoch_dict[k].append(v)
 
             # Increase the step count for all the keys
             # NOTE: This is done in such a way that two values of a given key do not
@@ -1031,6 +1063,7 @@ class EpochLogger(Logger):
             var_name = k if k not in tb_aliases.keys() else tb_aliases[k]
 
             # Write variable value to tensorboard
+            # TODO: Check if this is not redundant
             if tb_write:
                 self._write_to_tb(var_name, v, global_step=global_step)
 
@@ -1040,7 +1073,7 @@ class EpochLogger(Logger):
         val=None,
         with_min_and_max=False,
         average_only=False,
-        tb_write=False,
+        tb_write=False,  # TODO: Redundant already defined in store
         tb_prefix=None,
         tb_alias=None,
     ):
@@ -1111,8 +1144,17 @@ class EpochLogger(Logger):
         self.epoch_dict[key] = []
 
     def get_stats(self, key):
-        """
-        Lets an algorithm ask the logger for mean/std/min/max of a diagnostic.
+        """Lets an algorithm ask the logger for mean/std/min/max of a diagnostic.
+
+        Args:
+            key (str): The key for which you want to get the stats.
+
+        Returns:
+            (tuple): tuple containing:
+                mean(float): The current mean value.
+                std(float): The current  mean standard deviation.
+                min(float): The current mean value.
+                max(float): The current mean value.
         """
         v = self.epoch_dict[key]
         vals = (

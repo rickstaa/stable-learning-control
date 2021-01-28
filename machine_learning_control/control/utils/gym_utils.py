@@ -2,6 +2,7 @@
 `openai gym package <https://github.com/openai/gym>`_.
 """
 
+import gym
 from gym import spaces
 
 DISCRETE_SPACES = (
@@ -10,6 +11,18 @@ DISCRETE_SPACES = (
     spaces.MultiDiscrete,
 )
 CONTINUOUS_SPACES = (spaces.Box,)
+
+
+def is_gym_env(env):
+    """Checks whether object is a gym environment.
+
+    Args:
+        env (object): A python object.
+
+    Returns:
+        bool: Boolean specifying whether object is gym environment.
+    """
+    return isinstance(env, gym.core.Env)
 
 
 def is_continuous_space(space):

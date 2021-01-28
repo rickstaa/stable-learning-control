@@ -46,8 +46,6 @@ Welcome to Machine Learning Control!
 
    simzoo/simzoo
 
-
-
 .. toctree::
    :maxdepth: 2
    :caption: Algorithms Docs

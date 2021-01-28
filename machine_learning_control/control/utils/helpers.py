@@ -215,5 +215,57 @@ def calc_linear_lr_decay(lr_init, lr_final, epoch):
     """  # noqa: W605
     return -(
         ((decimal.Decimal(lr_final) / decimal.Decimal(lr_init)) - decimal.Decimal(1.0))
-        / (decimal.Decimal(epoch) - decimal.Decimal(1.0))
+        / (max(decimal.Decimal(epoch) - decimal.Decimal(1.0), 1))
     )
+
+
+# TEST: Validate that it works.
+def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, epochs):
+    """Creates a learning rate scheduler.
+
+        Args:
+            optimizer (torch.optim.Adam): Wrapped optimizer.
+            decaying_lr_type (string): The learning rate decay type that is used (
+            options are: ``linear`` and ``exponential`` and ``constant``).
+            lr_start (float): Initial learning rate.
+            lr_end (float): Final learning rate.
+            epochs (int, optional): Number of epochs used in the training.
+
+        Returns:
+            torch.optim.lr_scheduler: A learning rate scheduler object.
+        """
+
+    # Check for constant learning rate
+    if lr_start == lr_final or decaying_lr_type.lower() == "constant":
+        decaying_lr = False
+    else:
+        decaying_lr = True
+
+    # Create learning rate scheduler
+    if decaying_lr_type.lower() == "exponential":
+        gamma = np.longdouble(
+            (calc_gamma_lr_decay(lr_start, lr_final, epochs) if decaying_lr else 1.0)
+        )  # The decay exponent
+        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma)
+    else:
+        lr_decay_a = (
+            (
+                lambda epoch: np.longdouble(
+                    decimal.Decimal(1.0)
+                    - (
+                        calc_linear_lr_decay(lr_start, lr_final, epochs)
+                        * decimal.Decimal(epoch)
+                    )
+                )
+            )
+            if decaying_lr
+            else lambda epoch: 1.0
+        )  # Linear decay rate
+        lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
+            optimizer, lr_lambda=lr_decay_a
+        )
+    return lr_scheduler
+
+
+def save_eval():
+    print("test")

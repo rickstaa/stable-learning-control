@@ -10,15 +10,22 @@ import subprocess
 import sys
 from copy import deepcopy
 from textwrap import dedent
-
+from machine_learning_control.control.utils import safe_eval
 import gym
 
 # Import mlc algorithms and environments
 import machine_learning_control
 import machine_learning_control.simzoo.simzoo
 
+# TODO: Check if this imports are needed
+
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
 from machine_learning_control.user_config import DEFAULT_BACKEND
+
+# TODO: Add new logger arguments
+# TODO: Add version argument
+# TODO: Update logger documentation
+# TODO: Validate activation function make sure it is parsed if it is a string! Should be done in parsing function
 
 # Command line args that will go to ExperimentGrid.run, and must possess unique
 # values (therefore must be treated separately).
@@ -28,7 +35,13 @@ RUN_KEYS = ["num_cpu", "data_dir", "datestamp"]
 SUBSTITUTIONS = {
     "env": "env_name",
     "hid": "ac_kwargs:hidden_sizes",
+    "hid_a": "ac_kwargs:hidden_sizes:actor",
+    "hid_c": "ac_kwargs:hidden_sizes:critic",
     "act": "ac_kwargs:activation",
+    "act_a": "ac_kwargs:activation",
+    "act_out_a": "ac_kwargs:output_activation:actor",
+    "act_c": "ac_kwargs:activation",
+    "act_out_c": "ac_kwargs:output_activation:actor",
     "cpu": "num_cpu",
     "dt": "datestamp",
 }
@@ -38,9 +51,6 @@ MPI_COMPATIBLE_ALGOS = []
 
 # Algo names (used in a few places)
 BASE_ALGO_NAMES = ["sac", "lac"]
-
-# TODO: Store control algorithms in control sub folder (Needed when we add hardware and
-# modeling commands.)
 
 
 def add_with_backends(algo_list):
@@ -58,7 +68,6 @@ def friendly_err(err_msg):
 
 def parse_and_execute_grid_search(cmd, args):
     """Interprets algorithm name and cmd line args into an ExperimentGrid."""
-
     if cmd in BASE_ALGO_NAMES:
         backend = DEFAULT_BACKEND[cmd]
         print("\n\nUsing default backend (%s) for %s.\n" % (backend, cmd))
@@ -66,7 +75,7 @@ def parse_and_execute_grid_search(cmd, args):
 
     # TODO: Add check if machine_learning_control module exists -> More informative
     # warning
-    algo = eval("machine_learning_control.control." + cmd)
+    algo = safe_eval("machine_learning_control.control." + cmd)
 
     # Before all else, check to see if any of the flags is 'help'.
     valid_help = ["--help", "-h", "help"]
@@ -79,9 +88,10 @@ def parse_and_execute_grid_search(cmd, args):
         # Process an arg by eval-ing it, so users can specify more
         # than just strings at the command line (eg allows for
         # users to give functions as args).
+
         try:
-            return eval(arg)
-        except:
+            return safe_eval(arg)
+        except:  # noqa: E722
             return arg
 
     # Make first pass through args to build base arg_dict. Anything

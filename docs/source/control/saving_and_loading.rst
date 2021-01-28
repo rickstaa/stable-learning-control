@@ -20,33 +20,33 @@ Algorithm Outputs
 
 Each algorithm is set up to save a training run's hyperparameter configuration, learning progress, trained agent and value functions, and a copy of the environment if possible (to make it easy to load up the agent and environment simultaneously). The output directory contains the following:
 
-+--------------------------------------------------------------------------------+
-| **Output Directory Structure**                                                 |
-+----------------+---------------------------------------------------------------+
-|``pyt_save/``   | | **PyTorch implementations only.** A directory containing    |
-|                | | everything needed to restore the trained agent and value    |
-|                | | functions. (`Details for PyTorch saves below.`_)            |
-+----------------+---------------------------------------------------------------+
-|``tf1_save/``   | | **Tensorflow implementations only.** A directory containing |
-|                | | everything needed to restore the trained agent and value    |
-|                | | functions. (`Details for Tensorflow saves below.`_)         |
-+----------------+---------------------------------------------------------------+
-|``config.json`` | | A dict containing an as-complete-as-possible description    |
-|                | | of the args and kwargs you used to launch the training      |
-|                | | function. If you passed in something which can't be         |
-|                | | serialised to JSON, it should get handled gracefully by the |
-|                | | logger, and the config file will represent it with a string.|
-|                | | Note: this is meant for record-keeping only. Launching an   |
-|                | | experiment from a config file is not currently supported.   |
-+----------------+---------------------------------------------------------------+
-|``progress.txt``| | A tab-separated value file containing records of the metrics|
-|                | | recorded by the logger throughout training. eg, ``Epoch``,  |
-|                | | ``AverageEpRet``, etc.                                      |
-+----------------+---------------------------------------------------------------+
-|``vars.pkl``    | | A pickle file containing anything about the algorithm state |
-|                | | which should get stored. Currently, all algorithms only use |
-|                | | this to save a copy of the environment.                     |
-+----------------+---------------------------------------------------------------+
++---------------------------------------------------------------------------------------+
+| **Output Directory Structure**                                                        |
++-----------------------+---------------------------------------------------------------+
+|``pyt_save/``          | | **PyTorch implementations only.** A directory containing    |
+|                       | | everything needed to restore the trained agent and value    |
+|                       | | functions. (`Details for PyTorch saves below.`_)            |
++-----------------------+---------------------------------------------------------------+
+|``tf1_save/``          | | **Tensorflow implementations only.** A directory containing |
+|                       | | everything needed to restore the trained agent and value    |
+|                       | | functions. (`Details for Tensorflow saves below.`_)         |
++-----------------------+---------------------------------------------------------------+
+|``config.json``        | | A dict containing an as-complete-as-possible description    |
+|                       | | of the args and kwargs you used to launch the training      |
+|                       | | function. If you passed in something which can't be         |
+|                       | | serialised to JSON, it should get handled gracefully by the |
+|                       | | logger, and the config file will represent it with a string.|
+|                       | | Note: this is meant for record-keeping only. Launching an   |
+|                       | | experiment from a config file is not currently supported.   |
++-----------------------+---------------------------------------------------------------+
+|``progress.(csv/txt)`` | | A (comma/tab) separated value file containing records of the|
+|                       | | metrics recorded by the logger throughout training. eg,     |
+|                       | | ``Epoch``,   ``AverageEpRet``, etc.                         |
++-----------------------+---------------------------------------------------------------+
+|``vars.pkl``           | | A pickle file containing anything about the algorithm state |
+|                       | | which should get stored. Currently, all algorithms only use |
+|                       | | this to save a copy of the environment.                     |
++-----------------------+---------------------------------------------------------------+
 
 .. admonition:: You Should Know
 
@@ -107,7 +107,7 @@ Experiment results will, by default, be saved in the same directory as the Spinn
 
 .. parsed-literal::
 
-    spinningup/
+    machine_learning_control/
         **data/**
             ...
         docs/

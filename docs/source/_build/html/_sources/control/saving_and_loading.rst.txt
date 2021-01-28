@@ -107,7 +107,7 @@ Experiment results will, by default, be saved in the same directory as the Spinn
 
 .. parsed-literal::
 
-    spinningup/
+    machine_learning_control/
         **data/**
             ...
         docs/

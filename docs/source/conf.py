@@ -49,6 +49,7 @@ MOCK_MODULES = [
     "torch.nn.functional",
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# FIXME: check if something is missing.
 
 # Finish imports
 import machine_learning_control
@@ -77,6 +78,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.extlinks",
     "sphinx.ext.githubpages",
+    "sphinx.ext.intersphinx",
 ]
 
 # 'sphinx.ext.mathjax', ??
@@ -84,6 +86,14 @@ extensions = [
 # imgmath settings
 imgmath_image_format = "svg"
 imgmath_font_size = 14
+
+# Add mappings
+intersphinx_mapping = {
+    "python3": ("http://docs.python.org/3", None),
+    "torch": ("https://pytorch.org/docs/stable/", None),
+    "tensorflow": ("https://www.tensorflow.org/api_docs/python", None),
+    "numpy": ("http://docs.scipy.org/doc/numpy", None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
