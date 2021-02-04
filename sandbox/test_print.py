@@ -17,7 +17,12 @@ while True:
     print(
         colorize(
             "\r{}: {:8.3G}, {}: {:8.3g}, {}: {:8.3G}".format(
-                "Epoch", float(cnt), "Step", float(cnt), "Time", float(cnt),
+                "Epoch",
+                float(cnt),
+                "Step",
+                float(cnt),
+                "Time",
+                float(cnt),
             ),
             "green",
         ),

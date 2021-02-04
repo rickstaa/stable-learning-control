@@ -136,7 +136,7 @@ def load_tf_policy(fpath, itr, deterministic=False):
 def load_pytorch_policy(
     fpath, itr, deterministic=False, use_model_state=True, env=None
 ):
-    """ Load a pytorch policy saved with Machine Learning Control Logger.
+    """Load a pytorch policy saved with Machine Learning Control Logger.
 
     Args:
         fpath (str): The path where the model is found.

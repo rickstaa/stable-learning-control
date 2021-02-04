@@ -93,7 +93,10 @@ class LyapunovActorCritic(nn.Module):
             act_limits,
         )
         self.L = LCritic(
-            obs_dim, act_dim, hidden_sizes["critic"], activation["critic"],
+            obs_dim,
+            act_dim,
+            hidden_sizes["critic"],
+            activation["critic"],
         )
 
     def forward(self, obs, act):

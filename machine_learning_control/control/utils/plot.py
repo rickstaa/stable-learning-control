@@ -32,23 +32,23 @@ def plot_data(
 ):
     """Function used to plot data.
 
-        Args:
-        data (obj): The data you want to plot.
-        xaxis (string): Pick what column from data is used for the x-axis.
-             Defaults to ``TotalEnvInteracts``.
-        value (strings): Pick what columns from data to graph on the y-axis.
-            Submitting multiple values will produce multiple graphs. Defaults
-            to ``Performance``, which is not an actual output of any algorithm.
-            Instead, ``Performance`` refers to either ``AverageEpRet``, the
-            correct performance measure for the on-policy algorithms, or
-            ``AverageTestEpRet``, the correct performance measure for the
-            off-policy algorithms. The plotter will automatically figure out
-            which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
-            each separate logdir.
-        condition (str, optional): The condition to search for. By default ``None``.
-        smooth (int): Smooth data by averaging it over a fixed window. This
-            parameter says how wide the averaging window will be.
-        font_scale (int): The font scale you want to use for the plot text.
+    Args:
+    data (obj): The data you want to plot.
+    xaxis (string): Pick what column from data is used for the x-axis.
+         Defaults to ``TotalEnvInteracts``.
+    value (strings): Pick what columns from data to graph on the y-axis.
+        Submitting multiple values will produce multiple graphs. Defaults
+        to ``Performance``, which is not an actual output of any algorithm.
+        Instead, ``Performance`` refers to either ``AverageEpRet``, the
+        correct performance measure for the on-policy algorithms, or
+        ``AverageTestEpRet``, the correct performance measure for the
+        off-policy algorithms. The plotter will automatically figure out
+        which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
+        each separate logdir.
+    condition (str, optional): The condition to search for. By default ``None``.
+    smooth (int): Smooth data by averaging it over a fixed window. This
+        parameter says how wide the averaging window will be.
+    font_scale (int): The font scale you want to use for the plot text.
     """
     if smooth > 1:
         """

@@ -17,7 +17,11 @@ class LCritic(nn.Module):
     """
 
     def __init__(
-        self, obs_dim, act_dim, hidden_sizes, activation=nn.ReLU,
+        self,
+        obs_dim,
+        act_dim,
+        hidden_sizes,
+        activation=nn.ReLU,
     ):
         """Constructs all the necessary attributes for the Soft Q critic object.
 
@@ -29,7 +33,11 @@ class LCritic(nn.Module):
                 to torch.nn.ReLU.
         """
         super().__init__()
-        self.L = mlp([obs_dim + act_dim] + list(hidden_sizes), activation, activation,)
+        self.L = mlp(
+            [obs_dim + act_dim] + list(hidden_sizes),
+            activation,
+            activation,
+        )
 
     def forward(self, obs, act):
         """Perform forward pass through the network.
