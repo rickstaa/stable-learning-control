@@ -23,7 +23,7 @@ This framework follows a code structure similar to the `SpinningUp`_ educational
 it easier for new researchers to get started with our Algorithms. If you are new to RL, you are therefore highly
 encouraged first to check out the SpinningUp documentation and play with before diving into our codebase. Our
 implementation sometimes deviates from the `SpinningUp`_ version to increase code maintainability, extensibility
-and readability. You can find a list of the main differences in `remarks section of this document`_.
+and readability.
 
 .. _`Modeling`: ./modeling/modeling.html
 .. _`Simzoo`: ./simzoo/simzoo.html
@@ -31,7 +31,6 @@ and readability. You can find a list of the main differences in `remarks section
 .. _`Hardware`: ./hardware/hardware.html
 .. _`SpinningUp`: ./hardware/hardware.html
 .. _`Openai gym`: https://gym.openai.com/
-.. _`remarks section of this document`: ../etc/remarks.html
 
 .. warning::
 
@@ -46,18 +45,6 @@ Why We Built This
 
 How This Serves Our Mission
 ===========================
-
-.. todo::
-    Add short explanation.
-
-Code Design Philosophy
-======================
-
-.. todo::
-    Add short explanation.
-
-Long-Term Support and Support History
-=====================================
 
 .. todo::
     Add short explanation.

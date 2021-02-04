@@ -19,15 +19,17 @@ from textwrap import dedent
 import cloudpickle
 import numpy as np
 import psutil
+from machine_learning_control.control.utils.log_utils import colorize
+from machine_learning_control.control.utils.mpi_tools import mpi_fork
+from machine_learning_control.control.utils.serialization_utils import convert_json
+from machine_learning_control.control.common.helpers import valid_str, all_bools
 from machine_learning_control.user_config import (
     DEFAULT_DATA_DIR,
     DEFAULT_SHORTHAND,
+    DEFAULT_STD_OUT_TYPE,
     FORCE_DATESTAMP,
     WAIT_BEFORE_LAUNCH,
 )
-from machine_learning_control.control.utils.logx import colorize
-from machine_learning_control.control.utils.mpi_tools import mpi_fork
-from machine_learning_control.control.utils.serialization_utils import convert_json
 from tqdm import trange
 
 DIV_LINE_WIDTH = 80
@@ -38,6 +40,9 @@ def setup_logger_kwargs(
     seed=None,
     save_checkpoints=False,
     use_tensorboard=False,
+    verbose=True,
+    verbose_fmt=DEFAULT_STD_OUT_TYPE,
+    verbose_vars=[],
     data_dir=None,
     datestamp=False,
 ):
@@ -68,14 +73,21 @@ def setup_logger_kwargs(
         exp_name (string): Name for experiment.
         seed (int, optional): Seed for random number generators used by experiment.
         save_checkpoints (bool, optional): Save checkpoints during training.
-            Defaults to False.
+            Defaults to ``False``.
         use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
             to True.
+        verbose (bool, optional): Whether you want to log to the std_out. Defaults
+            to ``True``.
+        verbose_fmt (string, optional): The format in which the statistics are
+            displayed to the terminal. Options are "table" which supplies them as a
+            table and "line" which prints them in one line. Defaults to "line".
+        verbose_vars (list, optional): A list of variables you want to log to the
+            std_out. By default all variables are logged.
         data_dir (string, optional): Path to folder where results should be saved.
             Default is the ``DEFAULT_DATA_DIR`` in
             ``machine_learning_control/user_config.py``. Defaults to None.
         datestamp (bool, optional): Whether to include a date and timestamp in the
-            name of the save directory. Defaults to False.
+            name of the save directory. Defaults to ``False``.
 
     Returns:
         logger_kwargs, a dict containing output_dir and exp_name.
@@ -103,6 +115,9 @@ def setup_logger_kwargs(
         exp_name=exp_name,
         save_checkpoints=save_checkpoints,
         use_tensorboard=use_tensorboard,
+        verbose=verbose,
+        verbose_fmt=verbose_fmt,
+        verbose_vars=verbose_vars,
     )
     return logger_kwargs
 
@@ -139,6 +154,7 @@ def call_experiment(
             to store experiment results. Note: if left as None, data_dir will
             default to ``DEFAULT_DATA_DIR`` from
             ``machine_learning_control/user_config.py``.
+        datestamp (bool): Whether a datestamp should be added to the experiment name.
         **kwargs: All kwargs to pass to thunk.
     """
 
@@ -161,6 +177,11 @@ def call_experiment(
         kwargs["logger_kwargs"] = setup_logger_kwargs(
             exp_name, seed, data_dir, datestamp
         )
+
+        # Force algorithm default if verbose_fmt is line
+        # NOTE (rickstaa): Done since otherwise the stdout gets cluttered.
+        if kwargs["logger_kwargs"]["verbose_fmt"] == "line":
+            kwargs["logger_kwargs"]["verbose_vars"] = None
     else:
         print("Note: Call experiment is not handling logger_kwargs.\n")
 
@@ -263,42 +284,6 @@ def call_experiment(
     print(output_msg)
 
 
-def all_bools(vals):
-    """Check if list contains only strings.
-
-    Args:
-        vals (list): List with values.
-
-    Returns:
-        bool: Boolean specifying the result.
-    """
-    return all([isinstance(v, bool) for v in vals])
-
-
-def valid_str(v):
-    """Convert a value or values to a string which could go in a filepath.
-
-    Partly based on `this gist`_.
-
-    .. _`this gist`: https://gist.github.com/seanh/93666
-
-    Args:
-        vals (list): List with values.
-    """
-    if hasattr(v, "__name__"):
-        return valid_str(v.__name__)
-
-    if isinstance(v, tuple) or isinstance(v, list):
-        return "-".join([valid_str(x) for x in v])
-
-    # Valid characters are '-', '_', and alphanumeric. Replace invalid chars
-    # with '-'.
-    str_v = str(v).lower()
-    valid_chars = "-_%s%s" % (string.ascii_letters, string.digits)
-    str_v = "".join(c if c in valid_chars else "-" for c in str_v)
-    return str_v
-
-
 class ExperimentGrid:
     """Tool for running many experiments given hyperparameter ranges."""
 
@@ -387,7 +372,7 @@ class ExperimentGrid:
 
         By default, if a shorthand isn't given, one is automatically generated
         from the key using the first three letters of each colon-separated
-        term. To disable this behaviour, change ``DEFAULT_SHORTHAND`` in the
+        term. To disable this behavior, change ``DEFAULT_SHORTHAND`` in the
         ``machine_learning_control/user_config.py`` file to ``False``.
 
         Args:
@@ -420,6 +405,9 @@ class ExperimentGrid:
         separated by underscores.
 
         Note: if ``seed`` is a parameter, it is not included in the name.
+
+        args:
+            variant (str): The variant name.
         """
 
         def get_val(v, k):
@@ -572,6 +560,19 @@ class ExperimentGrid:
         Maintenance note: the args for ExperimentGrid.run should track closely
         to the args for call_experiment. However, ``seed`` is omitted because
         we presume the user may add it as a parameter in the grid.
+
+        Args:
+            thunk (callable): A python function.
+            seed (int): Seed for random number generators.
+            num_cpu (int): Number of MPI processes to split into. Also accepts
+                'auto', which will set up as many procs as there are cpus on
+                the machine.
+            data_dir (string): Used in configuring the logger, to decide where
+                to store experiment results. Note: if left as None, data_dir will
+                default to ``DEFAULT_DATA_DIR`` from
+                ``machine_learning_control/user_config.py``.
+            datestamp (bool): Whether a datestamp should be added to the experiment
+                name.
         """
 
         # Print info about self.

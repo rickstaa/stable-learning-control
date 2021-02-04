@@ -1,5 +1,5 @@
-import multiprocessing
-import os
+"""Helper methods for managing Pytorch MPI processes.
+"""
 
 import numpy as np
 import torch
@@ -7,9 +7,8 @@ from machine_learning_control.control.utils.mpi_tools import (
     broadcast,
     mpi_avg,
     num_procs,
-    proc_id,
+    # proc_id,
 )
-from mpi4py import MPI
 
 
 def setup_pytorch_for_mpi():

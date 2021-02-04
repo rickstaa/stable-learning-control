@@ -27,36 +27,8 @@ DEFAULT_SHORTHAND = True
 # experiments.
 WAIT_BEFORE_LAUNCH = 5
 
-# Logger output type
-# NOTE (rickstaa): LOGGER_OUTPUT_TYPE - The format in which the statistics are displayed
-# to the terminal. Options are "tab" which supplies them as a table and "line"
-# which prints them in one line. Defaults to "tab".
-# NOTE (rickstaa): LOG_IGNORE - Dictionary containing the keys for which you don't want
-# the statistics to be printed to the terminal.
-
-# === Logger ===
-# IMPROVE: Replace by commmand line arguments --> Config
-# IMPROVE: Ability to turn of and one std, avg, max, min
-LOG_FMT = "line"
-LOG_IGNORE = {
-    "MinQ2Vals",
-    "StdEpRet",
-    "MaxEpRet",
-    "MinEpRet",
-    "StdTestEpRet",
-    "MaxTestEpRet",
-    "MinTestEpRet",
-    "AverageQ1Vals",
-    "AverageQ1Vals",
-    "StdQ1Vals",
-    "MaxQ1Vals",
-    "MinQ1Vals",
-    "AverageQ2Vals",
-    "StdQ2Vals",
-    "MaxQ2Vals",
-    "MinQ2Vals",
-    "StdLogPi",
-    "MaxLogPi",
-    "MinLogPi",
-    "StdAlpha" "StdLabda",
-}
+# Logger std out output type
+# NOTE (rickstaa):The format in which the statistics are displayed
+# to the terminal. Options are "table" which supplies them as a table and "line"
+# which prints them in one line
+DEFAULT_STD_OUT_TYPE = "line"

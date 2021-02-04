@@ -31,6 +31,7 @@ Welcome to Machine Learning Control!
    control/saving_and_loading
    control/plotting
    control/bench/bench
+   control/utils/utils
 
 .. toctree::
    :maxdepth: 2
@@ -46,8 +47,6 @@ Welcome to Machine Learning Control!
 
    simzoo/simzoo
 
-
-
 .. toctree::
    :maxdepth: 2
    :caption: Algorithms Docs
@@ -59,10 +58,10 @@ Welcome to Machine Learning Control!
    :maxdepth: 2
    :caption: Utilities Docs
 
-   utils/logger
-   utils/plotter
-   utils/mpi
-   utils/run_utils
+   control/utils/logger
+   control/utils/plotter
+   control/utils/mpi
+   control/utils/run_utils
 
 .. toctree::
    :maxdepth: 2

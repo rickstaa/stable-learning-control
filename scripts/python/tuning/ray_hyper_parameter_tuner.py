@@ -9,23 +9,27 @@ in tensorboard using the `tensorboard --logdir="./data/ray_results` command.
 .. `ray tuning documentation`: https://docs.ray.io/en/latest/tune/index.html
 """
 
-# TODO: Write down in documentation 30m
-
 import os.path as osp
 import sys
 
 import numpy as np
-import ray
 
-
-from hyperopt import hp
-from hyperopt.pyll.base import scope
+try:
+    import ray
+except ImportError:
+    raise ImportError(
+        "The ray package appears to be missing. Did you run the `pip install .[tuning]`"
+        " command?"
+    )
 from ray import tune
 from ray.tune.schedulers import ASHAScheduler
 from ray.tune.suggest.hyperopt import HyperOptSearch
+from hyperopt import hp
+from hyperopt.pyll.base import scope
 
 # Import the algorithm we want to tune
-from machine_learning_control.contro.algos.sac.sac import train_sac
+from machine_learning_control.control.algos.pytorch.sac.sac import train_sac
+
 
 if __name__ == "__main__":
 

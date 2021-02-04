@@ -13,5 +13,7 @@
         "titleBar.inactiveBackground": "#5cd3fd99",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#5cd3fd"
+    "peacock.color": "#5cd3fd",
+    "python.pythonPath": "/home/ricks/miniconda3/envs/mlc/bin/python",
+    "todo-tree.tree.scanMode": "workspace only"
 }
