@@ -1249,7 +1249,7 @@ if __name__ == "__main__":
         help="maximum episode length (default: minimize)",
     )
     parser.add_argument(
-        "--epochs", type=int, default=2, help="the number of epochs (default: 50)"
+        "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
     )
     parser.add_argument(
         "--steps_per_epoch",
