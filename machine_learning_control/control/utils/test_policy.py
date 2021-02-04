@@ -1,28 +1,37 @@
 """A set of functions that can be used to see a algorithm perform in the environment
 it was trained on.
 """
+# flake8: noqa: E731
 
 import os
 import os.path as osp
 import time
 
 import joblib
-import tensorflow as tf
+import machine_learning_control as mlc
 import torch
-from machine_learning_control.control.utils.logx import EpochLogger
-from machine_learning_control.control.utils.logx import restore_tf_graph
+from machine_learning_control.control.utils import TF_WARN_MESSAGE, import_tf
+from machine_learning_control.control.utils.log_utils import (
+    EpochLogger,
+    colorize,
+    restore_tf_graph,
+)
 
 
 def load_policy_and_env(fpath, itr="last", deterministic=False):
-    """
-    Load a policy from save, whether it's TF or PyTorch, along with RL env.
+    """Load a policy from save, whether it's TF or PyTorch, along with RL env.
 
-    Not exceptionally future-proof, but it will suffice for basic uses of the
-    Spinning Up implementations.
+    Args:
+        fpath (str): The path where the model is found.
+        itr (str, optional): The current policy iteration. Defaults to "last".
+        deterministic (bool, optional): Whether you want the action from the policy to
+            be deterministic. Defaults to ``False``.
 
-    Checks to see if there's a tf1_save folder. If yes, assumes the model
-    is tensorflow and loads it that way. Otherwise, loads as if there's a
-    PyTorch save.
+    Returns:
+        (tuple): tuple containing:
+
+            env(gym.env): The gym environment.
+            get_action (func): The policy get_action function.
     """
 
     # determine if tf save or pytorch save
@@ -42,14 +51,24 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
 
         elif backend == "pytorch":
             pytsave_path = osp.join(fpath, "pyt_save")
-            # Each file in this folder has naming convention 'modelXX.pt', where
-            # 'XX' is either an integer or empty string. Empty string case
+            # Each file in this folder has naming convention 'model(_state_dict)XX.pt',
+            # where 'XX' is either an integer or empty string. Empty string case
             # corresponds to len(x)==8, hence that case is excluded.
-            saves = [
-                int(x.split(".")[0][5:])
-                for x in os.listdir(pytsave_path)
-                if len(x) > 8 and "model" in x
-            ]
+            use_model_state = any(
+                ["model_state" in x for x in os.listdir(pytsave_path)]
+            )
+            if use_model_state:
+                saves = [
+                    int(x.split(".")[0][11:])
+                    for x in os.listdir(pytsave_path)
+                    if len(x) > 14 and "model_state" in x
+                ]
+            else:
+                saves = [
+                    int(x.split(".")[0][5:])
+                    for x in os.listdir(pytsave_path)
+                    if len(x) > 8 and "model" in x
+                ]
 
         itr = "%d" % max(saves) if len(saves) > 0 else ""
 
@@ -59,12 +78,6 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
         ), "Bad value provided for itr (needs to be int or 'last')."
         itr = "%d" % itr
 
-    # load the get_action function
-    if backend == "tf1":
-        get_action = load_tf_policy(fpath, itr, deterministic)
-    else:
-        get_action = load_pytorch_policy(fpath, itr, deterministic)
-
     # try to load environment from save
     # (sometimes this will fail because the environment could not be pickled)
     try:
@@ -73,11 +86,30 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
     except:
         env = None
 
+    # load the get_action function
+    if backend == "tf1":
+        get_action = load_tf_policy(fpath, itr, deterministic)
+    else:
+        get_action = load_pytorch_policy(
+            fpath, itr, deterministic, use_model_state, env
+        )
+
     return env, get_action
 
 
 def load_tf_policy(fpath, itr, deterministic=False):
-    """ Load a tensorflow policy saved with Spinning Up Logger."""
+    """Load a tensorflow policy saved with Machine Learning Control Logger.
+
+    Args:
+        fpath (str): The path where the model is found.
+        itr (str, optional): The current policy iteration. Defaults to "last".
+        deterministic (bool, optional): Whether you want the action from the policy to
+            be deterministic. Defaults to ``False``.
+
+    Returns:
+        (func): The policy get_action function.
+    """
+    tf = import_tf()  # Import tf if installed otherwise throw warning
 
     fname = osp.join(fpath, "tf1_save" + itr)
     print("\n\nLoading from %s.\n\n" % fname)
@@ -101,26 +133,72 @@ def load_tf_policy(fpath, itr, deterministic=False):
     return get_action
 
 
-def load_pytorch_policy(fpath, itr, deterministic=False):
-    """ Load a pytorch policy saved with Spinning Up Logger."""
+def load_pytorch_policy(
+    fpath, itr, deterministic=False, use_model_state=True, env=None
+):
+    """ Load a pytorch policy saved with Machine Learning Control Logger.
 
-    fname = osp.join(fpath, "pyt_save", "model" + itr + ".pt")
+    Args:
+        fpath (str): The path where the model is found.
+        itr (str, optional): The current policy iteration. Defaults to "last".
+        deterministic (bool, optional): Whether you want the action from the policy to
+            be deterministic. Defaults to ``False``.
+        env (gym.env): The gym environment in which you want to test the policy.
+
+    Returns:
+        (func): The policy get_action function.
+    """
+
+    fname = osp.join(
+        fpath,
+        "pyt_save",
+        "model" if not use_model_state else "model_state" + itr + ".pt",
+    )
     print("\n\nLoading from %s.\n\n" % fname)
 
-    model = torch.load(fname)
+    model_data = torch.load(fname)
 
-    # make function for producing an action given a single state
-    def get_action(x):
-        with torch.no_grad():
-            x = torch.as_tensor(x, dtype=torch.float32)
-            action = model.act(x)
-        return action
+    # Retrieve get_action method
+    if use_model_state:
+        model = getattr(mlc.control.algos.pytorch, model_data["class_name"])(env=env)
+        model.load_state_dict(model_data)  # Retore model parameters
 
-    return get_action
+        return model.get_action
+    else:
+        print(
+            colorize(
+                "WARN: You are using the full pickled model in your inference. Please "
+                "note that this is the non-recommended method for loading Pytorch "
+                "models. Please make sure you save your model as a state dictionary. "
+                "See the Pytorch version of the lac algorithm for an example on how to "
+                "do this.",
+                "yellow",
+                bold=True,
+            )
+        )
+
+        # make function for producing an action given a single state
+        def get_action(x):
+            with torch.no_grad():
+                x = torch.as_tensor(x, dtype=torch.float32)
+                action = model_data.act(x)
+            return action
+
+        return get_action
 
 
 def run_policy(env, get_action, max_ep_len=None, num_episodes=100, render=True):
+    """Evaluates a policy inside a given gym environment.
 
+    Args:
+        env gym.env): The gym environment.
+        get_action (func): The policy get_action function.
+        max_ep_len (int, optional): The maximum episode length. Defaults to None.
+        num_episodes (int, optional): Number of episodes you want to perform in the
+            environment. Defaults to 100.
+        render (bool, optional): Whether you want to render the episode to the screen.
+            Defaults to ``True``.
+    """
     assert env is not None, (
         "Environment not found!\n\n It looks like the environment wasn't saved, "
         + "and we can't run the agent in it. :( \n\n Check out the readthedocs "

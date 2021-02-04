@@ -24,7 +24,8 @@ def mpi_fork(n, bind_to_core=False):
 
     Args:
         n (int): Number of process to split into.
-        bind_to_core (bool, optional): Bind each MPI process to a core. Defaults to False.
+        bind_to_core (bool, optional): Bind each MPI process to a core. Defaults to
+        ``False``.
     """  # noqa
     if n <= 1:
         return
@@ -50,7 +51,13 @@ def msg(m, string=""):
 
 
 def pprint(input_str="", end="\n", comm=MPI.COMM_WORLD):
-    """Print for MPI parallel programs: Only rank 0 prints *str*."""
+    """Print for MPI parallel programs: Only rank 0 prints *str*.
+
+    Args:
+        input_str (str): The string you want to print.
+        end(str): The print end character.
+        comm(mpi4py.MPI.COMM_WORLD): MPI communicator.
+    """
     if comm.rank == 0:
         print(str(input_str) + end)
 
@@ -140,7 +147,7 @@ def mpi_statistics_scalar(x, with_min_and_max=False):
         x: An array containing samples of the scalar to produce statistics
             for.
         with_min_and_max (bool, optional): If true, return min and max of x in
-            addition to mean and std. Defaults to False.
+            addition to mean and std. Defaults to ``False``.
 
     Returns:
         tuple: Reduced mean and standard deviation.

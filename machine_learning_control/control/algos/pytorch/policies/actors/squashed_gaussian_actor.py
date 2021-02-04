@@ -8,7 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from machine_learning_control.control.utils.helpers import clamp, mlp
+from machine_learning_control.control.algos.pytorch.common.helpers import clamp, mlp
 from torch.distributions.normal import Normal
 
 
@@ -74,9 +74,9 @@ class SquashedGaussianActor(nn.Module):
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
                 policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to False.
+                policy. Defaults to ``False``.
             with_logprob (bool, optional): Whether we want to return the log probability
-                of an action. Defaults to True.
+                of an action. Defaults to ``True``.
 
         Returns:
             torch.Tensor,  torch.Tensor: The actions given by the policy, the log

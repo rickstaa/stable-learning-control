@@ -8,21 +8,66 @@ This results in a agent that is equivalent to the SAC agent.
 
 import os.path as osp
 
-from machine_learning_control.control.algos.pytorch.lac import lac
+import torch.nn as nn
+from machine_learning_control.control.algos.pytorch.lac import LAC, lac
 from machine_learning_control.control.algos.pytorch.policies import SoftActorCritic
-from machine_learning_control.control.utils.logx import colorize
+from machine_learning_control.control.utils.log_utils import colorize
+
+
+def apply_sac_defaults(args, kwargs):
+    """Function that applies the :art:`sac` defaults to the input arguments and returns
+    them.
+
+    Args:
+        args (list): The args list.
+        kwargs (dict): The kwargs dictionary.
+
+    Returns:
+        (tuple): tuple containing:
+
+            args (list): The args list.
+            kwargs (dict): The kwargs dictionary.
+    """
+    kwargs["use_lyapunov"] = False
+    kwargs["actor_critic"] = (
+        kwargs["actor_critic"] if "actor_critic" in kwargs.keys() else SoftActorCritic
+    )
+    kwargs["ac_kwargs"] = (
+        kwargs["ac_kwargs"]
+        if "ac_kwargs" in kwargs.keys()
+        else dict(
+            hidden_sizes=[256, 256],
+            activation={"actor": nn.ReLU, "critic": nn.ReLU},
+            output_activation={"actor": nn.ReLU, "critic": nn.Identity},
+        )
+    )
+    return args, kwargs
+
+
+class SAC(LAC):
+    """Wrapper class used to create the SAC policy from the LAC policy."""
+
+    def __init__(self, *args, **kwargs):
+        """Calls the lac superclass using the sac defaults.
+
+        Args:
+            *args: All args to pass to thunk.
+            **kwargs: All kwargs to pass to thunk.
+        """
+        args, kwargs = apply_sac_defaults(args, kwargs)
+        super().__init__(*args, **kwargs)
 
 
 def sac(*args, **kwargs):
-    """Wrapper that calles the `:module:lac` algorithm with ``use_lyapunov`` false."""
+    """Wrapper that calles the `:module:lac` algorithm with ``use_lyapunov`` false. It
+    also sets up some :atr:`sac` related default arguments.
 
-    # Set sac related arguments
-    kwargs["use_lyapunov"] = False
-    kwargs["actor_critic"] = SoftActorCritic
-
-    # Train sac agent
+    Args:
+        *args: All args to pass to thunk.
+        **kwargs: All kwargs to pass to thunk.
+    """
+    args, kwargs = apply_sac_defaults(args, kwargs)
     lac(*args, **kwargs)
-    # TODO: Parse activations
 
 
 if __name__ == "__main__":

@@ -15,10 +15,10 @@ documentation `spinup_docs`_.
 import argparse
 
 import torch
-from machine_learning_control.control.utils.run_util import ExperimentGrid
+from machine_learning_control.control.utils.run_utils import ExperimentGrid
 
 # Import the RL agent you want to perform the grid search for
-from machine_learning_control.control.alogs import sac_pytorch
+from machine_learning_control.control.algos import sac_pytorch
 
 # Script parametesr
 ENV_NAME = "Oscillator-v1"  # The environment on which you want to train the agent.

@@ -15,49 +15,40 @@ with the Soft Actor Critic algorithm of
 """
 
 import argparse
+import glob
 import itertools
 import os
+import os.path as osp
 import random
+import sys
 import time
+from collections import OrderedDict
 from copy import deepcopy
 
 import gym
 import numpy as np
 import torch
 import torch.nn as nn
+from machine_learning_control.control.algos.pytorch.common import get_lr_scheduler
 from machine_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
 from machine_learning_control.control.algos.pytorch.common.helpers import (
+    count_vars,
     retrieve_device,
 )
 from machine_learning_control.control.algos.pytorch.policies import (
     LyapunovActorCritic,
     SoftActorCritic,
 )
-from machine_learning_control.control.common import heuristic_target_entropy
+from machine_learning_control.control.common.helpers import heuristic_target_entropy
 from machine_learning_control.control.utils import safe_eval
 from machine_learning_control.control.utils.eval_utils import test_agent
 from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
 )
-from machine_learning_control.control.utils.helpers import count_vars, get_lr_scheduler
-from machine_learning_control.control.utils.logx import EpochLogger, colorize
+from machine_learning_control.control.utils.log_utils import EpochLogger, colorize
 from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
 from torch.optim import Adam
-
-# TODO: Add way to set activation and output activation.
-# TODO: Add transfer learning
-# TODO: Add checkpoints
-# TODO: Add way to supply environment arguments
-# TODO: Set logger default values
-# TODO: Make sure the LAC works.
-# TEST: Test lr_decay
-# TODO: FIX LOGGER (See fixme in logger)
-# TODO: Add additional config file that can be loaded from argument
-# TODO Add descrite environment warning -> Github issue.
-# TODO: Fix tensorboard supply warning that it slows down trianing.
-# TEST: GPU
-# TEST: CPU warning test
 
 # Script settings
 SCALE_LAMBDA_MIN_MAX = (
@@ -65,11 +56,6 @@ SCALE_LAMBDA_MIN_MAX = (
     1.0,
 )  # Range of lambda lagrance multiplier
 SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier
-RUN_DB_FILE = os.path.abspath(
-    os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "../cfg/_cfg/lac_last_run.json"
-    )
-)  # FIXME: Think we can remove this
 STD_OUT_LOG_VARS_DEFAULT = [
     "Epoch",
     "TotalEnvInteracts",
@@ -107,7 +93,7 @@ class LAC(object):
         ac_kwargs=dict(
             hidden_sizes={"actor": [64] * 2, "critic": [128] * 2},
             activation=nn.ReLU,
-            output_activation=nn.ReLU,
+            output_activation={"actor": nn.ReLU},
         ),
         use_lyapunov=True,
         opt_type="minimize",
@@ -246,7 +232,9 @@ class LAC(object):
             )
         else:
             print(
-                colorize("WARN: You are using the SAC algorithm.", "yellow", bold=True)
+                colorize("INFO: You are using the ", "green", bold=True)
+                + colorize("SAC", "yellow", bold=True)
+                + colorize(" algorithm.", "green", bold=True)
             )
 
         # Store algorithm parameters
@@ -302,17 +290,22 @@ class LAC(object):
         # NOTE (rickstaa): We here optimize for log_alpha and log_labda instead of
         # alpha and labda because it is more numerically stable (see:
         # https://github.com/rail-berkeley/softlearning/issues/136)
+        # NOTE (rickstaa): The parameters() method returns a generator. This generator
+        # becomes empty after you looped through all values. As a result, below we use a
+        # lambda function to keep referencing the actual model parameters.
         self._pi_optimizer = Adam(self.ac.pi.parameters(), lr=self._lr_a)
+        self._pi_params = lambda: self.ac.pi.parameters()
         if self._adaptive_temperature:
             self._log_alpha_optimizer = Adam([self.log_alpha], lr=self._lr_a)
         if self._use_lyapunov:
             self._log_labda_optimizer = Adam([self.log_labda], lr=self._lr_lag)
-            self._c_params = self.ac.L.parameters()
-            self._c_optimizer = Adam(self._c_params, lr=self._lr_c)
+            self._c_params = lambda: self.ac.L.parameters()
+            self._c_optimizer = Adam(self._c_params(), lr=self._lr_c)
         else:
-            self._c_params = itertools.chain(
-                self.ac.Q1.parameters(), self.ac.Q2.parameters()
-            )  # Chain parameters of the two Q-critics
+            # List of parameters for both Q-networks (save this for convenience)
+            self._c_params = lambda: itertools.chain(
+                *[gen() for gen in [self.ac.Q1.parameters, self.ac.Q2.parameters]]
+            )
             self._c_optimizer = Adam(self._c_params, lr=self._lr_c)
 
     def get_action(self, s, deterministic=False):
@@ -423,11 +416,10 @@ class LAC(object):
         ################################################
         self._pi_optimizer.zero_grad()
 
-        # # Freeze Q-networks so you don't waste computational effort
-        # # computing gradients for them during the policy learning step.
-        # # TODO: Check if this is needed and works!
-        # for p in self._c_params:
-        #     p.requires_grad = False
+        # Freeze Q-networks so you don't waste computational effort
+        # computing gradients for them during the policy learning step.
+        for p in self._c_params():
+            p.requires_grad = False
 
         # Retrieve log probabilities of batch observations based on *current* policy
         pi, logp_pi = self.ac.pi(o)
@@ -452,7 +444,7 @@ class LAC(object):
             # NOTE (rickstaa): Actions come from *current* policy
             q1_pi = self.ac.Q1(o, pi)
             q2_pi = self.ac.Q2(o, pi)
-            if self.opt_type.lower() == "minimize":
+            if self._opt_type.lower() == "minimize":
                 q_pi = torch.max(q1_pi, q2_pi)
             else:
                 q_pi = torch.min(q1_pi, q2_pi)
@@ -461,13 +453,6 @@ class LAC(object):
 
         a_loss.backward()
         self._pi_optimizer.step()
-
-        # # Unfreeze Q-networks so you can optimize it at next SGD step.
-        # # TODO: Check if this is needed and works!
-        # # TODO: Check if nedeed with alpha and lambda!
-        # # TODO: I think we can replace this with a simple detach
-        # for p in self._c_params:
-        #     p.requires_grad = False
 
         # Store diagnostics
         pi_info = dict(
@@ -478,6 +463,12 @@ class LAC(object):
         ################################################
         # Optimize alpha (Entropy temperature) #########
         ################################################
+
+        # Freeze Pi-networks so you don't waste computational effort
+        # computing gradients for them during the policy learning step.
+        for p in self._pi_params():
+            p.requires_grad = False
+
         if self._adaptive_temperature:
             self._log_alpha_optimizer.zero_grad()
 
@@ -515,12 +506,156 @@ class LAC(object):
             diagnostics.update(
                 {**labda_info, "LossLambda": labda_loss.detach().numpy()}
             )
+
+        # Unfreeze Pi and Q networks so you can optimize it at next SGD step.
+        for p in self._c_params():
+            p.requires_grad = True
+        for p in self._pi_params():
+            p.requires_grad = True
+
         ################################################
         # Update target networks and return ############
         # diagnostics. #################################
         ################################################
         self._update_targets()
         return diagnostics
+
+    def save(self, path, save=True):
+        """Can be used to save the current model state.
+
+        Args:
+            path (str): The path where you want to save the policy.
+            save (bool): Whether you want to save the model to disk. Usefull for when
+                you only want to retrieve the model state dictionary (ie. when you want
+                to save it using the logger). Defaults to 'True'.
+        """
+
+        model_state_dict = self.state_dict()
+
+        if save:
+            save_path = osp.join(path, "policy/model.pt")
+            if osp.exists(osp.dirname(save_path)):
+                print(
+                    colorize(
+                        (
+                            "WARN: Log dir %s already exists! Storing policy there "
+                            "anyway." % osp.dirname(save_path)
+                        ),
+                        "red",
+                        bold=True,
+                    )
+                )
+            else:
+                os.makedirs(osp.dirname(save_path))
+            torch.save(model_state_dict, save_path)
+            print(
+                colorize(f"INFO: Saved policy to path: {save_path}", "cyan", bold=True)
+            )
+
+        return model_state_dict
+
+    def restore(self, path, restore_lagrance_multipliers=False):
+        """Restores a already trained policy. Used for transfer learning.
+
+        Args:
+            path (str): The path where the model 'state_dict' of the policy is found.
+            restore_lagrance_multipliers (bool, optional): Whether you want to restore
+                the lagrance multipliers. By fault ``False``.
+
+        Raises:
+            Exception: Raises an exception if something goes wrong during loading.
+        """
+
+        if os.path.basename(path) != ["model.pt", "model.pth"]:
+            load_path = glob.glob(path + "/**/model_state.pt*", recursive=True)
+            if len(load_path) == 0:
+                model_path = glob.glob(path + "/**/model.pt*", recursive=True)
+                if len(model_path) > 1:
+                    raise Exception(
+                        f"Only whole pickled models found in '{path}'. Using whole "
+                        "pickled models as a starting point is currently not supported "
+                        "as this method of loading is discouraged by the pytorch "
+                        "documentation. Please supply a path that contains a "
+                        "'model_state' dictionary and try again."
+                    )
+                else:
+                    raise Exception(
+                        f"No models found in '{path}'. Please check your policy restore"
+                        "path and try again."
+                    )
+            elif len(load_path) > 1:
+                raise Exception(
+                    f"Multiple models found in path '{path}'. Please check your policy "
+                    "restore path and try again."
+                )
+
+        restored_model_state_dict = torch.load(load_path[0])
+        self.load_state_dict(restored_model_state_dict, restore_lagrance_multipliers)
+
+    def state_dict(self):
+        """Returns a dictionary containing a whole state of the module.
+
+        Returns:
+            dict: A dictionary containing a whole state of the module.
+        """
+        lagrance_multipliers = [("alpha", self.alpha.detach())]
+        lagrance_multipliers.append(
+            ("labda", self.labda.detach())
+        ) if self.use_lyapunov else None
+
+        return OrderedDict(
+            [
+                ("class_name", "LAC" if self._use_lyapunov else "SAC"),
+                ("_use_lyapunov", self._use_lyapunov),
+                ("ac", self.ac.state_dict()),
+                ("ac_targ", self.ac_targ.state_dict()),
+                *lagrance_multipliers,
+            ]
+        )
+
+    def load_state_dict(self, state_dict, restore_lagrance_multipliers=True):
+        """Copies parameters and buffers from :attr:`state_dict` into
+        this module and its descendants.
+
+        Args:
+            state_dict (dict): a dict containing parameters and
+                persistent buffers.
+            restore_lagrance_multipliers (bool, optional): Whether you want to restore
+                the lagrance multipliers. By fault ``True``.
+        """
+
+        # Validate if right state_dictionary is given
+        if self.state_dict().keys() != state_dict.keys():
+            raise ValueError(
+                "The 'state_dict' you tried to load does not seem to be right. It "
+                "contains the {} keys while the {} keys are expected ".format(
+                    list(state_dict.keys()), list(self.state_dict().keys())
+                )
+                + "for the '{}' model.".format(self.__class__.__name__)
+            )
+
+        for name, param in state_dict.items():
+            if hasattr(self, name):
+                if hasattr(getattr(self, name), "load_state_dict"):
+                    getattr(self, name).load_state_dict(param)
+                else:
+                    if (
+                        restore_lagrance_multipliers
+                        or not restore_lagrance_multipliers
+                        and name not in ["labda", "alpha"]
+                    ):
+                        setattr(self, name, param)
+            else:
+                if name != "class_name":
+                    raise AttributeError(
+                        "Can't load parameter '{}' onto the '{}' policy since ".format(
+                            name, self.__class__.__name__
+                        )
+                        + "it does not exist. If this issue persists Please open a "
+                        "issue on"
+                        "https://github.com/rickstaa/machine-learning-control/issues "
+                        "if this issue persits."
+                    )
 
     def _update_targets(self):
         """Updates the target networks based on a Exponential moving average
@@ -540,6 +675,15 @@ class LAC(object):
         """
         return torch.clamp(self.log_alpha.exp(), *SCALE_ALPHA_MIN_MAX)
 
+    @alpha.setter
+    def alpha(self, set_val):
+        """Property used to make sure alpha and log_alpha are related."""
+        self.log_alpha.data = np.log(
+            1e-37
+            if torch.as_tensor(set_val, dtype=self.log_alpha.dtype) < 1e-37
+            else set_val
+        )
+
     @property
     def labda(self):
         """Property used to clip lambda to be equal or bigger than 0.0 in order to
@@ -549,6 +693,15 @@ class LAC(object):
         """
         return torch.clamp(self.log_labda.exp(), *SCALE_LAMBDA_MIN_MAX)
 
+    @labda.setter
+    def labda(self, set_val):
+        """Property used to make sure labda and log_labda are related."""
+        self.log_labda.data = np.log(
+            1e-37
+            if torch.as_tensor(set_val, dtype=self.log_labda.dtype) < 1e-37
+            else set_val
+        )
+
     @property
     def target_entropy(self):
         return self._target_entropy
@@ -556,7 +709,7 @@ class LAC(object):
     @target_entropy.setter
     def target_entropy(self, set_val):
         error_msg = (
-            "WARN: Changing the 'target_entropy' during training is not allowed."
+            "Changing the 'target_entropy' during training is not allowed."
             "Please open a feature/pull request on "
             "https://github.com/rickstaa/machine-learning-control/issues to "
             "if you need this."
@@ -623,10 +776,11 @@ def lac(
     lr_decay_type="linear",
     batch_size=256,
     replay_size=int(1e6),
-    seed=0,
+    seed=None,
     device="cpu",
     logger_kwargs=dict(),
     save_freq=1,
+    start_policy=None,
 ):
     """Trains the lac algorithm in a given environment.
 
@@ -692,7 +846,7 @@ def lac(
         max_ep_len (int, optional): Maximum length of trajectory / episode /
             rollout. Defaults to ``500``.
         epochs (int, optional): Number of epochs to run and train agent. Defaults
-            to ``50``.
+            to ``100``.
         steps_per_epoch (int, optional): Number of steps of interaction
             (state-action pairs) for the agent and the environment in each epoch.
             Defaults to ``2048``.
@@ -752,15 +906,22 @@ def lac(
         batch_size (int, optional): Minibatch size for SGD. Defaults to ``256``.
         replay_size (int, optional): Maximum length of replay buffer. Defaults to
             ``1e6``.
-        seed (int): Seed for random number generators. Defaults to 0.
+        seed (int): Seed for random number generators. Defaults to ``None``.
         device (str, optional): The device the networks are placed on (cpu or gpu).
             Defaults to "cpu".
         logger_kwargs (dict, optional): Keyword args for EpochLogger.
         save_freq (int, optional): How often (in terms of gap between epochs) to save
             the current policy and value function.
+        start_policy (str): Path of a already trained policy to use as the starting
+            point for the training. By default a new policy is created.
     """
     validate_args(**locals())
 
+    logger_kwargs["verbose_vars"] = (
+        STD_OUT_LOG_VARS_DEFAULT
+        if logger_kwargs["verbose_vars"] is None
+        else logger_kwargs["verbose_vars"]
+    )  # NOTE (rickstaa): Done to ensure the std_out doesn't get cluttered.
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())  # Write hyperparameters to logger
 
@@ -779,9 +940,12 @@ def lac(
     # Set random seed for reproducible results
     # https://pytorch.org/docs/stable/notes/randomness.html
     if seed is not None:
+        os.environ["PYTHONHASHSEED"] = str(seed)
         torch.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)
+        env.seed(seed)
+        test_env.seed(seed)
 
     policy = LAC(
         env,
@@ -800,6 +964,28 @@ def lac(
         lr_c,
         device,
     )
+
+    # Restore policy if supplied
+    if start_policy is not None:
+        print(
+            colorize(f"INFO: Restoring model from '{start_policy}'.", "cyan", bold=True)
+        )
+        try:
+            policy.restore(start_policy)
+            print(colorize("INFO: Model successfully restored.", "cyan", bold=True))
+        except Exception as e:
+            print(
+                colorize(
+                    (
+                        "ERROR: Shutting down training since {}.".format(
+                            e.args[0].lower().rstrip(".")
+                        )
+                    ),
+                    "red",
+                    bold=True,
+                )
+            )
+            sys.exit(0)
 
     replay_buffer = ReplayBuffer(
         obs_dim=obs_dim, act_dim=act_dim, rew_dim=rew_dim, size=replay_size
@@ -844,7 +1030,7 @@ def lac(
         opt_schedulers.append(labda_opt_scheduler)
 
     # Set up model saving
-    logger.setup_pytorch_saver(policy.ac)
+    logger.setup_pytorch_saver(policy)
 
     # Store initial learning rates
     if logger_kwargs["use_tensorboard"]:
@@ -971,15 +1157,19 @@ def lac(
 
     # Print final message
     print(
-        "{}Training finished after {}s".format(
-            "\n" if logger_kwargs["verbose"] else "\n\n", time.time() - start_time
+        colorize(
+            "{}Training finished after {}s".format(
+                "\n" if logger_kwargs["verbose"] else "\n\n", time.time() - start_time
+            ),
+            "cyan",
+            bold=True,
         )
     )
 
 
 if __name__ == "__main__":
+
     # Import gym environments
-    import gym
     import machine_learning_control.simzoo.simzoo.envs  # noqa: F401
 
     # Parse algorithm arguments
@@ -1029,7 +1219,7 @@ if __name__ == "__main__":
         help="the hidden layer activation function of the critic (default: nn.ReLU)",
     )
     parser.add_argument(
-        "--act_out",
+        "--act_out_a",
         type=str,
         default="nn.ReLU",
         help="the output activation function of the actor (default: nn.ReLU)",
@@ -1037,13 +1227,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--act_out_c",
         type=str,
-        default="nn.ReLU",
-        help="the output activation function of the critic (default: nn.ReLU)",
+        default="nn.Identity",
+        help="the output activation function of the critic (default: nn.Identity)",
     )
     parser.add_argument(
         "--use_lyapunov",
         type=bool,
-        default=False,
+        default=True,
         help="lyapunov toggle boolean (default: True)",
     )
     parser.add_argument(
@@ -1059,7 +1249,7 @@ if __name__ == "__main__":
         help="maximum episode length (default: minimize)",
     )
     parser.add_argument(
-        "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
+        "--epochs", type=int, default=2, help="the number of epochs (default: 50)"
     )
     parser.add_argument(
         "--steps_per_epoch",
@@ -1181,7 +1371,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_freq",
         type=int,
-        default=5,
+        default=1,
         help="how often (in epochs) the policy should be saved (default: 1)",
     )
     parser.add_argument(
@@ -1189,6 +1379,15 @@ if __name__ == "__main__":
         type=str,
         default="cpu",
         help="The device the networks are placed on (default: cpu)",
+    )
+    parser.add_argument(
+        "--start_policy",
+        type=str,
+        default=None,
+        help=(
+            "The policy which you want to use as the starting point for the training"
+            " (default: None)"
+        ),
     )
 
     # Parse logger related arguments
@@ -1200,8 +1399,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--verbose",
+        "-v",
         type=bool,
-        default=False,
+        default=True,
         help="log diagnostics to std out (default: True)",
     )
     parser.add_argument(
@@ -1235,13 +1435,17 @@ if __name__ == "__main__":
 
     # Setup actor critic arguments
     actor_critic = LyapunovActorCritic if args.use_lyapunov else SoftActorCritic
+    output_activation = {}
+    output_activation["actor"] = safe_eval(args.act_out_a)
+    if not args.use_lyapunov:
+        output_activation["critic"] = safe_eval(args.act_out_c)
     ac_kwargs = dict(
         hidden_sizes={
             "actor": [args.hid_a] * args.l_a,
             "critic": [args.hid_c] * args.l_c,
         },
-        activation=args.act,
-        output_activation=args.act_out,
+        activation={"actor": safe_eval(args.act_a), "critic": safe_eval(args.act_c)},
+        output_activation=output_activation,
     )
 
     # Setup output dir for logger and return output kwargs
@@ -1254,9 +1458,9 @@ if __name__ == "__main__":
         verbose_fmt=args.verbose_fmt,
         verbose_vars=args.verbose_vars,
     )
-    logger_kwargs["output_dir"] = os.path.abspath(
-        os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
+    logger_kwargs["output_dir"] = osp.abspath(
+        osp.join(
+            osp.dirname(osp.realpath(__file__)),
             f"../../../../../data/lac/{args.env.lower()}/runs/run_{int(time.time())}",
         )
     )
@@ -1293,5 +1497,6 @@ if __name__ == "__main__":
         seed=args.seed,
         save_freq=args.save_freq,
         device=args.device,
+        start_policy=args.start_policy,
         logger_kwargs=logger_kwargs,
     )

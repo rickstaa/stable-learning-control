@@ -1,4 +1,4 @@
-"""Module used for serialising json objects.
+"""Module used for serializing json objects.
 
 This module was cloned from the
 `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/serialization_utils.py>`_.

@@ -36,3 +36,5 @@ for ns in redundant_namespaces:
 setup(
     packages=PACKAGES, package_dir=PACKAGE_DIR,
 )
+
+# TODO: Add submodule check like in pytorch!

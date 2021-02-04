@@ -6,34 +6,39 @@ This module contains a Pytorch implementation of the Lyapunov Actor Critic polic
 
 import torch
 import torch.nn as nn
-from machine_learning_control.control.algos.pytorch.common.helpers import (
-    parse_network_structure,
-)
 from machine_learning_control.control.algos.pytorch.policies.actors import (
     SquashedGaussianActor,
 )
 from machine_learning_control.control.algos.pytorch.policies.critics import LCritic
+from machine_learning_control.control.common.helpers import strict_dict_update
+from machine_learning_control.control.utils.log_utils import colorize
+
+HIDDEN_SIZES_DEFAULT = {"actor": (64, 64), "critic": (128, 128)}
+ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.ReLU}
+OUTPUT_ACTIVATION_DEFAULT = {
+    "actor": nn.ReLU,
+}
 
 
 class LyapunovActorCritic(nn.Module):
     """Lyapunov (soft) Actor-Critic network.
 
     Attributes:
-        self.pi (:obj:`.SquashedGaussianActor`): The squashed gaussian policy network
+        self.pi (:obj:`SquashedGaussianActor`): The squashed gaussian policy network
             (actor).
-        self.L (:obj:`.LCritic`); The soft L-network (critic).
+        self.L (:obj:`LCritic`); The soft L-network (critic).
     """
 
     def __init__(
         self,
         observation_space,
         action_space,
-        hidden_sizes={"actor": (64, 64), "critic": (128, 128)},
-        activation={"actor": nn.ReLU, "critic": nn.ReLU},
-        output_activation={"actor": nn.ReLU, "critic": nn.ReLU},
+        hidden_sizes=HIDDEN_SIZES_DEFAULT,
+        activation=ACTIVATION_DEFAULT,
+        output_activation=OUTPUT_ACTIVATION_DEFAULT,
     ):
-        """Constructs all the necessary attributes for the lyapunov (soft) actor-critic network
-        object.
+        """Constructs all the necessary attributes for the lyapunov (soft) actor-critic
+        network object.
 
         Args:
             observation_space (gym.space.box.Box): A gym observation space.
@@ -44,17 +49,36 @@ class LyapunovActorCritic(nn.Module):
                 and critic) hidden layers activation function. Defaults to
                 torch.nn.ReLU.
             output_activation (Union[dict, torch.nn.modules.activation], optional): The
-                (actor and critic)  output activation function. Defaults to
-                torch.nn.ReLU.
+                actor  output activation function. Defaults to torch.nn.ReLU.
+
+        .. note::
+            It is currently not possible to set the critic output activation function
+            when using the LyapunovActorCritic. This is since it by design requires the
+            critic output activation to by of type :meth:`torch.square`.
         """
         super().__init__()
         obs_dim = observation_space.shape[0]
         act_dim = action_space.shape[0]
 
-        # Parse hidden sizes and activation inputs
-        hidden_sizes, activation, output_activation = parse_network_structure(
-            hidden_sizes, activation, output_activation
+        # Parse hidden sizes and activation inputs arguments
+        hidden_sizes, _ = strict_dict_update(HIDDEN_SIZES_DEFAULT, hidden_sizes)
+        activation, _ = strict_dict_update(ACTIVATION_DEFAULT, activation)
+        output_activation, ignored = strict_dict_update(
+            OUTPUT_ACTIVATION_DEFAULT, output_activation
         )
+
+        if "critic" in ignored:
+            print(
+                colorize(
+                    "WARN: Critic output activation function ignored since it is "
+                    "not possible to set the critic output activation function when "
+                    "using the LyapunovActorCritic architecture. This is since it by "
+                    "design requires the critic output activation to by of type "
+                    "'torch.square'.",
+                    "yellow",
+                    bold=True,
+                )
+            )
 
         # Action limit for clamping
         act_limits = {"low": action_space.low, "high": action_space.high}
@@ -69,11 +93,7 @@ class LyapunovActorCritic(nn.Module):
             act_limits,
         )
         self.L = LCritic(
-            obs_dim,
-            act_dim,
-            hidden_sizes["critic"],
-            activation["critic"],
-            output_activation["critic"],
+            obs_dim, act_dim, hidden_sizes["critic"], activation["critic"],
         )
 
     def forward(self, obs, act):
@@ -104,7 +124,7 @@ class LyapunovActorCritic(nn.Module):
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
                 policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to False.
+                policy. Defaults to ``False``.
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.

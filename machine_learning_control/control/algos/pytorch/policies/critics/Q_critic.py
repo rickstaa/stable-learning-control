@@ -6,14 +6,14 @@ This module contains a Pytorch implementation of the Q Critic policy of
 
 import torch
 import torch.nn as nn
-from machine_learning_control.control.utils.helpers import mlp
+from machine_learning_control.control.algos.pytorch.common.helpers import mlp
 
 
 class QCritic(nn.Module):
     """Soft Q critic network.
 
     Attributes:
-        q (torch.nn.modules.container.Sequential): The layers of the network.
+        Q (torch.nn.modules.container.Sequential): The layers of the network.
     """
 
     def __init__(

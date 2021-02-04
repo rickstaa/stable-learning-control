@@ -1,6 +1,0 @@
-======
-Deploy
-======
-
-.. todo::
-    Add this.

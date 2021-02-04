@@ -6,11 +6,13 @@ imported in this file.
 """
 
 # Import modules to which you want users to have access
-import torch
-import torch.nn as nn
-import tensorflow
 import machine_learning_control.control
 import machine_learning_control.simzoo.simzoo
+import torch
+import torch.nn as nn
+from machine_learning_control.control.utils.import_tf import import_tf
+
+tf = import_tf(frail=False)
 
 
 def safe_eval(*args):

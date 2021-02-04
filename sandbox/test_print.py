@@ -1,6 +1,6 @@
 import time
 import sys
-from machine_learning_control.control.utils.logx import colorize
+from machine_learning_control.control.utils.log_utils import colorize
 
 cnt = 0
 print("start info")

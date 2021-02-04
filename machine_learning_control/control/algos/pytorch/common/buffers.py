@@ -3,7 +3,7 @@
 
 import numpy as np
 import torch
-from machine_learning_control.control.utils.helpers import combined_shape
+from machine_learning_control.control.common.helpers import combined_shape
 
 
 class ReplayBuffer:

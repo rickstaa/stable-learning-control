@@ -6,7 +6,7 @@ This module contains a Pytorch implementation of the Lyapunov Critic policy of
 
 import torch
 import torch.nn as nn
-from machine_learning_control.control.utils.helpers import mlp
+from machine_learning_control.control.algos.pytorch.common.helpers import mlp
 
 
 class LCritic(nn.Module):
@@ -17,12 +17,7 @@ class LCritic(nn.Module):
     """
 
     def __init__(
-        self,
-        obs_dim,
-        act_dim,
-        hidden_sizes,
-        activation=nn.ReLU,
-        output_activation=nn.ReLU,
+        self, obs_dim, act_dim, hidden_sizes, activation=nn.ReLU,
     ):
         """Constructs all the necessary attributes for the Soft Q critic object.
 
@@ -32,15 +27,9 @@ class LCritic(nn.Module):
             hidden_sizes (list): Sizes of the hidden layers.
             activation (torch.nn.modules.activation): The activation function. Defaults
                 to torch.nn.ReLU.
-            output_activation (torch.nn.modules.activation, optional): The activation
-                function used for the output layers. Defaults to torch.nn.ReLU.
         """
         super().__init__()
-        self.L = mlp(
-            [obs_dim + act_dim] + list(hidden_sizes) + [1],
-            activation,
-            output_activation,
-        )
+        self.L = mlp([obs_dim + act_dim] + list(hidden_sizes), activation, activation,)
 
     def forward(self, obs, act):
         """Perform forward pass through the network.

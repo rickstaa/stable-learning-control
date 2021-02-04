@@ -1,9 +1,10 @@
 """Several Pytorch helper functions.
 """
 
+import numpy as np
 import torch
 import torch.nn as nn
-from machine_learning_control.control.utils.logx import colorize
+from machine_learning_control.control.utils.log_utils import colorize
 
 
 def retrieve_device(device_type="cpu"):
@@ -36,60 +37,101 @@ def retrieve_device(device_type="cpu"):
     return device
 
 
-def parse_network_structure(hidden_sizes, activation, output_activation):
-    """Function that parses the network related input arguments to split them into
-    'actor' and 'critic' related arguments.
+def mlp(sizes, activation, output_activation=nn.Identity):
+    """Create a multi-layered perceptron using pytorch.
 
     Args:
-        hidden_sizes (Union[tuple, list]): [description]
-        activation (object): [description]
-        output_activation ([type]): [description]
+        sizes (list): The size of each of the layers.
+        activation (torch.nn.modules.activation): The activation function used for the
+            hidden layers.
+        output_activation (torch.nn.modules.activation, optional): The activation
+            function used for the output layers. Defaults to torch.nn.Identity.
 
     Returns:
-        tuple: tuple containing:
-
-            hidden_sizes_parsed(dict): Episode retentions.
-            activation_parsed(dict): Episode lengths
-            output_activation_parsed(dict): Episode lengths
+        torch.nn.modules.container.Sequential: The multi-layered perceptron.
     """
-    hidden_sizes_parsed, activation_parsed, output_activation_parsed = {}, {}, {}
-    if isinstance(hidden_sizes, dict):
-        hidden_sizes_parsed["actor"] = (
-            hidden_sizes["actor"] if "actor" in hidden_sizes.keys() else (256, 256)
-        )
-        hidden_sizes_parsed["critic"] = (
-            hidden_sizes["critic"] if "critic" in hidden_sizes.keys() else (256, 256)
-        )
-    else:
-        hidden_sizes_parsed["actor"] = hidden_sizes
-        hidden_sizes_parsed["critic"] = hidden_sizes
-    if isinstance(activation, dict):
-        activation_parsed["actor"] = (
-            hidden_sizes["actor"] if "actor" in activation.keys() else nn.ReLU
-        )
-        activation_parsed["critic"] = (
-            activation["critic"] if "critic" in activation.keys() else nn.ReLU
-        )
-    else:
-        activation_parsed["actor"] = activation
-        activation_parsed["critic"] = activation
-    if isinstance(output_activation, dict):
-        output_activation_parsed["actor"] = (
-            output_activation["actor"]
-            if "actor" in output_activation.keys()
-            else nn.ReLU
-        )
-        output_activation_parsed["critic"] = (
-            output_activation["critic"]
-            if "critic" in output_activation.keys()
-            else nn.Identity
-        )
-    else:
-        output_activation_parsed["actor"] = output_activation
-        output_activation_parsed["critic"] = output_activation
+    layers = []
+    for j in range(len(sizes) - 1):
+        act = activation if j < len(sizes) - 2 else output_activation
+        layers += [nn.Linear(sizes[j], sizes[j + 1]), act()]
+    return nn.Sequential(*layers)
 
-    return (
-        hidden_sizes_parsed,
-        activation_parsed,
-        output_activation_parsed,
+
+def count_vars(module):
+    """Returns the total number of parameters of a pytorch module.
+
+    Args:
+        module (torch.nn.module): The module.
+
+    Returns:
+        numpy.int64: The total number of parameters inside the module.
+    """
+    return sum([np.prod(p.shape) for p in module.parameters()])
+
+
+def compare_models(model_1, model_2):
+    """Compares two models to see if the weights are equal.
+
+    Args:
+        model_1 (torch.nn.module): The first Pytorch model.
+        model_2 (torch.nn.module): The second Pytorch model.
+
+    Raises:
+        Exception: Raises Key error if the graph of the two models is different.
+
+    Returns:
+        Bool: Bool specifying whether the weights of two models are equal.
+    """
+    models_differ = 0
+    for key_item_1, key_item_2 in zip(
+        model_1.state_dict().items(), model_2.state_dict().items()
+    ):
+        if torch.equal(key_item_1[1], key_item_2[1]):
+            pass
+        else:
+            models_differ += 1
+            if key_item_1[0] == key_item_2[0]:
+                print("Mismatch found at", key_item_1[0])
+            else:
+                raise KeyError(
+                    "Model weights could not be compared between the two models as "
+                    f"the two models appear to be different. Parameter {key_item_1[0]} "
+                    f"which is found in model 1, does not exist in the model 2."
+                )
+
+    # Return result
+    if models_differ == 0:
+        print("Models match perfectly! :)")
+        return True
+    else:
+        return False
+
+
+def clamp(data, min_bound, max_bound):
+    """Clamp all the values of a input to be between the min and max boundaries.
+
+    Args:
+        data (np.ndarray/list): Input data.
+        min_bound (np.ndarray/list): Array containing the desired minimum values.
+        max_bound (np.ndarray/list): Array containing the desired maximum values.
+
+    Returns:
+        np.ndarray: Array which has it values clamped between the min and max
+            boundaries.
+    """
+
+    # Convert arguments to torch tensor if not already
+    data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
+    min_bound = (
+        torch.tensor(min_bound)
+        if not isinstance(min_bound, torch.Tensor)
+        else min_bound
     )
+    max_bound = (
+        torch.tensor(max_bound)
+        if not isinstance(max_bound, torch.Tensor)
+        else max_bound
+    )
+
+    # Clamp all actions to be within the boundaries
+    return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
