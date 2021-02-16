@@ -94,7 +94,7 @@ def plot_data(
     Changes the colorscheme and the default legend style, though.
     """
     plt.legend(loc="best").set_draggable(True)
-    # plt.legend(loc='upper center', ncol=3, handlelength=1,
+    # plt.legend(loc='upper center', ncol=6, handlelength=1, mode="expand"
     #           borderaxespad=0., prop={'size': 13})
 
     """

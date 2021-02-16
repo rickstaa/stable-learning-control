@@ -21,9 +21,8 @@ dist/
 # node related
 node_modules/
 
-# Files to ignore
-.coverage
-*.pyc
+# IDE files to ignore
+.vscode
 *.code-workspace
 
 # Other
