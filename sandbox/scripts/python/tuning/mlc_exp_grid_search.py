@@ -31,8 +31,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Setup Grid search parameters.
-    # NOTE (rickstaa): Here you can add the algorithm parameters you want using their
-    # name.
+    # NOTE: Here you can add the algorithm parameters you want using their name.
     eg = ExperimentGrid(name="sac-grid-search")
     eg.add("env_name", "Oscillator-v0", "", True)
     eg.add("seed", [10 * i for i in range(args.num_runs)])

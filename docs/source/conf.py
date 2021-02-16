@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
 # NOTE: This documentation is build upon the documentation provided by the spinningup
 # project https://spinningup.openai.com/en/latest/.
 #

@@ -64,7 +64,6 @@ To build the `HTML`_ documentation go into the `docs/`_ directory and run the
 inside the ``docs/build/html`` directory.
 
 .. note::
-
     Make sure you are in the Conda environment in which you installed the Machine Learning Control package
     with it's dependencies.
 

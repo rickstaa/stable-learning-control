@@ -8,20 +8,20 @@ it also logs the data to a tensorboard file.
 """  # noqa
 
 # TODO: Add WARN INFO methods -> Replace with proper logger!
+# TODO: Check string type
 
 import atexit
 import json
 import os
 import os.path as osp
-import shutil
+import pickle
 import time
-import warnings
 
 import joblib
 import numpy as np
 import torch
 from machine_learning_control.control.common.helpers import is_scalar
-from machine_learning_control.control.utils import TF_WARN_MESSAGE, import_tf
+from machine_learning_control.control.utils import import_tf
 from machine_learning_control.control.utils.log_utils.helpers import colorize
 from machine_learning_control.control.utils.mpi_tools import (
     mpi_statistics_scalar,
@@ -251,58 +251,36 @@ class Logger:
             fname = "vars.pkl" if itr is None else "vars%d.pkl" % itr
             try:
                 joblib.dump(state_dict, osp.join(self.output_dir, fname))
-            except:
+            except (ValueError, pickle.PicklingError):
                 self.log("Warning: could not pickle state_dict.", color="red")
             if hasattr(self, "tf_saver_elements"):
-                self._tf_simple_save(itr)
+                self._tf_save(itr)
             if hasattr(self, "pytorch_saver_elements"):
-                self._pytorch_simple_save(itr, epoch)
+                self._pytorch_save(itr, epoch)
 
-    def setup_tf_saver(self, sess, inputs, outputs):
-        """Set up easy model saving for tensorflow.
+    def setup_tf_saver(self, what_to_save):
+        """Set up easy model saving for a single Tensorlow model.
 
-        Call once, after defining your computation graph but before training.
+        Because Tensorlow saving and loading is especially painless, this is
+        very minimal; we just need references to whatever we would like to
+        pickle. This is integrated into the logger because the logger
+        knows where the user would like to save information about this
+        training run.
 
         Args:
-            sess: The Tensorflow session in which you train your computation
-                graph.
-            inputs (dict): A dictionary that maps from keys of your choice
-                to the tensorflow placeholders that serve as inputs to the
-                computation graph. Make sure that *all* of the placeholders
-                needed for your outputs are included!
-            outputs (dict): A dictionary that maps from keys of your choice
-                to the outputs from your computation graph.
+            what_to_save (object): Any PyTorch model or serializable object containing
+                Tensorflow models.
         """
         global tf
         tf = import_tf()  # Import tf if installed otherwise throw warning
-
-        self.tf_saver_elements = dict(session=sess, inputs=inputs, outputs=outputs)
-        self.tf_saver_info = {
-            "inputs": {k: v.name for k, v in inputs.items()},
-            "outputs": {k: v.name for k, v in outputs.items()},
-        }
-
-    def _tf_simple_save(self, itr=None):
-        """Saves tf model.
-
-        Uses simple_save to save a trained model, plus info to make it easy
-        to associated tensors to variables after restore.
-
-        Args:
-            itr (int/None): Current iteration of training. Defaults to None.
-        """
-        if proc_id() == 0:
-            assert hasattr(
-                self, "tf_saver_elements"
-            ), "First have to setup saving with self.setup_tf_saver"
-            fpath = "tf1_save" + ("%d" % itr if itr is not None else "")
-            fpath = osp.join(self.output_dir, fpath)
-            if osp.exists(fpath):
-                # simple_save refuses to be useful if fpath already exists,
-                # so just delete fpath if it's there.
-                shutil.rmtree(fpath)
-            tf.saved_model.simple_save(export_dir=fpath, **self.tf_saver_elements)
-            joblib.dump(self.tf_saver_info, osp.join(fpath, "model_info.pkl"))
+        self.tf_saver_elements = what_to_save
+        print(
+            colorize(
+                "INFO: Policy will be saved to '{}'.\n".format(self.output_dir),
+                "cyan",
+                bold=True,
+            )
+        )
 
     def setup_pytorch_saver(self, what_to_save):
         """Set up easy model saving for a single PyTorch model.
@@ -318,33 +296,38 @@ class Logger:
                 PyTorch models.
         """
         self.pytorch_saver_elements = what_to_save
+        print(
+            colorize(
+                "INFO: Policy will be saved to '{}'.\n".format(self.output_dir),
+                "cyan",
+                bold=True,
+            )
+        )
 
-    def _pytorch_simple_save(self, itr=None, epoch=None):
-        """Saves the PyTorch model/models with its/their 'state_dict'.
+    def _tf_save(self, itr=None, epoch=None):
+        """Saves the PyTorch model/models using their 'state_dict'.
 
         Args:
             itr(int/None): Current iteration of training. Defaults to None
-
-        .. warning::
-            You are adviced to use the 'model_state' dictionary to restore models as
-            pickled models are dependent on the exact directory structure at the time
-            of saving. For more information see
-            `https://pytorch.org/tutorials/beginner/saving_loading_models.html <https://pytorch.org/tutorials/beginner/saving_loading_models.html>`_.
-        """  # noqa: E501
+        """
         if proc_id() == 0:
+
+            save_fail_warning = colorize(
+                "WARN: The object you tried to save doesn't have a 'save_weights' we "
+                "can use to retrieve the model weights. Please make sure you supplied "
+                "the 'setup_pytorch_saver' method with a valid 'tf.keras.Model' object "
+                "or implemented a 'save_weights' method on your object.",
+                "yellow",
+                bold=True,
+            )
+
             assert hasattr(
-                self, "pytorch_saver_elements"
-            ), "First have to setup saving with self.setup_pytorch_saver"
+                self, "tf_saver_elements"
+            ), "First have to setup saving with self.setup_tf_saver"
 
             # Create filename
-            fpath = "pyt_save"
+            fpath = "tf_save" + ("%d" % itr if itr is not None else "")
             fpath = osp.join(self.output_dir, fpath)
-            fname = "model" + ("%d" % itr if itr is not None else "") + ".pt"
-            state_dict_fname = (
-                "model_state" + ("%d" % itr if itr is not None else "") + ".pt"
-            )
-            fname = osp.join(fpath, fname)
-            state_dict_fname = osp.join(fpath, state_dict_fname)
             os.makedirs(fpath, exist_ok=True)
 
             # Create Checkpoints Name
@@ -356,76 +339,90 @@ class Logger:
                 )
                 model_name = "model%d" % itr if itr is not None else ""
                 cpath = osp.join(fpath, "checkpoints", model_name, str(epoch_name))
-                cname = "model" + ("%d" % itr if itr is not None else "") + ".pt"
-                state_dict_cname = (
-                    "model_state" + ("%d" % itr if itr is not None else "") + ".pt"
-                )
-                cname = osp.join(cpath, cname)
-                state_dict_cname = osp.join(cpath, state_dict_cname)
                 os.makedirs(cpath, exist_ok=True)
 
             # Save model
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                # NOTE: We ignore all warnings in order to be able to pickle whole
-                # pytorch models. This was done for back compatibility with the Spinning
-                # up package. Please be aware that this is the non-recommended way of
-                # saving PyTorch models, since pickled objects are dependent on the
-                # exact directory structure at the time of saving) as opposed to just
-                # saving network weights (state_dict). You are therefore adviced to
-                # load modles using the 'state_dict'.
+            if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
+                self.tf_saver_elements, "save_weights"
+            ):
+                self.tf_saver_elements.save_weights(
+                    osp.join(fpath, "weights_checkpoint")
+                )
+            else:
+                print(save_fail_warning)
 
-                # Save model
-                if isinstance(self.pytorch_saver_elements, torch.nn.Module):
-                    torch.save(
-                        self.pytorch_saver_elements.state_dict(), state_dict_fname
+            # Save checkpoint
+            if self._save_checkpoints:
+                if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
+                    self.tf_saver_elements, "save_weights"
+                ):
+                    self.tf_saver_elements.save_weights(
+                        osp.join(cpath, "weights_checkpoint")
                     )
-                    torch.save(
-                        self.pytorch_saver_elements, fname
-                    )  # Non-recommended way
                 else:
-                    if hasattr(self.pytorch_saver_elements, "state_dict"):
-                        torch.save(
-                            self.pytorch_saver_elements.state_dict(), state_dict_fname
-                        )
-                        try:
-                            torch.save(
-                                self.pytorch_saver_elements, fname
-                            )  # Non-recommended way
-                        except AttributeError:
-                            pass
-                    else:
-                        torch.save(
-                            self.pytorch_saver_elements, fname
-                        )  # Non-recommended way
+                    print(save_fail_warning)
 
-                # Save checkpoint
-                if self._save_checkpoints:
-                    if isinstance(self.pytorch_saver_elements, torch.nn.Module):
-                        torch.save(
-                            self.pytorch_saver_elements.state_dict(), state_dict_cname
-                        )
-                        torch.save(
-                            self.pytorch_saver_elements, cname
-                        )  # Non-recommended way
-                    else:
-                        if hasattr(self.pytorch_saver_elements, "state_dict"):
-                            torch.save(
-                                self.pytorch_saver_elements.state_dict(),
-                                state_dict_cname,
-                            )
-                            try:
-                                torch.save(
-                                    self.pytorch_saver_elements, cname
-                                )  # Non-recommended way
-                            except AttributeError:
-                                pass
-                        else:
-                            torch.save(
-                                self.pytorch_saver_elements, cname
-                            )  # Non-recommended way
+                self._checkpoint += 1  # Increase epoch
 
-                    self._checkpoint += 1  # Increase epoch
+    def _pytorch_save(self, itr=None, epoch=None):
+        """Saves the PyTorch model/models using their 'state_dict'.
+
+        Args:
+            itr(int/None): Current iteration of training. Defaults to None
+        """
+        if proc_id() == 0:
+
+            save_fail_warning = colorize(
+                "WARN: The object you tried to save doesn't have a 'state_dict' we can"
+                "use to retrieve the model weights. Please make sure you supplied the "
+                "'setup_pytorch_saver' method with a valid 'torch.nn.module' object or "
+                "implemented a'state_dict' method on your object.",
+                "yellow",
+                bold=True,
+            )
+
+            assert hasattr(
+                self, "pytorch_saver_elements"
+            ), "First have to setup saving with self.setup_pytorch_saver"
+
+            # Create filename
+            fpath = "torch_save"
+            fpath = osp.join(self.output_dir, fpath)
+            fname = "model_state" + ("%d" % itr if itr is not None else "") + ".pt"
+            fname = osp.join(fpath, fname)
+            os.makedirs(fpath, exist_ok=True)
+
+            # Create Checkpoints Name
+            if self._save_checkpoints:
+                epoch_name = (
+                    "epoch%d" % epoch
+                    if epoch is not None
+                    else "epoch" + str(self._checkpoint)
+                )
+                model_name = "model%d" % itr if itr is not None else ""
+                cpath = osp.join(fpath, "checkpoints", model_name, str(epoch_name))
+                cname = "model_state" + ("%d" % itr if itr is not None else "") + ".pt"
+                cname = osp.join(cpath, cname)
+                os.makedirs(cpath, exist_ok=True)
+
+            # Save model
+            if isinstance(self.pytorch_saver_elements, torch.nn.Module) or hasattr(
+                self.pytorch_saver_elements, "state_dict"
+            ):
+                torch.save(self.pytorch_saver_elements.state_dict(), fname)
+            else:
+                print(save_fail_warning)
+
+            # Save checkpoint
+            if self._save_checkpoints:
+                if isinstance(self.pytorch_saver_elements, torch.nn.Module) or hasattr(
+                    self.pytorch_saver_elements, "state_dict"
+                ):
+                    torch.save(self.pytorch_saver_elements.state_dict(), cname)
+                else:
+                    print(save_fail_warning)
+
+                self._checkpoint += 1  # Increase epoch
 
     def dump_tabular(self, global_step=None):
         """Write all of the diagnostics from the current iteration.

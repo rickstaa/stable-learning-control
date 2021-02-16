@@ -57,8 +57,8 @@ if __name__ == "__main__":
     ]
 
     # Setup the parameter space for you hyperparameter search
-    # NOTE (rickstaa): This script uses the hyperopt search algorithm for efficient
-    # hyperparameter selection. For more information see
+    # NOTE: This script uses the hyperopt search algorithm for efficient hyperparameter
+    # selection. For more information see
     # https://docs.ray.io/en/latest/tune/api_docs/suggestion.html?highlight=hyperopt.
     # For the options see https://github.com/hyperopt/hyperopt/wiki/FMin.
     search_space = {
@@ -82,9 +82,9 @@ if __name__ == "__main__":
     )
 
     # Start the hyperparameter tuning job
-    # NOTE (rickstaa): We use the ASHA job scheduler to  early terminate bad trials,
-    # pause trials, clone trials, and alter hyperparameters of a running trial. For
-    # more information see https://docs.ray.io/en/master/tune/api_docs/schedulers.html.
+    # NOTE: We use the ASHA job scheduler to early terminate bad trials, pause trials,
+    # clone trials, and alter hyperparameters of a running trial. For more information
+    # see https://docs.ray.io/en/master/tune/api_docs/schedulers.html.
     analysis = tune.run(
         train_sac,
         name="tune_elpg_oscillator_1",

@@ -22,7 +22,6 @@ import os.path as osp
 import random
 import sys
 import time
-from collections import OrderedDict
 from copy import deepcopy
 
 import gym
@@ -46,8 +45,11 @@ from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
 )
-from machine_learning_control.control.utils.log_utils import EpochLogger, colorize
-from machine_learning_control.control.utils.run_utils import setup_logger_kwargs
+from machine_learning_control.control.utils.log_utils import (
+    colorize,
+    setup_logger_kwargs,
+)
+from machine_learning_control.control.utils.log_utils.logx import EpochLogger
 from torch.optim import Adam
 
 # Script settings
@@ -72,7 +74,7 @@ STD_OUT_LOG_VARS_DEFAULT = [
 ]
 
 
-class LAC(object):
+class LAC(nn.Module):
     """The Lyapunov actor critic algorithm.
 
     Attributes:
@@ -205,8 +207,10 @@ class LAC(object):
             device (str, optional): The device the networks are placed on (cpu or gpu).
                 Defaults to "cpu".
         """
+        super().__init__()
+
         # Validate gym env
-        # NOTE (rickstaa): The current implementation only works with continuous spaces.
+        # NOTE: The current implementation only works with continuous spaces.
         if not is_gym_env(env):
             raise ValueError("Env must be a valid Gym environment.")
         if is_discrete_space(env.action_space) or is_discrete_space(
@@ -215,8 +219,8 @@ class LAC(object):
             raise NotImplementedError(
                 "The LAC algorithm does not yet support discrete observation/action "
                 "spaces. Please open a feature/pull request on "
-                "https://github.com/rickstaa/machine-learning-control/issues to "
-                "if you need this."
+                "https://github.com/rickstaa/machine-learning-control/issues if you "
+                "need this."
             )
 
         print(
@@ -238,6 +242,8 @@ class LAC(object):
             )
 
         # Store algorithm parameters
+        self._act_dim = env.action_space.shape
+        self._obs_dim = env.observation_space.shape
         self._device = retrieve_device(device)
         self._use_lyapunov = use_lyapunov
         self._adaptive_temperature = adaptive_temperature
@@ -246,6 +252,8 @@ class LAC(object):
         self._gamma = gamma
         self._alpha3 = alpha3
         self._lr_a = lr_a
+        if self._adaptive_temperature:
+            self._lr_alpha = lr_a
         if self._use_lyapunov:
             self._lr_lag = lr_a
         self._lr_c = lr_c
@@ -255,28 +263,26 @@ class LAC(object):
             self._target_entropy = target_entropy
 
         # Create variables for the Lagrance multipliers
-        # NOTE (rickstaa): Clip at 1e-37 to prevent log_alpha/log_lambda from becoming
-        # -np.inf
-        self.log_alpha = torch.tensor(
-            np.log(1e-37 if alpha < 1e-37 else alpha), requires_grad=True
+        # NOTE: Clip at 1e-37 to prevent log_alpha/log_lambda from becoming -np.inf
+        self.log_alpha = nn.Parameter(
+            torch.tensor(np.log(1e-37 if alpha < 1e-37 else alpha), requires_grad=True)
         )
-        self.log_alpha.requires_grad = True
         if self._use_lyapunov:
-            self.log_labda = torch.tensor(
-                np.log(1e-37 if labda < 1e-37 else labda), requires_grad=True
+            self.log_labda = nn.Parameter(
+                torch.tensor(
+                    np.log(1e-37 if labda < 1e-37 else labda), requires_grad=True
+                )
             )
-            self.log_labda.requires_grad = True
 
         # Get default actor critic if no 'actor_critic' was supplied
         if actor_critic is None:
             actor_critic = LyapunovActorCritic if use_lyapunov else SoftActorCritic
 
         # Create actor-critic module and target networks
-        # NOTE (rickstaa): Pytorch currently uses kaiming initialization for the baises
-        # in the future this will change to zero initialization
+        # NOTE: Pytorch currently uses kaiming initialization for the baises in the
+        # future this will change to zero initialization
         # (https://github.com/pytorch/pytorch/issues/18182). This however does not
         # influence the results.
-        # Create actor-critic module and target networks
         self.ac = actor_critic(env.observation_space, env.action_space, **ac_kwargs).to(
             self._device
         )
@@ -287,26 +293,39 @@ class LAC(object):
             p.requires_grad = False
 
         # Create optimizers
-        # NOTE (rickstaa): We here optimize for log_alpha and log_labda instead of
-        # alpha and labda because it is more numerically stable (see:
+        # NOTE: We here optimize for log_alpha and log_labda instead of alpha and labda
+        # because it is more numerically stable (see:
         # https://github.com/rail-berkeley/softlearning/issues/136)
-        # NOTE (rickstaa): The parameters() method returns a generator. This generator
-        # becomes empty after you looped through all values. As a result, below we use a
+        # NOTE: The parameters() method returns a generator. This generator becomes
+        # empty after you looped through all values. As a result, below we use a
         # lambda function to keep referencing the actual model parameters.
         self._pi_optimizer = Adam(self.ac.pi.parameters(), lr=self._lr_a)
         self._pi_params = lambda: self.ac.pi.parameters()
         if self._adaptive_temperature:
-            self._log_alpha_optimizer = Adam([self.log_alpha], lr=self._lr_a)
+            self._log_alpha_optimizer = Adam([self.log_alpha], lr=self._lr_alpha)
         if self._use_lyapunov:
             self._log_labda_optimizer = Adam([self.log_labda], lr=self._lr_lag)
             self._c_params = lambda: self.ac.L.parameters()
-            self._c_optimizer = Adam(self._c_params(), lr=self._lr_c)
         else:
             # List of parameters for both Q-networks (save this for convenience)
             self._c_params = lambda: itertools.chain(
                 *[gen() for gen in [self.ac.Q1.parameters, self.ac.Q2.parameters]]
             )
-            self._c_optimizer = Adam(self._c_params, lr=self._lr_c)
+        self._c_optimizer = Adam(self._c_params(), lr=self._lr_c)
+
+    def forward(self, s, deterministic=False):
+        """Wrapper around the :meth:`.get_action` method that enables users to also
+        receive actions directly by invoking ``LAC(observations)``.
+
+        Args:
+            s (np.numpy): The current state.
+            deterministic (bool, optional): Whether to return a deterministic action.
+                Defaults to ``False``.
+
+        Returns:
+            np.numpy: The current action.
+        """
+        return self.get_action(s, deterministic)
 
     def get_action(self, s, deterministic=False):
         """Returns the current action of the policy.
@@ -342,12 +361,19 @@ class LAC(object):
         ################################################
         self._c_optimizer.zero_grad()
         if self.use_lyapunov:
+            if self._opt_type.lower() == "maximize":
+                raise NotImplementedError(
+                    "The LAC algorithm does not yet support maximization "
+                    "environments. Please open a feature/pull request on "
+                    "https://github.com/rickstaa/machine-learning-control/issues "
+                    "if you need this."
+                )
 
             # Get target Lyapunov value (Bellman-backup)
             with torch.no_grad():
                 a2_, _ = self.ac_targ.pi(
                     o_
-                )  # NOTE (rickstaa): Target actions come from *current* *target* policy
+                )  # NOTE: Target actions come from *current* *target* policy
                 l_pi_targ = self.ac_targ.L(o_, a2_)
                 l_backup = (
                     r + self._gamma * (1 - d) * l_pi_targ.detach()
@@ -357,41 +383,35 @@ class LAC(object):
             l1 = self.ac.L(o, a)
 
             # Calculate Lyapunov *CRITIC* error
-            # NOTE (rickstaa): The 0.5 multiplication factor was added to make the
-            # derivation cleaner and can be safely removed without influencing the
-            # minimization. We kept it here for consistency.
-            # NOTE (rickstaa): I use a manual implementation instead of using
-            # F.mse_loss as this is 2 times faster. This can be changed back to
-            # F.mse_loss if Torchscript is used.
+            # NOTE: The 0.5 multiplication factor was added to make the derivation
+            # cleaner and can be safely removed without influencing the minimization. We
+            # kept it here for consistency.
+            # NOTE: We currently use a manual implementation instead of using F.mse_loss
+            #  as this is 2 times faster.This can be changed back to F.mse_loss if
+            # Torchscript is used.
             l_error = 0.5 * ((l1 - l_backup) ** 2).mean()  # See eq. 7
 
             l_error.backward()
             self._c_optimizer.step()
 
-            # Store diagnostics
             l_info = dict(LVals=l1.detach().numpy())
             diagnostics.update({**l_info, "ErrorL": l_error.detach().numpy()})
         else:
 
-            # Retrieve the current Q values
-            q1 = self.ac.Q1(o, a)
-            q2 = self.ac.Q2(o, a)
-
             # Get target Q values (Bellman-backup)
-            # NOTE (rickstaa): Here we use max-clipping instead of min-clipping used
-            # in the SAC algorithm since we want to minimize the return.
+            # NOTE: Here we use max-clipping instead of min-clipping used in the SAC
+            # algorithm when we want to minimize the return.
             with torch.no_grad():
                 a2, logp_a2 = self.ac.pi(
                     o_
-                )  # NOTE (rickstaa): Target actions coming from *current* policy
+                )  # NOTE: Target actions coming from *current* policy
 
                 # Get target Q values based on optimization type
                 q1_pi_targ = self.ac_targ.Q1(o_, a2)
                 q2_pi_targ = self.ac_targ.Q2(o_, a2)
                 if self._opt_type.lower() == "minimize":
                     q_pi_targ = torch.max(
-                        q1_pi_targ,
-                        q2_pi_targ,
+                        q1_pi_targ, q2_pi_targ,
                     )  # Use max clipping  to prevent overestimation bias.
                 else:
                     q_pi_targ = torch.min(
@@ -401,17 +421,20 @@ class LAC(object):
                     q_pi_targ - self.alpha * logp_a2
                 )
 
+            # Retrieve the current Q values
+            q1 = self.ac.Q1(o, a)
+            q2 = self.ac.Q2(o, a)
+
             # Calculate Q-critic MSE loss against Bellman backup
             loss_q1 = 0.5 * ((q1 - q_backup) ** 2).mean()  # See Haarnoja eq. 5
             loss_q2 = 0.5 * ((q2 - q_backup) ** 2).mean()
-            loss_q = loss_q1 + loss_q2
+            q_loss = loss_q1 + loss_q2
 
-            loss_q.backward()
+            q_loss.backward()
             self._c_optimizer.step()
 
-            # Store diagnostics
             q_info = dict(Q1Vals=q1.detach().numpy(), Q2Vals=q2.detach().numpy())
-            diagnostics.update({**q_info, "LossQ": loss_q.detach().numpy()})
+            diagnostics.update({**q_info, "LossQ": q_loss.detach().numpy()})
         ################################################
         # Optimize Gaussian actor ######################
         ################################################
@@ -427,11 +450,16 @@ class LAC(object):
 
         # Calculate entropy-regularized policy loss
         if self.use_lyapunov:
+            if self._opt_type.lower() == "maximize":
+                raise NotImplementedError(
+                    "The LAC algorithm does not yet support maximization "
+                    "environments. Please open a feature/pull request on "
+                    "https://github.com/rickstaa/machine-learning-control/issues "
+                    "if you need this."
+                )
 
             # Get target lyapunov value
-            a2, _ = self.ac.pi(
-                o_
-            )  # NOTE (rickstaa): Target actions come from *current* policy
+            a2, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
             lya_l_ = self.ac.L(o_, a2)
 
             # Compute Lyapunov Actor error
@@ -441,8 +469,9 @@ class LAC(object):
                 self.labda.detach() * l_delta + self.alpha.detach() * logp_pi.mean()
             )  # See eq. 12
         else:
-            # Retrieve the current Q values for the action given by the current policy
-            # NOTE (rickstaa): Actions come from *current* policy
+
+            # Retrieve current Q values
+            # NOTE: Actions come from *current* policy
             q1_pi = self.ac.Q1(o, pi)
             q2_pi = self.ac.Q2(o, pi)
             if self._opt_type.lower() == "minimize":
@@ -455,7 +484,6 @@ class LAC(object):
         a_loss.backward()
         self._pi_optimizer.step()
 
-        # Store diagnostics
         pi_info = dict(
             LogPi=logp_pi.detach().numpy(),
             Entropy=-torch.mean(logp_pi).detach().numpy(),
@@ -481,7 +509,6 @@ class LAC(object):
             alpha_loss.backward()
             self._log_alpha_optimizer.step()
 
-            # Store diagnostics
             alpha_info = dict(Alpha=self.alpha.detach().numpy())
             diagnostics.update({**alpha_info, "LossAlpha": alpha_loss.detach().numpy()})
         ################################################
@@ -491,10 +518,10 @@ class LAC(object):
             self._log_labda_optimizer.zero_grad()
 
             # Calculate labda loss
-            # NOTE (rickstaa): Log_labda was used in the lambda_loss function because
-            # using lambda caused the gradients to vanish. This is caused since we
-            # restrict lambda within a 0-1.0 range using the clamp function (see #38).
-            # Using log_lambda also is more numerically stable.
+            # NOTE: Log_labda was used in the lambda_loss function because using lambda
+            # caused the gradients to vanish. This is caused since we restrict lambda
+            # within a 0-1.0 range using the clamp function (see #38). Using log_lambda
+            # also is more numerically stable.
             labda_loss = -(
                 self.log_labda * l_delta.detach()
             ).mean()  # See formulas under eq. 14
@@ -502,7 +529,6 @@ class LAC(object):
             labda_loss.backward()
             self._log_labda_optimizer.step()
 
-            # Store diagnostics
             labda_info = dict(Lambda=self.labda.detach().numpy())
             diagnostics.update(
                 {**labda_info, "LossLambda": labda_loss.detach().numpy()}
@@ -513,7 +539,6 @@ class LAC(object):
             p.requires_grad = True
         for p in self._pi_params():
             p.requires_grad = True
-
         ################################################
         # Update target networks and return ############
         # diagnostics. #################################
@@ -521,39 +546,22 @@ class LAC(object):
         self._update_targets()
         return diagnostics
 
-    def save(self, path, save=True):
+    def save(self, path):
         """Can be used to save the current model state.
 
         Args:
             path (str): The path where you want to save the policy.
-            save (bool): Whether you want to save the model to disk. Usefull for when
-                you only want to retrieve the model state dictionary (ie. when you want
-                to save it using the logger). Defaults to 'True'.
-        """
 
+        Raises:
+            Exception: Raises an exception if something goes wrong during saving.
+        """
         model_state_dict = self.state_dict()
 
-        if save:
-            save_path = osp.join(path, "policy/model.pt")
-            if osp.exists(osp.dirname(save_path)):
-                print(
-                    colorize(
-                        (
-                            "WARN: Log dir %s already exists! Storing policy there "
-                            "anyway." % osp.dirname(save_path)
-                        ),
-                        "red",
-                        bold=True,
-                    )
-                )
-            else:
-                os.makedirs(osp.dirname(save_path))
+        save_path = osp.join(path, "policy/model.pt")
+        try:
             torch.save(model_state_dict, save_path)
-            print(
-                colorize(f"INFO: Saved policy to path: {save_path}", "cyan", bold=True)
-            )
-
-        return model_state_dict
+        except Exception as e:
+            raise Exception("LAC model could not be saved.") from e
 
     def restore(self, path, restore_lagrance_multipliers=False):
         """Restores a already trained policy. Used for transfer learning.
@@ -566,7 +574,6 @@ class LAC(object):
         Raises:
             Exception: Raises an exception if something goes wrong during loading.
         """
-
         if os.path.basename(path) != ["model.pt", "model.pth"]:
             load_path = glob.glob(path + "/**/model_state.pt*", recursive=True)
             if len(load_path) == 0:
@@ -591,27 +598,33 @@ class LAC(object):
                 )
 
         restored_model_state_dict = torch.load(load_path[0])
-        self.load_state_dict(restored_model_state_dict, restore_lagrance_multipliers)
+        self.load_state_dict(
+            restored_model_state_dict,
+            restore_lagrance_multipliers,
+            map_location=self._device,
+        )
 
-    def state_dict(self):
-        """Returns a dictionary containing a whole state of the module.
+    def export(self, path):
+        """Can be used to export the model as a 'TorchSCript' such that it can be
+        deployed to hardware.
 
-        Returns:
-            dict: A dictionary containing a whole state of the module.
+        Args:
+            path (str): The path where you want to export the policy too.
+
+        Raises:
+            NotImplementedError: Raised until the feature is fixed on the upstream.
         """
-        lagrance_multipliers = [("alpha", self.alpha.detach())]
-        lagrance_multipliers.append(
-            ("labda", self.labda.detach())
-        ) if self.use_lyapunov else None
-
-        return OrderedDict(
-            [
-                ("class_name", "LAC" if self._use_lyapunov else "SAC"),
-                ("_use_lyapunov", self._use_lyapunov),
-                ("ac", self.ac.state_dict()),
-                ("ac_targ", self.ac_targ.state_dict()),
-                *lagrance_multipliers,
-            ]
+        # IMPROVE: Replace with TorchScript and Onyx versions when
+        # https://github.com/pytorch/pytorch/issues/29843 and
+        # https://github.com/onnx/onnx/issues/3033 are solved (see
+        # https://pytorch.org/tutorials/advanced/cpp_export.html and
+        # https://pytorch.org/tutorials/advanced/super_resolution_with_caffe2.html)
+        raise NotImplementedError(
+            "The LAC Pytorch module could not be exported as a 'TorchScript' since the "
+            "'torch.distributions.normal' method is not yet 'TorchScript' compatible. "
+            "The feature will be implemented when this is added to the upstream "
+            "see https://github.com/pytorch/pytorch/issues/29843 to follow progress on "
+            "this."
         )
 
     def load_state_dict(self, state_dict, restore_lagrance_multipliers=True):
@@ -624,8 +637,6 @@ class LAC(object):
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
                 the lagrance multipliers. By fault ``True``.
         """
-
-        # Validate if right state_dictionary is given
         if self.state_dict().keys() != state_dict.keys():
             raise ValueError(
                 "The 'state_dict' you tried to load does not seem to be right. It "
@@ -635,28 +646,16 @@ class LAC(object):
                 + "for the '{}' model.".format(self.__class__.__name__)
             )
 
-        for name, param in state_dict.items():
-            if hasattr(self, name):
-                if hasattr(getattr(self, name), "load_state_dict"):
-                    getattr(self, name).load_state_dict(param)
-                else:
-                    if (
-                        restore_lagrance_multipliers
-                        or not restore_lagrance_multipliers
-                        and name not in ["labda", "alpha"]
-                    ):
-                        setattr(self, name, param)
-            else:
-                if name != "class_name":
-                    raise AttributeError(
-                        "Can't load parameter '{}' onto the '{}' policy since ".format(
-                            name, self.__class__.__name__
-                        )
-                        + "it does not exist. If this issue persists Please open a "
-                        "issue on"
-                        "https://github.com/rickstaa/machine-learning-control/issues "
-                        "if this issue persits."
-                    )
+        if not restore_lagrance_multipliers:
+            try:
+                del state_dict["log_alpha"], state_dict["log_labda"]
+            except KeyError:
+                pass
+
+        try:
+            super().load_state_dict(state_dict)
+        except AttributeError as e:
+            raise type(e)("The 'state_dict' could not be loaded successfully.",) from e
 
     def _update_targets(self):
         """Updates the target networks based on a Exponential moving average
@@ -665,9 +664,63 @@ class LAC(object):
         with torch.no_grad():
             for p, p_targ in zip(self.ac.parameters(), self.ac_targ.parameters()):
                 # NOTE: We use an in-place operations "mul_", "add_" to update target
-                # params, as opposed to "mul" and "add", which would make new tensors.
+                # params, as opposed to "mul" and "add", which would make
+                # new tensors.
                 p_targ.data.mul_(self._polyak)
                 p_targ.data.add_((1 - self._polyak) * p.data)
+
+    def _set_learning_rates(self, lr_a=None, lr_c=None, lr_alpha=None, lr_labda=None):
+        """Can be used to manually adjusts the learning rates of the optimizers.
+
+        Args:
+            lr_a (float, optional): The learning rate of the actor optimizer. Defaults
+                to None.
+            lr_c (float, optional): The learning rate of the (Lyapunov) Critic. Defaults
+                to None.
+            lr_alpha (float, optional): The learning rate of the temperature optimizer.
+                Defaults to None.
+            lr_labda (float, optional): The learning rate of the Lyapunov Lagrance
+                multiplier optimizer. Defaults to None.
+        """
+        if lr_a:
+            self._pi_optimizer.param_groups[0]["lr"] = lr_a
+        if lr_c:
+            self._c_optimizer.param_groups[0]["lr"] = lr_c
+        if self._adaptive_temperature:
+            if lr_alpha:
+                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_alpha
+        if self.use_lyapunov:
+            if lr_labda:
+                self._log_labda_optimizer.param_groups[0]["lr"] = lr_labda
+
+    def bound_lr(
+        self, lr_a_final=None, lr_c_final=None, lr_alpha_final=None, lr_labda_final=None
+    ):
+        """Function that can be used to make sure the learning rate doesn't go beyond
+        a lower bound.
+
+        Args:
+            lr_a_final (float, optional): The lower bound for the actor learning rate.
+                Defaults to None.
+            lr_c_final (float, optional): The lower bound for the critic learning rate.
+                Defaults to None.
+            lr_alpha_final (float, optional): The lower bound for the alpha Lagrance
+                multiplier learning rate. Defaults to None.
+            lr_labda_final (float, optional): The lower bound for the labda Lagrance
+                multiplier learning rate. Defaults to None.
+        """
+        if lr_a_final is not None:
+            if self._pi_optimizer.param_groups[0]["lr"] < lr_a_final:
+                self._pi_optimizer.param_groups[0]["lr"] = lr_a_final
+        if lr_c_final is not None:
+            if self._c_optimizer.param_groups[0]["lr"] < lr_c_final:
+                self._c_optimizer.param_groups[0]["lr"] = lr_c_final
+        if lr_alpha_final is not None:
+            if self._log_alpha_optimizer.param_groups[0]["lr"] < lr_a_final:
+                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_a_final
+        if lr_labda_final is not None:
+            if self._log_labda_optimizer.param_groups[0]["lr"] < lr_labda_final:
+                self._log_labda_optimizer.param_groups[0]["lr"] = lr_labda_final
 
     @property
     def alpha(self):
@@ -679,10 +732,8 @@ class LAC(object):
     @alpha.setter
     def alpha(self, set_val):
         """Property used to make sure alpha and log_alpha are related."""
-        self.log_alpha.data = np.log(
-            1e-37
-            if torch.as_tensor(set_val, dtype=self.log_alpha.dtype) < 1e-37
-            else set_val
+        self.log_alpha.data = torch.as_tensor(
+            np.log(1e-37 if set_val < 1e-37 else set_val), dtype=self.log_alpha.dtype,
         )
 
     @property
@@ -697,10 +748,8 @@ class LAC(object):
     @labda.setter
     def labda(self, set_val):
         """Property used to make sure labda and log_labda are related."""
-        self.log_labda.data = np.log(
-            1e-37
-            if torch.as_tensor(set_val, dtype=self.log_labda.dtype) < 1e-37
-            else set_val
+        self.log_labda.data = torch.as_tensor(
+            np.log(1e-37 if set_val < 1e-37 else set_val), dtype=self.log_labda.dtype,
         )
 
     @property
@@ -712,8 +761,8 @@ class LAC(object):
         error_msg = (
             "Changing the 'target_entropy' during training is not allowed."
             "Please open a feature/pull request on "
-            "https://github.com/rickstaa/machine-learning-control/issues to "
-            "if you need this."
+            "https://github.com/rickstaa/machine-learning-control/issues if you need "
+            "this."
         )
         raise AttributeError(error_msg)
 
@@ -726,8 +775,8 @@ class LAC(object):
         error_msg = (
             "WARN: Changing the 'use_lyapunov' value during training is not allowed."
             "Please open a feature/pull request on "
-            "https://github.com/rickstaa/machine-learning-control/issues to "
-            "if you need this."
+            "https://github.com/rickstaa/machine-learning-control/issues if you need "
+            "this."
         )
         raise AttributeError(error_msg)
 
@@ -775,6 +824,7 @@ def lac(
     lr_a_final=1e-10,
     lr_c_final=1e-10,
     lr_decay_type="linear",
+    lr_decay_ref="epoch",
     batch_size=256,
     replay_size=int(1e6),
     seed=None,
@@ -782,6 +832,7 @@ def lac(
     logger_kwargs=dict(),
     save_freq=1,
     start_policy=None,
+    export=False,
 ):
     """Trains the lac algorithm in a given environment.
 
@@ -904,6 +955,8 @@ def lac(
         lr_decay_type (str, optional): The learning rate decay type that is used (
             options are: ``linear`` and ``exponential`` and ``constant``). Defaults to
             ``linear``.
+        lr_decay_ref (str, optional): The reference variable that is used for decaying
+            the learning rate (options: ``epoch`` and ``step``). Defaults to ``epoch``.
         batch_size (int, optional): Minibatch size for SGD. Defaults to ``256``.
         replay_size (int, optional): Maximum length of replay buffer. Defaults to
             ``1e6``.
@@ -915,18 +968,21 @@ def lac(
             the current policy and value function.
         start_policy (str): Path of a already trained policy to use as the starting
             point for the training. By default a new policy is created.
+        export (bool): Whether you want to export the model as a 'TorchScript' such that
+            it can be deployed on hardware. By default 'False'.
     """
+    total_steps = steps_per_epoch * epochs
+
     validate_args(**locals())
 
     logger_kwargs["verbose_vars"] = (
         STD_OUT_LOG_VARS_DEFAULT
         if logger_kwargs["verbose_vars"] is None
         else logger_kwargs["verbose_vars"]
-    )  # NOTE (rickstaa): Done to ensure the std_out doesn't get cluttered.
+    )  # NOTE: Done to ensure the std_out doesn't get cluttered.
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())  # Write hyperparameters to logger
 
-    # Create environments
     env, test_env = env_fn(), env_fn()
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape[0]
@@ -939,7 +995,6 @@ def lac(
         actor_critic = LyapunovActorCritic if use_lyapunov else SoftActorCritic
 
     # Set random seed for reproducible results
-    # https://pytorch.org/docs/stable/notes/randomness.html
     if seed is not None:
         os.environ["PYTHONHASHSEED"] = str(seed)
         torch.manual_seed(seed)
@@ -1012,25 +1067,29 @@ def lac(
 
     # Create learning rate schedulers
     opt_schedulers = []
+    lr_decay_ref_var = total_steps if lr_decay_ref.lower() == "steps" else epochs
     pi_opt_scheduler = get_lr_scheduler(
-        policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, epochs
+        policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var
     )
     opt_schedulers.append(pi_opt_scheduler)
     alpha_opt_scheduler = get_lr_scheduler(
-        policy._log_alpha_optimizer, lr_decay_type, lr_a, lr_a_final, epochs
+        policy._log_alpha_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var
     )
     opt_schedulers.append(alpha_opt_scheduler)
     c_opt_scheduler = get_lr_scheduler(
-        policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, epochs
+        policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, lr_decay_ref_var
     )
     opt_schedulers.append(c_opt_scheduler)
     if use_lyapunov:
         labda_opt_scheduler = get_lr_scheduler(
-            policy._log_labda_optimizer, lr_decay_type, lr_a, lr_a_final, epochs
+            policy._log_labda_optimizer,
+            lr_decay_type,
+            lr_a,
+            lr_a_final,
+            lr_decay_ref_var,
         )
         opt_schedulers.append(labda_opt_scheduler)
 
-    # Set up model saving
     logger.setup_pytorch_saver(policy)
 
     # Store initial learning rates
@@ -1054,7 +1113,6 @@ def lac(
             )
 
     # Main loop: collect experience in env and update/log each epoch
-    total_steps = steps_per_epoch * epochs
     start_time = time.time()
     o, ep_ret, ep_len = env.reset(), 0, 0
     for t in range(total_steps):
@@ -1089,6 +1147,15 @@ def lac(
 
         # Update handling
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
+
+            # Step based learning rate decay
+            if lr_decay_ref.lower() == "step":
+                for scheduler in opt_schedulers:
+                    scheduler.step()
+                policy.bound_lr(
+                    lr_a_final, lr_c_final, lr_a_final, lr_a_final
+                )  # Make sure lr is bounded above the final lr
+
             for _ in range(steps_per_update):
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
@@ -1107,14 +1174,16 @@ def lac(
                 policy, test_env, num_test_episodes, max_ep_len=max_ep_len
             )
             logger.store(
-                TestEpRet=eps_ret,
-                TestEpLen=eps_len,
-                extend=True,
+                TestEpRet=eps_ret, TestEpLen=eps_len, extend=True,
             )
 
-            # Decay learning rates
-            for scheduler in opt_schedulers:
-                scheduler.step()
+            # Epoch based learning rate decay
+            if lr_decay_ref.lower() != "step":
+                for scheduler in opt_schedulers:
+                    scheduler.step()
+                policy.bound_lr(
+                    lr_a_final, lr_c_final, lr_a_final, lr_a_final
+                )  # Make sure lr is bounded above the final lr
 
             # Log info about epoch
             logger.log_tabular("Epoch", epoch)
@@ -1142,13 +1211,11 @@ def lac(
                 logger.log_tabular("LossQ", average_only=True)
             if adaptive_temperature:
                 logger.log_tabular(
-                    "LossAlpha",
-                    average_only=True,
+                    "LossAlpha", average_only=True,
                 )
             if use_lyapunov:
                 logger.log_tabular(
-                    "LossLambda",
-                    average_only=True,
+                    "LossLambda", average_only=True,
                 )
             if use_lyapunov:
                 logger.log_tabular("LVals", with_min_and_max=True)
@@ -1160,7 +1227,10 @@ def lac(
             logger.log_tabular("Time", time.time() - start_time)
             logger.dump_tabular()
 
-    # Print final message
+    # Export model to 'TorchScript'
+    if export:
+        policy.export(logger.output_dir)
+
     print(
         colorize(
             "{}Training finished after {}s".format(
@@ -1177,7 +1247,6 @@ if __name__ == "__main__":
     # Import gym environments
     import machine_learning_control.simzoo.simzoo.envs  # noqa: F401
 
-    # Parse algorithm arguments
     parser = argparse.ArgumentParser(
         description="Trains a LAC agent in a given environment."
     )
@@ -1186,7 +1255,7 @@ if __name__ == "__main__":
         type=str,
         default="Oscillator-v1",
         help="the gym env (default: Oscillator-v1)",
-    )  # EX3 env
+    )
     parser.add_argument(
         "--hid_a",
         type=int,
@@ -1238,7 +1307,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_lyapunov",
         type=bool,
-        default=True,
+        default=False,
         help="lyapunov toggle boolean (default: True)",
     )
     parser.add_argument(
@@ -1251,7 +1320,7 @@ if __name__ == "__main__":
         "--max_ep_len",
         type=int,
         default=500,
-        help="maximum episode length (default: minimize)",
+        help="maximum episode length (default: 500)",
     )
     parser.add_argument(
         "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
@@ -1356,7 +1425,16 @@ if __name__ == "__main__":
         "--lr_decay_type",
         type=str,
         default="linear",
-        help="the learning rate decay type (default: 1e-10)",
+        help="the learning rate decay type (default: linear)",
+    )
+    parser.add_argument(
+        "--lr_decay_ref",
+        type=str,
+        default="epoch",
+        help=(
+            "the reference variable that is used for decaying the learning rate "
+            "'epoch' or 'step' (default: 'epoch')"
+        ),
     )
     parser.add_argument(
         "--batch-size",
@@ -1392,6 +1470,15 @@ if __name__ == "__main__":
         help=(
             "The policy which you want to use as the starting point for the training"
             " (default: None)"
+        ),
+    )
+    parser.add_argument(
+        "--export",
+        type=str,
+        default=False,
+        help=(
+            "Whether you want to export the model as a 'TorchScript' such that "
+            "it can be deployed on hardware (default: False)"
         ),
     )
 
@@ -1441,15 +1528,18 @@ if __name__ == "__main__":
     # Setup actor critic arguments
     actor_critic = LyapunovActorCritic if args.use_lyapunov else SoftActorCritic
     output_activation = {}
-    output_activation["actor"] = safe_eval(args.act_out_a)
+    output_activation["actor"] = safe_eval(args.act_out_a, backend="torch")
     if not args.use_lyapunov:
-        output_activation["critic"] = safe_eval(args.act_out_c)
+        output_activation["critic"] = safe_eval(args.act_out_c, backend="torch")
     ac_kwargs = dict(
         hidden_sizes={
             "actor": [args.hid_a] * args.l_a,
             "critic": [args.hid_c] * args.l_c,
         },
-        activation={"actor": safe_eval(args.act_a), "critic": safe_eval(args.act_c)},
+        activation={
+            "actor": safe_eval(args.act_a, backend="torch"),
+            "critic": safe_eval(args.act_c, backend="torch"),
+        },
         output_activation=output_activation,
     )
 
@@ -1497,11 +1587,13 @@ if __name__ == "__main__":
         lr_a_final=args.lr_a_final,
         lr_c_final=args.lr_c_final,
         lr_decay_type=args.lr_decay_type,
+        lr_decay_ref=args.lr_decay_ref,
         batch_size=args.batch_size,
         replay_size=args.replay_size,
         seed=args.seed,
         save_freq=args.save_freq,
         device=args.device,
         start_policy=args.start_policy,
+        export=args.export,
         logger_kwargs=logger_kwargs,
     )

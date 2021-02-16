@@ -17,109 +17,16 @@ from subprocess import CalledProcessError
 from textwrap import dedent
 
 import cloudpickle
+import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import psutil
-from machine_learning_control.control.utils.log_utils import colorize
+from machine_learning_control.control.common.helpers import all_bools, valid_str
 from machine_learning_control.control.utils.mpi_tools import mpi_fork
 from machine_learning_control.control.utils.serialization_utils import convert_json
-from machine_learning_control.control.common.helpers import valid_str, all_bools
-from machine_learning_control.user_config import (
-    DEFAULT_DATA_DIR,
-    DEFAULT_SHORTHAND,
-    DEFAULT_STD_OUT_TYPE,
-    FORCE_DATESTAMP,
-    WAIT_BEFORE_LAUNCH,
-)
+from machine_learning_control.user_config import DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
 from tqdm import trange
 
 DIV_LINE_WIDTH = 80
-
-
-def setup_logger_kwargs(
-    exp_name,
-    seed=None,
-    save_checkpoints=False,
-    use_tensorboard=False,
-    verbose=True,
-    verbose_fmt=DEFAULT_STD_OUT_TYPE,
-    verbose_vars=[],
-    data_dir=None,
-    datestamp=False,
-):
-    """Sets up the output_dir for a logger and returns a dict for logger kwargs.
-
-    If no seed is given and datestamp is false,
-
-    ::
-
-        output_dir = data_dir/exp_name
-
-    If a seed is given and datestamp is false,
-
-    ::
-
-        output_dir = data_dir/exp_name/exp_name_s[seed]
-
-    If datestamp is true, amend to
-
-    ::
-
-        output_dir = data_dir/YY-MM-DD_exp_name/YY-MM-DD_HH-MM-SS_exp_name_s[seed]
-
-    You can force datestamp=True by setting ``FORCE_DATESTAMP=True`` in
-    ``machine_learning_control/user_config.py``.
-
-    Args:
-        exp_name (string): Name for experiment.
-        seed (int, optional): Seed for random number generators used by experiment.
-        save_checkpoints (bool, optional): Save checkpoints during training.
-            Defaults to ``False``.
-        use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
-            to True.
-        verbose (bool, optional): Whether you want to log to the std_out. Defaults
-            to ``True``.
-        verbose_fmt (string, optional): The format in which the statistics are
-            displayed to the terminal. Options are "table" which supplies them as a
-            table and "line" which prints them in one line. Defaults to "line".
-        verbose_vars (list, optional): A list of variables you want to log to the
-            std_out. By default all variables are logged.
-        data_dir (string, optional): Path to folder where results should be saved.
-            Default is the ``DEFAULT_DATA_DIR`` in
-            ``machine_learning_control/user_config.py``. Defaults to None.
-        datestamp (bool, optional): Whether to include a date and timestamp in the
-            name of the save directory. Defaults to ``False``.
-
-    Returns:
-        logger_kwargs, a dict containing output_dir and exp_name.
-    """
-
-    # Datestamp forcing
-    datestamp = datestamp or FORCE_DATESTAMP
-
-    # Make base path
-    ymd_time = time.strftime("%Y-%m-%d_") if datestamp else ""
-    relpath = "".join([ymd_time, exp_name])
-
-    # Make a seed-specific subfolder in the experiment directory.
-    if seed is not None:
-        if datestamp:
-            hms_time = time.strftime("%Y-%m-%d_%H-%M-%S")
-            subfolder = "".join([hms_time, "-", exp_name, "_s", str(seed)])
-        else:
-            subfolder = "".join([exp_name, "_s", str(seed)])
-        relpath = osp.join(relpath, subfolder)
-
-    data_dir = data_dir or DEFAULT_DATA_DIR
-    logger_kwargs = dict(
-        output_dir=osp.join(data_dir, relpath),
-        exp_name=exp_name,
-        save_checkpoints=save_checkpoints,
-        use_tensorboard=use_tensorboard,
-        verbose=verbose,
-        verbose_fmt=verbose_fmt,
-        verbose_vars=verbose_vars,
-    )
-    return logger_kwargs
 
 
 def call_experiment(
@@ -165,21 +72,21 @@ def call_experiment(
     kwargs["seed"] = seed
 
     # Be friendly and print out your kwargs, so we all know what's up
-    print(colorize("Running experiment:\n", color="cyan", bold=True))
+    print(log_utils.colorize("Running experiment:\n", color="cyan", bold=True))
     print(exp_name + "\n")
-    print(colorize("with kwargs:\n", color="cyan", bold=True))
+    print(log_utils.colorize("with kwargs:\n", color="cyan", bold=True))
     kwargs_json = convert_json(kwargs)
     print(json.dumps(kwargs_json, separators=(",", ":\t"), indent=4, sort_keys=True))
     print("\n")
 
     # Set up logger output directory
     if "logger_kwargs" not in kwargs:
-        kwargs["logger_kwargs"] = setup_logger_kwargs(
+        kwargs["logger_kwargs"] = log_utils.setup_logger_kwargs(
             exp_name, seed, data_dir, datestamp
         )
 
         # Force algorithm default if verbose_fmt is line
-        # NOTE (rickstaa): Done since otherwise the stdout gets cluttered.
+        # NOTE: Done since otherwise the stdout gets cluttered.
         if kwargs["logger_kwargs"]["verbose_fmt"] == "line":
             kwargs["logger_kwargs"]["verbose_vars"] = None
     else:
@@ -240,16 +147,16 @@ def call_experiment(
     plot_cmd = (
         "python -m machine_learning_control.run plot " + logger_kwargs["output_dir"]
     )
-    plot_cmd = colorize(plot_cmd, "green")
+    plot_cmd = log_utils.colorize(plot_cmd, "green")
 
     test_cmd = (
         "python -m machine_learning_control.run test_policy "
         + logger_kwargs["output_dir"]
     )
-    test_cmd = colorize(test_cmd, "green")
+    test_cmd = log_utils.colorize(test_cmd, "green")
 
     eval_cmd = "python -m elpg_pack.run eval_robustness " + logger_kwargs["output_dir"]
-    eval_cmd = colorize(eval_cmd, "green")
+    eval_cmd = log_utils.colorize(eval_cmd, "green")
 
     output_msg = (
         "\n" * 5
@@ -321,11 +228,11 @@ class ExperimentGrid:
             msg = base_msg % name_insert
         else:
             msg = base_msg % (name_insert + "\n")
-        print(colorize(msg, color="green", bold=True))
+        print(log_utils.colorize(msg, color="green", bold=True))
 
         # List off parameters, shorthands, and possible values.
         for k, v, sh in zip(self.keys, self.vals, self.shs):
-            color_k = colorize(k.ljust(40), color="cyan", bold=True)
+            color_k = log_utils.colorize(k.ljust(40), color="cyan", bold=True)
             print("", color_k, "[" + sh + "]" if sh is not None else "", "\n")
             for i, val in enumerate(v):
                 print("\t" + str(convert_json(val)))
@@ -585,7 +492,7 @@ class ExperimentGrid:
         var_names = set([self.variant_name(var) for var in variants])
         var_names = sorted(list(var_names))
         line = "=" * DIV_LINE_WIDTH
-        preparing = colorize(
+        preparing = log_utils.colorize(
             "Preparing to run the following experiments...", color="green", bold=True
         )
         joined_var_names = "\n".join(var_names)
@@ -594,7 +501,7 @@ class ExperimentGrid:
 
         if WAIT_BEFORE_LAUNCH > 0:
             delay_msg = (
-                colorize(
+                log_utils.colorize(
                     dedent(
                         """
             Launch delayed to give you a few seconds to review your experiments.

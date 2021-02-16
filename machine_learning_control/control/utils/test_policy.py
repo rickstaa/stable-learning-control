@@ -1,7 +1,6 @@
 """A set of functions that can be used to see a algorithm perform in the environment
 it was trained on.
 """
-# flake8: noqa: E731
 
 import os
 import os.path as osp
@@ -9,13 +8,10 @@ import time
 
 import joblib
 import machine_learning_control as mlc
+import machine_learning_control.control.utils.log_utils as log_utils
 import torch
-from machine_learning_control.control.utils import TF_WARN_MESSAGE, import_tf
-from machine_learning_control.control.utils.log_utils import (
-    EpochLogger,
-    colorize,
-    restore_tf_graph,
-)
+from machine_learning_control.control.utils import import_tf
+from machine_learning_control.control.utils.log_utils.logx import EpochLogger
 
 
 def load_policy_and_env(fpath, itr="last", deterministic=False):
@@ -83,7 +79,7 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
     try:
         state = joblib.load(osp.join(fpath, "vars" + itr + ".pkl"))
         env = state["env"]
-    except:
+    except Exception:
         env = None
 
     # load the get_action function
@@ -116,7 +112,7 @@ def load_tf_policy(fpath, itr, deterministic=False):
 
     # load the things!
     sess = tf.Session()
-    model = restore_tf_graph(sess, fname)
+    model = log_utils.restore_tf_graph(sess, fname)
 
     # get the correct op for executing actions
     if deterministic and "mu" in model.keys():
@@ -166,7 +162,7 @@ def load_pytorch_policy(
         return model.get_action
     else:
         print(
-            colorize(
+            log_utils.colorize(
                 "WARN: You are using the full pickled model in your inference. Please "
                 "note that this is the non-recommended method for loading Pytorch "
                 "models. Please make sure you save your model as a state dictionary. "

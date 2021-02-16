@@ -15,5 +15,9 @@
     },
     "peacock.color": "#5cd3fd",
     "python.pythonPath": "/home/ricks/miniconda3/envs/mlc/bin/python",
-    "todo-tree.tree.scanMode": "workspace only"
+    "todo-tree.tree.scanMode": "workspace only",
+    "editor.formatOnSave": true,
+    "cSpell.words": [
+        "serializable"
+    ]
 }
