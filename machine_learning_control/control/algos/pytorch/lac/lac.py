@@ -411,7 +411,8 @@ class LAC(nn.Module):
                 q2_pi_targ = self.ac_targ.Q2(o_, a2)
                 if self._opt_type.lower() == "minimize":
                     q_pi_targ = torch.max(
-                        q1_pi_targ, q2_pi_targ,
+                        q1_pi_targ,
+                        q2_pi_targ,
                     )  # Use max clipping  to prevent overestimation bias.
                 else:
                     q_pi_targ = torch.min(
@@ -655,7 +656,9 @@ class LAC(nn.Module):
         try:
             super().load_state_dict(state_dict)
         except AttributeError as e:
-            raise type(e)("The 'state_dict' could not be loaded successfully.",) from e
+            raise type(e)(
+                "The 'state_dict' could not be loaded successfully.",
+            ) from e
 
     def _update_targets(self):
         """Updates the target networks based on a Exponential moving average
@@ -733,7 +736,8 @@ class LAC(nn.Module):
     def alpha(self, set_val):
         """Property used to make sure alpha and log_alpha are related."""
         self.log_alpha.data = torch.as_tensor(
-            np.log(1e-37 if set_val < 1e-37 else set_val), dtype=self.log_alpha.dtype,
+            np.log(1e-37 if set_val < 1e-37 else set_val),
+            dtype=self.log_alpha.dtype,
         )
 
     @property
@@ -749,7 +753,8 @@ class LAC(nn.Module):
     def labda(self, set_val):
         """Property used to make sure labda and log_labda are related."""
         self.log_labda.data = torch.as_tensor(
-            np.log(1e-37 if set_val < 1e-37 else set_val), dtype=self.log_labda.dtype,
+            np.log(1e-37 if set_val < 1e-37 else set_val),
+            dtype=self.log_labda.dtype,
         )
 
     @property
@@ -1174,7 +1179,9 @@ def lac(
                 policy, test_env, num_test_episodes, max_ep_len=max_ep_len
             )
             logger.store(
-                TestEpRet=eps_ret, TestEpLen=eps_len, extend=True,
+                TestEpRet=eps_ret,
+                TestEpLen=eps_len,
+                extend=True,
             )
 
             # Epoch based learning rate decay
@@ -1211,11 +1218,13 @@ def lac(
                 logger.log_tabular("LossQ", average_only=True)
             if adaptive_temperature:
                 logger.log_tabular(
-                    "LossAlpha", average_only=True,
+                    "LossAlpha",
+                    average_only=True,
                 )
             if use_lyapunov:
                 logger.log_tabular(
-                    "LossLambda", average_only=True,
+                    "LossLambda",
+                    average_only=True,
                 )
             if use_lyapunov:
                 logger.log_tabular("LVals", with_min_and_max=True)
