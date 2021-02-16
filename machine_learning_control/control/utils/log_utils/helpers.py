@@ -129,7 +129,7 @@ def setup_logger_kwargs(
     ``machine_learning_control/user_config.py``.
 
     Args:
-        exp_name (string): Name for experiment.
+        exp_name (str): Name for experiment.
         seed (int, optional): Seed for random number generators used by experiment.
         save_checkpoints (bool, optional): Save checkpoints during training.
             Defaults to ``False``.
@@ -137,12 +137,12 @@ def setup_logger_kwargs(
             to True.
         verbose (bool, optional): Whether you want to log to the std_out. Defaults
             to ``True``.
-        verbose_fmt (string, optional): The format in which the statistics are
+        verbose_fmt (str, optional): The format in which the statistics are
             displayed to the terminal. Options are "table" which supplies them as a
             table and "line" which prints them in one line. Defaults to "line".
         verbose_vars (list, optional): A list of variables you want to log to the
             std_out. By default all variables are logged.
-        data_dir (string, optional): Path to folder where results should be saved.
+        data_dir (str, optional): Path to folder where results should be saved.
             Default is the ``DEFAULT_DATA_DIR`` in
             ``machine_learning_control/user_config.py``. Defaults to None.
         datestamp (bool, optional): Whether to include a date and timestamp in the

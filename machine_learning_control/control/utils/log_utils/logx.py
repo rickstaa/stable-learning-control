@@ -8,7 +8,6 @@ it also logs the data to a tensorboard file.
 """  # noqa
 
 # TODO: Add WARN INFO methods -> Replace with proper logger!
-# TODO: Check string type
 
 import atexit
 import json
@@ -53,27 +52,25 @@ class Logger:
         """Initialise a Logger.
 
         Args:
-            output_dir (string, optional): A directory for saving results to. If
+            output_dir (str, optional): A directory for saving results to. If
                 ``None``, defaults to a temp directory of the form
                 ``/tmp/experiments/somerandomnumber``.
-            output_fname (string, optional): Name for the (tab/comma) separated-value
+            output_fname (str, optional): Name for the (tab/comma) separated-value
                 file containing metrics logged throughout a training run. Defaults to
                 to ``progress.csv``.
-            exp_name (string, optional): Experiment name. If you run multiple training
+            exp_name (str, optional): Experiment name. If you run multiple training
                 runs and give them all the same ``exp_name``, the plotter
                 will know to group them. (Use case: if you run the same
                 hyperparameter configuration with multiple random seeds, you
                 should give them all the same ``exp_name``.)
             verbose (bool, optional): Whether you want to log to the std_out. Defaults
                 to ``True``.
-            verbose_fmt (string, optional): The format in which the statistics are
+            verbose_fmt (str, optional): The format in which the statistics are
                 displayed to the terminal. Options are "tab" which supplies them as a
                 table and "line" which prints them in one line. Default is set in the
                 :py:mod:`user_config` file.
             verbose_vars (list, optional): A list of variables you want to log to the
                 std_out. By default all variables are logged.
-            log_ignore (string): Dictionary containing the keys for which you don't want
-                the statistics to be printed to the terminal.
             use_tensorboard (bool): Specifies whether you want also log to tensorboard.
             save_checkpoints (bool, optional): Save checkpoints during training.
                 Defaults to ``False``.
@@ -144,7 +141,7 @@ class Logger:
         """Print a colorized message to stdout.
 
         Args:
-            msg (string): Message you want to log.
+            msg (str): Message you want to log.
             color (str, optional): Color you want the message to have. Defaults to
                 "green".
         """
@@ -152,12 +149,7 @@ class Logger:
             print(colorize(msg, color, bold=True))
 
     def log_tabular(
-        self,
-        key,
-        val,
-        tb_write=False,
-        tb_prefix=None,
-        tb_alias=None,
+        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
     ):
         """Log a value of some diagnostic.
 
@@ -167,7 +159,7 @@ class Logger:
         stdout (otherwise they will not get saved anywhere).
 
         Args:
-            key (string): The name of the diagnostic. If you are logging a
+            key (str): The name of the diagnostic. If you are logging a
                 diagnostic whose state has previously been saved with
                 ``store``, the key here has to match the key you used there.
             val: A value for the diagnostic. If you have previously saved
@@ -520,7 +512,7 @@ class Logger:
         please use :py:attr:`tb_writer`. directly.
 
         Args:
-            var_name (string): Data identifier.
+            var_name (str): Data identifier.
             data (int, float, numpy.ndarray, torch.Tensor): Data you want to write.
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
@@ -1034,7 +1026,7 @@ class EpochLogger(Logger):
         Log a value or possibly the mean/std/min/max values of a diagnostic.
 
         Args:
-            key (string): The name of the diagnostic. If you are logging a
+            key (str): The name of the diagnostic. If you are logging a
                 diagnostic whose state has previously been saved with
                 ``store``, the key here has to match the key you used there.
             val: A value for the diagnostic. If you have previously saved

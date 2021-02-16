@@ -111,7 +111,7 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
     """Interprets algorithm name and cmd line args into an ExperimentGrid.
 
     Args:
-        cmd (string): The requested CLI command.
+        cmd (str): The requested CLI command.
         args (list): The command arguments.
 
     Raises:
