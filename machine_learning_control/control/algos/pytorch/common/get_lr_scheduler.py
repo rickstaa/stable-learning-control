@@ -1,4 +1,4 @@
-"""Module used for creating Pytorch/Tensorflow learning rate schedulers."""
+"""Module used for creating Pytorch learning rate schedulers."""
 
 from decimal import Decimal
 
@@ -63,10 +63,10 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
         See the `pytorch <https://pytorch.org/docs/stable/optim.html>`_ documentation on
         how to implement other decay options.
     """  # noqa: E501
-    if lr_start != lr_final or decaying_lr_type.lower() != "constant":
+    if decaying_lr_type.lower() != "constant" and lr_start != lr_final:
         if decaying_lr_type.lower() == "exponential":
             exponential_decay_rate = get_exponential_decay_rate(
-                lr_start, lr_final, steps
+                lr_start, lr_final, (steps - 1.0)
             )
             lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(
                 optimizer, np.float64(exponential_decay_rate)
@@ -83,7 +83,7 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
                 return np.longdouble(
                     Decimal(1.0)
                     - (
-                        calc_linear_decay_rate(lr_start, lr_final, steps)
+                        calc_linear_decay_rate(lr_start, lr_final, (steps - 1.0))
                         * Decimal(step)
                     )
                 )
@@ -93,4 +93,6 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
             )
         return lr_scheduler
     else:
-        return lambda step: np.longdouble(1.0)  # Return a constant function
+        return torch.optim.lr_scheduler.LambdaLR(
+            optimizer, lr_lambda=lambda step: np.longdouble(1.0)
+        )  # Return a constant function

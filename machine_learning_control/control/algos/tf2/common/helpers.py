@@ -56,7 +56,7 @@ def count_vars(module):
     """Returns the total number of parameters of a tensorflow module.
 
     Args:
-        module (torch.nn.module): The module.
+        module (union[tf.keras.Model, tf.module]): The tensorflow model.
 
     Returns:
         numpy.int64: The total number of parameters inside the module.
@@ -64,14 +64,15 @@ def count_vars(module):
     return sum([np.prod(p.shape) for p in module.trainable_variables])
 
 
-# TODO: Check this might be replaced by one method for both pytorch and tensorflow
 def clamp(data, min_bound, max_bound):
     """Clamp all the values of a input to be between the min and max boundaries.
 
     Args:
-        data (np.ndarray/list): Input data.
-        min_bound (np.ndarray/list): Array containing the desired minimum values.
-        max_bound (np.ndarray/list): Array containing the desired maximum values.
+        data (union[np.ndarray, list]): Input data.
+        min_bound (union[np.ndarray, list]): Array containing the desired minimum
+            values.
+        max_bound (union[np.ndarray, list]): Array containing the desired maximum
+            values.
 
     Returns:
         np.ndarray: Array which has it values clamped between the min and max

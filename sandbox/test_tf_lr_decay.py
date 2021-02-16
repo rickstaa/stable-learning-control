@@ -1,8 +1,8 @@
 from machine_learning_control.control.algos.tf2.common import get_lr_scheduler
 
-lr_start = 1.0
-lr_final = 0.5
-N = 100
+lr_start = 1e-4
+lr_final = 1e-10
+N = 2
 
 lr_scheduler = get_lr_scheduler("exponential", lr_start, lr_final, N)
 lr = []

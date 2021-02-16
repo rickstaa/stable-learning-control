@@ -76,10 +76,7 @@ class SquashedGaussianActor(tf.keras.Model):
         )
 
         self.net = mlp(
-            [obs_dim] + list(hidden_sizes),
-            activation,
-            output_activation,
-            name=name,
+            [obs_dim] + list(hidden_sizes), activation, output_activation, name=name,
         )
         self.mu_layer = tf.keras.layers.Dense(
             act_dim,

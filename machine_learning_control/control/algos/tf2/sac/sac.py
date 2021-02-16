@@ -8,10 +8,13 @@ agent that is equivalent to the SAC agent.
 """
 
 import os.path as osp
-import tensorflow.nn as nn
+
 from machine_learning_control.control.algos.tf2.lac import LAC, lac
 from machine_learning_control.control.algos.tf2.policies import SoftActorCritic
+from machine_learning_control.control.utils import import_tf
 from machine_learning_control.control.utils.log_utils import colorize
+
+nn = import_tf(module_name="tensorflow.nn")
 
 
 def apply_sac_defaults(args, kwargs):

@@ -33,8 +33,7 @@ for ns in redundant_namespaces:
             PACKAGES.append(short_child)
 
 setup(
-    packages=PACKAGES,
-    package_dir=PACKAGE_DIR,
+    packages=PACKAGES, package_dir=PACKAGE_DIR,
 )
 
 # TODO: Add submodule check like in pytorch!

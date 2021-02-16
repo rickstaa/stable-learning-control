@@ -1,4 +1,4 @@
-"""Module used for creating Pytorch/Tensorflow learning rate schedulers."""
+"""Module used for creating Tensorflow learning rate schedulers."""
 
 import numpy as np
 from machine_learning_control.control.utils import import_tf

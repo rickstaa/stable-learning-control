@@ -14,8 +14,6 @@ with the Soft Actor Critic algorithm of
             regards an equation in Han et. al 2019.
 """
 import argparse
-
-# import glob
 import os
 import os.path as osp
 import random
@@ -24,12 +22,11 @@ import time
 
 import gym
 import numpy as np
-import tensorflow as tf
+from machine_learning_control.control.algos.tf2.common import get_lr_scheduler
 from machine_learning_control.control.algos.tf2.common.helpers import (
     count_vars,
     set_device,
 )
-from machine_learning_control.control.algos.tf2.common import get_lr_scheduler
 from machine_learning_control.control.algos.tf2.policies import (
     LyapunovActorCritic,
     SoftActorCritic,
@@ -39,7 +36,7 @@ from machine_learning_control.control.common.helpers import (
     combine_shapes,
     heuristic_target_entropy,
 )
-from machine_learning_control.control.utils import safe_eval
+from machine_learning_control.control.utils import import_tf, safe_eval
 from machine_learning_control.control.utils.eval_utils import test_agent
 from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
@@ -50,8 +47,10 @@ from machine_learning_control.control.utils.log_utils import (
     setup_logger_kwargs,
 )
 from machine_learning_control.control.utils.log_utils.logx import EpochLogger
-from tensorflow import nn
-from tensorflow.keras.optimizers import Adam
+
+tf = import_tf()
+nn = import_tf(module_name="tensorflow.nn")
+Adam = import_tf(module_name="tensorflow.keras.optimizers", class_name="Adam")
 
 # Script settings
 SCALE_LAMBDA_MIN_MAX = (
@@ -112,6 +111,7 @@ class LAC(tf.keras.Model):
         lr_a=1e-4,
         lr_c=3e-4,
         device="gpu",
+        name="LAC",
     ):
         """Lyapunov (soft) Actor-Critic (LAC)
 
@@ -210,9 +210,11 @@ class LAC(tf.keras.Model):
                 Defaults to ``1e-4``.
             device (str, optional): The device the networks are placed on (cpu or gpu).
                 Defaults to "gpu".
+            name (str, optional): Additional alias for the LAC algorithm (this is what
+                shows up in the graph). By default "LAC".
         """
 
-        super().__init__()  # TODO: add name
+        super().__init__(name=name)
         self._was_build = False
 
         # NOTE: The current implementation only works with continuous spaces.
@@ -370,7 +372,13 @@ class LAC(tf.keras.Model):
         # Optimize (Lyapunov/Q) critic #################
         ################################################
         if self.use_lyapunov:
-            # TODO: Add maximization objective?
+            if self._opt_type.lower() == "maximize":
+                raise NotImplementedError(
+                    "The LAC algorithm does not yet support maximization "
+                    "environments. Please open a feature/pull request on "
+                    "https://github.com/rickstaa/machine-learning-control/issues "
+                    "if you need this."
+                )
 
             # Get target Lyapunov value (Bellman-backup)
             a2_, _ = self.ac_targ.pi(
@@ -448,7 +456,13 @@ class LAC(tf.keras.Model):
 
             # Calculate entropy-regularized policy loss
             if self.use_lyapunov:
-                # TODO: Add maximization objective?
+                if self._opt_type.lower() == "maximize":
+                    raise NotImplementedError(
+                        "The LAC algorithm does not yet support maximization "
+                        "environments. Please open a feature/pull request on "
+                        "https://github.com/rickstaa/machine-learning-control/issues "
+                        "if you need this."
+                    )
 
                 # Get target lyapunov value
                 a2, _ = self.ac.pi(
@@ -1154,10 +1168,10 @@ def lac(
             # Step based learning rate decay
             if lr_decay_ref.lower() == "step":
                 lr_a_now = max(
-                    lr_a_scheduler(t), lr_a_final
+                    lr_a_scheduler(t + 1), lr_a_final
                 )  # Make sure lr is bounded above final lr
                 lr_c_now = max(
-                    lr_c_scheduler(t), lr_c_final
+                    lr_c_scheduler(t + 1), lr_c_final
                 )  # Make sure lr is bounded above final lr
                 policy._set_learning_rates(
                     lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
@@ -1327,7 +1341,7 @@ if __name__ == "__main__":
         "--max_ep_len",
         type=int,
         default=500,
-        help="maximum episode length (default: minimize)",
+        help="maximum episode length (default: 500)",
     )
     parser.add_argument(
         "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
@@ -1431,13 +1445,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--lr_decay_type",
         type=str,
-        default="constant",
+        default="linear",
         help="the learning rate decay type (default: linear)",
     )
     parser.add_argument(
         "--lr_decay_ref",
         type=str,
-        default="linear",
+        default="epoch",
         help=(
             "the reference variable that is used for decaying the learning rate "
             "'epoch' or 'step' (default: 'epoch')"

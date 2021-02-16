@@ -35,7 +35,7 @@ def safe_eval(*args, backend=None):
     if backend is not None and backend.lower() in ["torch", "pytorch"]:
         from torch import nn
     elif backend is not None and backend.lower() in ["tensorflow", "tf"]:
-        nn = import_tf(module="tensorflow.nn")
+        nn = import_tf(module_name="tensorflow.nn")
 
     eval_safe_globals = {k: v for k, v in globals().items() if k not in {"os", "sys"}}
     eval_safe_globals["__builtins__"] = {}

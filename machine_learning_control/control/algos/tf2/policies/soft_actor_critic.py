@@ -16,8 +16,6 @@ HIDDEN_SIZES_DEFAULT = {"actor": (256, 256), "critic": (256, 256)}
 ACTIVATION_DEFAULT = {"actor": nn.relu, "critic": nn.relu}
 OUTPUT_ACTIVATION_DEFAULT = {"actor": nn.relu, "critic": None}
 
-# TODO: Check return types of all classes.
-
 
 class SoftActorCritic(tf.keras.Model):
     """(Soft) Actor-Critic network.

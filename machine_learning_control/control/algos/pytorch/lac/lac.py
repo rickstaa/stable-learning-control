@@ -361,7 +361,13 @@ class LAC(nn.Module):
         ################################################
         self._c_optimizer.zero_grad()
         if self.use_lyapunov:
-            # TODO: Add maximization objective?
+            if self._opt_type.lower() == "maximize":
+                raise NotImplementedError(
+                    "The LAC algorithm does not yet support maximization "
+                    "environments. Please open a feature/pull request on "
+                    "https://github.com/rickstaa/machine-learning-control/issues "
+                    "if you need this."
+                )
 
             # Get target Lyapunov value (Bellman-backup)
             with torch.no_grad():
@@ -444,7 +450,13 @@ class LAC(nn.Module):
 
         # Calculate entropy-regularized policy loss
         if self.use_lyapunov:
-            # TODO: Add maximization objective?
+            if self._opt_type.lower() == "maximize":
+                raise NotImplementedError(
+                    "The LAC algorithm does not yet support maximization "
+                    "environments. Please open a feature/pull request on "
+                    "https://github.com/rickstaa/machine-learning-control/issues "
+                    "if you need this."
+                )
 
             # Get target lyapunov value
             a2, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
@@ -1216,7 +1228,7 @@ def lac(
             logger.dump_tabular()
 
     # Export model to 'TorchScript'
-    if not export:
+    if export:
         policy.export(logger.output_dir)
 
     print(
@@ -1295,7 +1307,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_lyapunov",
         type=bool,
-        default=True,
+        default=False,
         help="lyapunov toggle boolean (default: True)",
     )
     parser.add_argument(
@@ -1308,11 +1320,11 @@ if __name__ == "__main__":
         "--max_ep_len",
         type=int,
         default=500,
-        help="maximum episode length (default: minimize)",
+        help="maximum episode length (default: 500)",
     )
     parser.add_argument(
-        "--epochs", type=int, default=1, help="the number of epochs (default: 50)"
-    )  # TODO : Change back
+        "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
+    )
     parser.add_argument(
         "--steps_per_epoch",
         type=int,
@@ -1414,6 +1426,15 @@ if __name__ == "__main__":
         type=str,
         default="linear",
         help="the learning rate decay type (default: linear)",
+    )
+    parser.add_argument(
+        "--lr_decay_ref",
+        type=str,
+        default="epoch",
+        help=(
+            "the reference variable that is used for decaying the learning rate "
+            "'epoch' or 'step' (default: 'epoch')"
+        ),
     )
     parser.add_argument(
         "--batch-size",
@@ -1566,6 +1587,7 @@ if __name__ == "__main__":
         lr_a_final=args.lr_a_final,
         lr_c_final=args.lr_c_final,
         lr_decay_type=args.lr_decay_type,
+        lr_decay_ref=args.lr_decay_ref,
         batch_size=args.batch_size,
         replay_size=args.replay_size,
         seed=args.seed,

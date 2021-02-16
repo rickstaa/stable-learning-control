@@ -1,7 +1,6 @@
 """Functions that are used in multiple Pytorch and Tensorflow algorithms.
 """
 
-import decimal
 import itertools
 import string
 from collections.abc import Iterable

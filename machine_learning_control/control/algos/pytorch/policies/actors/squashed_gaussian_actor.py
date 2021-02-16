@@ -142,7 +142,7 @@ class SquashedGaussianActor(nn.Module):
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.
-        """  # TODO: VAlidate
+        """
         with torch.no_grad():
             a, _ = self(obs, deterministic, False)
             return a.cpu().numpy()
@@ -152,7 +152,7 @@ class SquashedGaussianActor(nn.Module):
         'get_action' alias.
 
         Args:
-            obs (numpy.ndarray): The current observation (state).
+            obs (torch.Tensor): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
                 policy is returned. If false the action is sampled from the stochastic
@@ -160,5 +160,5 @@ class SquashedGaussianActor(nn.Module):
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.
-        """  # TODO: Check input format
+        """
         self.act(obs, deterministic=deterministic)
