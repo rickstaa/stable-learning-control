@@ -17,7 +17,11 @@ class LCritic(nn.Module):
     """
 
     def __init__(
-        self, obs_dim, act_dim, hidden_sizes, activation=nn.ReLU,
+        self,
+        obs_dim,
+        act_dim,
+        hidden_sizes,
+        activation=nn.ReLU,
     ):
         """Constructs all the necessary attributes for the Soft Q critic object.
 
