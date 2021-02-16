@@ -109,7 +109,7 @@ class SoftActorCritic(tf.keras.Model):
                 Q2 (tf.Tensor): Q-values of the second critic.
 
         .. note::
-            Usefull for when you want to print out the full network graph using
+            Useful for when you want to print out the full network graph using
             tensorboard.
         """
         obs, act = inputs

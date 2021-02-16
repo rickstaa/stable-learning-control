@@ -118,7 +118,7 @@ class LyapunovActorCritic(tf.keras.Model):
                 L (tf.Tensor): Critic L values.
 
         .. note::
-            Usefull for when you want to print out the full network graph using
+            Useful for when you want to print out the full network graph using
             tensorboard.
         """
         obs, act = inputs
