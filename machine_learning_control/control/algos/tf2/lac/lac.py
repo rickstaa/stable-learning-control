@@ -418,7 +418,8 @@ class LAC(tf.keras.Model):
             q2_pi_targ = self.ac_targ.Q2(o_, a2)
             if self._opt_type.lower() == "minimize":
                 q_pi_targ = tf.math.maximum(
-                    q1_pi_targ, q2_pi_targ,
+                    q1_pi_targ,
+                    q2_pi_targ,
                 )  # Use max clipping  to prevent overestimation bias.
             else:
                 q_pi_targ = tf.math.minimum(
@@ -1195,7 +1196,9 @@ def lac(
                 policy, test_env, num_test_episodes, max_ep_len=max_ep_len
             )
             logger.store(
-                TestEpRet=eps_ret, TestEpLen=eps_len, extend=True,
+                TestEpRet=eps_ret,
+                TestEpLen=eps_len,
+                extend=True,
             )
 
             # Epoch based learning rate decay
@@ -1232,11 +1235,13 @@ def lac(
                 logger.log_tabular("LossQ", average_only=True)
             if adaptive_temperature:
                 logger.log_tabular(
-                    "LossAlpha", average_only=True,
+                    "LossAlpha",
+                    average_only=True,
                 )
             if use_lyapunov:
                 logger.log_tabular(
-                    "LossLambda", average_only=True,
+                    "LossLambda",
+                    average_only=True,
                 )
             if use_lyapunov:
                 logger.log_tabular("LVals", with_min_and_max=True)
