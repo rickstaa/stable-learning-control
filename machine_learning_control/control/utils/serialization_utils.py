@@ -52,5 +52,5 @@ def is_json_serializable(v):
     try:
         json.dumps(v)
         return True
-    except:
+    except Exception:
         return False

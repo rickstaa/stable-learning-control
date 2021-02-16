@@ -79,8 +79,11 @@ class SquashedGaussianActor(nn.Module):
                 of an action. Defaults to ``True``.
 
         Returns:
-            torch.Tensor,  torch.Tensor: The actions given by the policy, the log
-            probabilities of each of these actions.
+            (tuple): tuple containing:
+
+                pi_action (torch.Tensor): The actions given by the policy
+                logp_pi (torch.Tensor): The log probabilities of each of these
+                    actions.
         """
         # Calculate mean action and standard deviation
         net_out = self.net(obs)
@@ -125,5 +128,37 @@ class SquashedGaussianActor(nn.Module):
                 max_bound=self.act_limits["high"],
             )
 
-        # Return action and log likelihood
         return pi_action, logp_pi
+
+    def act(self, obs, deterministic=False):
+        """Returns the action from the current state given the current policy.
+
+        Args:
+            obs (torch.Tensor): The current observation (state).
+            deterministic (bool, optional): Whether we want to use a deterministic
+                policy (used at test time). When true the mean action of the stochastic
+                policy is returned. If false the action is sampled from the stochastic
+                policy. Defaults to ``False``.
+        Returns:
+            numpy.ndarray: The action from the current state given the current
+            policy.
+        """  # TODO: VAlidate
+        with torch.no_grad():
+            a, _ = self(obs, deterministic, False)
+            return a.cpu().numpy()
+
+    def get_action(self, obs, deterministic=False):
+        """Simple warpper for making the :meth:`.act` method available under the
+        'get_action' alias.
+
+        Args:
+            obs (numpy.ndarray): The current observation (state).
+            deterministic (bool, optional): Whether we want to use a deterministic
+                policy (used at test time). When true the mean action of the stochastic
+                policy is returned. If false the action is sampled from the stochastic
+                policy. Defaults to ``False``.
+        Returns:
+            numpy.ndarray: The action from the current state given the current
+            policy.
+        """  # TODO: Check input format
+        self.act(obs, deterministic=deterministic)

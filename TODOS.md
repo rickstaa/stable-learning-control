@@ -11,6 +11,7 @@
 -   [ ] Add way to supply environment arguments
 -   [ ] Add GPU support.
 -   [ ] Add tensorboard support.
+-   [ ] Remove strickly pined versions and mayke sure it works for python > 3.6
 
 ## Docs
 
@@ -25,3 +26,9 @@
 -   [ ] Add custom gym add guide.
 -   [ ] Add install options [torch/tensorflow/hyperparameter/ect]
 -   [ ] State that default is torch if people want to use tensorflow use pip install .[tf]
+-   [ ] Gym install types instaructions!
+
+# Save pytorch inference guide
+
+-   \[] Load optimize rparameters
+-   \[] Load save CPU support create <https://www.youtube.com/watch?v=9L9jEOwRrCg>

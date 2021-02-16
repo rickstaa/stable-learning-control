@@ -15,7 +15,7 @@ from machine_learning_control.control.common.helpers import strict_dict_update
 
 HIDDEN_SIZES_DEFAULT = {"actor": (256, 256), "critic": (256, 256)}
 ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.ReLU}
-OUTPUT_ACTIVATION_DEFAULT = ({"actor": nn.ReLU, "critic": nn.Identity},)
+OUTPUT_ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.Identity}
 
 
 class SoftActorCritic(nn.Module):
@@ -54,56 +54,57 @@ class SoftActorCritic(nn.Module):
         obs_dim = observation_space.shape[0]
         act_dim = action_space.shape[0]
 
-        # Parse hidden sizes and activation inputs arguments
+        # Parse hidden sizes, activation inputs arguments and action_limits
         hidden_sizes, _ = strict_dict_update(HIDDEN_SIZES_DEFAULT, hidden_sizes)
         activation, _ = strict_dict_update(ACTIVATION_DEFAULT, activation)
         output_activation, _ = strict_dict_update(
             OUTPUT_ACTIVATION_DEFAULT, output_activation
         )
-
-        # Action limit for clamping
         act_limits = {"low": action_space.low, "high": action_space.high}
 
-        # build policy and value functions
         self.pi = SquashedGaussianActor(
-            obs_dim,
-            act_dim,
-            hidden_sizes["actor"],
-            activation["actor"],
-            output_activation["actor"],
-            act_limits,
+            obs_dim=obs_dim,
+            act_dim=act_dim,
+            hidden_sizes=hidden_sizes["actor"],
+            activation=activation["actor"],
+            output_activation=output_activation["actor"],
+            act_limits=act_limits,
         )
         self.Q1 = QCritic(
-            obs_dim,
-            act_dim,
-            hidden_sizes["critic"],
-            activation["critic"],
-            output_activation["critic"],
+            obs_dim=obs_dim,
+            act_dim=act_dim,
+            hidden_sizes=hidden_sizes["critic"],
+            activation=activation["critic"],
+            output_activation=output_activation["critic"],
         )
         self.Q2 = QCritic(
-            obs_dim,
-            act_dim,
-            hidden_sizes["critic"],
-            activation["critic"],
-            output_activation["critic"],
+            obs_dim=obs_dim,
+            act_dim=act_dim,
+            hidden_sizes=hidden_sizes["critic"],
+            activation=activation["critic"],
+            output_activation=output_activation["critic"],
         )
 
     def forward(self, obs, act):
-        """Perform a forward pass through all the networks.
+        """Performs a forward pass through all the networks (Actor, Q critic 1 and Q
+        critic 2).
 
         Args:
             obs (torch.Tensor): The tensor of observations.
             act (torch.Tensor): The tensor of actions.
         Returns:
-            tuple: actor_action, log probability of the action, critic 1 q value,
-            critic 2 q value.
+            (tuple): tuple containing:
+
+                pi_action (torch.Tensor): The actions given by the policy
+                logp_pi (torch.Tensor): The log probabilities of each of these
+                    actions.
+                Q1 (torch.Tensor): Q-values of the first critic.
+                Q2 (torch.Tensor): Q-values of the second critic.
 
         .. note::
             Usefull for when you want to print out the full network graph using
             tensorboard.
         """
-        # Perform a forward pass through all the networks (Actor, critic1 and critic2)
-        # and return the results
         pi_action, logp_pi = self.pi(obs)
         Q1 = self.Q1(obs, act)
         Q2 = self.Q2(obs, act)
@@ -122,6 +123,6 @@ class SoftActorCritic(nn.Module):
             numpy.ndarray: The action from the current state given the current
             policy.
         """
-        with torch.no_grad():  # Disable gradient update
+        with torch.no_grad():
             a, _ = self.pi(obs, deterministic, False)
             return a.cpu().numpy()

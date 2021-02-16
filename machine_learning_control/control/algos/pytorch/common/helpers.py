@@ -11,8 +11,9 @@ def retrieve_device(device_type="cpu"):
     """Retrieves the available computational device given a device type.
 
     Args:
-        device_type (string): The device type (options: ``cpu`` and
+        device_type (str): The device type (options: ``cpu`` and
             ``gpu``). Defaults to ``cpu``.
+
     Returns:
         torch.device: The Pytorch device object.
     """
@@ -99,7 +100,6 @@ def compare_models(model_1, model_2):
                     f"which is found in model 1, does not exist in the model 2."
                 )
 
-    # Return result
     if models_differ == 0:
         print("Models match perfectly! :)")
         return True
@@ -119,8 +119,6 @@ def clamp(data, min_bound, max_bound):
         np.ndarray: Array which has it values clamped between the min and max
             boundaries.
     """
-
-    # Convert arguments to torch tensor if not already
     data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
     min_bound = (
         torch.tensor(min_bound)
@@ -133,5 +131,4 @@ def clamp(data, min_bound, max_bound):
         else max_bound
     )
 
-    # Clamp all actions to be within the boundaries
     return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
