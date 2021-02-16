@@ -33,11 +33,7 @@ class LCritic(nn.Module):
                 to torch.nn.ReLU.
         """
         super().__init__()
-        self.L = mlp(
-            [obs_dim + act_dim] + list(hidden_sizes),
-            activation,
-            activation,
-        )
+        self.L = mlp([obs_dim + act_dim] + list(hidden_sizes), activation, activation)
 
     def forward(self, obs, act):
         """Perform forward pass through the network.
@@ -51,7 +47,6 @@ class LCritic(nn.Module):
         """
         L_hid_out = self.L(torch.cat([obs, act], dim=-1))
         L_out = torch.square(L_hid_out)
-        L_out = torch.sum(L_out, dim=1)
-        return torch.squeeze(
-            L_out, -1
-        )  # NOTE: Squeeze is critical to ensure L has right shape.
+        L_out = torch.sum(L_out, dim=-1)
+
+        return L_out

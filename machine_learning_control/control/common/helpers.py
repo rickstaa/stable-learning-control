@@ -1,6 +1,7 @@
 """Functions that are used in multiple Pytorch and Tensorflow algorithms.
 """
 
+import itertools
 import string
 from collections.abc import Iterable
 
@@ -10,6 +11,25 @@ from machine_learning_control.control.utils.gym_utils import (
     is_continuous_space,
     is_discrete_space,
 )
+
+
+def convert_to_tuple(input_var):
+    """Converts input into a tuple.
+
+    Args:
+        input_arg (union[int, float, list]): A input variable.
+
+    Returns:
+        tuple: A tuple.
+    """
+
+    return (
+        input_var
+        if isinstance(input_var, tuple)
+        else tuple(input_var)
+        if isinstance(input_var, list)
+        else (input_var,)
+    )
 
 
 def heuristic_target_entropy(action_space):
@@ -33,11 +53,16 @@ def heuristic_target_entropy(action_space):
     elif is_discrete_space(action_space):
         raise NotImplementedError(
             "The heuristic target entropy is not yet implement for discrete spaces."
+            "Please open a feature/pull request on "
+            "https://github.com/rickstaa/machine-learning-control/issues if you need "
+            "this."
         )
     else:
         raise NotImplementedError(
             "The heuristic target entropy is not yet implement for "
-            f"{type(action_space)} action spaces."
+            f"{type(action_space)} action spaces. Please open a feature/pull request"
+            "on https://github.com/rickstaa/machine-learning-control/issues if you"
+            "need this."
         )
     return heuristic_target_entropy
 
@@ -62,7 +87,7 @@ def strict_dict_update(input_dict, update_obj):
     ignored = []
     if isinstance(update_obj, dict):
         for key, val in update_obj.items():
-            if key in input_dict:
+            if key in input_dict.keys():
                 input_dict[key] = val
             else:
                 ignored.append(key)
@@ -72,23 +97,37 @@ def strict_dict_update(input_dict, update_obj):
     return input_dict, ignored
 
 
-def combined_shape(length, shape=None):
-    """Combines length and shape objects into one tuple.
+def combine_shapes(*args):
+    """Combines multiple tuples/ints/floats into one tuple.
 
     Args:
-        length (int): The length of an object.
-        shape (tuple, optional): The shape of an object. Only uses length if not
-            supplied.
+        *args (union[tuple,int,float]): Input arguments to combine
 
     Returns:
-        Tuple: A tuple in which the length and shape are combined.
+        Tuple: A tuple in which al the input arguments are combined.
     """
-    if shape is None:
-        return (length,)
-    return (length, shape) if np.isscalar(shape) else (length, *shape)
+    return tuple(
+        itertools.chain(
+            *[[item] if isinstance(item, (int, float)) else list(item) for item in args]
+        )
+    )
 
 
-def is_scalar(obj):
+def sum_tuples(*args):
+    """Returns the elementwise sum of a several tuples/lists.
+
+    Args:
+        *args (union[tuple, list]): Input arguments for which you want to calculate the
+            elementwise sum.
+
+    Returns:
+        Tuple: A tuple containing the elementwise sum of the input tuples/lists.
+    """
+    elem_sum = [sum(x) for x in zip(*args)]
+    return elem_sum[0] if len(elem_sum) == 1 else tuple(elem_sum)
+
+
+def is_scalar(obj):  # noqa: C901
     """Recursive function that checks whether a input
 
     Args:

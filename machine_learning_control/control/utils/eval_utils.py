@@ -18,8 +18,6 @@ def test_agent(policy, env, num_episodes, max_ep_len=None):
             ep_ret(list): Episode retentions.
             ep_len(list): Episode lengths.
     """
-
-    # Perform several steps in the test environment using the current policy
     test_ep_ret, test_ep_len = [], []
     for _ in range(num_episodes):
         o, d, ep_ret, ep_len = env.reset(), False, 0, 0

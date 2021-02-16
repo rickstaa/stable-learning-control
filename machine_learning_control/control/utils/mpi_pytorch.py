@@ -3,11 +3,10 @@
 
 import numpy as np
 import torch
-from machine_learning_control.control.utils.mpi_tools import (
+from machine_learning_control.control.utils.mpi_tools import (  # proc_id,
     broadcast,
     mpi_avg,
     num_procs,
-    # proc_id,
 )
 
 

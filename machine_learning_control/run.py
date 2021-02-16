@@ -4,7 +4,6 @@ Responsible for createing the CLI for the machine_learning_control package. It c
 be used to run the control, hardware, modelling packages from the terminal.
 """
 
-import importlib
 import os
 import os.path as osp
 import subprocess
@@ -12,16 +11,13 @@ import sys
 from copy import deepcopy
 from textwrap import dedent
 
-import gym
-
 # Import mlc algorithms and environments
-from machine_learning_control.control.utils import safe_eval
+from machine_learning_control.control.utils import import_tf, safe_eval
+from machine_learning_control.control.utils.gym_utils import validate_gym_env
 from machine_learning_control.control.utils.log_utils import friendly_err
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
 from machine_learning_control.user_config import DEFAULT_BACKEND
 from machine_learning_control.version import __version__
-from machine_learning_control.control.utils.log_utils import colorize
-from machine_learning_control.control.utils import import_tf
 
 # Command line args that will go to ExperimentGrid.run, and must possess unique
 # values (therefore must be treated separately).
@@ -50,7 +46,37 @@ MPI_COMPATIBLE_ALGOS = []
 BASE_ALGO_NAMES = ["sac", "lac"]
 
 
-def process_arg(arg):
+def _get_backend(cmd):
+    """Retrieves the backend from the cmd string.
+
+    Args:
+        cmd (str): The cmd string.
+
+    Returns:
+        str: The requested backend (options: "tf" or "pytorch").
+
+    Raises:
+        AssertError: Raised when a the tensorflow backend is requested but tensorflow
+            is not installed.
+    """
+    if cmd in BASE_ALGO_NAMES:
+        backend = DEFAULT_BACKEND[cmd]
+        print("\n\nUsing default backend (%s) for %s.\n" % (backend, cmd))
+        cmd = cmd + "_" + backend
+    else:
+        backend = cmd.split("_")[-1]
+
+    # Throw error if tf algorithm is requested but tensorflow is not installed.
+    if backend == "tf":
+        try:
+            import_tf(dry_run=True)
+        except ImportError as e:
+            raise ImportError(friendly_err(e.args[0]))
+
+    return backend
+
+
+def _process_arg(arg, backend=None):
     """Process an arg by eval-ing it, so users can specify more than just strings at
     the command line (eg allows for users to give functions as args).
 
@@ -61,12 +87,12 @@ def process_arg(arg):
         obj: Processed input argument.
     """
     try:
-        return safe_eval(arg)
-    except:
+        return safe_eval(arg, backend=backend)
+    except Exception:
         return arg
 
 
-def add_with_backends(algo_list):
+def _add_with_backends(algo_list):
     """Helper function to build lists with backend-specific function names
 
     Args:
@@ -81,7 +107,7 @@ def add_with_backends(algo_list):
     return algo_list_with_backends
 
 
-def parse_and_execute_grid_search(cmd, args):
+def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
     """Interprets algorithm name and cmd line args into an ExperimentGrid.
 
     Args:
@@ -91,20 +117,10 @@ def parse_and_execute_grid_search(cmd, args):
     Raises:
         ImportError: A custom import error if tensorflow is not installed.
     """
-    if cmd in BASE_ALGO_NAMES:
-        backend = DEFAULT_BACKEND[cmd]
-        print("\n\nUsing default backend (%s) for %s.\n" % (backend, cmd))
-        cmd = cmd + "_" + backend
-
-    # Throw error if tf algorithm is requested but tensorflow is not installed.
-    if cmd.split("_")[-1] == "tf":
-        try:
-            import_tf()
-        except ImportError as e:
-            raise ImportError(friendly_err(e.args[0]))
+    backend = _get_backend(cmd)
 
     # warning
-    algo = safe_eval("machine_learning_control.control." + cmd)
+    algo = safe_eval("machine_learning_control.control." + cmd, backend=backend)
 
     # Before all else, check to see if any of the flags is 'help'.
     valid_help = ["--help", "-h", "help"]
@@ -123,7 +139,7 @@ def parse_and_execute_grid_search(cmd, args):
             arg_key = arg.lstrip("-")
             arg_dict[arg_key] = []
         else:
-            arg_dict[arg_key].append(process_arg(arg))
+            arg_dict[arg_key].append(_process_arg(arg, backend=backend))
 
     # Make second pass through, to catch flags that have no vals.
     # Assume such flags indicate that a boolean parameter should have
@@ -191,34 +207,13 @@ def parse_and_execute_grid_search(cmd, args):
     # Make sure that if num_cpu > 1, the algorithm being used is compatible
     # with MPI.
     if "num_cpu" in run_kwargs and not (run_kwargs["num_cpu"] == 1):
-        assert cmd in add_with_backends(MPI_COMPATIBLE_ALGOS), friendly_err(
+        assert cmd in _add_with_backends(MPI_COMPATIBLE_ALGOS), friendly_err(
             "This algorithm can't be run with num_cpu > 1."
         )
 
     # Special handling for environment: make sure that env_name is a real,
     # registered gym environment.
-    valid_envs = [e.id for e in list(gym.envs.registry.all())]
-    assert "env_name" in arg_dict, friendly_err(
-        "You did not give a value for --env_name! Add one and try again."
-    )
-    for env_name in arg_dict["env_name"]:
-        err_msg = dedent(
-            """
-
-            %s is not registered with Gym.
-
-            Recommendations:
-
-                * Check for a typo (did you include the version tag?)
-
-                * View the complete list of valid Gym environments at
-
-                    https://gym.openai.com/envs/
-
-            """
-            % env_name
-        )
-        assert env_name in valid_envs, err_msg
+    validate_gym_env()
 
     # Construct and execute the experiment grid.
     eg = ExperimentGrid(name=exp_name)
@@ -229,7 +224,7 @@ def parse_and_execute_grid_search(cmd, args):
 
 def run(input_args):
     """Function that is used to run the experiments. I modified this component
-    compared to the Machine Learning Control such that I can import it in other
+    compared to the SpiningUp such that I can import it in other
     modules.
 
     Args:
@@ -237,7 +232,7 @@ def run(input_args):
     """
 
     cmd = sys.argv[1] if len(input_args) > 1 else "help"
-    valid_algos = add_with_backends(BASE_ALGO_NAMES)
+    valid_algos = _add_with_backends(BASE_ALGO_NAMES)
     valid_utils = ["plot", "test_policy", "eval_robustness"]
     valid_help = ["--help", "-h", "help"]
     valid_version = ["--version"]
@@ -316,7 +311,7 @@ def run(input_args):
         # Assume that the user plans to execute an algorithm. Run custom
         # parsing on the arguments and build a grid search to execute.
         args = input_args[2:]
-        parse_and_execute_grid_search(cmd, args)
+        _parse_and_execute_grid_search(cmd, args)
 
 
 if __name__ == "__main__":

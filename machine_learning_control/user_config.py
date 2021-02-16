@@ -28,7 +28,6 @@ DEFAULT_SHORTHAND = True
 WAIT_BEFORE_LAUNCH = 5
 
 # Logger std out output type
-# NOTE (rickstaa):The format in which the statistics are displayed
-# to the terminal. Options are "table" which supplies them as a table and "line"
-# which prints them in one line
+# NOTE:The format in which the statistics are displayed to the terminal. Options are
+# "table"  which supplies them as a table and "line" which prints them in one line
 DEFAULT_STD_OUT_TYPE = "line"

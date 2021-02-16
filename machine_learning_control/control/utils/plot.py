@@ -67,11 +67,20 @@ def plot_data(
     if isinstance(data, list):
         data = pd.concat(data, ignore_index=True)
     sns.set(style="darkgrid", font_scale=font_scale)
-    sns.tsplot(
+    # sns.tsplot(
+    #     data=data,
+    #     x=xaxis,
+    #     y=value,
+    #     units="Unit",
+    #     condition=condition,
+    #     ci="sd",
+    #     **kwargs,
+    # )
+    sns.lineplot(
         data=data,
-        time=xaxis,
-        value=value,
-        unit="Unit",
+        x=xaxis,
+        y=value,
+        units="Unit",
         condition=condition,
         ci="sd",
         **kwargs,
@@ -127,7 +136,7 @@ def get_datasets(logdir, condition=None):
                 config = json.load(config_path)
                 if "exp_name" in config:
                     exp_name = config["exp_name"]
-            except:
+            except Exception:
                 print("No file named config.json")
             condition1 = condition or exp_name or "exp"
             condition2 = condition1 + "-" + str(exp_idx)
@@ -139,7 +148,7 @@ def get_datasets(logdir, condition=None):
 
             try:
                 exp_data = pd.read_table(os.path.join(root, data_file[0]))
-            except:
+            except Exception:
                 print("Could not read from %s" % os.path.join(root, data_file[0]))
                 continue
             performance = (
