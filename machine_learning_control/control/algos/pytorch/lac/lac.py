@@ -1614,7 +1614,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--tb_log_freq",
         type=str,
-        default="high",
+        default="low",
         help=(
             "the tensorboard log frequency. Options are 'low' (Recommended: logs at "
             "every epoch) and 'high' (logs at every SGD update batch). Default is 'low'"
