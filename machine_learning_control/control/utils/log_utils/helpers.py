@@ -99,6 +99,7 @@ def setup_logger_kwargs(
     seed=None,
     save_checkpoints=False,
     use_tensorboard=False,
+    tb_log_freq="low",
     verbose=True,
     verbose_fmt=DEFAULT_STD_OUT_TYPE,
     verbose_vars=[],
@@ -135,6 +136,9 @@ def setup_logger_kwargs(
             Defaults to ``False``.
         use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
             to True.
+        tb_log_freq (str, optional): The tensorboard log frequency. Options are 'low'
+            (Recommended: logs at every epoch) and 'high' (logs at every SGD update "
+            batch). Defaults to 'low' since this is less resource intensive.
         verbose (bool, optional): Whether you want to log to the std_out. Defaults
             to ``True``.
         verbose_fmt (str, optional): The format in which the statistics are
@@ -174,6 +178,7 @@ def setup_logger_kwargs(
         exp_name=exp_name,
         save_checkpoints=save_checkpoints,
         use_tensorboard=use_tensorboard,
+        tb_log_freq=tb_log_freq,
         verbose=verbose,
         verbose_fmt=verbose_fmt,
         verbose_vars=verbose_vars,

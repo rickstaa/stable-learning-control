@@ -411,7 +411,8 @@ class LAC(nn.Module):
                 q2_pi_targ = self.ac_targ.Q2(o_, a2)
                 if self._opt_type.lower() == "minimize":
                     q_pi_targ = torch.max(
-                        q1_pi_targ, q2_pi_targ,
+                        q1_pi_targ,
+                        q2_pi_targ,
                     )  # Use max clipping  to prevent overestimation bias.
                 else:
                     q_pi_targ = torch.min(
@@ -655,7 +656,9 @@ class LAC(nn.Module):
         try:
             super().load_state_dict(state_dict)
         except AttributeError as e:
-            raise type(e)("The 'state_dict' could not be loaded successfully.",) from e
+            raise type(e)(
+                "The 'state_dict' could not be loaded successfully.",
+            ) from e
 
     def _update_targets(self):
         """Updates the target networks based on a Exponential moving average
@@ -733,7 +736,8 @@ class LAC(nn.Module):
     def alpha(self, set_val):
         """Property used to make sure alpha and log_alpha are related."""
         self.log_alpha.data = torch.as_tensor(
-            np.log(1e-37 if set_val < 1e-37 else set_val), dtype=self.log_alpha.dtype,
+            np.log(1e-37 if set_val < 1e-37 else set_val),
+            dtype=self.log_alpha.dtype,
         )
 
     @property
@@ -749,7 +753,8 @@ class LAC(nn.Module):
     def labda(self, set_val):
         """Property used to make sure labda and log_labda are related."""
         self.log_labda.data = torch.as_tensor(
-            np.log(1e-37 if set_val < 1e-37 else set_val), dtype=self.log_labda.dtype,
+            np.log(1e-37 if set_val < 1e-37 else set_val),
+            dtype=self.log_labda.dtype,
         )
 
     @property
@@ -980,8 +985,12 @@ def lac(
         if logger_kwargs["verbose_vars"] is None
         else logger_kwargs["verbose_vars"]
     )  # NOTE: Done to ensure the std_out doesn't get cluttered.
+    tb_low_log_freq = logger_kwargs.pop("tb_log_freq").lower() == "low"
     logger = EpochLogger(**logger_kwargs)
-    logger.save_config(locals())  # Write hyperparameters to logger
+    hyper_paramet_dict = {
+        k: v for k, v in locals().items() if k not in ["logger"]
+    }  # Retrieve hyperparameters (Ignore logger object)
+    logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger
 
     env, test_env = env_fn(), env_fn()
     obs_dim = env.observation_space.shape
@@ -1092,24 +1101,37 @@ def lac(
 
     logger.setup_pytorch_saver(policy)
 
-    # Store initial learning rates
+    # Setup diagnostics tb_write dict and store initial learning rates
+    diag_tb_log_list = (
+        ["ErrorL", "LossPi", "Alpha", "LossAlpha", "Lambda", "LossLambda", "Entropy"]
+        if use_lyapunov
+        else ["LossQ", "LossPi", "Alpha", "LossAlpha", "Entropy"]
+    )
     if logger_kwargs["use_tensorboard"]:
-        logger.add_scalar(
-            "LearningRates/Lr_a", policy._pi_optimizer.param_groups[0]["lr"], 0
+        logger.log_to_tb(
+            "Lr_a",
+            policy._pi_optimizer.param_groups[0]["lr"],
+            tb_prefix="LearningRates",
+            global_step=0,
         )
-        logger.add_scalar(
-            "LearningRates/Lr_c", policy._c_optimizer.param_groups[0]["lr"], 0
+        logger.log_to_tb(
+            "Lr_c",
+            policy._c_optimizer.param_groups[0]["lr"],
+            tb_prefix="LearningRates",
+            global_step=0,
         )
-        logger.add_scalar(
-            "LearningRates/Lr_alpha",
+        logger.log_to_tb(
+            "Lr_alpha",
             policy._log_alpha_optimizer.param_groups[0]["lr"],
-            0,
+            tb_prefix="LearningRates",
+            global_step=0,
         )
         if use_lyapunov:
-            logger.add_scalar(
-                "LearningRates/Lr_labda",
+            logger.log_to_tb(
+                "Lr_labda",
                 policy._log_labda_optimizer.param_groups[0]["lr"],
-                0,
+                tb_prefix="LearningRates",
+                global_step=0,
             )
 
     # Main loop: collect experience in env and update/log each epoch
@@ -1159,7 +1181,13 @@ def lac(
             for _ in range(steps_per_update):
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
-                logger.store(**update_diagnostics)  # Log diagnostics
+
+                # Log diagnostics
+                logger.store(**update_diagnostics)
+
+            # SGD batch tb logging
+            if logger_kwargs["use_tensorboard"] and not tb_low_log_freq:
+                logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
 
         # End of epoch handling (Save model, test performance and log data)
         if (t + 1) % steps_per_epoch == 0:
@@ -1174,7 +1202,9 @@ def lac(
                 policy, test_env, num_test_episodes, max_ep_len=max_ep_len
             )
             logger.store(
-                TestEpRet=eps_ret, TestEpLen=eps_len, extend=True,
+                TestEpRet=eps_ret,
+                TestEpLen=eps_len,
+                extend=True,
             )
 
             # Epoch based learning rate decay
@@ -1188,34 +1218,88 @@ def lac(
             # Log info about epoch
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("TotalEnvInteracts", t)
-            logger.log_tabular("EpRet", with_min_and_max=True)
-            logger.log_tabular("TestEpRet", with_min_and_max=True)
-            logger.log_tabular("EpLen", average_only=True)
-            logger.log_tabular("TestEpLen", average_only=True)
-            logger.log_tabular("Lr_a", policy._pi_optimizer.param_groups[0]["lr"])
-            logger.log_tabular("Lr_c", policy._c_optimizer.param_groups[0]["lr"])
             logger.log_tabular(
-                "Lr_alpha", policy._log_alpha_optimizer.param_groups[0]["lr"]
+                "EpRet",
+                with_min_and_max=True,
+                tb_write=logger_kwargs["use_tensorboard"],
+            )
+            logger.log_tabular(
+                "TestEpRet",
+                with_min_and_max=True,
+                tb_write=logger_kwargs["use_tensorboard"],
+            )
+            logger.log_tabular(
+                "EpLen", average_only=True, tb_write=logger_kwargs["use_tensorboard"]
+            )
+            logger.log_tabular(
+                "TestEpLen",
+                average_only=True,
+                tb_write=logger_kwargs["use_tensorboard"],
+            )
+            logger.log_tabular(
+                "Lr_a",
+                policy._pi_optimizer.param_groups[0]["lr"],
+                tb_write=logger_kwargs["use_tensorboard"],
+                tb_prefix="LearningRates",
+            )
+            logger.log_tabular(
+                "Lr_c",
+                policy._c_optimizer.param_groups[0]["lr"],
+                tb_write=logger_kwargs["use_tensorboard"],
+                tb_prefix="LearningRates",
+            )
+            logger.log_tabular(
+                "Lr_alpha",
+                policy._log_alpha_optimizer.param_groups[0]["lr"],
+                tb_write=logger_kwargs["use_tensorboard"],
+                tb_prefix="LearningRates",
             )
             if use_lyapunov:
                 logger.log_tabular(
-                    "Lr_labda", policy._log_labda_optimizer.param_groups[0]["lr"]
+                    "Lr_labda",
+                    policy._log_labda_optimizer.param_groups[0]["lr"],
+                    tb_write=logger_kwargs["use_tensorboard"],
+                    tb_prefix="LearningRates",
                 )
-            logger.log_tabular("Alpha", average_only=True)
+            logger.log_tabular(
+                "Alpha",
+                average_only=True,
+                tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+            )
             if use_lyapunov:
-                logger.log_tabular("Lambda", average_only=True)
-            logger.log_tabular("LossPi", average_only=True)
+                logger.log_tabular(
+                    "Lambda",
+                    average_only=True,
+                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                )
+            logger.log_tabular(
+                "LossPi",
+                average_only=True,
+                tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+            )
             if use_lyapunov:
-                logger.log_tabular("ErrorL", average_only=True)
+                logger.log_tabular(
+                    "ErrorL",
+                    average_only=True,
+                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                )
             else:
-                logger.log_tabular("LossQ", average_only=True)
+                logger.log_tabular(
+                    "LossQ",
+                    average_only=True,
+                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                )
             if adaptive_temperature:
                 logger.log_tabular(
-                    "LossAlpha", average_only=True,
+                    "LossAlpha",
+                    average_only=True,
+                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
                 )
             if use_lyapunov:
                 logger.log_tabular(
-                    "LossLambda", average_only=True,
+                    "LossLambda",
+                    average_only=True,
+                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
                 )
             if use_lyapunov:
                 logger.log_tabular("LVals", with_min_and_max=True)
@@ -1223,9 +1307,13 @@ def lac(
                 logger.log_tabular("Q1Vals", with_min_and_max=True)
                 logger.log_tabular("Q2Vals", with_min_and_max=True)
             logger.log_tabular("LogPi", with_min_and_max=True)
-            logger.log_tabular("Entropy", average_only=True)
+            logger.log_tabular(
+                "Entropy",
+                average_only=True,
+                tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+            )
             logger.log_tabular("Time", time.time() - start_time)
-            logger.dump_tabular()
+            logger.dump_tabular(global_step=t)
 
     # Export model to 'TorchScript'
     if export:
@@ -1307,7 +1395,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_lyapunov",
         type=bool,
-        default=False,
+        default=True,
         help="lyapunov toggle boolean (default: True)",
     )
     parser.add_argument(
@@ -1520,8 +1608,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_tensorboard",
         type=bool,
-        default=False,
+        default=True,
         help="use tensorboard (default: False)",
+    )
+    parser.add_argument(
+        "--tb_log_freq",
+        type=str,
+        default="high",
+        help=(
+            "the tensorboard log frequency. Options are 'low' (Recommended: logs at "
+            "every epoch) and 'high' (logs at every SGD update batch). Default is 'low'"
+            ""
+        ),
     )
     args = parser.parse_args()
 
@@ -1549,6 +1647,7 @@ if __name__ == "__main__":
         args.seed,
         save_checkpoints=args.save_checkpoints,
         use_tensorboard=args.use_tensorboard,
+        tb_log_freq=args.tb_log_freq,
         verbose=args.verbose,
         verbose_fmt=args.verbose_fmt,
         verbose_vars=args.verbose_vars,
