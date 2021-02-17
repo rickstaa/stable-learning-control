@@ -12,6 +12,7 @@
 -   [ ] Add GPU support.
 -   [ ] Add tensorboard support.
 -   [ ] Remove strickly pined versions and mayke sure it works for python > 3.6
+-   [ ] Check if logger (tensorboard) commands work in command line.
 
 ## Docs
 
@@ -27,6 +28,7 @@
 -   [ ] Add install options [torch/tensorflow/hyperparameter/ect]
 -   [ ] State that default is torch if people want to use tensorflow use pip install .[tf]
 -   [ ] Gym install types instaructions!
+-   [ ] Tensorboard instructions.
 
 # Save pytorch inference guide
 

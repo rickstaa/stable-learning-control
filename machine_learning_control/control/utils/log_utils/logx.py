@@ -71,7 +71,8 @@ class Logger:
                 :py:mod:`user_config` file.
             verbose_vars (list, optional): A list of variables you want to log to the
                 std_out. By default all variables are logged.
-            use_tensorboard (bool): Specifies whether you want also log to tensorboard.
+            use_tensorboard (bool): Specifies whether you want also log to Tensorboard.
+                This variable is set to True if you log a variable to Tensorboard.
             save_checkpoints (bool, optional): Save checkpoints during training.
                 Defaults to ``False``.
 
@@ -129,7 +130,7 @@ class Logger:
         self._checkpoint = 0
 
         self.tb_writer = None
-        self._use_tensorboard = use_tensorboard
+        self.use_tensorboard = use_tensorboard  # Create tensorboard writer
         self._tabular_to_tb_dict = (
             dict()
         )  # Stores whether tabular is logged to tensorboard when dump_tabular is called
@@ -138,6 +139,7 @@ class Logger:
         )  # Used for keeping count of the current global step
 
     def log(self, msg, color="green"):
+        # TODO: Use this instead of print(colorize()) inside script
         """Print a colorized message to stdout.
 
         Args:
@@ -148,8 +150,32 @@ class Logger:
         if proc_id() == 0:
             print(colorize(msg, color, bold=True))
 
+    def log_to_tb(self, key, val, tb_prefix=None, tb_alias=None, global_step=None):
+        """Log a value to Tensorboard.
+
+        Args:
+            key (str):  The name of the diagnostic.
+            val: A value for the diagnostic.
+            tb_prefix(str, optional): A prefix which can be added to group the
+                variables.
+            tb_alias (str, optional): A tb alias for the variable you want to store
+                store. Defaults to empty dict(). If not supplied the variable name is
+                used.
+            global_step (int, optional): Global step value to record. Uses internal step
+                counter if global step is not supplied.
+        """
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        var_name = tb_alias if tb_alias is not None else key
+        var_name = tb_prefix + "/" + var_name if tb_prefix is not None else var_name
+        self._write_to_tb(var_name, val, global_step=global_step)
+
     def log_tabular(
-        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
+        self,
+        key,
+        val,
+        tb_write=False,
+        tb_prefix=None,
+        tb_alias=None,
     ):
         """Log a value of some diagnostic.
 
@@ -167,6 +193,9 @@ class Logger:
                 here.
             tb_write (bool, optional): Boolean specifying whether you also want to write
                 the value to the tensorboard logfile. Defaults to ``False``.
+            tb_metrics (union[list[str], str], optional): List containing the metrics
+                you want to write to tensorboard. Options are ``['avg', 'std', 'min',
+                'max']. Defaults to ``avg``.
             tb_prefix(str, optional): A prefix which can be added to group the
                 variables.
             tb_alias (str, optional): A tb alias for the variable you want to store
@@ -191,6 +220,136 @@ class Logger:
             "tb_prefix": tb_prefix,
             "tb_alias": tb_alias,
         }
+
+    def dump_tabular(self, global_step=None):
+        """Write all of the diagnostics from the current iteration.
+
+        Writes both to stdout, tensorboard and to the output file.
+
+        Args:
+            global_step (int, optional): Global step value to record. Uses internal step
+            counter if global step is not supplied.
+        """
+        if proc_id() == 0:
+            vals = []
+            print_dict = {}
+            print_keys = []
+            print_vals = []
+
+            # Retrieve data from current row
+            for key in self._log_headers:
+                val = self._log_current_row.get(key, "")
+                valstr = (
+                    ("%8.3g" if self.verbose_table else "%.3g") % val
+                    if hasattr(val, "__float__")
+                    else val
+                )
+                print_keys.append(key)
+                print_vals.append(valstr)
+                print_dict[key] = valstr
+                vals.append(val)
+
+            # Log to stdout
+            if self.verbose:
+                key_filter = self.verbose_vars if self.verbose_vars else print_keys
+                if self.verbose_table:
+                    key_lens = [len(key) for key in self._log_headers]
+                    max_key_len = max(15, max(key_lens))
+                    keystr = "%" + "%d" % max_key_len
+                    fmt = "| " + keystr + "s | %15s |"
+                    n_slashes = 22 + max_key_len
+                    print("-" * n_slashes)
+                    print_str = "\n".join(
+                        [
+                            fmt % (key, val)
+                            for key, val in zip(print_keys, print_vals)
+                            if key in key_filter
+                        ]
+                    )
+                    print(print_str)
+                    print("-" * n_slashes, flush=True)
+                else:
+                    print_str = "|".join(
+                        [
+                            "%s:%s"
+                            % (
+                                "Steps"
+                                if key == "TotalEnvInteracts"
+                                else key.replace("Average", "Avg"),
+                                val,
+                            )
+                            for key, val in zip(print_keys, print_vals)
+                            if key in key_filter
+                        ]
+                    )
+                    print(print_str)
+            else:  # Increase epoch steps and time on the same line
+                print(
+                    colorize(
+                        "\r{}: {:8.3G}, {}: {:8.3g}, {}: {:8.3G} s".format(
+                            "Epoch",
+                            float(print_dict["Epoch"]),
+                            "Step",
+                            float(print_dict["TotalEnvInteracts"]),
+                            "Time",
+                            float(print_dict["Time"]),
+                        ),
+                        "green",
+                    ),
+                    end="",
+                )
+
+            # Log to file
+            if self.output_file is not None:
+                if self._first_row:
+                    self.output_file.write("\t".join(self._log_headers) + "\n")
+                self.output_file.write("\t".join(map(str, vals)) + "\n")
+                self.output_file.flush()
+
+            # Write tabular to tensorboard log
+            for key in self._log_headers:
+                if self._tabular_to_tb_dict[key]["tb_write"]:
+                    val = self._log_current_row.get(key, "")
+                    # Use internal counter if global_step is None
+                    if global_step is None:
+                        if key in self._log_headers:
+                            global_step = self._global_step
+                    var_name = (
+                        self._tabular_to_tb_dict[key]["tb_alias"]
+                        if self._tabular_to_tb_dict[key]["tb_alias"] is not None
+                        else key
+                    )
+                    var_name = (
+                        self._tabular_to_tb_dict[key]["tb_prefix"] + "/" + var_name
+                        if self._tabular_to_tb_dict[key]["tb_prefix"] is not None
+                        else var_name
+                    )
+                    self._write_to_tb(var_name, val, global_step=global_step)
+
+        self._log_current_row.clear()
+        self._first_row = False
+
+    def get_logdir(self, *args, **kwargs):
+        """Get Logger and Tensorboard Summary writer logdirs.
+
+        Args:
+            *args: All args to pass to thunk.
+            **kwargs: All kwargs to pass to thunk.
+
+        Returns(dict): dict containing:
+            output_dir(str): Logger output directory.
+            tb_output_dir(str): Tensorboard writer output directory.
+        """
+        if self._use_tensorboard:
+            return {
+                "output_dir": self.output_dir,
+                "tb_output_dir": self.tb_writer.get_logdir(*args, **kwargs),
+            }
+        else:
+            return {
+                "output_dir": self.output_dir,
+                "tb_output_dir": "",
+            }
 
     def save_config(self, config):
         """Log an experiment configuration.
@@ -416,95 +575,6 @@ class Logger:
 
                 self._checkpoint += 1  # Increase epoch
 
-    def dump_tabular(self, global_step=None):
-        """Write all of the diagnostics from the current iteration.
-
-        Writes both to stdout, tensorboard and to the output file.
-
-        Args:
-            global_step (int, optional): Global step value to record. Uses internal step
-            counter if global step is not supplied.
-        """
-        if proc_id() == 0:
-            vals = []
-            print_dict = {}
-            print_keys = []
-            print_vals = []
-
-            # Retrieve data from current row
-            for key in self._log_headers:
-                val = self._log_current_row.get(key, "")
-                valstr = (
-                    ("%8.3g" if self.verbose_table else "%.3g") % val
-                    if hasattr(val, "__float__")
-                    else val
-                )
-                print_keys.append(key)
-                print_vals.append(valstr)
-                print_dict[key] = valstr
-                vals.append(val)
-
-            # Log to stdout
-            if self.verbose:
-                key_filter = self.verbose_vars if self.verbose_vars else print_keys
-                if self.verbose_table:
-                    key_lens = [len(key) for key in self._log_headers]
-                    max_key_len = max(15, max(key_lens))
-                    keystr = "%" + "%d" % max_key_len
-                    fmt = "| " + keystr + "s | %15s |"
-                    n_slashes = 22 + max_key_len
-                    print("-" * n_slashes)
-                    print_str = "\n".join(
-                        [
-                            fmt % (key, val)
-                            for key, val in zip(print_keys, print_vals)
-                            if key in key_filter
-                        ]
-                    )
-                    print(print_str)
-                    print("-" * n_slashes, flush=True)
-                else:
-                    print_str = "|".join(
-                        [
-                            "%s:%s"
-                            % (
-                                "Steps"
-                                if key == "TotalEnvInteracts"
-                                else key.replace("Average", "Avg"),
-                                val,
-                            )
-                            for key, val in zip(print_keys, print_vals)
-                            if key in key_filter
-                        ]
-                    )
-                    print(print_str)
-            else:  # Increase epoch steps and time on the same line
-                print(
-                    colorize(
-                        "\r{}: {:8.3G}, {}: {:8.3g}, {}: {:8.3G} s".format(
-                            "Epoch",
-                            float(print_dict["Epoch"]),
-                            "Step",
-                            float(print_dict["TotalEnvInteracts"]),
-                            "Time",
-                            float(print_dict["Time"]),
-                        ),
-                        "green",
-                    ),
-                    end="",
-                )
-
-            # Log to file
-            if self.output_file is not None:
-                if self._first_row:
-                    self.output_file.write("\t".join(self._log_headers) + "\n")
-                self.output_file.write("\t".join(map(str, vals)) + "\n")
-                self.output_file.flush()
-        self._log_current_row.clear()
-        self._first_row = False
-
-        # TODO: Add tb write
-
     def _write_to_tb(self, var_name, data, global_step=None):
         """Writes data to tensorboard log file.
 
@@ -535,7 +605,6 @@ class Logger:
             ):
                 pass
         else:
-
             # Try to write data to tb as as historgram
             try:
                 self.tb_writer.add_histogram(var_name, data, global_step=global_step)
@@ -562,17 +631,17 @@ class Logger:
 
     @property
     def use_tensorboard(self):
-        """Get or set the current value of use_tensorboard
-
-        Setting the use_tensorboard variable to True will create a tensorboard writer.
-        Setting it to False will delete existing tensorboard writers.
-        """
         return self._use_tensorboard
 
     @use_tensorboard.setter
     def use_tensorboard(self, value):
+        """Custom setter that makes sure a Tensorboard writer is present on the
+        :attr:`.MyClass.tb_writer` attribute when ``use_tensorboard`` is set to ``True``
+        . This tensorboard writer can be used to write to the Tensorboard.
 
-        # Change tensorboard boolean
+        Args:
+            value (bool): Whether you want to use tensorboard logging.
+        """
         self._use_tensorboard = value
 
         # Create tensorboard writer if use_tensorboard == True else delete
@@ -591,21 +660,12 @@ class Logger:
     @property
     def _global_step(self):
         """Retrieve the current estimated global step count."""
-        return max(self._step_count_dict.values())
+        return max(list(self._step_count_dict.values()) + [0.0])
 
-    def get_logdir(self, *args, **kwargs):
-        """Get summary writer logdir.
-
-        Wrapper that calls the `SummaryWriter.get_logdir` method while first making
-        sure a SummaryWriter object exits. The `get_logdir` method can be used to
-        retrieve the directory where event files will be written.
-
-        Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
-        """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
-        return self.tb_writer.get_logdir(*args, **kwargs)
+    """Tensorboard related methods
+    Below are several wrapper methods which make the Tensorboard writer methods
+    available directly on the :class:`.EpochLogger` class.
+    """
 
     def add_hparams(self, *args, **kwargs):
         """Adds_hparams to tb summary.
@@ -956,13 +1016,15 @@ class EpochLogger(Logger):
         """Constructs all the necessary attributes for the EpochLogger object."""
         super().__init__(*args, **kwargs)
         self.epoch_dict = dict()
+        self._tb_index_dict = dict()
+        self._n_table_dumps = 0
 
     def store(
         self,
         tb_write=False,
-        global_step=None,
         tb_aliases=dict(),
         extend=False,
+        global_step=None,
         **kwargs,
     ):
         """Save something into the epoch_logger's current state.
@@ -971,15 +1033,16 @@ class EpochLogger(Logger):
         values.
 
         Args:
-            tb_write (bool, optional): Boolean specifying whether you also want to write
-                the value to the tensorboard logfile. Defaults to ``False``.
-            global_step (int, optional): Global step value to record. Uses internal step
-                counter if global step is not supplied.
+            tb_write (union[bool, dict], optional): Boolean or dict of key boolean pairs
+                specifying whether you also want to write the value to the tensorboard
+                logfile. Defaults to ``False``.
             tb_aliases (dict, optional): Dictionary that can be used to set aliases for
                 the variables you want to store. Defaults to empty dict().
             extend (bool, optional): Boolean specifying whether you want to extend the
                 values to the log buffer. By default ``false`` meaning the values are
                 appended to the buffer.
+            global_step (int, optional): Global step value to record. Uses internal step
+                counter if global step is not supplied.
         """
         for k, v in kwargs.items():
 
@@ -1001,16 +1064,78 @@ class EpochLogger(Logger):
                 else self._global_step
             )
 
-            # Check if global step was supplied else use internal counter
-            global_step = global_step if global_step else self._global_step
-
             # Check if a alias was given for the current parameter
             var_name = k if k not in tb_aliases.keys() else tb_aliases[k]
 
             # Write variable value to tensorboard
-            # TODO: Check if this is not redundant
-            if tb_write:
+            tb_write_key = (
+                (tb_write[k] if k in tb_write.keys() else False)
+                if isinstance(tb_write, dict)
+                else tb_write
+            )
+            if tb_write_key:
+                global_step = (
+                    global_step if global_step is not None else self._global_step
+                )  # Use internal counter if global_step is None
                 self._write_to_tb(var_name, v, global_step=global_step)
+
+    def log_to_tb(
+        self,
+        keys,
+        val=None,
+        with_min_and_max=False,
+        average_only=False,
+        tb_prefix=None,
+        tb_alias=None,
+        global_step=None,
+    ):
+        """Log a diagnostic to Tensorboard. This function takes or a list of keys or a
+        key-value pair. If only keys are supplied, averages will be calculated using
+        the new data found in the Loggers internal storage. If a key-value pair is
+        supplied, this pair will be directly logged to Tensorboard.
+
+        Args:
+            keys (union[list[str], str]): The name(s) of the diagnostic.
+            val: A value for the diagnostic.
+            with_min_and_max (bool): If true, log min and max values of the
+                diagnostic.
+            average_only (bool): If true, do not log the standard deviation
+                of the diagnostic.
+            tb_prefix(str, optional): A prefix which can be added to group the
+                variables.
+            tb_alias (str, optional): A tb alias for the variable you want to store
+                store. Defaults to empty dict(). If not supplied the variable name is
+                used.
+            global_step (int, optional): Global step value to record. Uses internal step
+                counter if global step is not supplied.
+        """
+        if val is not None:  # When key and value are supplied use direct write
+            super().log_to_tb(
+                keys,
+                val,
+                tb_prefix=tb_prefix,
+                tb_alias=tb_alias,
+                global_step=global_step,
+            )
+        else:  # When only keys are supplied use internal storage
+            keys = [keys] if not isinstance(keys, list) else keys
+            for key in keys:
+                if global_step is None:  # Retrieve global step if not supplied
+                    if self._n_table_dumps >= 1:
+                        global_step_tmp = self._global_step
+                    elif key in self.epoch_dict.keys():
+                        global_step_tmp = len(self.epoch_dict[key])
+                else:
+                    global_step_tmp = global_step
+
+                self._log_tb_statistics(
+                    key,
+                    with_min_and_max=with_min_and_max,
+                    average_only=average_only,
+                    tb_prefix=tb_prefix,
+                    tb_alias=tb_alias,
+                    global_step=global_step_tmp,
+                )
 
     def log_tabular(
         self,
@@ -1018,7 +1143,7 @@ class EpochLogger(Logger):
         val=None,
         with_min_and_max=False,
         average_only=False,
-        tb_write=False,  # TODO: Redundant already defined in store
+        tb_write=False,
         tb_prefix=None,
         tb_alias=None,
     ):
@@ -1046,9 +1171,14 @@ class EpochLogger(Logger):
         """
         if val is not None:
             super().log_tabular(
-                key, val, tb_write=tb_write, tb_prefix=tb_prefix, tb_alias=tb_alias
+                key,
+                val,
+                tb_write=tb_write,
+                tb_prefix=tb_prefix,
+                tb_alias=tb_alias,
             )
         else:
+
             v = self.epoch_dict[key]
             vals = (
                 np.concatenate(v)
@@ -1088,6 +1218,20 @@ class EpochLogger(Logger):
                 )
         self.epoch_dict[key] = []
 
+    def dump_tabular(self, *args, **kwargs):
+        """Small wrapper around the :class:`.Logger` parent class which makes sure that
+        the tensorboard index track dictionary is reset after the table is dumped.
+
+        Args:
+            *args: All args to pass to parent method.
+            **kwargs: All kwargs to pass to parent method.
+        """
+        super().dump_tabular(*args, **kwargs)
+        self._n_table_dumps += 1
+        self._tb_index_dict = {
+            key: 0 for key in self._tb_index_dict.keys()
+        }  # Reset tensorboard logging index storage dict
+
     def get_stats(self, key):
         """Lets an algorithm ask the logger for mean/std/min/max of a diagnostic.
 
@@ -1108,3 +1252,71 @@ class EpochLogger(Logger):
             else v
         )
         return mpi_statistics_scalar(vals)
+
+    def _log_tb_statistics(
+        self,
+        key,
+        with_min_and_max=False,
+        average_only=False,
+        tb_prefix=None,
+        tb_alias=None,
+        global_step=None,
+    ):
+        """Calculates the statistics of a given key from all the new data found in the
+        Loggers internal storage.
+
+        Args:
+            key (union[list[str], str]): The name of the diagnostic.
+            with_min_and_max (bool): If true, log min and max values of the
+                diagnostic.
+            average_only (bool): If true, do not log the standard deviation
+                of the diagnostic.
+            tb_prefix(str, optional): A prefix which can be added to group the
+                variables.
+            tb_alias (str, optional): A tb alias for the variable you want to store
+                store. Defaults to empty dict(). If not supplied the variable name is
+                used.
+            global_step (int, optional): Global step value to record. Uses internal step
+                counter if global step is not supplied.
+        """
+        if key not in self._tb_index_dict.keys():
+            self._tb_index_dict[key] = 0
+
+        v = self.epoch_dict[key]
+        vals = (
+            np.concatenate(v[self._tb_index_dict[key] :])
+            if isinstance(v[0], np.ndarray) and len(v[0].shape) > 0
+            else v[self._tb_index_dict[key] :]
+        )
+        stats = mpi_statistics_scalar(vals, with_min_and_max=with_min_and_max)
+        super().log_to_tb(
+            "Average" + key,
+            stats[0],
+            tb_prefix=tb_prefix + "/Average" if tb_prefix else "Average",
+            tb_alias=tb_alias,
+            global_step=global_step,
+        )
+        if not (average_only):
+            super().log_to_tb(
+                "Std" + key,
+                stats[1],
+                tb_prefix=tb_prefix + "/Std" if tb_prefix else "Std",
+                tb_alias=tb_alias,
+                global_step=global_step,
+            )
+        if with_min_and_max:
+            super().log_to_tb(
+                "Max" + key,
+                stats[3],
+                tb_prefix=tb_prefix + "/Max" if tb_prefix else "Max",
+                tb_alias=tb_alias,
+                global_step=global_step,
+            )
+            super().log_to_tb(
+                "Min" + key,
+                stats[2],
+                tb_prefix=tb_prefix + "/Min" if tb_prefix else "Min",
+                tb_alias=tb_alias,
+                global_step=global_step,
+            )
+        self._tb_index_dict[key] += len(vals)
