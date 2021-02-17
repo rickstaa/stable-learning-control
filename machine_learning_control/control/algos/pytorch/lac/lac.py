@@ -721,7 +721,7 @@ class LAC(nn.Module):
         if lr_alpha_final is not None:
             if self._log_alpha_optimizer.param_groups[0]["lr"] < lr_a_final:
                 self._log_alpha_optimizer.param_groups[0]["lr"] = lr_a_final
-        if lr_labda_final is not None:
+        if lr_labda_final is not None and self._use_lyapunov:
             if self._log_labda_optimizer.param_groups[0]["lr"] < lr_labda_final:
                 self._log_labda_optimizer.param_groups[0]["lr"] = lr_labda_final
 

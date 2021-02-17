@@ -44,7 +44,7 @@ def msg(m, string=""):
     """Send message from one MPI process to the other.
 
     Args:
-        m (string): Message you want to send.
+        m (str): Message you want to send.
         string (str, optional): Additional process description. Defaults to "".
     """
     print(("Message from %d: %s \t " % (MPI.COMM_WORLD.Get_rank(), string)) + str(m))

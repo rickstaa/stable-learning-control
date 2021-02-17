@@ -33,22 +33,22 @@ def plot_data(
     """Function used to plot data.
 
     Args:
-    data (obj): The data you want to plot.
-    xaxis (string): Pick what column from data is used for the x-axis.
-         Defaults to ``TotalEnvInteracts``.
-    value (strings): Pick what columns from data to graph on the y-axis.
-        Submitting multiple values will produce multiple graphs. Defaults
-        to ``Performance``, which is not an actual output of any algorithm.
-        Instead, ``Performance`` refers to either ``AverageEpRet``, the
-        correct performance measure for the on-policy algorithms, or
-        ``AverageTestEpRet``, the correct performance measure for the
-        off-policy algorithms. The plotter will automatically figure out
-        which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
-        each separate logdir.
-    condition (str, optional): The condition to search for. By default ``None``.
-    smooth (int): Smooth data by averaging it over a fixed window. This
-        parameter says how wide the averaging window will be.
-    font_scale (int): The font scale you want to use for the plot text.
+        data (obj): The data you want to plot.
+        xaxis (str): Pick what column from data is used for the x-axis.
+            Defaults to ``TotalEnvInteracts``.
+        value (str): Pick what columns from data to graph on the y-axis.
+            Submitting multiple values will produce multiple graphs. Defaults
+            to ``Performance``, which is not an actual output of any algorithm.
+            Instead, ``Performance`` refers to either ``AverageEpRet``, the
+            correct performance measure for the on-policy algorithms, or
+            ``AverageTestEpRet``, the correct performance measure for the
+            off-policy algorithms. The plotter will automatically figure out
+            which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
+            each separate logdir.
+        condition (str, optional): The condition to search for. By default ``None``.
+        smooth (int): Smooth data by averaging it over a fixed window. This
+            parameter says how wide the averaging window will be.
+        font_scale (int): The font scale you want to use for the plot text.
     """
     if smooth > 1:
         """
@@ -75,35 +75,17 @@ def plot_data(
     #     condition=condition,
     #     ci="sd",
     #     **kwargs,
-    # )
-    sns.lineplot(
-        data=data,
-        x=xaxis,
-        y=value,
-        units="Unit",
-        condition=condition,
-        ci="sd",
-        **kwargs,
-    )
-    """
-    If you upgrade to any version of Seaborn greater than 0.8.1, switch from
-    tsplot to lineplot replacing L29 with:
-
-        sns.lineplot(data=data, x=xaxis, y=value, hue=condition, ci='sd', **kwargs)
-
-    Changes the colorscheme and the default legend style, though.
-    """
+    # )  # NOTE: Use for seaborn < 0.8.1
+    sns.lineplot(data=data, x=xaxis, y=value, hue=condition, ci="sd", **kwargs)
     plt.legend(loc="best").set_draggable(True)
-    # plt.legend(loc='upper center', ncol=6, handlelength=1, mode="expand"
-    #           borderaxespad=0., prop={'size': 13})
-
-    """
-    For the version of the legend used in the Spinning Up benchmarking page,
-    swap L38 with:
-
-    plt.legend(loc='upper center', ncol=6, handlelength=1,
-               mode="expand", borderaxespad=0., prop={'size': 13})
-    """
+    # plt.legend(
+    #     loc="upper center",
+    #     ncol=6,
+    #     handlelength=1,
+    #     mode="expand",
+    #     borderaxespad=0.0,
+    #     prop={"size": 13},
+    # )  # NOTE: Use for Spining Up benchmark like plot
 
     xscale = np.max(np.asarray(data[xaxis])) > 5e3
     if xscale:
@@ -173,7 +155,7 @@ def get_all_datasets(all_logdirs, legend=None, select=None, exclude=None):
 
     Args:
         all_logdirs (list): A list of lig directories you want to use.
-        legend (strings): Optional way to specify legend for the plot. The
+        legend (list[str]): Optional way to specify legend for the plot. The
             plotter legend will automatically use the ``exp_name`` from the
             config.json file, unless you tell it otherwise through this flag.
             This only works if you provide a name for each directory that
@@ -184,9 +166,9 @@ def get_all_datasets(all_logdirs, legend=None, select=None, exclude=None):
             legend string for each one of those matches---unless you have
             removed some of them as candidates via selection or exclusion
             rules (below).)
-        select (strings): Optional selection rule: the plotter will only show
+        select (list[str]): Optional selection rule: the plotter will only show
             curves from logdirs that contain all of these substrings.
-        exclude (strings): Optional exclusion rule: plotter will only show
+        exclude (list[str]): Optional exclusion rule: plotter will only show
             curves from logdirs that do not contain these substrings.
     """
     logdirs = []
@@ -247,10 +229,10 @@ def make_plots(
     """Function used for generating the plots.
 
     Args:
-        logdir (strings): As many log directories (or prefixes to log
+        logdir (str): As many log directories (or prefixes to log
             directories, which the plotter will autocomplete internally) as
             you'd like to plot from.
-        legend (strings): Optional way to specify legend for the plot. The
+        legend (list[str]): Optional way to specify legend for the plot. The
             plotter legend will automatically use the ``exp_name`` from the
             config.json file, unless you tell it otherwise through this flag.
             This only works if you provide a name for each directory that
@@ -261,9 +243,9 @@ def make_plots(
             legend string for each one of those matches---unless you have
             removed some of them as candidates via selection or exclusion
             rules (below).)
-        xaxis (string): Pick what column from data is used for the x-axis.
+        xaxis (str): Pick what column from data is used for the x-axis.
              Defaults to ``TotalEnvInteracts``.
-        value (strings): Pick what columns from data to graph on the y-axis.
+        value (str): Pick what columns from data to graph on the y-axis.
             Submitting multiple values will produce multiple graphs. Defaults
             to ``Performance``, which is not an actual output of any algorithm.
             Instead, ``Performance`` refers to either ``AverageEpRet``, the
@@ -279,9 +261,9 @@ def make_plots(
             separately, use the ``--count`` flag.
         smooth (int): Smooth data by averaging it over a fixed window. This
             parameter says how wide the averaging window will be.
-        select (strings): Optional selection rule: the plotter will only show
+        select (list[str]): Optional selection rule: the plotter will only show
             curves from logdirs that contain all of these substrings.
-        exclude (strings): Optional exclusion rule: plotter will only show
+        exclude (list[str]): Optional exclusion rule: plotter will only show
             curves from logdirs that do not contain these substrings.
         estimator (str): The estimator you want to use in your plot (ie. mean, min max).
     """
@@ -322,10 +304,10 @@ def main():
     """
 
     Args:
-        logdir (strings): As many log directories (or prefixes to log
+        logdir (list[str]): As many log directories (or prefixes to log
             directories, which the plotter will autocomplete internally) as
             you'd like to plot from.
-        legend (strings): Optional way to specify legend for the plot. The
+        legend (list[str]): Optional way to specify legend for the plot. The
             plotter legend will automatically use the ``exp_name`` from the
             config.json file, unless you tell it otherwise through this flag.
             This only works if you provide a name for each directory that
@@ -336,9 +318,9 @@ def main():
             legend string for each one of those matches---unless you have
             removed some of them as candidates via selection or exclusion
             rules (below).)
-        xaxis (string): Pick what column from data is used for the x-axis.
+        xaxis (str): Pick what column from data is used for the x-axis.
              Defaults to ``TotalEnvInteracts``.
-        value (strings): Pick what columns from data to graph on the y-axis.
+        value (str): Pick what columns from data to graph on the y-axis.
             Submitting multiple values will produce multiple graphs. Defaults
             to ``Performance``, which is not an actual output of any algorithm.
             Instead, ``Performance`` refers to either ``AverageEpRet``, the
@@ -354,9 +336,9 @@ def main():
             separately, use the ``--count`` flag.
         smooth (int): Smooth data by averaging it over a fixed window. This
             parameter says how wide the averaging window will be.
-        select (strings): Optional selection rule: the plotter will only show
+        select (list[str]): Optional selection rule: the plotter will only show
             curves from logdirs that contain all of these substrings.
-        exclude (strings): Optional exclusion rule: plotter will only show
+        exclude (list[str]): Optional exclusion rule: plotter will only show
             curves from logdirs that do not contain these substrings.
     """
 

@@ -51,13 +51,13 @@ def call_experiment(
     directly here---to avoid leaking state between successive experiments.
 
     Args:
-        exp_name (string): Name for experiment.
+        exp_name (str): Name for experiment.
         thunk (callable): A python function.
         seed (int): Seed for random number generators.
         num_cpu (int): Number of MPI processes to split into. Also accepts
             'auto', which will set up as many procs as there are cpus on
             the machine.
-        data_dir (string): Used in configuring the logger, to decide where
+        data_dir (str): Used in configuring the logger, to decide where
             to store experiment results. Note: if left as None, data_dir will
             default to ``DEFAULT_DATA_DIR`` from
             ``machine_learning_control/user_config.py``.
@@ -261,7 +261,7 @@ class ExperimentGrid:
         which isn't alphanumeric, shear that off.
 
         Args:
-            key (string): Full grid key name.
+            key (str): Full grid key name.
 
         Returns:
             str: Generated shorthand.
@@ -283,9 +283,9 @@ class ExperimentGrid:
         ``machine_learning_control/user_config.py`` file to ``False``.
 
         Args:
-            key (string): Name of parameter.
+            key (str): Name of parameter.
             vals (value or list of values): Allowed values of parameter.
-            shorthand (string): Optional, shortened name of parameter. For
+            shorthand (str): Optional, shortened name of parameter. For
                 example, maybe the parameter ``steps_per_epoch`` is shortened
                 to ``steps``.
             in_name (bool): When constructing variant names, force the
@@ -474,7 +474,7 @@ class ExperimentGrid:
             num_cpu (int): Number of MPI processes to split into. Also accepts
                 'auto', which will set up as many procs as there are cpus on
                 the machine.
-            data_dir (string): Used in configuring the logger, to decide where
+            data_dir (str): Used in configuring the logger, to decide where
                 to store experiment results. Note: if left as None, data_dir will
                 default to ``DEFAULT_DATA_DIR`` from
                 ``machine_learning_control/user_config.py``.
