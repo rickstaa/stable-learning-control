@@ -4,7 +4,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from machine_learning_control.control.utils.log_utils import colorize
+from machine_learning_control.control.utils.log_utils import log
 
 
 def retrieve_device(device_type="cpu"):
@@ -23,18 +23,18 @@ def retrieve_device(device_type="cpu"):
     if torch.cuda.is_available() and device_type == "gpu":
         device = torch.device("cuda")
     elif not torch.cuda.is_available() and device_type == "gpu":
-        print(
-            colorize(
-                "WARN: GPU computing was enabled but the GPU can not be reached. "
+        log(
+            (
+                "GPU computing was enabled but the GPU can not be reached. "
                 "Reverting back to using CPU.",
                 "yellow",
-                bold=True,
             ),
+            type="warning",
         )
         device = torch.device("cpu")
     else:
         device = torch.device("cpu")
-    print(colorize(f"INFO: Torch is using the {device_type}.", "cyan", bold=True))
+    log(f"Torch is using the {device_type}.", type="info")
     return device
 
 

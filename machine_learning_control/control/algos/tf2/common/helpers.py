@@ -2,9 +2,9 @@
 """
 
 import numpy as np
+import machine_learning_control.control.utils.log_utils as log_utils
 import tensorflow as tf
 from machine_learning_control.control.common.helpers import convert_to_tuple
-from machine_learning_control.control.utils.log_utils import colorize
 
 
 def set_device(device_type="cpu"):
@@ -19,7 +19,7 @@ def set_device(device_type="cpu"):
     """
     if device_type.lower() == "cpu":
         tf.config.set_visible_devices([], "GPU")  # Force disable GPU
-    print(colorize(f"INFO: Tensorflow is using the {device_type}.", "cyan", bold=True))
+    log_utils.log(f"Tensorflow is using the {device_type}.", type="info")
     return device_type.lower()
 
 

@@ -21,6 +21,7 @@ import sys
 import time
 
 import gym
+import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 from machine_learning_control.control.algos.tf2.common import get_lr_scheduler
 from machine_learning_control.control.algos.tf2.common.helpers import (
@@ -41,10 +42,6 @@ from machine_learning_control.control.utils.eval_utils import test_agent
 from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
-)
-from machine_learning_control.control.utils.log_utils import (
-    colorize,
-    setup_logger_kwargs,
 )
 from machine_learning_control.control.utils.log_utils.logx import EpochLogger
 
@@ -213,7 +210,6 @@ class LAC(tf.keras.Model):
             name (str, optional): Additional alias for the LAC algorithm (this is what
                 shows up in the graph). By default "LAC".
         """
-
         super().__init__(name=name)
         self._was_build = False
 
@@ -226,26 +222,24 @@ class LAC(tf.keras.Model):
             raise NotImplementedError(
                 "The LAC algorithm does not yet support discrete observation/action "
                 "spaces. Please open a feature/pull request on "
-                "https://github.com/rickstaa/machine-learning-control/issues if you"
+                "https://github.com/rickstaa/machine-learning-control/issues if you "
                 "need this."
             )
 
-        print(
-            colorize(
-                "INFO: You are using the {} environment.".format(env.unwrapped.spec.id),
-                "green",
-                bold=True,
-            )
+        log_utils.log(
+            "You are using the {} environment.".format(env.unwrapped.spec.id),
+            type="info",
         )
         if use_lyapunov:
-            print(
-                colorize("INFO: You are using the LAC algorithm.", "green", bold=True)
-            )
+            log_utils.log("You are using the LAC algorithm.", type="info")
         else:
-            print(
-                colorize("INFO: You are using the ", "green", bold=True)
-                + colorize("SAC", "yellow", bold=True)
-                + colorize(" algorithm.", "green", bold=True)
+            log_utils.log(
+                (
+                    log_utils.colorize("You are using the ", color="green", bold=True)
+                    + log_utils.colorize("SAC", "yellow", bold=True)
+                    + log_utils.colorize(" algorithm.", "green", bold=True)
+                ),
+                type="info",
             )
 
         # Store algorithm parameters
@@ -317,6 +311,21 @@ class LAC(tf.keras.Model):
         self._c_optimizer = Adam(learning_rate=self._lr_c)
 
     @tf.function
+    def call(self, s, deterministic=False):
+        """Wrapper around the :meth:`.get_action` method that enables users to also
+        receive actions directly by invoking ``LAC(observations)``.
+
+        Args:
+            s (np.numpy): The current state.
+            deterministic (bool, optional): Whether to return a deterministic action.
+                Defaults to ``False``.
+
+        Returns:
+            np.numpy: The current action.
+        """
+        return self.get_action(s, deterministic=deterministic)
+
+    @tf.function
     def get_action(self, s, deterministic=False):
         """Returns the current action of the policy.
 
@@ -337,21 +346,6 @@ class LAC(tf.keras.Model):
         return tf.squeeze(
             self.ac.act(s, deterministic)
         )  # NOTE: Squeeze is critical to ensure a has right shape.
-
-    @tf.function
-    def call(self, s, deterministic=False):
-        """Wrapper around the :meth:`.get_action` method that enables users to also
-        receive actions directly by invoking ``LAC(observations)``.
-
-        Args:
-            s (np.numpy): The current state.
-            deterministic (bool, optional): Whether to return a deterministic action.
-                Defaults to ``False``.
-
-        Returns:
-            np.numpy: The current action.
-        """
-        return self.get_action(s, deterministic=deterministic)
 
     @tf.function
     def update(self, data):
@@ -414,8 +408,8 @@ class LAC(tf.keras.Model):
             )  # NOTE: Target actions coming from *current* policy
 
             # Get target Q values based on optimization type
-            q1_pi_targ = self.ac_targ.Q1(o_, a2)
-            q2_pi_targ = self.ac_targ.Q2(o_, a2)
+            q1_pi_targ = self.ac_targ.Q1([o_, a2])
+            q2_pi_targ = self.ac_targ.Q2([o_, a2])
             if self._opt_type.lower() == "minimize":
                 q_pi_targ = tf.math.maximum(
                     q1_pi_targ,
@@ -431,8 +425,8 @@ class LAC(tf.keras.Model):
             with tf.GradientTape() as q_tape:
 
                 # Retrieve the current Q values
-                q1 = self.ac.Q1(o, a)
-                q2 = self.ac.Q2(o, a)
+                q1 = self.ac.Q1([o, a])
+                q2 = self.ac.Q2([o, a])
 
                 # Calculate Q-critic MSE loss against Bellman backup
                 loss_q1 = 0.5 * tf.reduce_mean(
@@ -485,8 +479,8 @@ class LAC(tf.keras.Model):
 
                 # Retrieve current Q values
                 # NOTE: Actions come from *current* policy
-                q1_pi = self.ac.Q1(o, pi)
-                q2_pi = self.ac.Q2(o, pi)
+                q1_pi = self.ac.Q1([o, pi])
+                q2_pi = self.ac.Q2([o, pi])
                 if self._opt_type.lower() == "minimize":
                     q_pi = tf.math.maximum(q1_pi, q2_pi)
                 else:
@@ -629,15 +623,9 @@ class LAC(tf.keras.Model):
             path (str): The path where you want to export the policy too.
         """
         if tf.config.functions_run_eagerly():
-            print(
-                colorize(
-                    (
-                        "ERROR: Exporting the tensorflow model is not supported in "
-                        "eager mode."
-                    ),
-                    "red",
-                    bold=True,
-                )
+            log_utils.log(
+                "Exporting the tensorflow model is not supported in eager mode.",
+                type="error",
             )
         else:
             # NOTE: Currently we only export the actor as this is what is usefull when
@@ -673,18 +661,27 @@ class LAC(tf.keras.Model):
         """
         if not self._was_build:
             self.build()
-        print(super().summary(), end="\n\n")
-        print(self.ac.summary(), end="\n\n")
-        print(self.ac.pi.summary(), end="\n\n")
-        print(self.ac.pi.net.summary(), end="\n\n")
+        super().summary()
+        print("")
+        self.ac.summary()
+        print("")
+        self.ac.pi.summary()
+        print("")
+        self.ac.pi.net.summary()
+        print("")
         if self._use_lyapunov:
-            print(self.ac.L.summary(), end="\n\n")
-            print(self.ac.L.L.summary(), end="\n\n")
+            self.ac.L.summary()
+            print("")
+            self.ac.L.L.summary()
+            print("")
         else:
-            print(self.ac.Q1.summary(), end="\n\n")
-            print(self.ac.Q1.Q.summary(), end="\n\n")
-            print(self.ac.Q2.summary(), end="\n\n")
-            print(self.ac.Q2.Q.summary(), end="\n\n")
+            self.ac.Q1.summary()
+            print("")
+            self.ac.Q1.Q.summary()
+            print("")
+            self.ac.Q2.summary()
+            self.ac.Q2.Q.summary()
+            print("")
 
     @tf.function
     def _init_targets(self):
@@ -725,7 +722,7 @@ class LAC(tf.keras.Model):
             ):
                 c2_targ.assign(self._polyak * c2_targ + (1 - self._polyak) * c2_main)
 
-    def _set_learning_rates(self, lr_a=None, lr_c=None, lr_alpha=None, lr_labda=None):
+    def set_learning_rates(self, lr_a=None, lr_c=None, lr_alpha=None, lr_labda=None):
         """Adjusts the learning rates of the optimizers.
 
         Args:
@@ -806,8 +803,8 @@ class LAC(tf.keras.Model):
     @use_lyapunov.setter
     def use_lyapunov(self, set_val):
         error_msg = (
-            "WARN: Changing the 'use_lyapunov' value during training is not allowed."
-            "Please open a feature/pull request on "
+            "Changing the 'use_lyapunov' value during training is not allowed. Please "
+            "open a feature/pull request on "
             "https://github.com/rickstaa/machine-learning-control/issues if you need "
             "this."
         )
@@ -1013,8 +1010,14 @@ def lac(
         if logger_kwargs["verbose_vars"] is None
         else logger_kwargs["verbose_vars"]
     )  # NOTE: Done to ensure the std_out doesn't get cluttered.
+    logger_kwargs["backend"] = "tf"
+    tb_low_log_freq = logger_kwargs.pop("tb_log_freq").lower() == "low"
+    use_tensorboard = logger_kwargs.pop("use_tensorboard")
     logger = EpochLogger(**logger_kwargs)
-    logger.save_config(locals())  # Write hyperparameters to logger
+    hyper_paramet_dict = {
+        k: v for k, v in locals().items() if k not in ["logger"]
+    }  # Retrieve hyperparameters (Ignore logger object)
+    logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger
 
     env, test_env = env_fn(), env_fn()
     obs_dim = env.observation_space.shape
@@ -1065,23 +1068,16 @@ def lac(
 
     # Restore policy if supplied
     if start_policy is not None:
-        print(
-            colorize(f"INFO: Restoring model from '{start_policy}'.", "cyan", bold=True)
-        )
+        logger.log(f"Restoring model from '{start_policy}'.", type="info")
         try:
             policy.restore(start_policy)
-            print(colorize("INFO: Model successfully restored.", "cyan", bold=True))
+            logger.log("Model successfully restored.", type="info")
         except Exception as e:
-            print(
-                colorize(
-                    (
-                        "ERROR: Shutting down training since {}.".format(
-                            e.args[0].lower().rstrip(".")
-                        )
-                    ),
-                    "red",
-                    bold=True,
-                )
+            logger.log(
+                "Shutting down training since {}.".format(
+                    e.args[0].lower().rstrip(".")
+                ),
+                type="error",
             )
             sys.exit(0)
 
@@ -1099,35 +1095,50 @@ def lac(
         )
     )
     if use_lyapunov:
-        logger.log("\nNumber of parameters: \t pi: %d, \t L: %d\n" % var_counts)
+        logger.log(
+            "Number of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info"
+        )
     else:
         logger.log(
-            "\nNumber of parameters: \t pi: %d, \t Q1: %d, \t Q2: %d\n" % var_counts
+            "Number of parameters: \t pi: %d, \t Q1: %d, \t Q2: %d\n" % var_counts,
+            type="info",
         )
-
-    logger.log("Network structure:\n")
+    logger.log("Network structure:\n", type="info")
     policy.summary()
 
     logger.setup_tf_saver(policy)
 
-    # Store initial learning rates
-    if logger_kwargs["use_tensorboard"]:
-        logger.add_scalar(
-            "LearningRates/Lr_a", policy._pi_optimizer.param_groups[0]["lr"], 0
+    # Setup diagnostics tb_write dict and store initial learning rates
+    diag_tb_log_list = (
+        ["ErrorL", "LossPi", "Alpha", "LossAlpha", "Lambda", "LossLambda", "Entropy"]
+        if use_lyapunov
+        else ["LossQ", "LossPi", "Alpha", "LossAlpha", "Entropy"]
+    )
+    if use_tensorboard:
+        logger.log_to_tb(
+            "Lr_a",
+            policy._pi_optimizer.lr.numpy(),
+            tb_prefix="LearningRates",
+            global_step=0,
         )
-        logger.add_scalar(
-            "LearningRates/Lr_c", policy._c_optimizer.param_groups[0]["lr"], 0
+        logger.log_to_tb(
+            "Lr_c",
+            policy._c_optimizer.lr.numpy(),
+            tb_prefix="LearningRates",
+            global_step=0,
         )
-        logger.add_scalar(
-            "LearningRates/Lr_alpha",
-            policy._log_alpha_optimizer.param_groups[0]["lr"],
-            0,
+        logger.log_to_tb(
+            "Lr_alpha",
+            policy._log_alpha_optimizer.lr.numpy(),
+            tb_prefix="LearningRates",
+            global_step=0,
         )
         if use_lyapunov:
-            logger.add_scalar(
-                "LearningRates/Lr_labda",
-                policy._log_labda_optimizer.param_groups[0]["lr"],
-                0,
+            logger.log_to_tb(
+                "Lr_labda",
+                policy._log_labda_optimizer.lr.numpy(),
+                tb_prefix="LearningRates",
+                global_step=0,
             )
 
     # Main loop: collect experience in env and update/log each epoch
@@ -1174,7 +1185,7 @@ def lac(
                 lr_c_now = max(
                     lr_c_scheduler(t + 1), lr_c_final
                 )  # Make sure lr is bounded above final lr
-                policy._set_learning_rates(
+                policy.set_learning_rates(
                     lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
                 )
 
@@ -1182,6 +1193,9 @@ def lac(
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
                 logger.store(**update_diagnostics)  # Log diagnostics
+            # SGD batch tb logging
+            if use_tensorboard and not tb_low_log_freq:
+                logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
 
         # End of epoch handling (Save model, test performance and log data)
         if (t + 1) % steps_per_epoch == 0:
@@ -1209,39 +1223,93 @@ def lac(
                 lr_c_now = max(
                     lr_c_scheduler(epoch), lr_c_final
                 )  # Make sure lr is bounded above final
-                policy._set_learning_rates(
+                policy.set_learning_rates(
                     lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
                 )
 
             # Log info about epoch
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("TotalEnvInteracts", t)
-            logger.log_tabular("EpRet", with_min_and_max=True)
-            logger.log_tabular("TestEpRet", with_min_and_max=True)
-            logger.log_tabular("EpLen", average_only=True)
-            logger.log_tabular("TestEpLen", average_only=True)
-            logger.log_tabular("Lr_a", policy._pi_optimizer.lr)
-            logger.log_tabular("Lr_c", policy._c_optimizer.lr)
-            logger.log_tabular("Lr_alpha", policy._log_alpha_optimizer.lr)
+            logger.log_tabular(
+                "EpRet",
+                with_min_and_max=True,
+                tb_write=use_tensorboard,
+            )
+            logger.log_tabular(
+                "TestEpRet",
+                with_min_and_max=True,
+                tb_write=use_tensorboard,
+            )
+            logger.log_tabular("EpLen", average_only=True, tb_write=use_tensorboard)
+            logger.log_tabular(
+                "TestEpLen",
+                average_only=True,
+                tb_write=use_tensorboard,
+            )
+            logger.log_tabular(
+                "Lr_a",
+                policy._pi_optimizer.lr.numpy(),
+                tb_write=use_tensorboard,
+                tb_prefix="LearningRates",
+            )
+            logger.log_tabular(
+                "Lr_c",
+                policy._c_optimizer.lr.numpy(),
+                tb_write=use_tensorboard,
+                tb_prefix="LearningRates",
+            )
+            logger.log_tabular(
+                "Lr_alpha",
+                policy._log_alpha_optimizer.lr.numpy(),
+                tb_write=use_tensorboard,
+                tb_prefix="LearningRates",
+            )
             if use_lyapunov:
-                logger.log_tabular("Lr_labda", policy._log_labda_optimizer.lr)
-            logger.log_tabular("Alpha", average_only=True)
+                logger.log_tabular(
+                    "Lr_labda",
+                    policy._log_labda_optimizer.lr.numpy(),
+                    tb_write=use_tensorboard,
+                    tb_prefix="LearningRates",
+                )
+            logger.log_tabular(
+                "Alpha",
+                average_only=True,
+                tb_write=(use_tensorboard and tb_low_log_freq),
+            )
             if use_lyapunov:
-                logger.log_tabular("Lambda", average_only=True)
-            logger.log_tabular("LossPi", average_only=True)
+                logger.log_tabular(
+                    "Lambda",
+                    average_only=True,
+                    tb_write=(use_tensorboard and tb_low_log_freq),
+                )
+            logger.log_tabular(
+                "LossPi",
+                average_only=True,
+                tb_write=(use_tensorboard and tb_low_log_freq),
+            )
             if use_lyapunov:
-                logger.log_tabular("ErrorL", average_only=True)
+                logger.log_tabular(
+                    "ErrorL",
+                    average_only=True,
+                    tb_write=(use_tensorboard and tb_low_log_freq),
+                )
             else:
-                logger.log_tabular("LossQ", average_only=True)
+                logger.log_tabular(
+                    "LossQ",
+                    average_only=True,
+                    tb_write=(use_tensorboard and tb_low_log_freq),
+                )
             if adaptive_temperature:
                 logger.log_tabular(
                     "LossAlpha",
                     average_only=True,
+                    tb_write=(use_tensorboard and tb_low_log_freq),
                 )
             if use_lyapunov:
                 logger.log_tabular(
                     "LossLambda",
                     average_only=True,
+                    tb_write=(use_tensorboard and tb_low_log_freq),
                 )
             if use_lyapunov:
                 logger.log_tabular("LVals", with_min_and_max=True)
@@ -1249,22 +1317,22 @@ def lac(
                 logger.log_tabular("Q1Vals", with_min_and_max=True)
                 logger.log_tabular("Q2Vals", with_min_and_max=True)
             logger.log_tabular("LogPi", with_min_and_max=True)
-            logger.log_tabular("Entropy", average_only=True)
+            logger.log_tabular(
+                "Entropy",
+                average_only=True,
+                tb_write=(use_tensorboard and tb_low_log_freq),
+            )
             logger.log_tabular("Time", time.time() - start_time)
-            logger.dump_tabular()
+            logger.dump_tabular(global_step=t)
 
     # Export model to 'SavedModel'
     if export:
         policy.export(logger.output_dir)
 
-    print(
-        colorize(
-            "{}Training finished after {}s".format(
-                "\n" if logger_kwargs["verbose"] else "\n\n", time.time() - start_time
-            ),
-            "cyan",
-            bold=True,
-        )
+    print("" if logger_kwargs["verbose"] else "\n")
+    logger.log(
+        "Training finished after {}s".format(time.time() - start_time),
+        type="info",
     )
 
 
@@ -1549,6 +1617,16 @@ if __name__ == "__main__":
         default=False,
         help="use tensorboard (default: False)",
     )
+    parser.add_argument(
+        "--tb_log_freq",
+        type=str,
+        default="low",
+        help=(
+            "the tensorboard log frequency. Options are 'low' (Recommended: logs at "
+            "every epoch) and 'high' (logs at every SGD update batch). Default is 'low'"
+            ""
+        ),
+    )
     args = parser.parse_args()
 
     # Setup actor critic arguments
@@ -1570,11 +1648,12 @@ if __name__ == "__main__":
     )
 
     # Setup output dir for logger and return output kwargs
-    logger_kwargs = setup_logger_kwargs(
+    logger_kwargs = log_utils.setup_logger_kwargs(
         args.exp_name,
         args.seed,
         save_checkpoints=args.save_checkpoints,
         use_tensorboard=args.use_tensorboard,
+        tb_log_freq=args.tb_log_freq,
         verbose=args.verbose,
         verbose_fmt=args.verbose_fmt,
         verbose_vars=args.verbose_vars,

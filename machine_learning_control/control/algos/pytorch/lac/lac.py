@@ -25,6 +25,7 @@ import time
 from copy import deepcopy
 
 import gym
+import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import torch
 import torch.nn as nn
@@ -44,10 +45,6 @@ from machine_learning_control.control.utils.eval_utils import test_agent
 from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
-)
-from machine_learning_control.control.utils.log_utils import (
-    colorize,
-    setup_logger_kwargs,
 )
 from machine_learning_control.control.utils.log_utils.logx import EpochLogger
 from torch.optim import Adam
@@ -223,22 +220,20 @@ class LAC(nn.Module):
                 "need this."
             )
 
-        print(
-            colorize(
-                "INFO: You are using the {} environment.".format(env.unwrapped.spec.id),
-                "green",
-                bold=True,
-            )
+        log_utils.log(
+            "You are using the {} environment.".format(env.unwrapped.spec.id),
+            type="info",
         )
         if use_lyapunov:
-            print(
-                colorize("INFO: You are using the LAC algorithm.", "green", bold=True)
-            )
+            log_utils.log("You are using the LAC algorithm.", type="info")
         else:
-            print(
-                colorize("INFO: You are using the ", "green", bold=True)
-                + colorize("SAC", "yellow", bold=True)
-                + colorize(" algorithm.", "green", bold=True)
+            log_utils.log(
+                (
+                    log_utils.colorize("You are using the ", color="green", bold=True)
+                    + log_utils.colorize("SAC", "yellow", bold=True)
+                    + log_utils.colorize(" algorithm.", "green", bold=True)
+                ),
+                type="info",
             )
 
         # Store algorithm parameters
@@ -325,7 +320,7 @@ class LAC(nn.Module):
         Returns:
             np.numpy: The current action.
         """
-        return self.get_action(s, deterministic)
+        return self.get_action(s, deterministic=deterministic)
 
     def get_action(self, s, deterministic=False):
         """Returns the current action of the policy.
@@ -778,8 +773,8 @@ class LAC(nn.Module):
     @use_lyapunov.setter
     def use_lyapunov(self, set_val):
         error_msg = (
-            "WARN: Changing the 'use_lyapunov' value during training is not allowed."
-            "Please open a feature/pull request on "
+            "Changing the 'use_lyapunov' value during training is not allowed. Please "
+            "open a feature/pull request on "
             "https://github.com/rickstaa/machine-learning-control/issues if you need "
             "this."
         )
@@ -986,6 +981,7 @@ def lac(
         else logger_kwargs["verbose_vars"]
     )  # NOTE: Done to ensure the std_out doesn't get cluttered.
     tb_low_log_freq = logger_kwargs.pop("tb_log_freq").lower() == "low"
+    use_tensorboard = logger_kwargs.pop("use_tensorboard")
     logger = EpochLogger(**logger_kwargs)
     hyper_paramet_dict = {
         k: v for k, v in locals().items() if k not in ["logger"]
@@ -1032,23 +1028,18 @@ def lac(
 
     # Restore policy if supplied
     if start_policy is not None:
-        print(
-            colorize(f"INFO: Restoring model from '{start_policy}'.", "cyan", bold=True)
-        )
+        logger.log(f"Restoring model from '{start_policy}'.", type="info")
         try:
             policy.restore(start_policy)
-            print(colorize("INFO: Model successfully restored.", "cyan", bold=True))
+            logger.log("Model successfully restored.", type="info")
         except Exception as e:
-            print(
-                colorize(
-                    (
-                        "ERROR: Shutting down training since {}.".format(
-                            e.args[0].lower().rstrip(".")
-                        )
-                    ),
-                    "red",
-                    bold=True,
-                )
+            logger.log(
+                (
+                    "Shutting down training since {}.".format(
+                        e.args[0].lower().rstrip(".")
+                    )
+                ),
+                type="error",
             )
             sys.exit(0)
 
@@ -1066,13 +1057,16 @@ def lac(
         )
     )
     if use_lyapunov:
-        logger.log("\nNumber of parameters: \t pi: %d, \t L: %d\n" % var_counts)
+        logger.log(
+            "\nNumber of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info"
+        )
     else:
         logger.log(
-            "\nNumber of parameters: \t pi: %d, \t Q1: %d, \t Q2: %d\n" % var_counts
+            "\nNumber of parameters: \t pi: %d, \t Q1: %d, \t Q2: %d\n" % var_counts,
+            type="info",
         )
-    logger.log("Network structure:\n")
-    print(policy.ac, end="\n\n")
+    logger.log("Network structure:\n", type="info")
+    logger.log(policy.ac, end="\n\n")
 
     # Create learning rate schedulers
     opt_schedulers = []
@@ -1107,7 +1101,7 @@ def lac(
         if use_lyapunov
         else ["LossQ", "LossPi", "Alpha", "LossAlpha", "Entropy"]
     )
-    if logger_kwargs["use_tensorboard"]:
+    if use_tensorboard:
         logger.log_to_tb(
             "Lr_a",
             policy._pi_optimizer.param_groups[0]["lr"],
@@ -1186,7 +1180,7 @@ def lac(
                 logger.store(**update_diagnostics)
 
             # SGD batch tb logging
-            if logger_kwargs["use_tensorboard"] and not tb_low_log_freq:
+            if use_tensorboard and not tb_low_log_freq:
                 logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
 
         # End of epoch handling (Save model, test performance and log data)
@@ -1221,85 +1215,83 @@ def lac(
             logger.log_tabular(
                 "EpRet",
                 with_min_and_max=True,
-                tb_write=logger_kwargs["use_tensorboard"],
+                tb_write=use_tensorboard,
             )
             logger.log_tabular(
                 "TestEpRet",
                 with_min_and_max=True,
-                tb_write=logger_kwargs["use_tensorboard"],
+                tb_write=use_tensorboard,
             )
-            logger.log_tabular(
-                "EpLen", average_only=True, tb_write=logger_kwargs["use_tensorboard"]
-            )
+            logger.log_tabular("EpLen", average_only=True, tb_write=use_tensorboard)
             logger.log_tabular(
                 "TestEpLen",
                 average_only=True,
-                tb_write=logger_kwargs["use_tensorboard"],
+                tb_write=use_tensorboard,
             )
             logger.log_tabular(
                 "Lr_a",
                 policy._pi_optimizer.param_groups[0]["lr"],
-                tb_write=logger_kwargs["use_tensorboard"],
+                tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             logger.log_tabular(
                 "Lr_c",
                 policy._c_optimizer.param_groups[0]["lr"],
-                tb_write=logger_kwargs["use_tensorboard"],
+                tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             logger.log_tabular(
                 "Lr_alpha",
                 policy._log_alpha_optimizer.param_groups[0]["lr"],
-                tb_write=logger_kwargs["use_tensorboard"],
+                tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             if use_lyapunov:
                 logger.log_tabular(
                     "Lr_labda",
                     policy._log_labda_optimizer.param_groups[0]["lr"],
-                    tb_write=logger_kwargs["use_tensorboard"],
+                    tb_write=use_tensorboard,
                     tb_prefix="LearningRates",
                 )
             logger.log_tabular(
                 "Alpha",
                 average_only=True,
-                tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                tb_write=(use_tensorboard and tb_low_log_freq),
             )
             if use_lyapunov:
                 logger.log_tabular(
                     "Lambda",
                     average_only=True,
-                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                    tb_write=(use_tensorboard and tb_low_log_freq),
                 )
             logger.log_tabular(
                 "LossPi",
                 average_only=True,
-                tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                tb_write=(use_tensorboard and tb_low_log_freq),
             )
             if use_lyapunov:
                 logger.log_tabular(
                     "ErrorL",
                     average_only=True,
-                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                    tb_write=(use_tensorboard and tb_low_log_freq),
                 )
             else:
                 logger.log_tabular(
                     "LossQ",
                     average_only=True,
-                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                    tb_write=(use_tensorboard and tb_low_log_freq),
                 )
             if adaptive_temperature:
                 logger.log_tabular(
                     "LossAlpha",
                     average_only=True,
-                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                    tb_write=(use_tensorboard and tb_low_log_freq),
                 )
             if use_lyapunov:
                 logger.log_tabular(
                     "LossLambda",
                     average_only=True,
-                    tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                    tb_write=(use_tensorboard and tb_low_log_freq),
                 )
             if use_lyapunov:
                 logger.log_tabular("LVals", with_min_and_max=True)
@@ -1310,7 +1302,7 @@ def lac(
             logger.log_tabular(
                 "Entropy",
                 average_only=True,
-                tb_write=(logger_kwargs["use_tensorboard"] and tb_low_log_freq),
+                tb_write=(use_tensorboard and tb_low_log_freq),
             )
             logger.log_tabular("Time", time.time() - start_time)
             logger.dump_tabular(global_step=t)
@@ -1319,14 +1311,10 @@ def lac(
     if export:
         policy.export(logger.output_dir)
 
-    print(
-        colorize(
-            "{}Training finished after {}s".format(
-                "\n" if logger_kwargs["verbose"] else "\n\n", time.time() - start_time
-            ),
-            "cyan",
-            bold=True,
-        )
+    print("" if logger_kwargs["verbose"] else "\n")
+    logger.log(
+        "Training finished after {}s".format(time.time() - start_time),
+        type="info",
     )
 
 
@@ -1542,7 +1530,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_freq",
         type=int,
-        default=1,
+        default=2,
         help="how often (in epochs) the policy should be saved (default: 1)",
     )
     parser.add_argument(
@@ -1608,7 +1596,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_tensorboard",
         type=bool,
-        default=True,
+        default=False,
         help="use tensorboard (default: False)",
     )
     parser.add_argument(
@@ -1642,7 +1630,7 @@ if __name__ == "__main__":
     )
 
     # Setup output dir for logger and return output kwargs
-    logger_kwargs = setup_logger_kwargs(
+    logger_kwargs = log_utils.setup_logger_kwargs(
         args.exp_name,
         args.seed,
         save_checkpoints=args.save_checkpoints,
