@@ -11,7 +11,7 @@ from machine_learning_control.control.algos.tf2.policies.actors import (
 )
 from machine_learning_control.control.algos.tf2.policies.critics import LCritic
 from machine_learning_control.control.common.helpers import strict_dict_update
-from machine_learning_control.control.utils.log_utils import colorize
+import machine_learning_control.control.utils.log_utils as log_utils
 from tensorflow import nn
 
 HIDDEN_SIZES_DEFAULT = {"actor": (64, 64), "critic": (128, 128)}
@@ -73,16 +73,15 @@ class LyapunovActorCritic(tf.keras.Model):
         act_limits = {"low": action_space.low, "high": action_space.high}
 
         if "critic" in ignored:
-            print(
-                colorize(
-                    "WARN: Critic output activation function ignored since it is "
+            log_utils.log(
+                (
+                    "Critic output activation function ignored since it is "
                     "not possible to set the critic output activation function when "
                     "using the LyapunovActorCritic architecture. This is since it by "
                     "design requires the critic output activation to by of type "
                     "'tf.math.square'.",
-                    "yellow",
-                    bold=True,
-                )
+                ),
+                type="warning",
             )
 
         self.pi = SquashedGaussianActor(

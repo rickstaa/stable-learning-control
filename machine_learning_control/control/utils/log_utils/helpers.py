@@ -3,8 +3,6 @@
 
 import os.path as osp
 import time
-import joblib
-from machine_learning_control.control.utils import import_tf
 from machine_learning_control.user_config import (
     DEFAULT_DATA_DIR,
     DEFAULT_STD_OUT_TYPE,
@@ -22,6 +20,17 @@ color2num = dict(
     white=37,
     crimson=38,
 )
+
+LOG_TYPES = {
+    "info": {"color": "green", "bold": True, "highlight": False, "prefix": "INFO: "},
+    "warning": {
+        "color": "yellow",
+        "bold": True,
+        "highlight": False,
+        "prefix": "warning: ",
+    },
+    "error": {"color": "red", "bold": True, "highlight": False, "prefix": "error: "},
+}
 
 
 def friendly_err(err_msg):
@@ -51,47 +60,60 @@ def colorize(string, color, bold=False, highlight=False):
     Returns:
         str: Colorized string.
     """
-    attr = []
-    num = color2num[color]
-    if highlight:
-        num += 10
-    attr.append(str(num))
-    if bold:
-        attr.append("1")
-    return "\x1b[%sm%s\x1b[0m" % (";".join(attr), string)
+    if color:
+        attr = []
+        num = color2num[color]
+        if highlight:
+            num += 10
+        attr.append(str(num))
+        if bold:
+            attr.append("1")
+        return "\x1b[%sm%s\x1b[0m" % (";".join(attr), string)
+    else:
+        return string
 
 
-def restore_tf_graph(sess, fpath):
-    """Loads graphs saved by Logger.
-
-    Will output a dictionary whose keys and values are from the 'inputs'
-    and 'outputs' dict you specified with logger.setup_tf_saver().
+def log(msg, color="", bold=False, highlight=False, type=None, *args, **kwargs):
+    """Print a colorized message to stdout.
 
     Args:
-        sess: A Tensorflow session.
-        fpath: Filepath to save directory.
-
-    Returns:
-        A dictionary mapping from keys to tensors in the computation graph
-        loaded from ``fpath``.
-
-    Raises:
-        ImportError: Raised when this method is called while tensorflow is not
-        installed.
+        msg (str): Message you want to log.
+        color (str, optional): Color you want the message to have. Defaults to
+            "".
+        bold (bool, optional): Whether you want the text to be bold text has to be
+            bold.
+        highlight (bool, optional):  Whether you want to highlight the text.
+            Defaults to False.
+        type (str, optional): The log message type. Options are: "info", "warning"
+            and "error". Defaults to ``None``.
+        *args: All args to pass to the print function.
+        **kwargs: All kwargs to pass to the print function.
     """
-    tf = import_tf()  # Import tf if installed otherwise throw warning
-
-    tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], fpath)
-    model_info = joblib.load(osp.join(fpath, "model_info.pkl"))
-    graph = tf.get_default_graph()
-    model = dict()
-    model.update(
-        {k: graph.get_tensor_by_name(v) for k, v in model_info["inputs"].items()}
+    color = (
+        LOG_TYPES[type.lower()]["color"]
+        if (type is not None and type.lower() in LOG_TYPES.keys())
+        else color
     )
-    model.update(
-        {k: graph.get_tensor_by_name(v) for k, v in model_info["outputs"].items()}
+    bold = (
+        LOG_TYPES[type.lower()]["bold"]
+        if (type is not None and type.lower() in LOG_TYPES.keys())
+        else bold
     )
-    return model
+    highlight = (
+        LOG_TYPES[type.lower()]["highlight"]
+        if (type is not None and type.lower() in LOG_TYPES.keys())
+        else highlight
+    )
+    prefix = (
+        LOG_TYPES[type.lower()]["prefix"]
+        if (type is not None and type.lower() in LOG_TYPES.keys())
+        else ""
+    )
+    print(
+        colorize((str(prefix) + str(msg)), color, bold=bold, highlight=highlight),
+        *args,
+        **kwargs
+    )
 
 
 def setup_logger_kwargs(

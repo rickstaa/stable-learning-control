@@ -7,8 +7,6 @@ so that besides logging to tab-separated-values file
 it also logs the data to a tensorboard file.
 """  # noqa
 
-# TODO: Add WARN INFO methods -> Replace with proper logger!
-
 import atexit
 import json
 import os
@@ -17,11 +15,11 @@ import pickle
 import time
 
 import joblib
+import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import torch
 from machine_learning_control.control.common.helpers import is_scalar
 from machine_learning_control.control.utils import import_tf
-from machine_learning_control.control.utils.log_utils.helpers import colorize
 from machine_learning_control.control.utils.mpi_tools import (
     mpi_statistics_scalar,
     proc_id,
@@ -46,8 +44,8 @@ class Logger:
         verbose=True,
         verbose_fmt=DEFAULT_STD_OUT_TYPE,
         verbose_vars=[],
-        use_tensorboard=False,
         save_checkpoints=False,
+        backend="torch",
     ):
         """Initialise a Logger.
 
@@ -71,15 +69,15 @@ class Logger:
                 :py:mod:`user_config` file.
             verbose_vars (list, optional): A list of variables you want to log to the
                 std_out. By default all variables are logged.
-            use_tensorboard (bool): Specifies whether you want also log to Tensorboard.
-                This variable is set to True if you log a variable to Tensorboard.
             save_checkpoints (bool, optional): Save checkpoints during training.
                 Defaults to ``False``.
+            backend (str, optional): The backend you want to use for writing to
+                tensorboard. Options are: ``tf`` or ``torch``. Defaults to ``torch``.
 
         Attributes:
             tb_writer (torch.utils.tensorboard.writer.SummaryWriter): A tensorboard
-                writer. Is only created when the :py:attr:`.use_tensorboard` variable
-                is set to `True`, if not it returns `None`.
+                writer. This is only created when you log a variable to tensorboard or
+                set the :py:attr:`.use_tensorboard` variable to `True`.
             output_dir (str): The directory in which the log data and models are saved.
             output_file (str): The name of the file in which the progress data is saved.
             exp_name (str): Experiment name.
@@ -92,25 +90,18 @@ class Logger:
 
             self.output_dir = output_dir or "/tmp/experiments/%i" % int(time.time())
             if osp.exists(self.output_dir):
-                print(
-                    colorize(
-                        (
-                            "WARN: Log dir %s already exists! Storing info there "
-                            "anyway." % self.output_dir
-                        ),
-                        "yellow",
-                        bold=True,
-                    )
+                self.log(
+                    (
+                        "Log dir %s already exists! Storing info there anyway."
+                        % self.output_dir
+                    ),
+                    type="warning",
                 )
             else:
                 os.makedirs(self.output_dir)
             self.output_file = open(osp.join(self.output_dir, output_fname), "w")
             atexit.register(self.output_file.close)
-            print(
-                colorize(
-                    "Logging data to %s" % self.output_file.name, "green", bold=True
-                )
-            )
+            self.log("Logging data to %s" % self.output_file.name, type="info")
             self.verbose = verbose
             self.verbose_table = verbose_fmt.lower() != "line"
             self.verbose_vars = [
@@ -129,8 +120,8 @@ class Logger:
         self._save_checkpoints = save_checkpoints
         self._checkpoint = 0
 
+        self._use_tf_backend = backend.lower() in ["tf", "tensorflow"]
         self.tb_writer = None
-        self.use_tensorboard = use_tensorboard  # Create tensorboard writer
         self._tabular_to_tb_dict = (
             dict()
         )  # Stores whether tabular is logged to tensorboard when dump_tabular is called
@@ -138,17 +129,40 @@ class Logger:
             dict()
         )  # Used for keeping count of the current global step
 
-    def log(self, msg, color="green"):
-        # TODO: Use this instead of print(colorize()) inside script
+    def log(
+        self,
+        msg,
+        color="",
+        bold=False,
+        highlight=False,
+        type=None,
+        *args,
+        **kwargs,
+    ):
         """Print a colorized message to stdout.
 
         Args:
             msg (str): Message you want to log.
-            color (str, optional): Color you want the message to have. Defaults to
-                "green".
+            color (str, optional): Color you want the message to have. Defaults to "".
+            bold (bool, optional): Whether you want the text to be bold text has to be
+                bold.
+            highlight (bool, optional):  Whether you want to highlight the text.
+                Defaults to False.
+            type (str, optional): The log message type. Options are: "info", "warning"
+                and "error". Defaults to ``None``.
+            *args: All args to pass to the print function.
+            **kwargs: All kwargs to pass to the print function.
         """
         if proc_id() == 0:
-            print(colorize(msg, color, bold=True))
+            log_utils.log(
+                msg,
+                color=color,
+                bold=bold,
+                highlight=highlight,
+                type=type,
+                *args,
+                **kwargs,
+            )
 
     def log_to_tb(self, key, val, tb_prefix=None, tb_alias=None, global_step=None):
         """Log a value to Tensorboard.
@@ -258,7 +272,7 @@ class Logger:
                     keystr = "%" + "%d" % max_key_len
                     fmt = "| " + keystr + "s | %15s |"
                     n_slashes = 22 + max_key_len
-                    print("-" * n_slashes)
+                    self.log("-" * n_slashes)
                     print_str = "\n".join(
                         [
                             fmt % (key, val)
@@ -266,8 +280,8 @@ class Logger:
                             if key in key_filter
                         ]
                     )
-                    print(print_str)
-                    print("-" * n_slashes, flush=True)
+                    self.log(print_str)
+                    self.log("-" * n_slashes, flush=True)
                 else:
                     print_str = "|".join(
                         [
@@ -282,19 +296,16 @@ class Logger:
                             if key in key_filter
                         ]
                     )
-                    print(print_str)
+                    self.log(print_str)
             else:  # Increase epoch steps and time on the same line
-                print(
-                    colorize(
-                        "\r{}: {:8.3G}, {}: {:8.3g}, {}: {:8.3G} s".format(
-                            "Epoch",
-                            float(print_dict["Epoch"]),
-                            "Step",
-                            float(print_dict["TotalEnvInteracts"]),
-                            "Time",
-                            float(print_dict["Time"]),
-                        ),
-                        "green",
+                self.log(
+                    "\r{}: {:8.3G}, {}: {:8.3g}, {}: {:8.3G} s".format(
+                        "Epoch",
+                        float(print_dict["Epoch"]),
+                        "Step",
+                        float(print_dict["TotalEnvInteracts"]),
+                        "Time",
+                        float(print_dict["Time"]),
                     ),
                     end="",
                 )
@@ -333,8 +344,8 @@ class Logger:
         """Get Logger and Tensorboard Summary writer logdirs.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
 
         Returns(dict): dict containing:
             output_dir(str): Logger output directory.
@@ -373,8 +384,8 @@ class Logger:
             output = json.dumps(
                 config_json, separators=(",", ":\t"), indent=4, sort_keys=True
             )
-            print(colorize("Saving config:\n", color="cyan", bold=True))
-            print(output)
+            self.log("Saving config:\n", type="info")
+            self.log(output)
             with open(osp.join(self.output_dir, "config.json"), "w") as out:
                 out.write(output)
 
@@ -425,13 +436,7 @@ class Logger:
         global tf
         tf = import_tf()  # Import tf if installed otherwise throw warning
         self.tf_saver_elements = what_to_save
-        print(
-            colorize(
-                "INFO: Policy will be saved to '{}'.\n".format(self.output_dir),
-                "cyan",
-                bold=True,
-            )
-        )
+        self.log("Policy will be saved to '{}'.\n".format(self.output_dir), type="info")
 
     def setup_pytorch_saver(self, what_to_save):
         """Set up easy model saving for a single PyTorch model.
@@ -447,13 +452,7 @@ class Logger:
                 PyTorch models.
         """
         self.pytorch_saver_elements = what_to_save
-        print(
-            colorize(
-                "INFO: Policy will be saved to '{}'.\n".format(self.output_dir),
-                "cyan",
-                bold=True,
-            )
-        )
+        self.log("Policy will be saved to '{}'.\n".format(self.output_dir), type="info")
 
     def _tf_save(self, itr=None, epoch=None):
         """Saves the PyTorch model/models using their 'state_dict'.
@@ -463,13 +462,11 @@ class Logger:
         """
         if proc_id() == 0:
 
-            save_fail_warning = colorize(
-                "WARN: The object you tried to save doesn't have a 'save_weights' we "
+            save_fail_warning = (
+                "The object you tried to save doesn't have a 'save_weights' we "
                 "can use to retrieve the model weights. Please make sure you supplied "
                 "the 'setup_pytorch_saver' method with a valid 'tf.keras.Model' object "
                 "or implemented a 'save_weights' method on your object.",
-                "yellow",
-                bold=True,
             )
 
             assert hasattr(
@@ -500,7 +497,7 @@ class Logger:
                     osp.join(fpath, "weights_checkpoint")
                 )
             else:
-                print(save_fail_warning)
+                self.log(save_fail_warning, type="warning")
 
             # Save checkpoint
             if self._save_checkpoints:
@@ -511,7 +508,7 @@ class Logger:
                         osp.join(cpath, "weights_checkpoint")
                     )
                 else:
-                    print(save_fail_warning)
+                    self.log(save_fail_warning, type="warning")
 
                 self._checkpoint += 1  # Increase epoch
 
@@ -523,13 +520,11 @@ class Logger:
         """
         if proc_id() == 0:
 
-            save_fail_warning = colorize(
-                "WARN: The object you tried to save doesn't have a 'state_dict' we can"
+            save_fail_warning = (
+                "The object you tried to save doesn't have a 'state_dict' we can"
                 "use to retrieve the model weights. Please make sure you supplied the "
                 "'setup_pytorch_saver' method with a valid 'torch.nn.module' object or "
-                "implemented a'state_dict' method on your object.",
-                "yellow",
-                bold=True,
+                "implemented a'state_dict' method on your object."
             )
 
             assert hasattr(
@@ -562,7 +557,7 @@ class Logger:
             ):
                 torch.save(self.pytorch_saver_elements.state_dict(), fname)
             else:
-                print(save_fail_warning)
+                self.log(save_fail_warning, type="warning")
 
             # Save checkpoint
             if self._save_checkpoints:
@@ -571,7 +566,7 @@ class Logger:
                 ):
                     torch.save(self.pytorch_saver_elements.state_dict(), cname)
                 else:
-                    print(save_fail_warning)
+                    self.log(save_fail_warning, type="warning")
 
                 self._checkpoint += 1  # Increase epoch
 
@@ -595,7 +590,7 @@ class Logger:
             )
         if is_scalar(data):  # Extra protection since trying to write a list freezes tb
             try:  # Try to write as scalar
-                self.tb_writer.add_scalar(var_name, data, global_step=global_step)
+                self.add_scalar(var_name, data, global_step=global_step)
             except (
                 AssertionError,
                 NotImplementedError,
@@ -607,7 +602,7 @@ class Logger:
         else:
             # Try to write data to tb as as historgram
             try:
-                self.tb_writer.add_histogram(var_name, data, global_step=global_step)
+                self.add_histogram(var_name, data, global_step=global_step)
             except (
                 AssertionError,
                 NotImplementedError,
@@ -619,7 +614,7 @@ class Logger:
 
             # Try to write data as image
             try:
-                self.tb_writer.add_image(var_name, data, global_step=global_step)
+                self.add_image(var_name, data, global_step=global_step)
             except (
                 AssertionError,
                 NotImplementedError,
@@ -627,6 +622,18 @@ class Logger:
                 ValueError,
                 TypeError,
             ):
+                self.log(
+                    (
+                        "WARNING: Variable {} could ".format(var_name.capitalize())
+                        + "not be written to tensorboard as the '{}' ".format(
+                            self.__class__.__name__
+                        )
+                        + "class does not yet support objects of type {}.".format(
+                            type(data)
+                        )
+                    ),
+                    type="warning",
+                )
                 pass
 
     @property
@@ -646,12 +653,22 @@ class Logger:
 
         # Create tensorboard writer if use_tensorboard == True else delete
         if self._use_tensorboard and not self.tb_writer:  # Create writer object
-            exp_name = "-" + self.exp_name if self.exp_name else ""
-            self.tb_writer = SummaryWriter(
-                log_dir=self.output_dir,
-                comment=f"{exp_name.upper()}-data_" + time.strftime("%Y%m%d-%H%M%S"),
-            )
-            atexit.register(self.tb_writer.close)  # Make sure the writer is closed
+            if self._use_tf_backend:
+                self.log("Using Tensorflow as the Tensorboard backend.", type="info")
+                tf = import_tf()  # Import tf if installed otherwise throw warning
+                self.tb_writer = tf.summary.create_file_writer(self.output_dir)
+            else:
+                self.log(
+                    "Using Torch.utils.tensorboard as the Tensorboard backend.",
+                    type="info",
+                )
+                exp_name = "-" + self.exp_name if self.exp_name else ""
+                self.tb_writer = SummaryWriter(
+                    log_dir=self.output_dir,
+                    comment=f"{exp_name.upper()}-data_"
+                    + time.strftime("%Y%m%d-%H%M%S"),
+                )
+                atexit.register(self.tb_writer.close)  # Make sure the writer is closed
         elif not self._use_tensorboard and self.tb_writer:  # Delete tensorboard writer
             self.tb_writer.close()  # Close writer
             atexit.unregister(self.tb_writer.close)  # Make sure the writer is closed
@@ -675,80 +692,158 @@ class Logger:
         hyperparameters to be compared in TensorBoard.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_hparams' method is not available when using the 'tensorflow' "
+                "backend."
+            )
         return self.tb_writer.add_hparams(*args, **kwargs)
 
     def add_scalar(self, *args, **kwargs):
         """Add scalar to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_scalar` method while first making
-        sure a SummaryWriter object exits. The `add_scalar` method is used to add scalar
-        data to summary.
+        Wrapper that calls the ``SummaryWriter.add_scalar`` or
+        ``tf.summary.scalar`` (depending on the backend) method while first making
+        sure a SummaryWriter object exits. These methods can be used to add a scalar
+        to the summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
-        return self.tb_writer.add_scalar(*args, **kwargs)
+        if self._use_tf_backend:
+            kwargs["step"] = kwargs.pop("global_step")
+            global tf
+            with self.tb_writer.as_default():
+                return tf.summary.scalar(*args, **kwargs)
+        else:
+            return self.tb_writer.add_scalar(*args, **kwargs)
+
+    def scalar(self, *args, **kwargs):
+        """Wrapper for making the :meth:``add_scalar` method available directly under
+        the ``scalar`` alias.
+
+        Args:
+            *args: All args to pass to the :meth:``add_scalar` method.
+            **kwargs: All kwargs to pass to the :meth:``add_scalar` method.
+        """
+        self.add_scalar(*args, **kwargs)
 
     def add_scalars(self, *args, **kwargs):
         """Add scalars to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_scalars` method while first making
-        sure a SummaryWriter object exits. The `add_scalars` method is used to add many
-        scalar data to summary.
+        Wrapper that calls the ``SummaryWriter.add_scalars`` method while first making
+        sure a SummaryWriter object exits. The ``add_scalars`` method can be used to add
+        many scalar data to the summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_scalars' method is not available when using the 'tensorflow' "
+                "backend. Please use the 'add_scalar' method instead."
+            )
         return self.tb_writer.add_scalars(*args, **kwargs)
 
     def add_histogram(self, *args, **kwargs):
         """Add historgram to tb summary.
-        Wrapper that calls the `SummaryWriter.add_histogram` method while first making
-        sure a SummaryWriter object exits. The `add_histogram` method is used to add
-        a histogram to summary.
+
+        Wrapper that calls the ``SummaryWriter.add_histogram`` or
+        ``tf.summary.histogram`` (depending on the backend) method while first making
+        sure a SummaryWriter object exits. These methods can be used to add a histogram
+        to the summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
-        return self.tb_writer.add_histogram(*args, **kwargs)
+        if self._use_tf_backend:
+            kwargs["step"] = kwargs.pop("global_step")
+            global tf
+            with self.tb_writer.as_default():
+                return tf.summary.histogram(*args, **kwargs)
+        else:
+            return self.tb_writer.add_histogram(*args, **kwargs)
+
+    def histogram(self, *args, **kwargs):
+        """Wrapper for making the :meth:``add_histogram` method available directly under
+        the ``histogram`` alias.
+
+        Args:
+            *args: All args to pass to the :meth:``add_histogram` method.
+            **kwargs: All kwargs to pass to the :meth:``add_histogram` method.
+        """
+        self.add_histogram(*args, **kwargs)
 
     def add_histogram_raw(self, *args, **kwargs):
         """Adds raw histogram to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_histogram_raw` method while first
-        making sure a SummaryWriter object exits. The `add_histogram_raw` method is used
-        to add histograms with raw data to summary.
+        Wrapper that calls the ``SummaryWriter.add_histogram_raw`` method while first
+        making sure a SummaryWriter object exits. The ``add_histogram_raw`` method can
+        be used to add histograms with raw data to the summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_histogram_raw' method is not available when using the "
+                "'tensorflow' backend."
+            )
         return self.tb_writer.add_histogram_raw(*args, **kwargs)
 
     def add_image(self, *args, **kwargs):
         """Add image to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_image` method while first making
-        sure a SummaryWriter object exits. The `add_image` method is used to add image
-        data to summary.
+        Wrapper that calls the ``SummaryWriter.add_image`` or ``tf.summary.image``
+        (depending on the backend) method while first making sure a SummaryWriter
+        object exits. These methods can be used to add a histogram to the summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
-        return self.tb_writer.add_image(*args, **kwargs)
+        if self._use_tf_backend:
+            kwargs["step"] = kwargs.pop("global_step")
+            global tf
+            with self.tb_writer.as_default():
+                return tf.summary.image(*args, **kwargs)
+        else:
+            return self.tb_writer.add_image(*args, **kwargs)
+
+    def image(self, *args, **kwargs):
+        """Wrapper for making the :meth:``add_image` method available directly under
+        the ``image`` alias.
+
+        Args:
+            *args: All args to pass to the :meth:``add_image` method.
+            **kwargs: All kwargs to pass to the :meth:``add_image` method.
+        """
+        self.add_image(*args, **kwargs)
 
     def add_images(self, *args, **kwargs):
         """Add images to tb summary.
@@ -758,10 +853,19 @@ class Logger:
         batched image data to summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_images' method is not available when using the 'tensorflow' "
+                "backend. Please use the 'add_image' method instead."
+            )
         return self.tb_writer.add_images(*args, **kwargs)
 
     def add_image_with_boxes(self, *args, **kwargs):
@@ -772,10 +876,19 @@ class Logger:
         method is used to add image and draw bounding boxes on the image.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_image_with_boxes' method is not available when using the "
+                "'tensorflow' backend."
+            )
         return self.tb_writer.add_image_with_boxes(*args, **kwargs)
 
     def add_figure(self, *args, **kwargs):
@@ -787,10 +900,19 @@ class Logger:
         summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_figure' method is not available when using the 'tensorflow' "
+                "backend."
+            )
         return self.tb_writer.add_figure(*args, **kwargs)
 
     def add_video(self, *args, **kwargs):
@@ -801,39 +923,82 @@ class Logger:
         method is used to add video data to summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_video' method is not available when using the 'tensorflow' "
+                "backend."
+            )
         return self.tb_writer.add_video(*args, **kwargs)
 
     def add_audio(self, *args, **kwargs):
         """Add audio to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_audio` method while
-        first making sure a SummaryWriter object exits. The `add_audio`
-        method is used to add audio data to summary.
+        Wrapper that calls the ``SummaryWriter.add_audio`` or
+        ``tf.summary.audio`` (depending on the backend) method while first making
+        sure a SummaryWriter object exits. These methods can be used to add audio data
+        to the summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
-        return self.tb_writer.add_audio(*args, **kwargs)
+        if self._use_tf_backend:
+            kwargs["step"] = kwargs.pop("global_step")
+            global tf
+            with self.tb_writer.as_default():
+                return tf.summary.audio(*args, **kwargs)
+        else:
+            return self.tb_writer.add_audio(*args, **kwargs)
+
+    def audio(self, *args, **kwargs):
+        """Wrapper for making the :meth:``add_audio` method available directly under
+        the ``image`` alias.
+
+        Args:
+            *args: All args to pass to the :meth:``add_audio` method.
+            **kwargs: All kwargs to pass to the :meth:``add_audio` method.
+        """
+        self.add_audio(*args, **kwargs)
 
     def add_text(self, *args, **kwargs):
         """Add text to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_text` method while
-        first making sure a SummaryWriter object exits. The `add_text`
-        method is used to add text data to summary.
+        Wrapper that calls the ``SummaryWriter.add_text`` or
+        ``tf.summary.text`` (depending on the backend) method while first making
+        sure a SummaryWriter object exits. These methods can be used to add text data
+        to the summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
-        return self.tb_writer.add_text(*args, **kwargs)
+        if self._use_tf_backend:
+            kwargs["step"] = kwargs.pop("global_step")
+            global tf
+            with self.tb_writer.as_default():
+                return tf.summary.text(*args, **kwargs)
+        else:
+            return self.tb_writer.add_text(*args, **kwargs)
+
+    def text(self, *args, **kwargs):
+        """Wrapper for making the :meth:``add_text` method available directly under
+        the ``image`` alias.
+
+        Args:
+            *args: All args to pass to the :meth:``add_text` method.
+            **kwargs: All kwargs to pass to the :meth:``add_text` method.
+        """
+        self.add_text(*args, **kwargs)
 
     def add_onnx_graph(self, *args, **kwargs):
         """Add onnyx graph to tb summary.
@@ -843,10 +1008,19 @@ class Logger:
         method is used to add a onnx graph data to summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_onnx_graph' method is not available when using the "
+                "'tensorflow' backend."
+            )
         return self.tb_writer.add_onnx_graph(*args, **kwargs)
 
     def add_graph(self, *args, **kwargs):
@@ -857,10 +1031,19 @@ class Logger:
         method is used to add a graph data to summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_graph' method is not available when using the 'tensorflow' "
+                "backend. Please use the 'trace_export' method instead."
+            )
         return self.tb_writer.add_graph(*args, **kwargs)
 
     def add_embedding(self, *args, **kwargs):
@@ -871,10 +1054,19 @@ class Logger:
         method is used to add embedding projector data to summary.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_embedding' method is not available when using the "
+                "'tensorflow' backend."
+            )
         return self.tb_writer.add_embedding(*args, **kwargs)
 
     def add_pr_curve(self, *args, **kwargs):
@@ -885,10 +1077,19 @@ class Logger:
         method is used to add a precision recall curve.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_pr_curve' method is not available when using the "
+                "'tensorflow' backend."
+            )
         return self.tb_writer.add_pr_curve(*args, **kwargs)
 
     def add_pr_curve_raw(self, *args, **kwargs):
@@ -899,10 +1100,19 @@ class Logger:
         method is used to add a precision recall curve with raw data.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_pr_curve_raw' method is not available when using the "
+                "'tensorflow' backend."
+            )
         return self.tb_writer.add_pr_curve_raw(*args, **kwargs)
 
     def add_custom_scalars_multilinechart(self, *args, **kwargs):
@@ -915,10 +1125,19 @@ class Logger:
         argument is *tags*.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_custom_scalars_multilinechart' method is not available "
+                "when using the 'tensorflow' backend."
+            )
         return self.tb_writer.add_custom_scalars_multilinechart(*args, **kwargs)
 
     def add_custom_scalars_marginchart(self, *args, **kwargs):
@@ -931,10 +1150,19 @@ class Logger:
         which should have exactly 3 elements.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_custom_scalars_marginchart' method is not available when "
+                "using the 'tensorflow' backend."
+            )
         return self.tb_writer.add_custom_scalars_marginchart(*args, **kwargs)
 
     def add_custom_scalars(self, *args, **kwargs):
@@ -948,10 +1176,19 @@ class Logger:
         before or after the training loop.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_custom_scalars' method is not available when using the "
+                "'tensorflow' backend."
+            )
         return self.tb_writer.add_custom_scalars(*args, **kwargs)
 
     def add_mesh(self, *args, **kwargs):
@@ -962,25 +1199,158 @@ class Logger:
         method is used to add meshes or 3D point clouds to TensorBoard.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
+        if self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'add_mesh' method is not available when using the 'tensorflow' "
+                "backend."
+            )
         return self.tb_writer.add_mesh(*args, **kwargs)
 
     def flush(self, *args, **kwargs):
         """Flush tb event file to disk.
 
-        Wrapper that calls the `SummaryWriter.flush` method while
+        Wrapper that calls the ``SummaryWriter.flush`` or
+        ``tf.summary.flush`` (depending on the backend) method while
         first making sure a SummaryWriter object exits. The `flush`
         method is used to flush the event file to disk.
 
         Args:
-            *args: All args to pass to thunk.
-            **kwargs: All kwargs to pass to thunk.
+            *args: All args to pass to the Summary/SummaryWriter object.
+            **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
-        return self.tb_writer.flush(*args, **kwargs)
+        self.use_tensorboard = True  # Make sure SummaryWriter exists\
+        if self._use_tf_backend:
+            global tf
+            with self.tb_writer.as_default():
+                return tf.summary.flush(*args, **kwargs)
+        else:
+            return self.tb_writer.flush(*args, **kwargs)
+
+    def record_if(self, *args, **kwargs):
+        """Sets summary recording on or off per the provided boolean value.
+
+        Wrapper that calls the ``tf.summary.record_if`` method while
+        first making sure a SummaryWriter object exits.
+
+        Args:
+            *args: All args to pass to the Summary object.
+            **kwargs: All kwargs to pass to the Summary object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Torch backend.
+        """
+        if not self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'record_if' method is not available when using the 'torch' "
+                "backend."
+            )
+        global tf
+        return tf.summary.record_if(*args, **kwargs)
+
+    def should_record_summaries(self):
+        """Returns boolean Tensor which is true if summaries should be recorded.
+
+        Wrapper that calls the ``tf.summary.should_record_summaries`` method while
+        first making sure a SummaryWriter object exits.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Torch backend.
+        """
+        if not self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'should_record_summaries' method is not available when using the "
+                "'torch' backend."
+            )
+        global tf
+        return tf.summary.should_record_summaries()
+
+    def trace_export(self, *args, **kwargs):
+        """Stops and exports the active trace as a Summary and/or profile file.
+
+        Wrapper that calls the ``tf.summary.trace_export`` method while
+        first making sure a SummaryWriter object exits.
+
+        Args:
+            *args: All args to pass to the Summary object.
+            **kwargs: All kwargs to pass to the Summary object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Torch backend.
+        """
+        if not self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'trace_export' method is not available when using the 'torch' "
+                "backend."
+            )
+        global tf
+        return tf.summary.trace_export(*args, **kwargs)
+
+    def trace_off(self):
+        """Stops the current trace and discards any collected information.
+
+        Wrapper that calls the ``tf.summary.trace_export`` method while
+        first making sure a SummaryWriter object exits.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Torch backend.
+        """
+        if not self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'trace_off' method is not available when using the 'torch' "
+                "backend."
+            )
+        global tf
+        return tf.summary.trace_off()
+
+    def trace_on(self):
+        """Starts a trace to record computation graphs and profiling information.
+
+        Wrapper that calls the ``tf.summary.trace_export`` method while
+        first making sure a SummaryWriter object exits.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Torch backend.
+        """
+        if not self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'trace_on' method is not available when using the 'torch' backend."
+            )
+        global tf
+        return tf.summary.trace_on()
+
+    def write(self, *args, **kwargs):
+        """Starts a trace to record computation graphs and profiling information.
+
+        Wrapper that calls the ``tf.summary.trace_export`` method while
+        first making sure a SummaryWriter object exits.
+
+        Args:
+            *args: All args to pass to the Summary object.
+            **kwargs: All kwargs to pass to the Summary object.
+
+        Raises:
+            NotImplementedError: Raised if you try to call this method when using the
+            Torch backend.
+        """
+        if not self._use_tf_backend:
+            raise NotImplementedError(
+                "The 'write' method is not available when using the 'torch' backend."
+            )
+        global tf
+        return tf.summary.write()
 
 
 class EpochLogger(Logger):

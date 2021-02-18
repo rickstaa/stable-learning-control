@@ -76,6 +76,7 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
 
     # try to load environment from save
     # (sometimes this will fail because the environment could not be pickled)
+    # TODO: FIX THIS!
     try:
         state = joblib.load(osp.join(fpath, "vars" + itr + ".pkl"))
         env = state["env"]
@@ -94,6 +95,7 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
 
 
 def load_tf_policy(fpath, itr, deterministic=False):
+    # TODO: Fix this!
     """Load a tensorflow policy saved with Machine Learning Control Logger.
 
     Args:
@@ -161,16 +163,15 @@ def load_pytorch_policy(
 
         return model.get_action
     else:
-        print(
-            log_utils.colorize(
-                "WARN: You are using the full pickled model in your inference. Please "
+        log_utils.log(
+            (
+                "You are using the full pickled model in your inference. Please "
                 "note that this is the non-recommended method for loading Pytorch "
                 "models. Please make sure you save your model as a state dictionary. "
                 "See the Pytorch version of the lac algorithm for an example on how to "
                 "do this.",
-                "yellow",
-                bold=True,
-            )
+            ),
+            type="warning",
         )
 
         # make function for producing an action given a single state

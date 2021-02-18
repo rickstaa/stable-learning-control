@@ -11,7 +11,7 @@ from machine_learning_control.control.algos.pytorch.policies.actors import (
 )
 from machine_learning_control.control.algos.pytorch.policies.critics import LCritic
 from machine_learning_control.control.common.helpers import strict_dict_update
-from machine_learning_control.control.utils.log_utils import colorize
+from machine_learning_control.control.utils.log_utils import log
 
 HIDDEN_SIZES_DEFAULT = {"actor": (64, 64), "critic": (128, 128)}
 ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.ReLU}
@@ -69,16 +69,15 @@ class LyapunovActorCritic(nn.Module):
         act_limits = {"low": action_space.low, "high": action_space.high}
 
         if "critic" in ignored:
-            print(
-                colorize(
-                    "WARN: Critic output activation function ignored since it is "
+            log(
+                (
+                    "Critic output activation function ignored since it is "
                     "not possible to set the critic output activation function when "
                     "using the LyapunovActorCritic architecture. This is since it by "
                     "design requires the critic output activation to by of type "
-                    "'torch.square'.",
-                    "yellow",
-                    bold=True,
-                )
+                    "'torch.square'."
+                ),
+                type="warning",
             )
 
         self.pi = SquashedGaussianActor(

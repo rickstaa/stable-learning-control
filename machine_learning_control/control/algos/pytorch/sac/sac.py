@@ -11,7 +11,7 @@ import os.path as osp
 import torch.nn as nn
 from machine_learning_control.control.algos.pytorch.lac import LAC, lac
 from machine_learning_control.control.algos.pytorch.policies import SoftActorCritic
-from machine_learning_control.control.utils.log_utils import colorize
+import machine_learning_control.control.utils.log_utils as log_utils
 
 
 def apply_sac_defaults(args, kwargs):
@@ -72,14 +72,12 @@ def sac(*args, **kwargs):
 
 if __name__ == "__main__":
     file_name = osp.basename(__file__)
-    print(
-        colorize(
-            (
-                f"WARN: Running the '{file_name}' sac algorithm directly "
-                "is currently not supported. In order to train the SAC algorithm "
-                "your advised to use the CLI or run the LAC algorithm while setting "
-                "the 'use_lyapunov' flag to False."
-            ),
-            "yellow",
-        )
+    log_utils.log(
+        (
+            f"Running the '{file_name}' sac algorithm directly "
+            "is currently not supported. In order to train the SAC algorithm "
+            "your advised to use the CLI or run the LAC algorithm while setting "
+            "the 'use_lyapunov' flag to False."
+        ),
+        type="warning",
     )
