@@ -27,9 +27,9 @@ LOG_TYPES = {
         "color": "yellow",
         "bold": True,
         "highlight": False,
-        "prefix": "warning: ",
+        "prefix": "WARNING: ",
     },
-    "error": {"color": "red", "bold": True, "highlight": False, "prefix": "error: "},
+    "error": {"color": "red", "bold": True, "highlight": False, "prefix": "ERROR: "},
 }
 
 

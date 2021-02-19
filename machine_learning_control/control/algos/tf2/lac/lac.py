@@ -600,7 +600,7 @@ class LAC(tf.keras.Model):
             log_labda_init = self.log_labda.value()
 
         try:
-            self.load_weights(tf.train.latest_checkpoint(path))
+            self.load_weights(latest)
         except Exception as e:
             raise Exception(
                 f"Something went wrong when trying to load model '{latest}'."
@@ -614,6 +614,11 @@ class LAC(tf.keras.Model):
         if not restore_lagrance_multipliers:
             self.log_alpha.assign(log_alpha_init)
             self.log_labda.assign(log_labda_init)
+            log_utils.log("Restoring lagrance multipliers.", type="info")
+        else:
+            log_utils.log(
+                "Keeping lagrance multipliers at their initial value.", type="info"
+            )
 
     def export(self, path):
         """Can be used to export the model in the 'SavedModel' format such that it can
@@ -793,6 +798,17 @@ class LAC(tf.keras.Model):
             "Please open a feature/pull request on "
             "https://github.com/rickstaa/machine-learning-control/issues if you need "
             "this."
+        )
+        raise AttributeError(error_msg)
+
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, set_val):
+        error_msg = (
+            "Changing the computational 'device' during training is not allowed."
         )
         raise AttributeError(error_msg)
 
@@ -1082,7 +1098,10 @@ def lac(
             sys.exit(0)
 
     replay_buffer = ReplayBuffer(
-        obs_dim=obs_dim, act_dim=act_dim, rew_dim=rew_dim, size=replay_size
+        obs_dim=obs_dim,
+        act_dim=act_dim,
+        rew_dim=rew_dim,
+        size=replay_size,
     )
 
     # Count variables and print network structure

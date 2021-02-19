@@ -34,7 +34,7 @@ def retrieve_device(device_type="cpu"):
         device = torch.device("cpu")
     else:
         device = torch.device("cpu")
-    log(f"Torch is using the {device_type}.", type="info")
+    log(f"Torch is using the {device_type.upper()}.", type="info")
     return device
 
 
@@ -121,14 +121,14 @@ def clamp(data, min_bound, max_bound):
     """
     data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
     min_bound = (
-        torch.tensor(min_bound)
+        torch.tensor(min_bound, device=data.device)
         if not isinstance(min_bound, torch.Tensor)
-        else min_bound
+        else min_bound.to(data.device)
     )
     max_bound = (
-        torch.tensor(max_bound)
+        torch.tensor(max_bound, device=data.device)
         if not isinstance(max_bound, torch.Tensor)
-        else max_bound
+        else max_bound.to(data.device)
     )
 
     return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound

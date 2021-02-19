@@ -4,6 +4,7 @@ This module contains a Pytorch implementation of the Squashed Gaussian Actor pol
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
 
+import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import torch
 import torch.nn as nn
@@ -58,6 +59,7 @@ class SquashedGaussianActor(nn.Module):
                 to 2.0.
         """
         super().__init__()
+        self._device_warning = False
         self.act_limits = act_limits
         self._log_std_min = log_std_min
         self._log_std_max = log_std_max
@@ -85,6 +87,26 @@ class SquashedGaussianActor(nn.Module):
                 logp_pi (torch.Tensor): The log probabilities of each of these
                     actions.
         """
+        # Make sure the observations are on the right device
+        if obs.device != self.net[0].weight.device:
+            if not self._device_warning:
+                device_warn_msg = (
+                    "The observations were automatically moved from "
+                    "'{}' to '{}' during the '{}' forward pass.".format(
+                        obs.device, self.net[0].weight.device, self.__class__.__name__
+                    )
+                    + "Please place your observations on the '{}' ".format(
+                        self.net[0].weight.device
+                    )
+                    + "before calling the '{}' as converting them ".format(
+                        self.__class__.__name__
+                    )
+                    + "during the forward pass slows down the algorithm."
+                )
+                log_utils.log(device_warn_msg, type="warning")
+                self._device_warning = True
+            obs = obs.to(self.net[0].weight.device)
+
         # Calculate mean action and standard deviation
         net_out = self.net(obs)
         mu = self.mu_layer(net_out)
