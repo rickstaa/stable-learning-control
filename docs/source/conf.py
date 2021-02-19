@@ -19,11 +19,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
+import os.path as osp
 import sys
 
 # Make sure mlc is accessible without going through setup.py
-dirname = os.path.dirname
+dirname = osp.dirname
 sys.path.insert(0, dirname(dirname(__file__)))
 
 # Mock mpi4py to get around having to install it on RTD server (which fails)

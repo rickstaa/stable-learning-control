@@ -1436,7 +1436,7 @@ if __name__ == "__main__":
         help="maximum episode length (default: 500)",
     )
     parser.add_argument(
-        "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
+        "--epochs", type=int, default=2, help="the number of epochs (default: 50)"
     )
     parser.add_argument(
         "--steps_per_epoch",
@@ -1565,12 +1565,6 @@ if __name__ == "__main__":
         "--seed", "-s", type=int, default=0, help="the random seed (default: 0)"
     )
     parser.add_argument(
-        "--save_freq",
-        type=int,
-        default=2,
-        help="how often (in epochs) the policy should be saved (default: 1)",
-    )
-    parser.add_argument(
         "--device",
         type=str,
         default="gpu",
@@ -1625,9 +1619,15 @@ if __name__ == "__main__":
         help=("a space seperated list of the values you want to show on the std out."),
     )
     parser.add_argument(
+        "--save_freq",
+        type=int,
+        default=2,
+        help="how often (in epochs) the policy should be saved (default: 2)",
+    )
+    parser.add_argument(
         "--save_checkpoints",
         type=bool,
-        default=False,
+        default=True,
         help="use model checkpoints (default: False)",
     )
     parser.add_argument(

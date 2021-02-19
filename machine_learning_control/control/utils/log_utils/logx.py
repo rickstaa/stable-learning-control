@@ -24,7 +24,11 @@ from machine_learning_control.control.utils.mpi_tools import (
     mpi_statistics_scalar,
     proc_id,
 )
-from machine_learning_control.control.utils.serialization_utils import convert_json
+from machine_learning_control.control.utils.serialization_utils import (
+    convert_json,
+    save_to_json,
+    load_from_json,
+)
 from machine_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from torch.utils.tensorboard import SummaryWriter
 
@@ -85,7 +89,7 @@ class Logger:
         if proc_id() == 0:
 
             # Parse output_fname to see if csv was requested
-            extension = os.path.splitext(output_fname)[1]
+            extension = osp.splitext(output_fname)[1]
             self._output_csv = True if extension.lower() == ".csv" else False
 
             self.output_dir = output_dir or "/tmp/experiments/%i" % int(time.time())
@@ -119,6 +123,7 @@ class Logger:
         self._log_current_row = {}
         self._save_checkpoints = save_checkpoints
         self._checkpoint = 0
+        self._save_info_saved = False
 
         self._use_tf_backend = backend.lower() in ["tf", "tensorflow"]
         self.tb_writer = None
@@ -389,6 +394,39 @@ class Logger:
             with open(osp.join(self.output_dir, "config.json"), "w") as out:
                 out.write(output)
 
+    def save_to_json(self, input_object, output_filename, output_path=None):
+        """Save python object to Json file. This method will serialize the object to
+        JSON, while handling anything which can't be serialized in a graceful way
+        (writing as informative a string as possible).
+
+        Args:
+            input_object (object): The input object you want to save.
+            output_filename (str): The output filename.
+            output_path (str): The output path. By default the :attr:`.output_dir` is
+                used.
+        """
+        if proc_id() == 0:
+            input_object_json = convert_json(input_object)
+            if self.exp_name is not None:
+                input_object_json["exp_name"] = self.exp_name
+            output_path = self.output_dir if output_path is None else output_path
+            save_to_json(
+                input_object=input_object_json,
+                output_filename=output_filename,
+                output_path=output_path,
+            )
+
+    def load_from_json(self, path):
+        """Load data from json file.
+
+        Args:
+            path (str): The path of the json file you want to load.
+        Returns:
+            (object): The Json load object.
+        """
+        if proc_id() == 0:
+            return load_from_json(path)
+
     def save_state(self, state_dict, itr=None, epoch=None):
         """Saves the state of an experiment.
 
@@ -489,6 +527,15 @@ class Logger:
                 cpath = osp.join(fpath, "checkpoints", model_name, str(epoch_name))
                 os.makedirs(cpath, exist_ok=True)
 
+            # Save additional algorithm information
+            if not self._save_info_saved:
+                save_info = {"class_name": self.tf_saver_elements.__class__.__name__}
+                self.save_to_json(
+                    save_info,
+                    output_filename="save_info.json",
+                    output_path=fpath,
+                )
+
             # Save model
             if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
                 self.tf_saver_elements, "save_weights"
@@ -550,6 +597,17 @@ class Logger:
                 cname = "model_state" + ("%d" % itr if itr is not None else "") + ".pt"
                 cname = osp.join(cpath, cname)
                 os.makedirs(cpath, exist_ok=True)
+
+            # Save additional algorithm information
+            if not self._save_info_saved:
+                save_info = {
+                    "class_name": self.pytorch_saver_elements.__class__.__name__
+                }
+                self.save_to_json(
+                    save_info,
+                    output_filename="save_info.json",
+                    output_path=fpath,
+                )
 
             # Save model
             if isinstance(self.pytorch_saver_elements, torch.nn.Module) or hasattr(

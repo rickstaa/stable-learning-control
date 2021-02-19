@@ -37,7 +37,7 @@ class QCritic(nn.Module):
                 function used for the output layers. Defaults to torch.nn.Identity.
         """
         super().__init__()
-        self._device_warning = False
+        self.__device_warning_logged = False
         self._obs_same_device = False
         self._act_same_device = False
         self.Q = mlp(
@@ -60,7 +60,7 @@ class QCritic(nn.Module):
         self._obs_same_device = obs.device != self.Q[0].weight.device
         self._act_same_device = act.device != self.Q[0].weight.device
         if self._obs_same_device or self._act_same_device:
-            if not self._device_warning:
+            if not self.__device_warning_logged:
                 device_warn_strs = (
                     ("observations and actions", obs.device)
                     if (self._obs_same_device or self._act_same_device)
@@ -86,7 +86,7 @@ class QCritic(nn.Module):
                     + "during the forward pass slows down the algorithm."
                 )
                 log_utils.log(device_warn_msg, type="warning")
-                self._device_warning = True
+                self.__device_warning_logged = True
             obs = (
                 obs.to(self.L[0].weight.device)
                 if obs.device != self.Q[0].weight.device

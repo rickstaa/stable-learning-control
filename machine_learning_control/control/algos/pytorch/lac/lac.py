@@ -574,10 +574,14 @@ class LAC(nn.Module):
         Raises:
             Exception: Raises an exception if something goes wrong during loading.
         """
-        if os.path.basename(path) != ["model.pt", "model.pth"]:
-            load_path = glob.glob(path + "/**/model_state.pt*", recursive=True)
+        if osp.basename(path) != ["model.pt", "model.pth"]:
+            load_path = glob.glob(
+                osp.join(path, "**", "model_state.pt*"), recursive=True
+            )
             if len(load_path) == 0:
-                model_path = glob.glob(path + "/**/model.pt*", recursive=True)
+                model_path = glob.glob(
+                    osp.join(path, "**", "model.pt*"), recursive=True
+                )
                 if len(model_path) > 1:
                     raise Exception(
                         f"Only whole pickled models found in '{path}'. Using whole "
@@ -664,6 +668,16 @@ class LAC(nn.Module):
             raise type(e)(
                 "The 'state_dict' could not be loaded successfully.",
             ) from e
+
+    def state_dict(self):
+        """Simple wrapper around the :meth:`tf.nn.Module.state_dict` method that saves
+        the current class name. This is used to enable easy loading of the model.
+        """
+        state_dict = super().state_dict()
+        state_dict[
+            "class_name"
+        ] = self.__class__.__name__  # Save Class name in state dict
+        return state_dict
 
     def _update_targets(self):
         """Updates the target networks based on a Exponential moving average
@@ -1424,7 +1438,7 @@ if __name__ == "__main__":
         help="maximum episode length (default: 500)",
     )
     parser.add_argument(
-        "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
+        "--epochs", type=int, default=2, help="the number of epochs (default: 50)"
     )
     parser.add_argument(
         "--steps_per_epoch",
@@ -1553,12 +1567,6 @@ if __name__ == "__main__":
         "--seed", "-s", type=int, default=0, help="the random seed (default: 0)"
     )
     parser.add_argument(
-        "--save_freq",
-        type=int,
-        default=2,
-        help="how often (in epochs) the policy should be saved (default: 1)",
-    )
-    parser.add_argument(
         "--device",
         type=str,
         default="cpu",
@@ -1611,6 +1619,12 @@ if __name__ == "__main__":
         nargs="+",
         default=STD_OUT_LOG_VARS_DEFAULT,
         help=("a space seperated list of the values you want to show on the std out."),
+    )
+    parser.add_argument(
+        "--save_freq",
+        type=int,
+        default=2,
+        help="how often (in epochs) the policy should be saved (default: 2)",
     )
     parser.add_argument(
         "--save_checkpoints",

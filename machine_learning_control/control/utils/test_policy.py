@@ -2,19 +2,20 @@
 it was trained on.
 """
 
+import glob
 import os
 import os.path as osp
 import time
 
 import joblib
-import machine_learning_control as mlc
 import machine_learning_control.control.utils.log_utils as log_utils
 import torch
 from machine_learning_control.control.utils import import_tf
 from machine_learning_control.control.utils.log_utils.logx import EpochLogger
+from machine_learning_control.control.utils.serialization_utils import load_from_json
 
 
-def load_policy_and_env(fpath, itr="last", deterministic=False):
+def load_policy_and_env(fpath, itr="last"):
     """Load a policy from save, whether it's TF or PyTorch, along with RL env.
 
     Args:
@@ -31,41 +32,29 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
     """
 
     # determine if tf save or pytorch save
-    if any(["tf1_save" in x for x in os.listdir(fpath)]):
-        backend = "tf1"
+    if any(["tf_save" in x for x in os.listdir(fpath)]):
+        backend = "tf"
     else:
         backend = "pytorch"
 
     # handle which epoch to load from
     if itr == "last":
-        # check filenames for epoch (AKA iteration) numbers, find maximum value
-
-        if backend == "tf1":
+        if backend == "tf":
+            tf_save_path = osp.join(fpath, "tf_save")
             saves = [
-                int(x[8:]) for x in os.listdir(fpath) if "tf1_save" in x and len(x) > 8
+                int(osp.basename(item).split(".")[0][18:])
+                for item in glob.glob(
+                    osp.join(tf_save_path, "weights_checkpoint*.index")
+                )
+                if len(osp.basename(item).split(".")[0]) > 18
             ]
-
         elif backend == "pytorch":
-            pytsave_path = osp.join(fpath, "pyt_save")
-            # Each file in this folder has naming convention 'model(_state_dict)XX.pt',
-            # where 'XX' is either an integer or empty string. Empty string case
-            # corresponds to len(x)==8, hence that case is excluded.
-            use_model_state = any(
-                ["model_state" in x for x in os.listdir(pytsave_path)]
-            )
-            if use_model_state:
-                saves = [
-                    int(x.split(".")[0][11:])
-                    for x in os.listdir(pytsave_path)
-                    if len(x) > 14 and "model_state" in x
-                ]
-            else:
-                saves = [
-                    int(x.split(".")[0][5:])
-                    for x in os.listdir(pytsave_path)
-                    if len(x) > 8 and "model" in x
-                ]
-
+            torch_save_path = osp.join(fpath, "torch_save")
+            saves = [
+                int(osp.basename(item).split(".")[0][11:])
+                for item in glob.glob(osp.join(torch_save_path, "model_state*.pt"))
+                if len(osp.basename(item).split(".")[0]) > 11
+            ]
         itr = "%d" % max(saves) if len(saves) > 0 else ""
 
     else:
@@ -75,8 +64,7 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
         itr = "%d" % itr
 
     # try to load environment from save
-    # (sometimes this will fail because the environment could not be pickled)
-    # TODO: FIX THIS!
+    # NOTE: Sometimes this will fail because the environment could not be pickled.
     try:
         state = joblib.load(osp.join(fpath, "vars" + itr + ".pkl"))
         env = state["env"]
@@ -84,115 +72,81 @@ def load_policy_and_env(fpath, itr="last", deterministic=False):
         env = None
 
     # load the get_action function
-    if backend == "tf1":
-        get_action = load_tf_policy(fpath, itr, deterministic)
+    if backend == "tf":
+        policy = load_tf_policy(fpath, itr, env)
     else:
-        get_action = load_pytorch_policy(
-            fpath, itr, deterministic, use_model_state, env
-        )
+        policy = load_pytorch_policy(fpath, itr, env)
 
-    return env, get_action
+    return env, policy
 
 
-def load_tf_policy(fpath, itr, deterministic=False):
-    # TODO: Fix this!
+def load_tf_policy(fpath, itr, env=None):
     """Load a tensorflow policy saved with Machine Learning Control Logger.
 
     Args:
         fpath (str): The path where the model is found.
         itr (str, optional): The current policy iteration. Defaults to "last".
-        deterministic (bool, optional): Whether you want the action from the policy to
-            be deterministic. Defaults to ``False``.
+        env (gym.env): The gym environment in which you want to test the policy.
 
     Returns:
-        (func): The policy get_action function.
+        (tf.nn.Module): The policy.
     """
     tf = import_tf()  # Import tf if installed otherwise throw warning
+    fname = osp.join(fpath, "tf_save" + itr)
+    print("\n")
+    log_utils.log("Loading from %s.\n\n" % fname, type="info")
 
-    fname = osp.join(fpath, "tf1_save" + itr)
-    print("\n\nLoading from %s.\n\n" % fname)
+    # Retrieve get_action method
+    save_info = load_from_json(osp.join(fname, "save_info.json"))
+    import machine_learning_control.control.algos.tf2 as tf2_algos
 
-    # load the things!
-    sess = tf.Session()
-    model = log_utils.restore_tf_graph(sess, fname)
-
-    # get the correct op for executing actions
-    if deterministic and "mu" in model.keys():
-        # 'deterministic' is only a valid option for SAC policies
-        print("Using deterministic action op.")
-        action_op = model["mu"]
-    else:
-        print("Using default action op.")
-        action_op = model["pi"]
-
-    # make function for producing an action given a single state
-    get_action = lambda x: sess.run(action_op, feed_dict={model["x"]: x[None, :]})[0]
-
-    return get_action
+    model = getattr(tf2_algos, save_info["class_name"])(env=env)
+    latest = tf.train.latest_checkpoint(fname)  # Restore latest checkpoint
+    model.load_weights(latest)
+    # return model.get_action
+    return model
 
 
-def load_pytorch_policy(
-    fpath, itr, deterministic=False, use_model_state=True, env=None
-):
+def load_pytorch_policy(fpath, itr, env=None):
     """Load a pytorch policy saved with Machine Learning Control Logger.
 
     Args:
         fpath (str): The path where the model is found.
         itr (str, optional): The current policy iteration. Defaults to "last".
-        deterministic (bool, optional): Whether you want the action from the policy to
-            be deterministic. Defaults to ``False``.
         env (gym.env): The gym environment in which you want to test the policy.
 
     Returns:
-        (func): The policy get_action function.
+        (tf.keras.Model): The policy.
     """
-
     fname = osp.join(
         fpath,
-        "pyt_save",
-        "model" if not use_model_state else "model_state" + itr + ".pt",
+        "torch_save",
+        "model_state" + itr + ".pt",
     )
-    print("\n\nLoading from %s.\n\n" % fname)
-
+    log_utils.log("\n\nLoading from %s.\n\n" % fname, type="info")
     model_data = torch.load(fname)
 
     # Retrieve get_action method
-    if use_model_state:
-        model = getattr(mlc.control.algos.pytorch, model_data["class_name"])(env=env)
-        model.load_state_dict(model_data)  # Retore model parameters
+    import machine_learning_control.control.algos.pytorch as torch_algos
 
-        return model.get_action
-    else:
-        log_utils.log(
-            (
-                "You are using the full pickled model in your inference. Please "
-                "note that this is the non-recommended method for loading Pytorch "
-                "models. Please make sure you save your model as a state dictionary. "
-                "See the Pytorch version of the lac algorithm for an example on how to "
-                "do this.",
-            ),
-            type="warning",
-        )
-
-        # make function for producing an action given a single state
-        def get_action(x):
-            with torch.no_grad():
-                x = torch.as_tensor(x, dtype=torch.float32)
-                action = model_data.act(x)
-            return action
-
-        return get_action
+    model = getattr(torch_algos, model_data["class_name"])(env=env)
+    model.load_state_dict(model_data)  # Retore model parameters
+    return model
 
 
-def run_policy(env, get_action, max_ep_len=None, num_episodes=100, render=True):
+def run_policy(
+    env, get_action, max_ep_len=None, num_episodes=100, render=True, deterministic=False
+):
     """Evaluates a policy inside a given gym environment.
 
     Args:
         env gym.env): The gym environment.
-        get_action (func): The policy get_action function.
+        policy (union[tf.keras.Model, torch.nn.Module]): The policy.
         max_ep_len (int, optional): The maximum episode length. Defaults to None.
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
+        deterministic (bool, optional): Whether you want the action from the policy to
+            be deterministic. Defaults to ``False``.
         render (bool, optional): Whether you want to render the episode to the screen.
             Defaults to ``True``.
     """
@@ -202,24 +156,39 @@ def run_policy(env, get_action, max_ep_len=None, num_episodes=100, render=True):
         + "page on Experiment Outputs for how to handle this situation."
     )
 
-    logger = EpochLogger()
+    logger = EpochLogger(verbose_fmt="table")
     o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
+    supports_deterministic = True  # Only supported with gaussian algorithms
     while n < num_episodes:
         if render:
             env.render()
             time.sleep(1e-3)
 
-        a = get_action(o)
+            if supports_deterministic:
+                try:
+                    a = policy.get_action(o, deterministic=deterministic)
+                except TypeError:
+                    log_utils.log(
+                        "Input argument 'deterministic' ignored as the algorithm does "
+                        "not support deterministic actions. This is only supported for "
+                        "gaussian  algorithms.",
+                        type="warning",
+                    )
+                    a = policy.get_action(o)
+            else:
+                a = policy.get_action(o)
+            supports_deterministic = False
         o, r, d, _ = env.step(a)
         ep_ret += r
         ep_len += 1
 
         if d or (ep_len == max_ep_len):
             logger.store(EpRet=ep_ret, EpLen=ep_len)
-            print("Episode %d \t EpRet %.3f \t EpLen %d" % (n, ep_ret, ep_len))
+            logger.log("Episode %d \t EpRet %.3f \t EpLen %d" % (n, ep_ret, ep_len))
             o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
             n += 1
 
+    print("")
     logger.log_tabular("EpRet", with_min_and_max=True)
     logger.log_tabular("EpLen", average_only=True)
     logger.dump_tabular()
@@ -236,7 +205,7 @@ if __name__ == "__main__":
     parser.add_argument("--itr", "-i", type=int, default=-1)
     parser.add_argument("--deterministic", "-d", action="store_true")
     args = parser.parse_args()
-    env, get_action = load_policy_and_env(
-        args.fpath, args.itr if args.itr >= 0 else "last", args.deterministic
+    env, policy = load_policy_and_env(
+        args.fpath, args.itr if args.itr >= 0 else "last"
     )
-    run_policy(env, get_action, args.len, args.episodes, not (args.norender))
+    run_policy(env, policy, args.len, args.episodes, not (args.norender))
