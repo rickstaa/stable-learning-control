@@ -114,7 +114,7 @@ def get_datasets(logdir, condition=None):
         if data_file:
             exp_name = None
             try:
-                config_path = open(os.path.join(root, "config.json"))
+                config_path = open(osp.join(root, "config.json"))
                 config = json.load(config_path)
                 if "exp_name" in config:
                     exp_name = config["exp_name"]
@@ -129,9 +129,9 @@ def get_datasets(logdir, condition=None):
             units[condition1] += 1
 
             try:
-                exp_data = pd.read_table(os.path.join(root, data_file[0]))
+                exp_data = pd.read_table(osp.join(root, data_file[0]))
             except Exception:
-                print("Could not read from %s" % os.path.join(root, data_file[0]))
+                print("Could not read from %s" % osp.join(root, data_file[0]))
                 continue
             performance = (
                 "AverageTestEpRet" if "AverageTestEpRet" in exp_data else "AverageEpRet"

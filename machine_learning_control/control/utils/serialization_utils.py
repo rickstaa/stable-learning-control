@@ -5,6 +5,7 @@ This module was cloned from the
 """  # noqa
 
 import json
+import os.path as osp
 
 
 def convert_json(obj):
@@ -54,3 +55,39 @@ def is_json_serializable(v):
         return True
     except Exception:
         return False
+
+
+def save_to_json(input_object, output_filename, output_path):
+    """Save python object to Json file. This method will serialize the object to
+    JSON, while handling anything which can't be serialized in a graceful way
+    (writing as informative a string as possible).
+
+    Args:
+        input_object (object): The input object you want to save.
+        output_filename (str): The output filename.
+        output_path (str): The output path.
+    """
+    input_object_json = convert_json(input_object)
+    output = json.dumps(
+        input_object_json, separators=(",", ":\t"), indent=4, sort_keys=True
+    )
+    output_filename = (
+        output_filename + ".json"
+        if osp.splitext(output_filename)[1] != ".json"
+        else output_filename
+    )
+    with open(osp.join(output_path, output_filename), "w") as out:
+        out.write(output)
+
+
+def load_from_json(path):
+    """Load data from json file.
+
+    Args:
+        path (str): The path of the json file you want to load.
+    Returns:
+        (object): The Json load object.
+    """
+    path = path + ".json" if osp.splitext(path)[1] != ".json" else path
+    content = open(path)
+    return json.load(content)

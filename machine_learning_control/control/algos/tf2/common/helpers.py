@@ -19,7 +19,7 @@ def set_device(device_type="cpu"):
     """
     if device_type.lower() == "cpu":
         tf.config.set_visible_devices([], "GPU")  # Force disable GPU
-    log_utils.log(f"Tensorflow is using the {device_type}.", type="info")
+    log_utils.log(f"Tensorflow is using the {device_type.upper()}.", type="info")
     return device_type.lower()
 
 

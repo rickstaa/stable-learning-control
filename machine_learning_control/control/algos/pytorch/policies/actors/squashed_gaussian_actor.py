@@ -59,7 +59,7 @@ class SquashedGaussianActor(nn.Module):
                 to 2.0.
         """
         super().__init__()
-        self._device_warning = False
+        self.__device_warning_logged = False
         self.act_limits = act_limits
         self._log_std_min = log_std_min
         self._log_std_max = log_std_max
@@ -89,7 +89,7 @@ class SquashedGaussianActor(nn.Module):
         """
         # Make sure the observations are on the right device
         if obs.device != self.net[0].weight.device:
-            if not self._device_warning:
+            if not self.__device_warning_logged:
                 device_warn_msg = (
                     "The observations were automatically moved from "
                     "'{}' to '{}' during the '{}' forward pass.".format(
@@ -104,7 +104,7 @@ class SquashedGaussianActor(nn.Module):
                     + "during the forward pass slows down the algorithm."
                 )
                 log_utils.log(device_warn_msg, type="warning")
-                self._device_warning = True
+                self.__device_warning_logged = True
             obs = obs.to(self.net[0].weight.device)
 
         # Calculate mean action and standard deviation
