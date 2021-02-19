@@ -135,7 +135,7 @@ def load_pytorch_policy(fpath, itr, env=None):
 
 
 def run_policy(
-    env, get_action, max_ep_len=None, num_episodes=100, render=True, deterministic=False
+    env, policy, max_ep_len=None, num_episodes=100, render=True, deterministic=False
 ):
     """Evaluates a policy inside a given gym environment.
 
