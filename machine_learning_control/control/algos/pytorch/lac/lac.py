@@ -389,8 +389,8 @@ class LAC(nn.Module):
             l_error.backward()
             self._c_optimizer.step()
 
-            l_info = dict(LVals=l1.detach().numpy())
-            diagnostics.update({**l_info, "ErrorL": l_error.detach().numpy()})
+            l_info = dict(LVals=l1.cpu().detach().numpy())
+            diagnostics.update({**l_info, "ErrorL": l_error.cpu().detach().numpy()})
         else:
 
             # Get target Q values (Bellman-backup)
@@ -429,8 +429,10 @@ class LAC(nn.Module):
             q_loss.backward()
             self._c_optimizer.step()
 
-            q_info = dict(Q1Vals=q1.detach().numpy(), Q2Vals=q2.detach().numpy())
-            diagnostics.update({**q_info, "LossQ": q_loss.detach().numpy()})
+            q_info = dict(
+                Q1Vals=q1.cpu().detach().numpy(), Q2Vals=q2.cpu().detach().numpy()
+            )
+            diagnostics.update({**q_info, "LossQ": q_loss.cpu().detach().numpy()})
         ################################################
         # Optimize Gaussian actor ######################
         ################################################
@@ -481,10 +483,10 @@ class LAC(nn.Module):
         self._pi_optimizer.step()
 
         pi_info = dict(
-            LogPi=logp_pi.detach().numpy(),
-            Entropy=-torch.mean(logp_pi).detach().numpy(),
-        )  # FIXME: Make GPU compatibel .cpu().detach()
-        diagnostics.update({**pi_info, "LossPi": a_loss.detach().numpy()})
+            LogPi=logp_pi.cpu().detach().numpy(),
+            Entropy=-torch.mean(logp_pi).cpu().detach().numpy(),
+        )
+        diagnostics.update({**pi_info, "LossPi": a_loss.cpu().detach().numpy()})
         ################################################
         # Optimize alpha (Entropy temperature) #########
         ################################################
@@ -505,8 +507,10 @@ class LAC(nn.Module):
             alpha_loss.backward()
             self._log_alpha_optimizer.step()
 
-            alpha_info = dict(Alpha=self.alpha.detach().numpy())
-            diagnostics.update({**alpha_info, "LossAlpha": alpha_loss.detach().numpy()})
+            alpha_info = dict(Alpha=self.alpha.cpu().detach().numpy())
+            diagnostics.update(
+                {**alpha_info, "LossAlpha": alpha_loss.cpu().detach().numpy()}
+            )
         ################################################
         # Optimize labda (Lyapunov temperature) ########
         ################################################
@@ -525,9 +529,9 @@ class LAC(nn.Module):
             labda_loss.backward()
             self._log_labda_optimizer.step()
 
-            labda_info = dict(Lambda=self.labda.detach().numpy())
+            labda_info = dict(Lambda=self.labda.cpu().detach().numpy())
             diagnostics.update(
-                {**labda_info, "LossLambda": labda_loss.detach().numpy()}
+                {**labda_info, "LossLambda": labda_loss.cpu().detach().numpy()}
             )
 
         # Unfreeze Pi and Q networks so you can optimize it at next SGD step.
@@ -593,12 +597,13 @@ class LAC(nn.Module):
                     "restore path and try again."
                 )
 
-        restored_model_state_dict = torch.load(load_path[0])
+        restored_model_state_dict = torch.load(load_path[0], map_location=self._device)
         self.load_state_dict(
             restored_model_state_dict,
             restore_lagrance_multipliers,
-            map_location=self._device,
         )
+        self.ac.to(self._device)
+        self.ac_targ.to(self._device)
 
     def export(self, path):
         """Can be used to export the model as a 'TorchSCript' such that it can be
@@ -643,13 +648,18 @@ class LAC(nn.Module):
             )
 
         if not restore_lagrance_multipliers:
+            log_utils.log(
+                "Keeping lagrance multipliers at their initial value.", type="info"
+            )
             try:
                 del state_dict["log_alpha"], state_dict["log_labda"]
             except KeyError:
                 pass
+        else:
+            log_utils.log("Restoring lagrance multipliers.", type="info")
 
         try:
-            super().load_state_dict(state_dict)
+            super().load_state_dict(state_dict, strict=False)
         except AttributeError as e:
             raise type(e)(
                 "The 'state_dict' could not be loaded successfully.",
@@ -763,6 +773,17 @@ class LAC(nn.Module):
             "Please open a feature/pull request on "
             "https://github.com/rickstaa/machine-learning-control/issues if you need "
             "this."
+        )
+        raise AttributeError(error_msg)
+
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, set_val):
+        error_msg = (
+            "Changing the computational 'device' during training is not allowed."
         )
         raise AttributeError(error_msg)
 
@@ -1044,7 +1065,11 @@ def lac(
             sys.exit(0)
 
     replay_buffer = ReplayBuffer(
-        obs_dim=obs_dim, act_dim=act_dim, rew_dim=rew_dim, size=replay_size
+        obs_dim=obs_dim,
+        act_dim=act_dim,
+        rew_dim=rew_dim,
+        size=replay_size,
+        device=policy.device,
     )
 
     # Count variables and print network structure
@@ -1058,11 +1083,11 @@ def lac(
     )
     if use_lyapunov:
         logger.log(
-            "\nNumber of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info"
+            "Number of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info"
         )
     else:
         logger.log(
-            "\nNumber of parameters: \t pi: %d, \t Q1: %d, \t Q2: %d\n" % var_counts,
+            "Number of parameters: \t pi: %d, \t Q1: %d, \t Q2: %d\n" % var_counts,
             type="info",
         )
     logger.log("Network structure:\n", type="info")

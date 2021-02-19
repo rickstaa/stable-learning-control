@@ -4,6 +4,7 @@ This module contains a Pytorch implementation of the Lyapunov Critic policy of
 `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
 
+import machine_learning_control.control.utils.log_utils as log_utils
 import torch
 import torch.nn as nn
 from machine_learning_control.control.algos.pytorch.common.helpers import mlp
@@ -33,6 +34,9 @@ class LCritic(nn.Module):
                 to torch.nn.ReLU.
         """
         super().__init__()
+        self._device_warning = False
+        self._obs_same_device = False
+        self._act_same_device = False
         self.L = mlp([obs_dim + act_dim] + list(hidden_sizes), activation, activation)
 
     def forward(self, obs, act):
@@ -45,6 +49,48 @@ class LCritic(nn.Module):
             torch.Tensor: The tensor containing the lyapunov values of the input
                 observations and actions.
         """
+        # Make sure the observations and actions are on the right device
+        self._obs_same_device = obs.device != self.L[0].weight.device
+        self._act_same_device = act.device != self.L[0].weight.device
+        if self._obs_same_device or self._act_same_device:
+            if not self._device_warning:
+                device_warn_strs = (
+                    ("observations and actions", obs.device)
+                    if (self._obs_same_device or self._act_same_device)
+                    else (
+                        ("observations", obs.device)
+                        if self._obs_same_device
+                        else ("actions", act.device)
+                    )
+                )
+                device_warn_msg = (
+                    "The {} were automatically moved from ".format(device_warn_strs[0])
+                    + "'{}' to '{}' during the '{}' forward pass.".format(
+                        device_warn_strs[1],
+                        self.L[0].weight.device,
+                        self.__class__.__name__,
+                    )
+                    + "Please place your observations on the '{}' ".format(
+                        self.L[0].weight.device
+                    )
+                    + "before calling the '{}' as converting them ".format(
+                        self.__class__.__name__
+                    )
+                    + "during the forward pass slows down the algorithm."
+                )
+                log_utils.log(device_warn_msg, type="warning")
+                self._device_warning = True
+            obs = (
+                obs.to(self.L[0].weight.device)
+                if obs.device != self.L[0].weight.device
+                else obs
+            )
+            act = (
+                act.to(self.L[0].weight.device)
+                if act.device != self.L[0].weight.device
+                else act
+            )
+
         L_hid_out = self.L(torch.cat([obs, act], dim=-1))
         L_out = torch.square(L_hid_out)
         L_out = torch.sum(L_out, dim=-1)
