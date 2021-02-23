@@ -5,29 +5,18 @@
 -   [ ] Check if libopenmpi-dev is still needed.
 -   [ ] MPI fallback
 -   [ ] Add yaml load option.
--   [ ] Add way to supply environment arguments
--   [ ] Add GPU support.
 -   [ ] Check if logger (tensorboard) commands work in command line.
 
 ## Docs
 
+-   [ ] Restructure docs.
 -   [ ] Add new logger arguments.
--   [ ] ADd env kwargs to docs.
--   [ ] Restructure.
--   [ ] Add experimental grid explination.
--   [ ] Add robustness eval.
+-   [ ] Add custom env guide.
+-   [ ] Add env kwargs to docs.
+-   [ ] Add experimental grid (ray-tuner) guide.
+-   [ ] Add robustness eval guide.
 -   [ ] Add new config file run method.
 -   [ ] Add github repo link to sphinx.
--   [ ] Add gym environment documnetation.
--   [ ] Add gym environment add guidel.
--   [ ] Add custom gym add guide.
--   [ ] Add install options [torch/tensorflow/hyperparameter/ect]
--   [ ] State that default is torch if people want to use tensorflow use pip install .[tf]
--   [ ] Gym install types instaructions!
+-   [ ] Add pip install options [torch/tensorflow/hyperparameter/ect]
+    -   [ ] State that default is torch if people want to use tensorflow use pip install .[tf]
 -   [ ] Tensorboard instructions.
--   [ ] Add env add guide.
-
-# Save pytorch inference guide
-
--   \[] Load optimize parameters
--   \[] Load save CPU support create <https://www.youtube.com/watch?v=9L9jEOwRrCg>

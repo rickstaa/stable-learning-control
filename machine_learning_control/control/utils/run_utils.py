@@ -97,32 +97,19 @@ def call_experiment(
         # Make 'env_fn' from 'env_name'
         if "env_name" in kwargs:
 
-            # Import main gym environments
+            # Import gym environments
             import gym
-            import machine_learning_control.simzoo.simzoo  # noqa: F401
-
-            # Import custom gym environments
+            # import machine_learning_control.simzoo.simzoo  # noqa: F401
             try:
                 import machine_learning_control.env_config  # noqa: F401
             except Exception as e:
                 raise Exception(
                     "Something went wrong when trying to import the 'env_config' file."
                 ) from e
-            if "env_pkg" in kwargs.keys():
-                env_pkg = kwargs.pop("env_pkg")
-                try:
-                    import_gym_env_pkg(env_pkg)
-                except ImportError as e:
-                    import_error_msg = (
-                        "{} Please make sure you supplied a valid package ".format(e)
-                        + "in the 'env_pkg' input argument."
-                    )
-                    raise ImportError(import_error_msg) from e
 
             env_name = kwargs.pop("env_name")
             env_kwargs = kwargs.pop("env_kwargs", {})
             kwargs["env_fn"] = lambda: gym.make(env_name, **env_kwargs)
-            del kwargs["env_name"]
 
         # Fork into multiple processes
         mpi_fork(num_cpu)

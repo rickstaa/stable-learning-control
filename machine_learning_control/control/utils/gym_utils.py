@@ -64,52 +64,39 @@ def validate_gym_env(arg_dict):
         AssertError: Raised when a environment is supplied that is not a valid gym
             environment.
     """
-
-    # Import main gym environments
+    # Import gym environments
     import gym
-    import machine_learning_control.simzoo.simzoo  # noqa: F401
 
-    # Try to import custom environments
+    # import machine_learning_control.simzoo.simzoo  # noqa: F401
     try:
         import machine_learning_control.env_config  # noqa: F401
     except Exception as e:
         raise Exception(
             "Something went wrong when trying to import the 'env_config' file."
         ) from e
-    env_pkg_err_msg = ""
-    if "env_pkg" in arg_dict.keys():
-        try:
-            import_gym_env_pkg(arg_dict["env_pkg"], frail=False)
-        except ImportError:
-            env_pkg_err_msg = (
-                "\n\t\t* Make sure the package you supplied in the 'env_pkg' contains a "
-                "a valid gym environment.\n"
-            )
 
     # Special handling for environment: make sure that env_name is a real,
     # registered gym environment.
-    valid_envs = [e.id for e in list(gym.envs.registry.all())]
     assert "env_name" in arg_dict, log_utils.friendly_err(
         "You did not give a value for --env_name! Add one and try again."
     )
     for env_name in arg_dict["env_name"]:
-        err_msg = dedent(
-            """
+        try:
+            gym.envs.registry.spec(env_name)
+        except gym.error.Error as e:
+            err_msg = dedent(
+                """
+                %s is not registered with Gym. (%s)
 
-            %s is not registered with Gym.
+                Recommendations:
+                    * Check for a typo (did you include the version tag?)
 
-            Recommendations:
-
-                * Check for a typo (did you include the version tag?)
-
-                * View the complete list of valid Gym environments at
-
-                    https://gym.openai.com/envs/
-                %s
-            """
-            % (env_name, env_pkg_err_msg)
-        )
-        assert env_name in valid_envs, err_msg
+                    * View the complete list of valid Gym environments at
+                        https://gym.openai.com/envs/
+                """
+                % (env_name, str(e))
+            )
+            assert False, err_msg
 
 
 def import_gym_env_pkg(module_name, frail=True, dry_run=False):
