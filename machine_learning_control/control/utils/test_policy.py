@@ -205,7 +205,5 @@ if __name__ == "__main__":
     parser.add_argument("--itr", "-i", type=int, default=-1)
     parser.add_argument("--deterministic", "-d", action="store_true")
     args = parser.parse_args()
-    env, policy = load_policy_and_env(
-        args.fpath, args.itr if args.itr >= 0 else "last"
-    )
+    env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
     run_policy(env, policy, args.len, args.episodes, not (args.norender))

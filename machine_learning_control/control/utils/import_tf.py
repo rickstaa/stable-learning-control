@@ -5,7 +5,7 @@ is not installed.
 import importlib
 import sys
 
-TF_WARN_MESSAGE = (
+TF_IMPORT_WARNING = (
     "No module named '{}'. Did you run the `pip install .[tf]` " "command?"
 )
 
@@ -15,13 +15,15 @@ def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
     installed.
 
     Args:
-        module_name (str): The python module you want to import (eg. tensorflow.nn). By
-            default ``None``, meaning the Tensorflow package is imported.
+        module_name (str, optional): The python module you want to import
+            (eg. tensorflow.nn). By default ``None``, meaning the Tensorflow package is
+            imported.
         class_name (str): The python class you want to import (eg. Adam
             from :module:`tensorflow.keras.optimizers`). By default ``None``.
-        frail (bool): Throw ImportError when tensorflow can not be imported.
-        dry_run (bool): Do not actually import tensorflow if available, by Default
-            ``False``.
+        frail (bool, optional): Throw ImportError when tensorflow can not be imported.
+            Defaults to ``true``.
+        dry_run (bool, optional): Do not actually import tensorflow if available.
+            Defaults to ``False``.
 
     Raises:
         ImportError: A custom import error if tensorflow is not installed.
@@ -50,7 +52,10 @@ def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
                 return True
         else:
             if frail:
-                raise ImportError(TF_WARN_MESSAGE.format(module_name))
+                raise ImportError(TF_IMPORT_WARNING.format(module_name))
             return False
     except (ImportError, KeyError, AttributeError) as e:
-        raise ImportError(TF_WARN_MESSAGE.format(module_name)) from e
+        if ImportError:
+            if not frail:
+                return False
+        raise ImportError(TF_IMPORT_WARNING.format(module_name)) from e

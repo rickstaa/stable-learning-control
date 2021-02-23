@@ -20,6 +20,7 @@ import cloudpickle
 import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import psutil
+from machine_learning_control.control.utils.gym_utils import import_gym_env_pkg
 from machine_learning_control.control.common.helpers import all_bools, valid_str
 from machine_learning_control.control.utils.mpi_tools import mpi_fork
 from machine_learning_control.control.utils.serialization_utils import convert_json
@@ -95,13 +96,32 @@ def call_experiment(
     def thunk_plus():
         # Make 'env_fn' from 'env_name'
         if "env_name" in kwargs:
-            import gym
-            import machine_learning_control.simzoo.simzoo
 
-            # FIXME: Make sure that all custom environments that are already imported [20m]
-            # are available.
-            env_name = kwargs["env_name"]
-            kwargs["env_fn"] = lambda: gym.make(env_name)
+            # Import main gym environments
+            import gym
+            import machine_learning_control.simzoo.simzoo  # noqa: F401
+
+            # Import custom gym environments
+            try:
+                import machine_learning_control.env_config  # noqa: F401
+            except Exception as e:
+                raise Exception(
+                    "Something went wrong when trying to import the 'env_config' file."
+                ) from e
+            if "env_pkg" in kwargs.keys():
+                env_pkg = kwargs.pop("env_pkg")
+                try:
+                    import_gym_env_pkg(env_pkg)
+                except ImportError as e:
+                    import_error_msg = (
+                        "{} Please make sure you supplied a valid package ".format(e)
+                        + "in the 'env_pkg' input argument."
+                    )
+                    raise ImportError(import_error_msg) from e
+
+            env_name = kwargs.pop("env_name")
+            env_kwargs = kwargs.pop("env_kwargs", {})
+            kwargs["env_fn"] = lambda: gym.make(env_name, **env_kwargs)
             del kwargs["env_name"]
 
         # Fork into multiple processes

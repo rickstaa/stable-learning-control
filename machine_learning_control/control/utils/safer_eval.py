@@ -5,15 +5,18 @@ imported in this file.
 """
 
 # Import modules to which you want users to have access
-import machine_learning_control.simzoo.simzoo  # noqa: F401
 import torch  # noqa: F401
+import machine_learning_control as machine_learning_control  # noqa: F401
+import machine_learning_control as mlc  # noqa: F401
+
+# import machine_learning_control.simzoo.simzoo  # noqa: F401
 from machine_learning_control.control.utils.import_tf import import_tf
 
 tf = import_tf(frail=False)
 tensorflow = tf
 
 
-def safe_eval(*args, backend=None):
+def safer_eval(*args, backend=None):
     """Function used to make sure that only the in this module imported packages can be
     used inside the eval method. This was done in a attempt to make eval a little bit
     more save.
@@ -36,6 +39,8 @@ def safe_eval(*args, backend=None):
         from torch import nn
     elif backend is not None and backend.lower() in ["tensorflow", "tf"]:
         nn = import_tf(module_name="tensorflow.nn")
+    else:
+        nn = None
 
     eval_safe_globals = {k: v for k, v in globals().items() if k not in {"os", "sys"}}
     eval_safe_globals["__builtins__"] = {}

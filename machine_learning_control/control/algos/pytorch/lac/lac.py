@@ -40,7 +40,7 @@ from machine_learning_control.control.algos.pytorch.policies import (
     SoftActorCritic,
 )
 from machine_learning_control.control.common.helpers import heuristic_target_entropy
-from machine_learning_control.control.utils import safe_eval
+from machine_learning_control.control.utils import safer_eval
 from machine_learning_control.control.utils.eval_utils import test_agent
 from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
@@ -1653,17 +1653,17 @@ if __name__ == "__main__":
     # Setup actor critic arguments
     actor_critic = LyapunovActorCritic if args.use_lyapunov else SoftActorCritic
     output_activation = {}
-    output_activation["actor"] = safe_eval(args.act_out_a, backend="torch")
+    output_activation["actor"] = safer_eval(args.act_out_a, backend="torch")
     if not args.use_lyapunov:
-        output_activation["critic"] = safe_eval(args.act_out_c, backend="torch")
+        output_activation["critic"] = safer_eval(args.act_out_c, backend="torch")
     ac_kwargs = dict(
         hidden_sizes={
             "actor": [args.hid_a] * args.l_a,
             "critic": [args.hid_c] * args.l_c,
         },
         activation={
-            "actor": safe_eval(args.act_a, backend="torch"),
-            "critic": safe_eval(args.act_c, backend="torch"),
+            "actor": safer_eval(args.act_a, backend="torch"),
+            "critic": safer_eval(args.act_c, backend="torch"),
         },
         output_activation=output_activation,
     )

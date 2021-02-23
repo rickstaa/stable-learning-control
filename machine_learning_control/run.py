@@ -12,7 +12,7 @@ from copy import deepcopy
 from textwrap import dedent
 
 # Import mlc algorithms and environments
-from machine_learning_control.control.utils import import_tf, safe_eval
+from machine_learning_control.control.utils import import_tf, safer_eval
 from machine_learning_control.control.utils.gym_utils import validate_gym_env
 from machine_learning_control.control.utils.log_utils import friendly_err
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
@@ -46,14 +46,17 @@ MPI_COMPATIBLE_ALGOS = []
 BASE_ALGO_NAMES = ["sac", "lac"]
 
 
-def _get_backend(cmd):
-    """Retrieves the backend from the cmd string.
+def _add_backend_to_cmd(cmd):
+    """Adds the backend suffix to the input command.
 
     Args:
         cmd (str): The cmd string.
 
     Returns:
-        str: The requested backend (options: "tf" or "pytorch").
+        (tuple): tuple containing:
+
+            cmd (str): The new cmd.
+            backend (str): The used backend (options: "tf" or "pytorch").
 
     Raises:
         AssertError: Raised when a the tensorflow backend is requested but tensorflow
@@ -73,7 +76,7 @@ def _get_backend(cmd):
         except ImportError as e:
             raise ImportError(friendly_err(e.args[0]))
 
-    return backend
+    return cmd, backend
 
 
 def _process_arg(arg, backend=None):
@@ -87,7 +90,7 @@ def _process_arg(arg, backend=None):
         obj: Processed input argument.
     """
     try:
-        return safe_eval(arg, backend=backend)
+        return safer_eval(arg, backend=backend)
     except Exception:
         return arg
 
@@ -117,10 +120,10 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
     Raises:
         ImportError: A custom import error if tensorflow is not installed.
     """
-    backend = _get_backend(cmd)
+    cmd, backend = _add_backend_to_cmd(cmd)
 
     # warning
-    algo = safe_eval("machine_learning_control.control." + cmd, backend=backend)
+    algo = safer_eval("machine_learning_control.control." + cmd, backend=backend)
 
     # Before all else, check to see if any of the flags is 'help'.
     valid_help = ["--help", "-h", "help"]
@@ -180,6 +183,21 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
             given_shorthands[true_name] = given_shorthands[special_name]
             del given_shorthands[special_name]
 
+    # Determine experiment name. If not given by user, will be determined
+    # by the algorithm name.
+    if "exp_name" in arg_dict:
+        assert len(arg_dict["exp_name"]) == 1, friendly_err(
+            "You can only provide one value for exp_name."
+        )
+        exp_name = arg_dict["exp_name"][0]
+        del arg_dict["exp_name"]
+    else:
+        exp_name = "cmd_" + cmd
+
+    # Special handling for environment: make sure that env_name is a real,
+    # registered gym environment.
+    validate_gym_env(arg_dict)
+
     # Final pass: check for the special args that go to the 'run' command
     # for an experiment grid, separate them from the arg dict, and make sure
     # that they have unique values. The special args are given by RUN_KEYS.
@@ -193,27 +211,12 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
             run_kwargs[k] = val[0]
             del arg_dict[k]
 
-    # Determine experiment name. If not given by user, will be determined
-    # by the algorithm name.
-    if "exp_name" in arg_dict:
-        assert len(arg_dict["exp_name"]) == 1, friendly_err(
-            "You can only provide one value for exp_name."
-        )
-        exp_name = arg_dict["exp_name"][0]
-        del arg_dict["exp_name"]
-    else:
-        exp_name = "cmd_" + cmd
-
     # Make sure that if num_cpu > 1, the algorithm being used is compatible
     # with MPI.
     if "num_cpu" in run_kwargs and not (run_kwargs["num_cpu"] == 1):
         assert cmd in _add_with_backends(MPI_COMPATIBLE_ALGOS), friendly_err(
             "This algorithm can't be run with num_cpu > 1."
         )
-
-    # Special handling for environment: make sure that env_name is a real,
-    # registered gym environment.
-    validate_gym_env()
 
     # Construct and execute the experiment grid.
     eg = ExperimentGrid(name=exp_name)

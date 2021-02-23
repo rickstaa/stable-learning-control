@@ -1,8 +1,5 @@
-"""Module used for storing several configuration values.
-
-This module was based on the `user_config` module of the
-`spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/user_config.py>`_.
-"""  # noqa: E501
+"""Module used for storing several package configuration values.
+"""
 
 import os.path as osp
 
@@ -31,5 +28,3 @@ WAIT_BEFORE_LAUNCH = 5
 # NOTE:The format in which the statistics are displayed to the terminal. Options are
 # "table"  which supplies them as a table and "line" which prints them in one line
 DEFAULT_STD_OUT_TYPE = "line"
-
-# TODO: Add Custom environment LOAD method

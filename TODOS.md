@@ -12,6 +12,7 @@
 ## Docs
 
 -   [ ] Add new logger arguments.
+-   [ ] ADd env kwargs to docs.
 -   [ ] Restructure.
 -   [ ] Add experimental grid explination.
 -   [ ] Add robustness eval.
@@ -24,6 +25,7 @@
 -   [ ] State that default is torch if people want to use tensorflow use pip install .[tf]
 -   [ ] Gym install types instaructions!
 -   [ ] Tensorboard instructions.
+-   [ ] Add env add guide.
 
 # Save pytorch inference guide
 

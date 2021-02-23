@@ -46,9 +46,10 @@ MOCK_MODULES = [
     "torch.distributions.normal",
     "torch.distributions.categorical",
     "torch.nn.functional",
+    "tensorflow.nn",
+    "tensorflow.keras",
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-# FIXME: check if something is missing.
 
 # Finish imports
 import machine_learning_control
