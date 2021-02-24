@@ -63,7 +63,7 @@ class SAC(LAC):
 
 def sac(*args, **kwargs):
     """Wrapper that calles the `:module:lac` algorithm with ``use_lyapunov`` false. It
-    also sets up some :atr:`sac` related default arguments.
+    also sets up some :attr:`sac` related default arguments.
 
     Args:
         *args: All args to pass to thunk.

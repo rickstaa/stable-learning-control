@@ -18,13 +18,15 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
+# -- Make sure mlc is accessible without going through setup.py -----------
 import os.path as osp
 import sys
 
-# Make sure mlc is accessible without going through setup.py
 dirname = osp.dirname
 sys.path.insert(0, dirname(dirname(__file__)))
+
+# -- General configuration ------------------------------------------------
 
 # Mock mpi4py to get around having to install it on RTD server (which fails)
 # Also to mock PyTorch, because it is too large for the RTD server to download
@@ -39,33 +41,14 @@ class Mock(MagicMock):
 
 MOCK_MODULES = [
     "mpi4py",
-    "torch",
-    "torch.optim",
-    "torch.nn",
-    "torch.distributions",
-    "torch.distributions.normal",
-    "torch.distributions.categorical",
-    "torch.nn.functional",
-    "tensorflow.nn",
-    "tensorflow.keras",
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
-# Finish imports
-import machine_learning_control
-from recommonmark.parser import CommonMarkParser
-
-
-source_parsers = {
-    ".md": CommonMarkParser,
-}
 
 
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#
-# needs_sphinx = '1.0'
+needs_sphinx = "2.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -74,14 +57,15 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.imgmath",
     "sphinx.ext.viewcode",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",  # TODO: Check feature min version needed
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",  # TODO: Check feature min version needed
     "sphinx.ext.extlinks",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.autosectionlabel",
+    "recommonmark",
 ]
-
-# 'sphinx.ext.mathjax', ??
 
 # imgmath settings
 imgmath_image_format = "svg"
@@ -91,26 +75,27 @@ imgmath_font_size = 14
 intersphinx_mapping = {
     "python3": ("http://docs.python.org/3", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
-    "tensorflow": ("https://www.tensorflow.org/api_docs/python", None),
+    "tensorflow": (
+        "https://www.tensorflow.org/api_docs/python",
+        "https://github.com/mr-ubik/tensorflow-intersphinx/raw/master/tf2_py_objects.inv",
+    ),
     "numpy": ("http://docs.scipy.org/doc/numpy", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
-# The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-#
-source_suffix = [".rst", ".md"]
-# source_suffix = '.rst'
+# Map suffix(es) to parsers
+# source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 
 # The master toctree document.
 master_doc = "index"
 
 # General information about the project.
-project = "Machine Learning Control"
+project = "machine-learning-control"
 copyright = "2020, Rick Staa"
 author = "Rick Staa"
+git_user_name = "rickstaa"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -131,7 +116,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "TODO.*"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "default"  # 'sphinx'
@@ -139,29 +124,30 @@ pygments_style = "default"  # 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-# html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-
 html_logo = "images/logo.svg"
-html_theme_options = {"logo_only": True}
 html_favicon = "_static/favicon.ico"
+
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+html_theme_options = {"logo_only": True}
+html_context = {
+    "display_github": True,  # Add 'Edit on Github' link instead of 'View page source'
+    "github_user": git_user_name,
+    "github_repo": project,
+    "github_version": "master",
+    "conf_py_path": "/docs/source/",  # needs leading and trailing slashes!
+}
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -170,7 +156,28 @@ htmlhelp_basename = "MachineLearningControldoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
-imgmath_latex_preamble = r"\input{_latex/img_math_latex_preabmle.tex.txt"
+imgmath_latex_preamble = r"""
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsmath}
+\usepackage{cancel}
+
+\usepackage[verbose=true,letterpaper]{geometry}
+\geometry{
+    textheight=12in,
+    textwidth=6.5in,
+    top=1in,
+    headheight=12pt,
+    headsep=25pt,
+    footskip=30pt
+    }
+
+\newcommand{\E}{{\mathrm E}}
+
+\newcommand{\underE}[2]{\underset{\begin{subarray}{c}#1 \end{subarray}}{\E}\left[ #2 \right]}
+
+\newcommand{\Epi}[1]{\underset{\begin{subarray}{c}\tau \sim \pi \end{subarray}}{\E}\left[ #1 \right]}
+"""
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
@@ -181,7 +188,19 @@ latex_elements = {
     # 'pointsize': '10pt',
     # Additional stuff for the LaTeX preamble.
     #
-    "preamble": r"\input{_latex/latex_elements_preamble.tex.txt"
+    "preamble": r"""
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsmath}
+\usepackage{cancel}
+
+
+\newcommand{\E}{{\mathrm E}}
+
+\newcommand{\underE}[2]{\underset{\begin{subarray}{c}#1 \end{subarray}}{\E}\left[ #2 \right]}
+
+\newcommand{\Epi}[1]{\underset{\begin{subarray}{c}\tau \sim \pi \end{subarray}}{\E}\left[ #1 \right]}
+""",
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -242,4 +261,4 @@ extlinks = {
 
 # -- Add extra style sheets --------------------------------------------------
 def setup(app):
-    app.add_stylesheet("css/modify.css")
+    app.add_css_file("css/modify.css")

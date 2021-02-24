@@ -255,7 +255,7 @@ You can get actions from this model with
 Documentation: Tensorflow Version
 ---------------------------------
 
-.. autofunction:: machine_learning_control.control.sac_tf2
+.. autofunction:: machine_learning_control.control.lac_tf
 
 Saved Model Contents: Tensorflow Version
 ----------------------------------------

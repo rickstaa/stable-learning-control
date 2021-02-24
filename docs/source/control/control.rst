@@ -19,7 +19,7 @@ The following algorithms are implemented in the Machine Learning Control package
 - `Soft Actor-Critic`_ (SAC)
 - `Lyapunov Actor-Critic`_ (LAC)
 
-They are all implemented with `MLP`_ (non-recurrent) actor-critics, making them suitable for fully-observed, non-image-based RL environments, e.g. the `Gym Mujoco`_ environments.
+They are all implemented with `MLP`_ (non-recurrent) actor-critics, making them suitable for fully-observed, non-image-based RL environments, e.g., the `Gym Mujoco`_ environments.
 
 Machine Learning Control has two implementations for each algorithm: one that uses `PyTorch`_ as the neural network library, and one that uses `Tensorflow v2`_ as the neural network library.
 

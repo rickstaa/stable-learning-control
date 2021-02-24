@@ -16,7 +16,7 @@
 -   [ ] Add experimental grid (ray-tuner) guide.
 -   [ ] Add robustness eval guide.
 -   [ ] Add new config file run method.
--   [ ] Add github repo link to sphinx.
 -   [ ] Add pip install options [torch/tensorflow/hyperparameter/ect]
     -   [ ] State that default is torch if people want to use tensorflow use pip install .[tf]
 -   [ ] Tensorboard instructions.
+-   [ ] Documentation markdown rts comment.

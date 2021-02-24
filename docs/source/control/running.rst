@@ -43,7 +43,7 @@ eg:
 
     runs SAC in the ``Ant-v2`` Gym environment, with various settings controlled by the flags.
 
-    By default, the PyTorch version will run (except for with TRPO, since Spinning Up doesn't have a PyTorch TRPO yet). Substitute ``sac`` with ``sac_tf2`` for the Tensorflow version.
+    By default, the PyTorch version will run (except for with TRPO, since Spinning Up doesn't have a PyTorch TRPO yet). Substitute ``sac`` with ``sac_tf`` for the Tensorflow version.
 
     ``clip_ratio``, ``hid``, and ``act`` are flags to set some algorithm hyperparameters. You can provide multiple values for hyperparameters to run multiple experiments. Check the docs to see what hyperparameters you can set (click here for the `SAC documentation`_).
 
@@ -101,7 +101,7 @@ to see a readout of the docstring.
 
         python -m machine_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ELU
 
-    sets ``torch.nn.ELU`` as the activation function. (Tensorflow equivalent: run ``sac_tf2`` with ``--act tf.nn.elu``.)
+    sets ``torch.nn.ELU`` as the activation function. (Tensorflow equivalent: run ``sac_tf`` with ``--act tf.nn.elu``.)
 
 .. admonition:: You Should Know
 
@@ -212,7 +212,7 @@ For example, consider:
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run sac_tf2 --env Hopper-v2 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
+    python -m machine_learning_control.run sac_tf --env Hopper-v2 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
 
 Here, the ``--hid`` flag is given a **user-supplied shorthand**, ``h``. The ``--act`` flag is not given a shorthand by the user, so one will be constructed for it automatically.
 
@@ -247,7 +247,7 @@ See the documentation page for each algorithm for a complete account of possible
 
 .. code-block:: python
 
-    from machine_learning_control.control import sac_tf2 as sac
+    from machine_learning_control.control import sac_tf as sac
     import tensorflow as tf
     import gym
 

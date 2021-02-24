@@ -118,30 +118,21 @@ class LAC(tf.keras.Model):
                 while creating the network sizes. The environment must satisfy the
                 OpenAI Gym API.
             actor_critic (tf.Module, optional): The constructor method for a
-                Tensorflow Module with an ``act`` method, a ``pi`` module, a ``Q1``
-                module, a ``Q2``module and a ``L`` module. The ``act`` method and ``pi``
-                module should accept batches of observations as inputs, and ``Q1``,
-                ``Q2`` and ``L`` should accept a batch of observations and a batch of
-                actions as inputs. When called, ``act``, ``q1``, and ``q2`` should
-                return:
+                Tensorflow Module with an ``act`` method, a ``pi`` module and several
+                ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
+                accept batches of observations as inputs, and the ``Q*`` and ``L``
+                modules should accept a batch of observations and a batch of actions as
+                inputs. When called, these modules should return:
 
                 ===========  ================  ======================================
                 Call         Output Shape      Description
                 ===========  ================  ======================================
                 ``act``      (batch, act_dim)  | Numpy array of actions for each
                                             | observation.
-                ``Q1``       (batch,)          | Tensor containing one current estimate
+                ``Q*/L``     (batch,)          | Tensor containing one current estimate
                                             | of Q* for the provided observations
                                             | and actions. (Critical: make sure to
                                             | flatten this!)
-                ``Q2``       (batch,)          | Tensor containing the other current
-                                            | estimate of Q* for the provided
-                                            | observations and actions. (Critical:
-                                            | make sure to flatten this!)
-                ``L``       (batch,)          | Tensor containing the other current
-                                            | estimate of L* for the provided
-                                            | observations and actions. (Critical:
-                                            | make sure to flatten this!)
                 ===========  ================  ======================================
 
                 Calling ``pi`` should return:
@@ -886,29 +877,21 @@ def lac(
         env_fn: A function which creates a copy of the environment.
             The environment must satisfy the OpenAI Gym API.
         actor_critic (tf.Module, optional): The constructor method for a
-            Tensorflow Module with an ``act`` method, a ``pi`` module, a ``Q1`` module,
-            a ``Q2``module and a ``L`` module. The ``act`` method and ``pi`` module
-            should accept batches of observations as inputs, and ``Q1``, ``Q2`` and
-            ``L`` should accept a batch of observations and a batch of actions as
-            inputs. When called, ``act``, ``q1``, and ``q2`` should return:
+            Tensorflow Module with an ``act`` method, a ``pi`` module and several ``Q``
+            or ``L`` modules. The ``act`` method and ``pi`` module should accept batches
+            of observations as inputs, and the ``Q*`` and
+            ``L`` modules should accept a batch of observations and a batch of actions
+            as inputs. When called, these modules should return:
 
             ===========  ================  ======================================
             Call         Output Shape      Description
             ===========  ================  ======================================
             ``act``      (batch, act_dim)  | Numpy array of actions for each
-                                        | observation.
-            ``Q1``       (batch,)          | Tensor containing one current estimate
-                                        | of Q* for the provided observations
-                                        | and actions. (Critical: make sure to
-                                        | flatten this!)
-            ``Q2``       (batch,)          | Tensor containing the other current
-                                        | estimate of Q* for the provided
-                                        | observations and actions. (Critical:
-                                        | make sure to flatten this!)
-            ``L``       (batch,)          | Tensor containing the other current
-                                        | estimate of L* for the provided
-                                        | observations and actions. (Critical:
-                                        | make sure to flatten this!)
+                                           | observation.
+            ``Q*/L``     (batch,)          | Tensor containing one current estimate
+                                           | of Q* for the provided observations
+                                           | and actions. (Critical: make sure to
+                                           | flatten this!)
             ===========  ================  ======================================
 
             Calling ``pi`` should return:
@@ -917,10 +900,10 @@ def lac(
             Symbol       Shape             Description
             ===========  ================  ======================================
             ``a``        (batch, act_dim)  | Tensor containing actions from policy
-                                        | given observations.
+                                           | given observations.
             ``logp_pi``  (batch,)          | Tensor containing log probabilities of
-                                        | actions in ``a``. Importantly: gradients
-                                        | should be able to flow back into ``a``.
+                                           | actions in ``a``. Importantly: gradients
+                                           | should be able to flow back into ``a``.
             ===========  ================  ======================================
 
             Defaults to `:class:LyapunovActorCritic` if ``use_lyapunov=True``
