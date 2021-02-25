@@ -17,7 +17,7 @@ def convert_to_tuple(input_var):
     """Converts input into a tuple.
 
     Args:
-        input_arg (union[int, float, list]): A input variable.
+        input_arg (Union[int, float, list]): A input variable.
 
     Returns:
         tuple: A tuple.
@@ -37,7 +37,7 @@ def heuristic_target_entropy(action_space):
     explained in `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 
     Args:
-        action_space (gym.spaces): The action space.
+        action_space (:obj:`:obj:`gym.spaces``): The action space.
 
     Raises:
         NotImplementedError: If no heuristic target entropy has yet been implemented
@@ -75,14 +75,14 @@ def strict_dict_update(input_dict, update_obj):
 
     Args:
         input_dict (dict): The input dictionary.
-        update_dict (union[dict, list]): Dictionary or list containing the update
+        update_dict (Union[dict, list]): Dictionary or list containing the update
             values.
 
     Returns:
         (tuple): tuple containing:
 
-            input_dict(list): The new updated dictionary.
-            ignored (str): The ignored keys.
+            - input_dict(:obj:`list`): The new updated dictionary.
+            - ignored (:obj:`str`): The ignored keys.
     """
     ignored = []
     if isinstance(update_obj, dict):
@@ -101,7 +101,7 @@ def combine_shapes(*args):
     """Combines multiple tuples/ints/floats into one tuple.
 
     Args:
-        *args (union[tuple,int,float]): Input arguments to combine
+        *args (Union[tuple,int,float]): Input arguments to combine
 
     Returns:
         Tuple: A tuple in which al the input arguments are combined.
@@ -117,11 +117,11 @@ def sum_tuples(*args):
     """Returns the elementwise sum of a several tuples/lists.
 
     Args:
-        *args (union[tuple, list]): Input arguments for which you want to calculate the
+        *args (Union[tuple, list]): Input arguments for which you want to calculate the
             elementwise sum.
 
     Returns:
-        Tuple: A tuple containing the elementwise sum of the input tuples/lists.
+        tuple: A tuple containing the elementwise sum of the input tuples/lists.
     """
     elem_sum = [sum(x) for x in zip(*args)]
     return elem_sum[0] if len(elem_sum) == 1 else tuple(elem_sum)
@@ -208,9 +208,10 @@ def all_bools(vals):
 def valid_str(v):
     """Convert a value or values to a string which could go in a filepath.
 
-    Partly based on `this gist`_.
+    .. note::
+        Partly based on `this gist`_.
 
-    .. _`this gist`: https://gist.github.com/seanh/93666
+        .. _`this gist`: https://gist.github.com/seanh/93666
 
     Args:
         v (list): List with values.

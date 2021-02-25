@@ -247,7 +247,7 @@ See the documentation page for each algorithm for a complete account of possible
 
 .. code-block:: python
 
-    from machine_learning_control.control import sac_tf as sac
+    from machine_learning_control.control import sac_tf2 as sac
     import tensorflow as tf
     import gym
 
@@ -305,7 +305,7 @@ After all parameters have been added,
 
 .. parsed-literal::
 
-    eg.run(thunk, **run_kwargs)
+    eg.run(thunk, \*\*run_kwargs)
 
 runs all experiments in the grid (one experiment per valid configuration), by providing the configurations as kwargs to the function ``thunk``. ``ExperimentGrid.run`` uses a function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs`` specify behaviors for ``call_experiment``. See `the documentation page`_ for details.
 

@@ -1,7 +1,15 @@
-"""Module used for determining the run entrypoint.
+"""Module that can be used for determining the run entrypoint.
 
-This module was cloned from the
-`spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/run_utils.py>`_.
+.. note::
+    This module was based on
+    `Spinning Up repository <https://github.com/openai/spinningup/blob/master/spinup/utils/run_utils.py>`__.
+
+Source code
+-----------
+.. literalinclude:: /../../machine_learning_control/control/utils/run_entrypoint.py
+   :language: python
+   :linenos:
+   :lines: 15-
 """  # noqa
 
 import base64

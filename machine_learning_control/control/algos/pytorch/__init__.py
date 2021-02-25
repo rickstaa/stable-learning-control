@@ -1,4 +1,4 @@
-"""The set of supported (Pytorch) RL algorithms and Policy Classes.
+"""Contains the Pytorch implementations of the RL/IL algorithms.
 """
 
 from machine_learning_control.control.algos.pytorch.sac.sac import SAC

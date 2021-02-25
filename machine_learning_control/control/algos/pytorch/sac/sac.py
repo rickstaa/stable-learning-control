@@ -1,22 +1,28 @@
-"""(soft) Actor-Critic algorithm
+"""
+Soft Actor-Critic algorithm
+===========================
 
 This module contains a wrapper that can be used for running a Pytorch implementation of
 the SAC algorithm of `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_. This
-wrapper runs the `:module:lac` algorithm with the ``use_lyapunov`` input set to false.
-This results in a agent that is equivalent to the SAC agent.
+wrapper runs the :mod:`~machine_learning_control.control.algos.pytorch.lac.lac.lac`
+algorithm with the ``use_lyapunov`` input set to false. This results in a agent that is
+equivalent to the SAC agent.
 """
 
 import os.path as osp
 
 import torch.nn as nn
-from machine_learning_control.control.algos.pytorch.lac import LAC, lac
-from machine_learning_control.control.algos.pytorch.policies import SoftActorCritic
+from machine_learning_control.control.algos.pytorch.lac.lac import LAC, lac
+from machine_learning_control.control.algos.pytorch.policies.soft_actor_critic import (
+    SoftActorCritic,
+)
 import machine_learning_control.control.utils.log_utils as log_utils
 
 
 def apply_sac_defaults(args, kwargs):
-    """Function that applies the :art:`sac` defaults to the input arguments and returns
-    them.
+    """Function that applies the
+    :mod:`machine_learning_control.control.algos.pytorch.sac.sac` defaults to the input
+    arguments and returns them.
 
     Args:
         args (list): The args list.
@@ -25,8 +31,8 @@ def apply_sac_defaults(args, kwargs):
     Returns:
         (tuple): tuple containing:
 
-            args (list): The args list.
-            kwargs (dict): The kwargs dictionary.
+            - args (:obj:`list`): The args list.
+            - kwargs (:obj:`dict`): The kwargs dictionary.
     """
     kwargs["use_lyapunov"] = False
     kwargs["actor_critic"] = (
@@ -59,8 +65,9 @@ class SAC(LAC):
 
 
 def sac(*args, **kwargs):
-    """Wrapper that calles the `:module:lac` algorithm with ``use_lyapunov`` false. It
-    also sets up some :attr:`sac` related default arguments.
+    """Wrapper that calles the
+    :mod:`~machine_learning_control.control.algos.pytorch.lac.lac` algorithm with
+    ``use_lyapunov`` false. It also sets up some :attr:`sac` related default arguments.
 
     Args:
         *args: All args to pass to thunk.

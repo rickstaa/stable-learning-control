@@ -79,8 +79,8 @@ and the Bellman equation for :math:`Q^{\pi}` is
     The way we've set up the value functions in the entropy-regularised setting is a little bit arbitrary, and actually we could have done it differently (eg make :math:`Q^{\pi}` include the entropy bonus at the first timestep). The choice of definition may vary slightly across papers on the subject.
 
 
-Soft Actor-Critic
-^^^^^^^^^^^^^^^^^
+Soft Actor-Critic 2
+^^^^^^^^^^^^^^^^^^^
 
 SAC concurrently learns a policy :math:`\pi_{\theta}` and two Q-functions :math:`Q_{\phi_1}, Q_{\phi_2}`. There are two variants of SAC that are currently standard: one that uses a fixed entropy regularisation coefficient :math:`\alpha`, and another that enforces an entropy constraint by varying :math:`\alpha` over the course of training. For simplicity, Spinning Up makes use of the version with a fixed entropy regularisation coefficient, but the entropy-constrained variant is generally preferred by practitioners.
 
@@ -248,7 +248,7 @@ Documentation
 Documentation: PyTorch Version
 ------------------------------
 
-.. autofunction:: machine_learning_control.control.sac_pytorch
+.. autofunction:: machine_learning_control.control.algos.pytorch.sac.sac
 
 Saved Model Contents: PyTorch Version
 -------------------------------------
@@ -265,7 +265,7 @@ You can get actions from this model with
 Documentation: Tensorflow Version
 ---------------------------------
 
-.. autofunction:: machine_learning_control.control.sac_tf
+.. autofunction:: machine_learning_control.control.algos.tf2.sac.sac
 
 Saved Model Contents: Tensorflow Version
 ----------------------------------------
@@ -292,7 +292,10 @@ This saved model can be accessed either by
 Note: for SAC, the correct evaluation policy is given by ``mu`` and not by ``pi``. The policy ``pi`` may be thought of as the exploration policy, while ``mu`` is the exploitation policy.
 
 .. _`test_policy.py`: ../user/saving_and_loading.html#loading-and-running-trained-policies
-.. _`restore_tf_graph`: ../utils/logger.html#machine_learning_control.control.utils.logx.restore_tf_graph
+.. _`restore_tf_graph`: ../utils/logger.html#machine_learning_control.control.utils.logx
+
+.. todo::
+    Replace
 
 
 References
@@ -302,11 +305,11 @@ Relevant Papers
 ---------------
 
 - `Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor`_, Haarnoja et al, 2018
-- `Soft Actor-Critic Algorithms and Applications`_, Haarnoja et al, 2018
+- `Soft Actor-Critic: Algorithms and Applications`_, Haarnoja et al, 2018
 - `Learning to Walk via Deep Reinforcement Learning`_, Haarnoja et al, 2018
 
 .. _`Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor`: https://arxiv.org/abs/1801.01290
-.. _`Soft Actor-Critic Algorithms and Applications`: https://arxiv.org/abs/1812.05905
+.. _`Soft Actor-Critic: Algorithms and Applications`: https://arxiv.org/abs/1812.05905
 .. _`Learning to Walk via Deep Reinforcement Learning`: https://arxiv.org/abs/1812.11103
 
 Other Public Implementations

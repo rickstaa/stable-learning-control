@@ -1,15 +1,24 @@
-"""Module used to make the eval calls inside the run.py script more save. For more
-info see https://python-reference.readthedocs.io/en/latest/docs/functions/eval.html.
-The `:meth:save_eval` method can only evaluate expresions that use modules which are
-imported in this file.
-"""
+"""Module used to make the eval calls inside the run.py script more save.
+
+.. important::
+    The :meth:`safer_eval` method can only evaluate expresions that use modules which are
+    imported in this file.
+
+.. note::
+    This module was based on
+    `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/serialization_utils.py>`_.
+
+..
+    NOTE: Below is needed due to a bug in the auto_summary_package (see
+    https://stackoverflow.com/questions/2701998/sphinx-autodoc-is-not-automatic-enough/62613202#62613202%3E
+"""  # noqa
 
 # Import modules to which you want users to have access
 import torch  # noqa: F401
 import machine_learning_control as machine_learning_control  # noqa: F401
 import machine_learning_control as mlc  # noqa: F401
 
-# import machine_learning_control.simzoo.simzoo  # noqa: F401
+import machine_learning_control.simzoo.simzoo  # noqa: F401
 from machine_learning_control.control.utils.import_tf import import_tf
 
 tf = import_tf(frail=False)
@@ -24,14 +33,10 @@ def safer_eval(*args, backend=None):
     Args:
         backend (str): The machine_learning backend you want to use. By default
             ``None``, meaning no backend is assumed.
-
-    .. note::
-        Please open a issue on https://github.com/rickstaa/machine-learning-control if
-        something is not working.
-
     Returns:
         args: The eval return values.
     """
+
     # Import the nn module based on the backend type
     # NOTE: This was done to enable users to specify `nn.relu` instead of
     # `torch.nn.ReLu`.

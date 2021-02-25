@@ -9,10 +9,9 @@ The :mlc:`Machine Learning Control <>` contains several Utilities for
    :maxdepth: 2
    :caption: Control
 
-   control/control
-   control/algorithms
-   control/running
-   control/saving_and_loading
-   control/plotting
-   control/bench/bench
-   control/utils/utils
+   ../control
+   ../algorithms/sac
+   ../running
+   ../saving_and_loading
+   ../plotting
+   ../bench/bench

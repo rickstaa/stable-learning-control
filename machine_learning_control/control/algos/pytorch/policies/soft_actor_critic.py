@@ -1,4 +1,6 @@
-"""Soft actor critic policy.
+"""
+Soft actor critic policy
+========================
 
 This module contains a Pytorch implementation of the Soft Actor Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
@@ -7,10 +9,11 @@ This module contains a Pytorch implementation of the Soft Actor Critic policy of
 
 import torch
 import torch.nn as nn
-from machine_learning_control.control.algos.pytorch.policies.actors import (
-    SquashedGaussianActor,
-)
-from machine_learning_control.control.algos.pytorch.policies.critics import QCritic
+
+# fmt: off
+from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.pytorch.policies.critics.Q_critic import QCritic  # noqa: E501
+# fmt: on
 from machine_learning_control.control.common.helpers import strict_dict_update
 
 HIDDEN_SIZES_DEFAULT = {"actor": (256, 256), "critic": (256, 256)}
@@ -19,14 +22,14 @@ OUTPUT_ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.Identity}
 
 
 class SoftActorCritic(nn.Module):
-    """(Soft) Actor-Critic network.
+    """Soft Actor-Critic network.
 
     Attributes:
-        self.pi (:obj:`SquashedGaussianActor`): The squashed gaussian policy network
-            (actor).
-        self.Q1 (:obj:`QCritic`): The first soft Q-network (critic).
-        self.Q1 (:obj:`QCritic`); The second soft Q-network (critic).
-    """
+        self.pi (:class:`~machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor.SquashedGaussianActor`):
+            The squashed gaussian policy network (actor).
+        self.Q1 (:obj:`~machine_learning_control.control.algos.pytorch.policies.critics.Q_critic.QCritic`): The first soft Q-network (critic).
+        self.Q1 (:obj:`~machine_learning_control.control.algos.pytorch.policies.critics.Q_critic.QCritic`): The second soft Q-network (critic).
+    """  # noqa: E501
 
     def __init__(
         self,
@@ -40,16 +43,17 @@ class SoftActorCritic(nn.Module):
         object.
 
         Args:
-            observation_space (gym.space.box.Box): A gym observation space.
-            action_space (gym.space.box.Box): A gym action space.
+            observation_space (:obj:`gym.space.box.Box`): A gym observation space.
+            action_space (:obj:`gym.space.box.Box`): A gym action space.
             hidden_sizes (Union[dict, tuple, list], optional): Sizes of the hidden
-                layers for the actor. Defaults to (256, 256).
-            activation (Union[dict, torch.nn.modules.activation], optional): The (actor
-                and critic) hidden layers activation function. Defaults to nn.ReLU.
-            output_activation (Union[dict, torch.nn.modules.activation], optional): The
-                (actor and critic)  output activation function. Defaults to nn.ReLU for
-                the actor and nn.Identity for the critic.
-        """
+                layers for the actor. Defaults to ``(256, 256)``.
+            activation (Union[:obj:`dict`, :obj:`torch.nn.modules.activation`], optional):
+                The (actor and critic) hidden layers activation function. Defaults to
+                :class:`torch.nn.ReLU`.
+            output_activation (Union[:obj:`dict`, :obj:`torch.nn.modules.activation`], optional):
+                The (actor and critic) output activation function. Defaults to
+                :class:`torch.nn.ReLU` for the actor and nn.Identity for the critic.
+        """  # noqa: E501
         super().__init__()
         obs_dim = observation_space.shape[0]
         act_dim = action_space.shape[0]
@@ -95,16 +99,15 @@ class SoftActorCritic(nn.Module):
         Returns:
             (tuple): tuple containing:
 
-                pi_action (torch.Tensor): The actions given by the policy
-                logp_pi (torch.Tensor): The log probabilities of each of these
-                    actions.
-                Q1 (torch.Tensor): Q-values of the first critic.
-                Q2 (torch.Tensor): Q-values of the second critic.
+                - pi_action (:obj:`torch.Tensor`): The actions given by the policy.
+                - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.
+                - Q1(:obj:`torch.Tensor`): Q-values of the first critic.
+                - Q2(:obj:`torch.Tensor`): Q-values of the second critic.
 
         .. note::
             Usefull for when you want to print out the full network graph using
             tensorboard.
-        """
+        """  # noqa: E501
         pi_action, logp_pi = self.pi(obs)
         Q1 = self.Q1(obs, act)
         Q2 = self.Q2(obs, act)
@@ -117,11 +120,10 @@ class SoftActorCritic(nn.Module):
             obs (torch.Tensor): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
-            numpy.ndarray: The action from the current state given the current
-            policy.
+            numpy.ndarray: The action from the current state given the current policy.
         """
         with torch.no_grad():
             a, _ = self.pi(obs, deterministic, False)

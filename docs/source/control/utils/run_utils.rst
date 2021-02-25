@@ -20,4 +20,4 @@ Calling Experiments
 
 .. autofunction:: machine_learning_control.control.utils.run_utils.call_experiment
 
-.. autofunction:: machine_learning_control.control.utils.log.setup_logger_kwargs
+.. autofunction:: machine_learning_control.control.utils.log_utils.setup_logger_kwargs

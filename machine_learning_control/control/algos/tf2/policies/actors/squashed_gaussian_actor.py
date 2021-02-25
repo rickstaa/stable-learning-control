@@ -22,9 +22,10 @@ class SquashedGaussianActor(tf.keras.Model):
             the actions.
         log_std_layer (tf.keras.Sequential): The output layer which returns
             the log standard deviation of the actions.
-        act_limits (dict, optional): The "high" and "low" action bounds of the
+        act_limits (dict, optional): The ``high`` and ``low`` action bounds of the
             environment. Used for rescaling the actions that comes out of network
-            from (-1, 1) to (low, high). No scaling will be applied if left empty.
+            from ``(-1, 1)`` to ``(low, high)``. No scaling will be applied if left
+            empty.
     """
 
     def __init__(
@@ -47,20 +48,20 @@ class SquashedGaussianActor(tf.keras.Model):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (tf.keras.activations): The activation function. Defaults
-                to tf.nn.relu.
-            output_activation (tf.keras.activations, optional): The activation
-                function used for the output layers. Defaults to tf.nn.relu.
-            act_limits (dict): The "high" and "low" action bounds of the environment.
-                Used for rescaling the actions that comes out of network from (-1, 1)
-                to (low, high).
+            activation (:obj:`tf.keras.activations`): The activation function. Defaults
+                to :obj:`tf.nn.relu`.
+            output_activation (:obj:`tf.keras.activations`, optional): The activation
+                function used for the output layers. Defaults to :obj:`tf.nn.relu`.
+            act_limits (dict): The ``high`` and ``low`` action bounds of the
+                environment. Used for rescaling the actions that comes out of network
+                from ``(-1, 1)`` to ``(low, high)``.
             log_std_min (int, optional): The minimum log standard deviation. Defaults
-                to -20.
+                to ``-20``.
             log_std_max (float, optional): The maximum log standard deviation. Defaults
-                to 2.0.
+                to ``2.0``.
             name (str, optional): The Lyapunov critic name. Defaults to
-                "gaussian_actor".
-            **kwargs: All kwargs to pass to the :module:`tf.keras.Model`. Can be used
+                ``gaussian_actor``.
+            **kwargs: All kwargs to pass to the :mod:`tf.keras.Model`. Can be used
                 to add additional inputs or outputs.
         """
         super().__init__(name=name, **kwargs)
@@ -102,18 +103,17 @@ class SquashedGaussianActor(tf.keras.Model):
             obs (numpy.ndarray): The tensor of observations.
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
             with_logprob (bool, optional): Whether we want to return the log probability
                 of an action. Defaults to ``True``.
 
         Returns:
             (tuple): tuple containing:
 
-                pi_action (tf.Tensor): The actions given by the policy
-                logp_pi (tf.Tensor): The log probabilities of each of these
-                    actions.
-        """
+                - pi_action (:obj:`tensorflow.Tensor`): The actions given by the policy.
+                - logp_pi (:obj:`tensorflow.Tensor`): The log probabilities of each of these actions.
+        """  # noqa: E501
         # Calculate mean action and standard deviation
         net_out = self.net(obs)
         mu = self.mu_layer(net_out)
@@ -170,8 +170,8 @@ class SquashedGaussianActor(tf.keras.Model):
             obs (numpy.ndarray): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.
@@ -185,15 +185,15 @@ class SquashedGaussianActor(tf.keras.Model):
 
     @tf.function
     def get_action(self, obs, deterministic=False):
-        """Simple warpper for making the :meth:`.act` method available under the
+        """Simple wrapper for making the :meth:`.act` method available under the
         'get_action' alias.
 
         Args:
             obs (numpy.ndarray): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.

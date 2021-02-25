@@ -14,7 +14,7 @@ class LCritic(nn.Module):
     """Soft Lyapunov critic Network.
 
     Attributes:
-        L (torch.nn.modules.container.Sequential): The layers of the network.
+        L (torch.nn.Sequential): The layers of the network.
     """
 
     def __init__(
@@ -30,8 +30,8 @@ class LCritic(nn.Module):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (torch.nn.modules.activation): The activation function. Defaults
-                to torch.nn.ReLU.
+            activation (:obj:`torch.nn.modules.activation`): The activation function.
+                Defaults to :obj:`torch.nn.ReLU`.
         """
         super().__init__()
         self.__device_warning_logged = False
@@ -46,8 +46,9 @@ class LCritic(nn.Module):
             obs (torch.Tensor): The tensor of observations.
             act (torch.Tensor): The tensor of actions.
         Returns:
-            torch.Tensor: The tensor containing the lyapunov values of the input
-                observations and actions.
+            torch.Tensor:
+                The tensor containing the lyapunov values of the input observations and
+                actions.
         """
         # Make sure the observations and actions are on the right device
         self._obs_same_device = obs.device != self.L[0].weight.device

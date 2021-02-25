@@ -5,7 +5,8 @@ Installation
 .. contents:: Table of Contents
 
 :mlc:`Machine Learning Control <>` requires `Python3`_ and `OpenAI Gym`_ to work. It is
-currently only supported on Linux and OSX.
+currently only supported on Linux and OSX. Although it should work on Windows it has not
+been thoroughly tested.
 
 .. admonition:: You Should Know
 
@@ -15,8 +16,8 @@ currently only supported on Linux and OSX.
     benchmarking deep RL algorithms in continuous control---it is preferred.
 
     Don't worry if you decide not to install MuJoCo, though. You can definitely get started using the Machine Learning Framework by running RL
-    algorithms with the included :mlc:`Machine Learning Control <>` `simzoo`_ gym environments. Additionally, you can also provide your own gym environments
-    or use the `MuJoCo`_ the `Classic Control`_ and `Box2d`_ environments in Gym, which are totally free to use.
+    algorithms with the included :mlc:`Machine Learning Control <>` `simzoo`_ gym environments. Additionally, you can also provide your own gym
+    environments or use the `MuJoCo`_ the `Classic Control`_ and `Box2d`_ environments in Gym, which are totally free to use.
 
 
 .. _`Python3`: https://www.python.org/

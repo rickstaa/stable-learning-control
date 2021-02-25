@@ -13,14 +13,14 @@ MPI Tools
 Core MPI Utilities
 ==================
 
-.. automodule:: machine_learning_control.control.utils.mpi_tools
+.. automodule:: machine_learning_control.control.utils.mpi_utils.mpi_tools
     :members:
 
 
 MPI + PyTorch Utilities
 =======================
 
-``machine_learning_control.control.utils.mpi_pytorch`` contains a few tools to make it easy to do data-parallel PyTorch optimization across MPI processes. The two main ingredients are syncing parameters and averaging gradients before they are used by the adaptive optimizer. Also there's a hacky fix for a problem where the PyTorch instance in each separate process tries to get too many threads, and they start to clobber each other.
+``machine_learning_control.control.utils.mpi_utils.mpi_pytorch`` contains a few tools to make it easy to do data-parallel PyTorch optimization across MPI processes. The two main ingredients are syncing parameters and averaging gradients before they are used by the adaptive optimizer. Also there's a hacky fix for a problem where the PyTorch instance in each separate process tries to get too many threads, and they start to clobber each other.
 
 The pattern for using these tools looks something like this:
 
@@ -39,15 +39,11 @@ The pattern for using these tools looks something like this:
     optimizer.step()
 
 
-.. automodule:: machine_learning_control.control.utils.mpi_pytorch
+.. automodule:: machine_learning_control.control.utils.mpi_utils.mpi_pytorch
     :members:
 
 MPI + Tensorflow Utilities
 ==========================
 
-The ``machine_learning_control.control.utils.mpi_tf`` contains a a few tools to make it easy to use the AdamOptimizer across many MPI processes. This is a bit hacky---if you're looking for something more sophisticated and general-purpose, consider `horovod`_.
-
-.. _`horovod`: https://github.com/uber/horovod
-
-.. automodule:: machine_learning_control.control.utils.mpi_tf
-    :members:
+.. todo::
+    REMOVE

@@ -4,6 +4,12 @@ Benchmarks
 
 .. contents:: Table of Contents
 
+.. toctree::
+   :maxdepth: 2
+
+   bench_sac
+
+
 We benchmarked the Machine Learning Control algorithm implementations in five environments
 from the MuJoCo_ Gym task suite: HalfCheetah, Hopper, Walker2d, Swimmer, and Ant and two
 environments from the `simzoo`_ gym environments: Oscillator-v1 and Ex3_EKF.
@@ -138,14 +144,6 @@ Oscillator: Tensorflow Versions
 
 .. todo::
     Replace with our own benchmark.
-
-
-Oscillator: Tensorflow Versions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. todo::
-    Replace with our own benchmark.
-
 
 Experiment Details
 ==================

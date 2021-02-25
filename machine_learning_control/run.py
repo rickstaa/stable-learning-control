@@ -1,6 +1,4 @@
-"""Machine_learning_control run functions.
-
-Responsible for createing the CLI for the machine_learning_control package. It can
+"""Responsible for creating the CLI for the machine_learning_control package. It can
 be used to run the control, hardware, modelling packages from the terminal.
 """
 
@@ -12,7 +10,8 @@ from copy import deepcopy
 from textwrap import dedent
 
 # Import mlc algorithms and environments
-from machine_learning_control.control.utils import import_tf, safer_eval
+from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.control.utils.safer_eval import safer_eval
 from machine_learning_control.control.utils.gym_utils import validate_gym_env
 from machine_learning_control.control.utils.log_utils import friendly_err
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
@@ -55,12 +54,13 @@ def _add_backend_to_cmd(cmd):
     Returns:
         (tuple): tuple containing:
 
-            cmd (str): The new cmd.
-            backend (str): The used backend (options: "tf" or "pytorch").
+            - cmd (:obj:`str`): The new cmd.
+            - backend (:obj:`str`): The used backend (options: ``tf`` or ``pytorch``).
 
     Raises:
-        AssertError: Raised when a the tensorflow backend is requested but tensorflow
-            is not installed.
+        AssertError:
+            Raised when a the tensorflow backend is requested but tensorflow is not
+            installed.
     """
     if cmd in BASE_ALGO_NAMES:
         backend = DEFAULT_BACKEND[cmd]

@@ -28,9 +28,9 @@ def mlp(sizes, activation, output_activation=None, name=""):
 
     Args:
         sizes (list): The size of each of the layers.
-        activation (tf.keras.activations): The activation function used for the
+        activation (:obj:`tf.keras.activations`): The activation function used for the
             hidden layers.
-        output_activation (tf.keras.activations, optional): The activation
+        output_activation (:obj:`tf.keras.activations`, optional): The activation
             function used for the output layers. Defaults to ``None``.
         name (str, optional): A nameprefix that is added before the layer name. Defaults
             to an empty string.
@@ -56,7 +56,7 @@ def count_vars(module):
     """Returns the total number of parameters of a tensorflow module.
 
     Args:
-        module (union[tf.keras.Model, tf.module]): The tensorflow model.
+        module (Union[tf.keras.Model, tf.module]): The tensorflow model.
 
     Returns:
         numpy.int64: The total number of parameters inside the module.
@@ -68,14 +68,14 @@ def clamp(data, min_bound, max_bound):
     """Clamp all the values of a input to be between the min and max boundaries.
 
     Args:
-        data (union[np.ndarray, list]): Input data.
-        min_bound (union[np.ndarray, list]): Array containing the desired minimum
+        data (Union[numpy.ndarray, list]): Input data.
+        min_bound (Union[numpy.ndarray, list]): Array containing the desired minimum
             values.
-        max_bound (union[np.ndarray, list]): Array containing the desired maximum
+        max_bound (Union[numpy.ndarray, list]): Array containing the desired maximum
             values.
 
     Returns:
-        np.ndarray: Array which has it values clamped between the min and max
+        numpy.ndarray: Array which has it values clamped between the min and max
             boundaries.
     """
     return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound

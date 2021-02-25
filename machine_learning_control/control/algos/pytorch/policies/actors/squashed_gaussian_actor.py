@@ -17,15 +17,16 @@ class SquashedGaussianActor(nn.Module):
     """The squashed gaussian actor network.
 
     Attributes:
-        net (torch.nn.modules.container.Sequential): The input/hidden layers of the
+        net (torch.nn.Sequential): The input/hidden layers of the
             network.
-        mu (torch.nn.modules.linear.Linear): The output layer which returns the mean of
+        mu (torch.nn.Linear): The output layer which returns the mean of
             the actions.
-        log_std_layer (torch.nn.modules.linear.Linear): The output layer which returns
+        log_std_layer (torch.nn.Linear): The output layer which returns
             the log standard deviation of the actions.
-        act_limits (dict, optional): The "high" and "low" action bounds of the
+        act_limits (dict, optional): The ``high`` and ``low`` action bounds of the
             environment. Used for rescaling the actions that comes out of network
-            from (-1, 1) to (low, high). No scaling will be applied if left empty.
+            from ``(-1, 1)`` to ``(low, high)``. No scaling will be applied if left
+            empty.
     """
 
     def __init__(
@@ -46,17 +47,18 @@ class SquashedGaussianActor(nn.Module):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (torch.nn.modules.activation): The activation function. Defaults
-                to torch.nn.ReLU.
-            output_activation (torch.nn.modules.activation, optional): The activation
-                function used for the output layers. Defaults to torch.nn.ReLU.
-            act_limits (dict): The "high" and "low" action bounds of the environment.
-                Used for rescaling the actions that comes out of network from (-1, 1)
-                to (low, high).
+            activation (:obj:`torch.nn.modules.activation`): The activation function.
+                Defaults to :obj:`torch.nn.ReLU`.
+            output_activation (:obj:`torch.nn.modules.activation`, optional): The
+                activation function used for the output layers. Defaults to
+                :obj:`torch.nn.ReLU`.
+            act_limits (dict): The ``high`` and ``low`` action bounds of the
+                environment. Used for rescaling the actions that comes out of network
+                from ``(-1, 1)`` to ``(low, high)``.
             log_std_min (int, optional): The minimum log standard deviation. Defaults
-                to -20.
+                to ``-20``.
             log_std_max (float, optional): The maximum log standard deviation. Defaults
-                to 2.0.
+                to ``2.0``.
         """
         super().__init__()
         self.__device_warning_logged = False
@@ -83,10 +85,9 @@ class SquashedGaussianActor(nn.Module):
         Returns:
             (tuple): tuple containing:
 
-                pi_action (torch.Tensor): The actions given by the policy
-                logp_pi (torch.Tensor): The log probabilities of each of these
-                    actions.
-        """
+                - pi_action (:obj:`torch.Tensor`): The actions given by the policy.
+                - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.
+        """  # noqa: E501
         # Make sure the observations are on the right device
         if obs.device != self.net[0].weight.device:
             if not self.__device_warning_logged:
@@ -159,8 +160,8 @@ class SquashedGaussianActor(nn.Module):
             obs (torch.Tensor): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.
@@ -177,10 +178,10 @@ class SquashedGaussianActor(nn.Module):
             obs (torch.Tensor): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
             numpy.ndarray: The action from the current state given the current
-            policy.
+                policy.
         """
         self.act(obs, deterministic=deterministic)

@@ -1,4 +1,4 @@
-"""File containing some usefull functions used during the robustness evaluation."""
+"""Helper functions used for performing the robustness evaluation."""
 
 
 def test_agent(policy, env, num_episodes, max_ep_len=None):
@@ -6,7 +6,7 @@ def test_agent(policy, env, num_episodes, max_ep_len=None):
 
     Args:
         policy (Union[torch.nn.Module, tf.Module]): The policy you want to test.
-        env (gym.Env): The environment in which you want to test the agent.
+        env (:obj:`gym.Env`): The environment in which you want to test the agent.
         num_episodes (int): The number of episodes you want to perform in the test
             environment.
         max_episode_len (int): The maximum number of steps in a episode.
@@ -15,8 +15,8 @@ def test_agent(policy, env, num_episodes, max_ep_len=None):
     Returns:
         tuple: tuple containing:
 
-            ep_ret(list): Episode retentions.
-            ep_len(list): Episode lengths.
+            - ep_ret(:obj:`list`): Episode retentions.
+            - ep_len(:obj:`list`): Episode lengths.
     """
     test_ep_ret, test_ep_len = [], []
     for _ in range(num_episodes):

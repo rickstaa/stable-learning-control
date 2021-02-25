@@ -7,23 +7,43 @@ Code API
 Python Code API
 ===============
 
-All python modules, classes, script and functions of the `machine_learning_control`_
-package will be documented here.
+All Python modules, classes, scripts, utilities and functions of the
+:mlc:`Machine Learning Control <>` package will be documented here.
 
-Machine_learning_control modules
---------------------------------
-
-.. autosummary::
-   :toctree: _autosummary
-
-.. todo::
-   Run automatic code api generation step.
-
-Machine_learning_control scripts
---------------------------------
+MLC modules
+-----------
 
 .. autosummary::
    :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
 
-.. todo::
-   Run automatic code api generation step.
+   machine_learning_control.control
+   machine_learning_control.hardware
+   machine_learning_control.modeling
+   machine_learning_control.simzoo
+   machine_learning_control.run
+
+MLC configuration files
+-----------------------
+
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
+
+
+   machine_learning_control.user_config
+   machine_learning_control.env_config
+
+MLC scripts
+-----------
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
+
+   mlc_exp_grid_search
+   ray_hyper_parameter_tuner

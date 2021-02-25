@@ -168,11 +168,13 @@ a:visited {
   background-color: var(--color--warmgraylight) !important;
 }
 
-.wy-alert-title{
+.wy-alert-title {
   background-color: var(--color--mediumblue) !important;
 }
 
-.wy-alert,  .rst-content .note, .rst-content .seealso{
+.wy-alert,
+.rst-content .note,
+.rst-content .seealso {
   background-color: var(--color--warmgraylight) !important;
 }
 
@@ -180,5 +182,18 @@ a:visited {
 @media screen and (min-width: 1100px) {
   .wy-nav-content-wrap {
     background-color: var(--color--warmgraylight) !important;
+  }
+}
+
+/* override table width restrictions */
+
+@media screen and (min-width: 767px) {
+  .wy-table-responsive table td {
+    /* !important prevents the common CSS stylesheets from
+     overriding this as on RTD they are loaded after this stylesheet */
+    white-space: normal !important;
+  }
+  .wy-table-responsive {
+    overflow: visible !important;
   }
 }

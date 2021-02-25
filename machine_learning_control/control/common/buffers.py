@@ -24,7 +24,7 @@ class ReplayBuffer:
         Args:
             obs_dim (tuple): The size of the observation space.
             act_dim (tuple): The size of the action space.
-            act_dim (tuple): The size of the reward space.
+            rew_dim (tuple): The size of the reward space.
             size (int): The replay buffer size.
         """
         # Preallocate memory for experience buffer (s, s', a, r, d)
@@ -50,7 +50,7 @@ class ReplayBuffer:
         Args:
             obs (numpy.ndarray): Start state (observation).
             act (numpy.ndarray): Action.
-            rew (numpy.float64): Reward.
+            rew (:obj:`numpy.float64`): Reward.
             next_obs (numpy.ndarray): Next state (observation)
             done (bool): Boolean specifying whether the terminal state was reached.
         """
@@ -96,7 +96,7 @@ class ReplayBuffer:
         """Retrieve a batch of experiences from buffer.
 
         Args:
-            batch_size (int, optional): The batch size. Defaults to 32.
+            batch_size (int, optional): The batch size. Defaults to ``32``.
         Returns:
             dict: A batch of experiences.
         """

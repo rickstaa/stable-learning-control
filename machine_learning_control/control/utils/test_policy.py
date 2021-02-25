@@ -10,7 +10,7 @@ import time
 import joblib
 import machine_learning_control.control.utils.log_utils as log_utils
 import torch
-from machine_learning_control.control.utils import import_tf
+from machine_learning_control.control.utils.import_tf import import_tf
 from machine_learning_control.control.utils.log_utils.logx import EpochLogger
 from machine_learning_control.control.utils.serialization_utils import load_from_json
 
@@ -20,15 +20,15 @@ def load_policy_and_env(fpath, itr="last"):
 
     Args:
         fpath (str): The path where the model is found.
-        itr (str, optional): The current policy iteration. Defaults to "last".
+        itr (str, optional): The current policy iteration. Defaults to ``last``.
         deterministic (bool, optional): Whether you want the action from the policy to
             be deterministic. Defaults to ``False``.
 
     Returns:
         (tuple): tuple containing:
 
-            env(gym.env): The gym environment.
-            get_action (func): The policy get_action function.
+            - env(:obj:`gym.env`): The gym environment.
+            - get_action (:obj:`func`): The policy get_action function.
     """
 
     # determine if tf save or pytorch save
@@ -85,11 +85,11 @@ def load_tf_policy(fpath, itr, env=None):
 
     Args:
         fpath (str): The path where the model is found.
-        itr (str, optional): The current policy iteration. Defaults to "last".
-        env (gym.env): The gym environment in which you want to test the policy.
+        itr (str, optional): The current policy iteration. Defaults to ``last``.
+        env (:obj:`gym.env`): The gym environment in which you want to test the policy.
 
     Returns:
-        (tf.nn.Module): The policy.
+        tf.keras.Model: The policy.
     """
     tf = import_tf()  # Import tf if installed otherwise throw warning
     fname = osp.join(fpath, "tf_save" + itr)
@@ -113,10 +113,10 @@ def load_pytorch_policy(fpath, itr, env=None):
     Args:
         fpath (str): The path where the model is found.
         itr (str, optional): The current policy iteration. Defaults to "last".
-        env (gym.env): The gym environment in which you want to test the policy.
+        env (:obj:`gym.env`): The gym environment in which you want to test the policy.
 
     Returns:
-        (tf.keras.Model): The policy.
+        torch.nn.Module: The policy.
     """
     fname = osp.join(
         fpath,
@@ -140,8 +140,8 @@ def run_policy(
     """Evaluates a policy inside a given gym environment.
 
     Args:
-        env gym.env): The gym environment.
-        policy (union[tf.keras.Model, torch.nn.Module]): The policy.
+        env (:obj:`gym.env`): The gym environment.
+        policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
         max_ep_len (int, optional): The maximum episode length. Defaults to None.
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.

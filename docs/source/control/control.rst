@@ -1,11 +1,11 @@
-==========
-Algorithms
-==========
+=======
+Control
+=======
 
 .. contents:: Table of Contents
 
-What's Included
-===============
+What's Included 2
+==================
 
 The following algorithms are implemented in the Machine Learning Control package:
 
@@ -13,8 +13,7 @@ The following algorithms are implemented in the Machine Learning Control package
    :maxdepth: 2
    :caption: User Documentation
 
-   control/algorithms/sac
-   control/algorithms/lac
+   algorithms/sac
 
 - `Soft Actor-Critic`_ (SAC)
 - `Lyapunov Actor-Critic`_ (LAC)

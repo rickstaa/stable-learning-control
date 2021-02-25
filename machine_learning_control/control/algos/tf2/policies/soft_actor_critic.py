@@ -1,14 +1,17 @@
-"""Soft actor critic policy.
+"""
+Soft actor critic policy
+========================
 
 This module contains a Tensorflow 2.x implementation of the Soft Actor Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
 
 import tensorflow as tf
-from machine_learning_control.control.algos.tf2.policies.actors import (
-    SquashedGaussianActor,
-)
-from machine_learning_control.control.algos.tf2.policies.critics import QCritic
+
+# fmt: off
+from machine_learning_control.control.algos.tf2.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.tf2.policies.critics.Q_critic import QCritic  # noqa: E501
+# fmt: on
 from machine_learning_control.control.common.helpers import strict_dict_update
 from tensorflow import nn
 
@@ -18,14 +21,14 @@ OUTPUT_ACTIVATION_DEFAULT = {"actor": nn.relu, "critic": None}
 
 
 class SoftActorCritic(tf.keras.Model):
-    """(Soft) Actor-Critic network.
+    """Soft Actor-Critic network.
 
     Attributes:
-        self.pi (:obj:`SquashedGaussianActor`): The squashed gaussian policy network
-            (actor).
-        self.Q1 (:obj:`QCritic`): The first soft Q-network (critic).
-        self.Q1 (:obj:`QCritic`); The second soft Q-network (critic).
-    """
+        self.pi (:class:`~machine_learning_control.control.algos.tf2.policies.actors.SquashedGaussianActor`):
+            The squashed gaussian policy network (actor).
+        self.Q1 (:class:`~machine_learning_control.control.algos.tf2.policies.critics.QCritic`): The first soft Q-network (critic).
+        self.Q1 (:class:`~machine_learning_control.control.algos.tf2.policies.critics.QCritic`); The second soft Q-network (critic).
+    """  # noqa: E501
 
     def __init__(
         self,
@@ -40,18 +43,20 @@ class SoftActorCritic(tf.keras.Model):
         object.
 
         Args:
-            observation_space (gym.space.box.Box): A gym observation space.
-            action_space (gym.space.box.Box): A gym action space.
+            observation_space (:obj:`gym.space.box.Box`): A gym observation space.
+            action_space (:obj:`gym.space.box.Box`): A gym action space.
             hidden_sizes (Union[dict, tuple, list], optional): Sizes of the hidden
-                layers for the actor. Defaults to (256, 256).
-            activation (Union[dict, tf.keras.activations], optional): The (actor
-                and critic) hidden layers activation function. Defaults to nn.relu.
-            output_activation (Union[dict, tf.keras.activations], optional): The
-                (actor and critic)  output activation function. Defaults to nn.relu for
-                the actor and nn.Identity for the critic.
+                layers for the actor. Defaults to ``(256, 256)``.
+            activation (Union[:obj:`dict`, :obj:`tf.keras.activations`], optional): The
+                (actor and critic) hidden layers activation function. Defaults to
+                :obj:`tf.nn.relu`.
+            output_activation (Union[:obj:`dict`, :obj:`tf.keras.activations`], optional):
+                The (actor and critic)  output activation function. Defaults to
+                :obj:`tf.nn.relu` for the actor and the Identity function for the
+                critic.
             name (str, optional): The name given to the SoftActorCritic. Defaults to
                 "soft_actor_critic".
-        """
+        """  # noqa: E501
         super().__init__(name=name)
         obs_dim = observation_space.shape[0]
         act_dim = action_space.shape[0]
@@ -95,23 +100,22 @@ class SoftActorCritic(tf.keras.Model):
         critic 2).
 
         Args:
-            inputs (tuple/list): The network inputs:
+            inputs (tuple): tuple containing:
 
-                obs (tf.Tensor): The tensor of observations.
-                act (tf.Tensor): The tensor of actions.
+                - obs (tf.Tensor): The tensor of observations.
+                - act (tf.Tensor): The tensor of actions.
         Returns:
             (tuple): tuple containing:
 
-                pi_action (tf.Tensor): The actions given by the policy
-                logp_pi (tf.Tensor): The log probabilities of each of these
-                    actions.
-                Q1 (tf.Tensor): Q-values of the first critic.
-                Q2 (tf.Tensor): Q-values of the second critic.
+                - pi_action (:obj:`tensorflow.Tensor`): The actions given by the policy.
+                - logp_pi (:obj:`tensorflow.Tensor`): The log probabilities of each of these actions.
+                - Q1(:obj:`tensorflow.Tensor`): Q-values of the first critic.
+                - Q2(:obj:`tensorflow.Tensor`): Q-values of the second critic.
 
         .. note::
             Useful for when you want to print out the full network graph using
             tensorboard.
-        """
+        """  # noqa: E501
         obs, act = inputs
         pi_action, logp_pi = self.pi(obs)
         Q1 = self.Q1([obs, act])
@@ -126,8 +130,8 @@ class SoftActorCritic(tf.keras.Model):
             obs (tf.Tensor): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.

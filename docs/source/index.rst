@@ -8,25 +8,48 @@ Welcome to Machine Learning Control!
 
 .. image:: https://d1rkab7tlqy5f1.cloudfront.net/_processed_/8/9/csm_SR_mecor_7576_a9342f9469.jpg
 
+Welcome to the :mlc:`Machine Learning Control <>` (MLC) framework! The Machine Learning Control framework enables
+you to automatically create, train and deploy various Reinforcement Learning (RL) and
+Imitation learning (IL) control algorithms directly from real-world data. This framework
+is made up of four main modules:
+
+* `Modeling`_: Module that uses state of the art System Identification and State Estimation techniques to create an `Openai gym`_ environment out of real data.
+* `Simzoo`_: Module that contains several already created :mlc:`Machine Learning Control <>` `Openai gym`_ environments.
+* `Control`_: Module used to train several :mlc:`Machine Learning Control <>` RL/IL agents on the built gym environments.
+* `Hardware`_: Module that can be used to deploy the trained RL/IL agents onto the hardware of your choice.
+
+This framework was build upon the `SpinningUp`_ educational resource. By doing this, we hope to make
+it easier for new researchers to get started with our Algorithms. If you are new to RL, you are therefore highly
+encouraged first to check out the SpinningUp documentation and play with before diving into our codebase. Our
+implementation sometimes deviates from the `SpinningUp`_ version to increase code maintainability, extensibility, and readability.
+
+.. _`Modeling`: ./modeling/modeling.html
+.. _`Simzoo`: ./simzoo/simzoo.html
+.. _`Control`: ./control/control.html
+.. _`Hardware`: ./hardware/hardware.html
+.. _`SpinningUp`: ./hardware/hardware.html
+.. _`Openai gym`: https://gym.openai.com/
+
+.. warning::
+
+    The Machine Learning Control framework is still in its development state. We can therefore not guarantee that it is bug free.
+    Please open :issue:`an issue<>` if you experience problems or something is unclear.
+
+
 .. toctree::
    :maxdepth: 2
-   :caption: MLC package
+   :caption: Getting Started
 
-   user/introduction
    user/installation
+   user/usage
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Modeling
-
-   modeling/modeling
 
 .. toctree::
    :maxdepth: 2
    :caption: Control
 
    control/control
-   control/algorithms
+   control/algorithms/algorithms
    control/running
    control/saving_and_loading
    control/plotting
@@ -38,8 +61,13 @@ Welcome to Machine Learning Control!
    :caption: Hardware
 
    hardware/hardware
-   hardware/supported
-   hardware/deploy
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Modeling
+
+   modeling/modeling
 
 .. toctree::
    :maxdepth: 2
@@ -47,12 +75,6 @@ Welcome to Machine Learning Control!
 
    simzoo/simzoo
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Algorithms Docs
-
-   algorithms/sac
-   algorithms/lac
 
 .. toctree::
    :maxdepth: 2
@@ -75,7 +97,6 @@ Welcome to Machine Learning Control!
    :maxdepth: 2
    :caption: Etc.
 
-   etc/remarks
    etc/acknowledgements
    etc/author
 

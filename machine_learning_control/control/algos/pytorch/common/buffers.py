@@ -1,4 +1,4 @@
-"""This module contains several replay buffers used in the Pytorch algorithms.
+"""Contains several replay buffers used in the Pytorch algorithms.
 """
 
 import torch
@@ -6,8 +6,9 @@ from machine_learning_control.control.common.buffers import ReplayBuffer
 
 
 class ReplayBuffer(ReplayBuffer):
-    """A wrapper around the general FIFO :class:`ReplayBuffer` which makes sure a
-    torch.tensor is returned when sampling.
+    """Wrapper around the general FIFO
+    :obj:`~machine_learning_control.control.common.buffers.ReplayBuffer` which makes
+    sure a :obj:`torch.tensor` is returned when sampling.
 
     Attributes:
         device (str): The device the experiences are placed on (CPU or GPU).
@@ -29,7 +30,7 @@ class ReplayBuffer(ReplayBuffer):
         """Retrieve a batch of experiences from buffer.
 
         Args:
-            batch_size (int, optional): The batch size. Defaults to 32.
+            batch_size (int, optional): The batch size. Defaults to ``32``.
         Returns:
             dict: A batch of experiences.
         """

@@ -55,7 +55,7 @@ def colorize(string, color, bold=False, highlight=False):
         color (str): The color you want to use.
         bold (bool, optional): Whether you want the text to be bold text has to be bold.
         highlight (bool, optional):  Whether you want to highlight the text. Defaults to
-            False.
+            ``False``.
 
     Returns:
         str: Colorized string.
@@ -79,13 +79,13 @@ def log(msg, color="", bold=False, highlight=False, type=None, *args, **kwargs):
     Args:
         msg (str): Message you want to log.
         color (str, optional): Color you want the message to have. Defaults to
-            "".
+            ``""``.
         bold (bool, optional): Whether you want the text to be bold text has to be
             bold.
         highlight (bool, optional):  Whether you want to highlight the text.
             Defaults to False.
-        type (str, optional): The log message type. Options are: "info", "warning"
-            and "error". Defaults to ``None``.
+        type (str, optional): The log message type. Options are: ``info``, ``warning``
+            and ``error``. Defaults to ``None``.
         *args: All args to pass to the print function.
         **kwargs: All kwargs to pass to the print function.
     """
@@ -157,25 +157,26 @@ def setup_logger_kwargs(
         save_checkpoints (bool, optional): Save checkpoints during training.
             Defaults to ``False``.
         use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
-            to True.
-        tb_log_freq (str, optional): The tensorboard log frequency. Options are 'low'
-            (Recommended: logs at every epoch) and 'high' (logs at every SGD update "
-            batch). Defaults to 'low' since this is less resource intensive.
+            to ``True``.
+        tb_log_freq (str, optional): The tensorboard log frequency. Options are ``low``
+            (Recommended: logs at every epoch) and ``high`` (logs at every SGD update "
+            batch). Defaults to ``low`` since this is less resource intensive.
         verbose (bool, optional): Whether you want to log to the std_out. Defaults
             to ``True``.
         verbose_fmt (str, optional): The format in which the statistics are
-            displayed to the terminal. Options are "table" which supplies them as a
-            table and "line" which prints them in one line. Defaults to "line".
+            displayed to the terminal. Options are ``table`` which supplies them as a
+            table and ``line`` which prints them in one line. Defaults to ``line``.
         verbose_vars (list, optional): A list of variables you want to log to the
             std_out. By default all variables are logged.
         data_dir (str, optional): Path to folder where results should be saved.
             Default is the ``DEFAULT_DATA_DIR`` in
-            ``machine_learning_control/user_config.py``. Defaults to None.
+            ``machine_learning_control/user_config.py``. Defaults to ``None``.
         datestamp (bool, optional): Whether to include a date and timestamp in the
             name of the save directory. Defaults to ``False``.
 
     Returns:
-        logger_kwargs, a dict containing output_dir and exp_name.
+        dict: logger_kwargs
+            A dict containing output_dir and exp_name.
     """
 
     # Datestamp forcing

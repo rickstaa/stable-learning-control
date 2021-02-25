@@ -24,7 +24,13 @@ import os.path as osp
 import sys
 
 dirname = osp.dirname
-sys.path.insert(0, dirname(dirname(__file__)))
+top_folder = dirname(dirname(dirname(__file__)))
+sys.path.insert(0, osp.join(top_folder, "machine_learning_control"))
+sys.path.insert(0, osp.join(top_folder, "scripts"))
+sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "control"))
+sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "hardware"))
+sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "modeling"))
+sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "simzoo"))
 
 # -- General configuration ------------------------------------------------
 
@@ -48,7 +54,7 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = "2.0"
+needs_sphinx = "3.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -57,15 +63,20 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.imgmath",
     "sphinx.ext.viewcode",
-    "sphinx.ext.autodoc",  # TODO: Check feature min version needed
+    "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon",  # TODO: Check feature min version needed
+    "sphinx.ext.napoleon",
     "sphinx.ext.extlinks",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.autosectionlabel",
     "recommonmark",
 ]
+
+# Extension settings
+autosummary_generate = True
+autosummary_generate_overwrite = True
+autodoc_member_order = "bysource"
+autosummary_imported_members = True
 
 # imgmath settings
 imgmath_image_format = "svg"
@@ -75,7 +86,7 @@ imgmath_font_size = 14
 intersphinx_mapping = {
     "python3": ("http://docs.python.org/3", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
-    "tensorflow": (
+    "tf": (
         "https://www.tensorflow.org/api_docs/python",
         "https://github.com/mr-ubik/tensorflow-intersphinx/raw/master/tf2_py_objects.inv",
     ),
@@ -116,7 +127,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "TODO.*"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "TODO.*", "README.*"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "default"  # 'sphinx'
@@ -255,7 +266,7 @@ texinfo_documents = [
 # -- External links dictionary -----------------------------------------------
 # Here you will find some often used global url definitions.
 extlinks = {
-    "mlc": ("https://github.com/rickstaa/panda_openai_sim/%s", None),
+    "mlc": ("https://github.com/rickstaa/machine-learning-control/%s", None),
     "issue": ("https://github.com/rickstaa/machine-learning-control/issues/%s", None),
 }
 

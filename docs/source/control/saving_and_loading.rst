@@ -212,6 +212,7 @@ Episode 1    EpRet -346.164      EpLen 99
 Using Trained Value Functions
 -----------------------------
 
-The ``test_policy.py`` tool doesn't help you look at trained value functions, and if you want to use those, you will have to do some digging by hand. For the PyTorch case, load the saved model file with ``torch.load`` and check the documentation for each algorithm to see what modules the ActorCritic object has. For the Tensorflow case, load the saved computation graph with the `restore_tf_graph`_ function, and check the documentation for each algorithm to see what functions were saved.
+The ``test_policy.py`` tool doesn't help you look at trained value functions, and if you want to use those, you will have to do some digging by hand. For the PyTorch case, load the saved model file with ``torch.load`` and check the documentation for each algorithm to see what modules the ActorCritic object has. For the Tensorflow case, load the saved computation graph with the restore_tf_graph function, and check the documentation for each algorithm to see what functions were saved.
 
-.. _`restore_tf_graph`: ../utils/logger.html#machine_learning_control.control.utils.logx.restore_tf_graph
+.. todo::
+    Replace

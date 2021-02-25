@@ -1,4 +1,4 @@
-"""Several Pytorch helper functions.
+"""Contains several Pytorch helper functions.
 """
 
 import numpy as np
@@ -15,7 +15,7 @@ def retrieve_device(device_type="cpu"):
             ``gpu``). Defaults to ``cpu``.
 
     Returns:
-        torch.device: The Pytorch device object.
+        :obj:`torch.device`: The Pytorch device object.
     """
     device_type = (
         "cpu" if device_type.lower() not in ["gpu", "cpu"] else device_type.lower()
@@ -43,13 +43,13 @@ def mlp(sizes, activation, output_activation=nn.Identity):
 
     Args:
         sizes (list): The size of each of the layers.
-        activation (torch.nn.modules.activation): The activation function used for the
+        activation (:obj:`torch.nn.modules.activation`): The activation function used for the
             hidden layers.
-        output_activation (torch.nn.modules.activation, optional): The activation
+        output_activation (:obj:`torch.nn.modules.activation`, optional): The activation
             function used for the output layers. Defaults to torch.nn.Identity.
 
     Returns:
-        torch.nn.modules.container.Sequential: The multi-layered perceptron.
+        torch.nn.Sequential: The multi-layered perceptron.
     """
     layers = []
     for j in range(len(sizes) - 1):
@@ -62,10 +62,10 @@ def count_vars(module):
     """Returns the total number of parameters of a pytorch module.
 
     Args:
-        module (torch.nn.module): The module.
+        module (torch.nn.Module): The module.
 
     Returns:
-        numpy.int64: The total number of parameters inside the module.
+        :obj:`numpy.int64`: The total number of parameters inside the module.
     """
     return sum([np.prod(p.shape) for p in module.parameters()])
 
@@ -74,14 +74,14 @@ def compare_models(model_1, model_2):
     """Compares two models to see if the weights are equal.
 
     Args:
-        model_1 (torch.nn.module): The first Pytorch model.
-        model_2 (torch.nn.module): The second Pytorch model.
+        model_1 (torch.nn.Module): The first Pytorch model.
+        model_2 (torch.nn.Module): The second Pytorch model.
 
     Raises:
         Exception: Raises Key error if the graph of the two models is different.
 
     Returns:
-        Bool: Bool specifying whether the weights of two models are equal.
+        bool: Bool specifying whether the weights of two models are equal.
     """
     models_differ = 0
     for key_item_1, key_item_2 in zip(
@@ -111,13 +111,14 @@ def clamp(data, min_bound, max_bound):
     """Clamp all the values of a input to be between the min and max boundaries.
 
     Args:
-        data (np.ndarray/list): Input data.
-        min_bound (np.ndarray/list): Array containing the desired minimum values.
-        max_bound (np.ndarray/list): Array containing the desired maximum values.
+        data (Union[numpy.ndarray, list]): Input data.
+        min_bound (Union[numpy.ndarray, list]): Array containing the desired minimum
+            values.
+        max_bound (Union[numpy.ndarray, list]): Array containing the desired maximum
+            values.
 
     Returns:
-        np.ndarray: Array which has it values clamped between the min and max
-            boundaries.
+        numpy.ndarray: Array which has it values clamped between the min and max boundaries.
     """
     data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
     min_bound = (

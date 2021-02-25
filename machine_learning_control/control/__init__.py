@@ -1,13 +1,10 @@
-"""The set of supported RL algorithms.
-
-This module is based on the algos module found in the the
-`Spinning Up repository <https://github.com/openai/spinningup>`_.
+"""Contains the MLC Reinforcement Learning (RL) and Imitation learning (IL) algorithms.
 """
 
 from machine_learning_control.control.algos.pytorch.lac.lac import lac as lac_pytorch
 from machine_learning_control.control.algos.pytorch.sac.sac import sac as sac_pytorch
 
-from machine_learning_control.control.utils import import_tf
+from machine_learning_control.control.utils.import_tf import import_tf
 from machine_learning_control.version import __version__
 
 if import_tf(dry_run=True, frail=False):

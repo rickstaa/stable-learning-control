@@ -1,4 +1,6 @@
-"""Lyapunov actor critic policy.
+"""
+Lyapunov actor critic policy
+============================
 
 This module contains a Tensorflow 2.x implementation of the Lyapunov Actor Critic policy
 of `Han et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
@@ -6,10 +8,11 @@ of `Han et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 
 
 import tensorflow as tf
-from machine_learning_control.control.algos.tf2.policies.actors import (
-    SquashedGaussianActor,
-)
-from machine_learning_control.control.algos.tf2.policies.critics import LCritic
+
+# fmt: off
+from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.pytorch.policies.critics.L_critic import LCritic  # noqa: E501
+# fmt: on
 from machine_learning_control.control.common.helpers import strict_dict_update
 import machine_learning_control.control.utils.log_utils as log_utils
 from tensorflow import nn
@@ -25,10 +28,11 @@ class LyapunovActorCritic(tf.keras.Model):
     """Lyapunov (soft) Actor-Critic network.
 
     Attributes:
-        self.pi (:obj:`SquashedGaussianActor`): The squashed gaussian policy network
-            (actor).
-        self.L (:obj:`LCritic`); The soft L-network (critic).
-    """
+        self.pi (:class:`~machine_learning_control.control.algos.tf2.policies.actors.squashed_gaussian_actor.SquashedGaussianActor`):
+            The squashed gaussian policy network (actor).
+        self.L (:obj:`~machine_learning_control.control.algos.pytorch.policies.critics.L_critic.LCritic`):
+            The soft L-network (critic).
+    """  # noqa: E501
 
     def __init__(
         self,
@@ -43,15 +47,15 @@ class LyapunovActorCritic(tf.keras.Model):
         network object.
 
         Args:
-            observation_space (gym.space.box.Box): A gym observation space.
-            action_space (gym.space.box.Box): A gym action space.
+            observation_space (:obj:`gym.space.box.Box`): A gym observation space.
+            action_space (:obj:`gym.space.box.Box`): A gym action space.
             hidden_sizes (Union[dict, tuple, list], optional): Sizes of the hidden
-                layers for the actor. Defaults to (256, 256).
-            activation (Union[dict, tf.keras.activations], optional): The (actor
-                and critic) hidden layers activation function. Defaults to
-                tf.nn.relu.
-            output_activation (Union[dict, tf.keras.activations], optional): The
-                actor  output activation function. Defaults to tf.nn.relu.
+                layers for the actor. Defaults to ``(256, 256)``.
+            activation (Union[:obj:`dict`, :obj:`tf.keras.activations`], optional): The
+                (actor and critic) hidden layers activation function. Defaults to
+                :obj:`tf.nn.relu`.
+            output_activation (Union[:obj:`dict`, :obj:`tf.keras.activations`], optional):
+                The actor  output activation function. Defaults to :obj:`tf.nn.relu`.
             name (str, optional): The name given to the LyapunovActorCritic. Defaults to
                 "lyapunov_actor_critic".
 
@@ -59,7 +63,7 @@ class LyapunovActorCritic(tf.keras.Model):
             It is currently not possible to set the critic output activation function
             when using the LyapunovActorCritic. This is since it by design requires the
             critic output activation to by of type :meth:`tf.math.square`.
-        """
+        """  # noqa: E501
         super().__init__(name=name)
         obs_dim = observation_space.shape[0]
         act_dim = action_space.shape[0]
@@ -104,22 +108,21 @@ class LyapunovActorCritic(tf.keras.Model):
         """Performs a forward pass through all the networks (Actor and L critic).
 
         Args:
-            inputs (tuple/list): The network inputs:
+            inputs (tuple): tuple containing:
 
-                obs (tf.Tensor): The tensor of observations.
-                act (tf.Tensor): The tensor of actions.
+                - obs (tf.Tensor): The tensor of observations.
+                - act (tf.Tensor): The tensor of actions.
         Returns:
             (tuple): tuple containing:
 
-                pi_action (tf.Tensor): The actions given by the policy
-                logp_pi (tf.Tensor): The log probabilities of each of these
-                    actions.
-                L (tf.Tensor): Critic L values.
+                - pi_action (:obj:`tf.Tensor`): The actions given by the policy.
+                - logp_pi (:obj:`tf.Tensor`): The log probabilities of each of these actions.
+                - L (:obj:`tf.Tensor`): Critic L values.
 
         .. note::
             Useful for when you want to print out the full network graph using
             tensorboard.
-        """
+        """  # noqa: E501
         obs, act = inputs
         pi_action, logp_pi = self.pi(obs)
         L = self.L([obs, act])
@@ -133,8 +136,8 @@ class LyapunovActorCritic(tf.keras.Model):
             obs (numpy.ndarray): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.

@@ -31,11 +31,11 @@ class LCritic(tf.keras.Model):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (tf.keras.activations): The activation function. Defaults
-                to tf.nn.relu.
+            activation (:obj:`tf.keras.activations`): The activation function. Defaults
+                to :obj:`tf.nn.relu`.
             name (str, optional): The Lyapunov critic name. Defaults to
-                "gaussian_actor".
-            **kwargs: All kwargs to pass to the :module:`tf.keras.Model`. Can be used
+                ``lyapunov_critic``.
+            **kwargs: All kwargs to pass to the :mod:`tf.keras.Model`. Can be used
                 to add additional inputs or outputs.
         """
         super().__init__(name=name, **kwargs)
@@ -48,13 +48,14 @@ class LCritic(tf.keras.Model):
         """Perform forward pass through the network.
 
         Args:
-            inputs (tuple/list): The network inputs:
+            inputs (tuple): tuple containing:
 
-                obs (tf.Tensor): The tensor of observations.
-                act (tf.Tensor): The tensor of actions.
+                    - obs (tf.Tensor): The tensor of observations.
+                    - act (tf.Tensor): The tensor of actions.
         Returns:
-            tf.Tensor: The tensor containing the lyapunov values of the input
-                observations and actions.
+            tf.Tensor:
+                The tensor containing the lyapunov values of the input observations and
+                actions.
         """
         L_hid_out = self.L(tf.concat(inputs, axis=-1))
         L_out = tf.math.square(L_hid_out)

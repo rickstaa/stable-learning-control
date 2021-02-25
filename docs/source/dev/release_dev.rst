@@ -7,17 +7,17 @@ Release package
 Code formatting guidelines
 --------------------------
 
-To increase code quality, readability and usability, we use several language guidelines:
+To increase code quality, readability and usability, we use several language guidelines.
 
 Python guidelines:
-    * **Linting:** Please make sure your python code doesn't contain any errors by checking it with the `flake8 python linter`_.
+    * **Linting:** Please ensure your python code doesn't contain any errors by checking it with the `flake8 python linter`_.
     * **Formatting:** Please format all your scripts using the `black python formatter`_.
 
 .. _`flake8 python linter`: https://flake8.pycqa.org/en/latest/
 .. _`black python formatter`: https://github.com/psf/black
 
 Markdown guidelines:
-    * **Linting and formatting:** Please make sure your markdown code contains no errors and is formatter according to the `remark-lint`_ style guidelines.
+    * **Linting and formatting:** Please make sure your markdown code contains no errors and is formatted according to the `remark-lint`_ style guidelines.
 
 .. _`remark-lint`: https://github.com/remarkjs/remark-lint
 
@@ -53,7 +53,7 @@ Before releasing the package, make sure the following steps are performed:
 Commit guidelines
 ~~~~~~~~~~~~~~~~~
 
-Make sure you add a good descriptive commit messages while committing to this repository. A
+Make sure you add a good descriptive commit message while committing to this repository. A
 good guide can be found `here`_. To make searching to commits even easier your welcome to
 replace the ``scope`` attribute with `gitmojis`_.
 
@@ -64,4 +64,4 @@ replace the ``scope`` attribute with `gitmojis`_.
 Versioning guidelines
 ~~~~~~~~~~~~~~~~~~~~~
 
-Additionally please use the `versioning guidelines specified at semver.org <https://semver.org/>`_.
+Additionally, please use the `versioning guidelines specified at semver.org <https://semver.org/>`_.

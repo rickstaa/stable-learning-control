@@ -1,7 +1,8 @@
 """Module used for serializing json objects.
 
-This module was cloned from the
-`spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/serialization_utils.py>`_.
+.. note::
+    This module was based on
+    `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/serialization_utils.py>`_.
 """  # noqa
 
 import json

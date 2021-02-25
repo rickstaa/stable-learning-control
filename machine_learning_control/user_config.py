@@ -1,4 +1,9 @@
-"""Module used for storing several package configuration values.
+"""File used for storing several package configuration values.
+
+.. literalinclude:: /../../machine_learning_control/user_config.py
+   :language: python
+   :linenos:
+   :lines: 9-
 """
 
 import os.path as osp

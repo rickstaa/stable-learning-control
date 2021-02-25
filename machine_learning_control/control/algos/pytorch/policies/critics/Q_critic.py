@@ -14,7 +14,7 @@ class QCritic(nn.Module):
     """Soft Q critic network.
 
     Attributes:
-        Q (torch.nn.modules.container.Sequential): The layers of the network.
+        Q (torch.nn.Sequential): The layers of the network.
     """
 
     def __init__(
@@ -31,10 +31,11 @@ class QCritic(nn.Module):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (torch.nn.modules.activation): The activation function. Defaults
-                to torch.nn.ReLU.
-            output_activation (torch.nn.modules.activation, optional): The activation
-                function used for the output layers. Defaults to torch.nn.Identity.
+            activation (:obj:`torch.nn.modules.activation`): The activation function.
+                Defaults to torch.nn.ReLU.
+            output_activation (:obj:`torch.nn.modules.activation`, optional): The
+                activation function used for the output layers. Defaults to
+                :mod:`torch.nn.Identity`.
         """
         super().__init__()
         self.__device_warning_logged = False
@@ -53,8 +54,9 @@ class QCritic(nn.Module):
             obs (torch.Tensor): The tensor of observations.
             act (torch.Tensor): The tensor of actions.
         Returns:
-            torch.Tensor: The tensor containing the Q values of the input observations
-                and actions.
+            torch.Tensor:
+                The tensor containing the Q values of the input observations and
+                actions.
         """
         # Make sure the observations and actions are on the right device
         self._obs_same_device = obs.device != self.Q[0].weight.device

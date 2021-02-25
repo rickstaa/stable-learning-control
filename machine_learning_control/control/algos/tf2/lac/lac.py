@@ -28,8 +28,10 @@ from machine_learning_control.control.algos.tf2.common.helpers import (
     count_vars,
     set_device,
 )
-from machine_learning_control.control.algos.tf2.policies import (
+from machine_learning_control.control.algos.tf2.policies.lyapunov_actor_critic import (
     LyapunovActorCritic,
+)
+from machine_learning_control.control.algos.tf2.policies.soft_actor_critic import (
     SoftActorCritic,
 )
 from machine_learning_control.control.common.buffers import ReplayBuffer
@@ -37,7 +39,8 @@ from machine_learning_control.control.common.helpers import (
     combine_shapes,
     heuristic_target_entropy,
 )
-from machine_learning_control.control.utils import import_tf, safer_eval
+from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.control.utils.safer_eval import safer_eval
 from machine_learning_control.control.utils.eval_utils import test_agent
 from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
@@ -83,8 +86,8 @@ class LAC(tf.keras.Model):
         log_labda (tf.Variable): The Lyapunov lagrance multiplier.
         target_entropy (int): The target entropy.
         device (str): The device the networks are placed on (CPU or GPU).
-        use_lyapunov (bool): Whether the Lyapunov Critic is used (use_lyapunov=True) or
-            the regular Q-critic (use_lyapunov=false).
+        use_lyapunov (bool): Whether the Lyapunov Critic is used. If ``False``the
+            regular Q-critic will be used.
     """
 
     def __init__(
@@ -113,10 +116,10 @@ class LAC(tf.keras.Model):
         """Lyapunov (soft) Actor-Critic (LAC)
 
         Args:
-            env (gym.env): The gym environment the LAC is training in. This is used to
-                retrieve the activation and observation space dimensions. This is used
-                while creating the network sizes. The environment must satisfy the
-                OpenAI Gym API.
+            env (:obj:`gym.env`): The gym environment the LAC is training in. This is
+                used toretrieve the activation and observation space dimensions. This
+                is used while creating the network sizes. The environment must satisfy
+                the OpenAI Gym API.
             actor_critic (tf.Module, optional): The constructor method for a
                 Tensorflow Module with an ``act`` method, a ``pi`` module and several
                 ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
@@ -128,11 +131,11 @@ class LAC(tf.keras.Model):
                 Call         Output Shape      Description
                 ===========  ================  ======================================
                 ``act``      (batch, act_dim)  | Numpy array of actions for each
-                                            | observation.
+                                               | observation.
                 ``Q*/L``     (batch,)          | Tensor containing one current estimate
-                                            | of Q* for the provided observations
-                                            | and actions. (Critical: make sure to
-                                            | flatten this!)
+                                               | of ``Q*/L`` for the provided
+                                               | observations and actions. (Critical:
+                                               | make sure to flatten this!)
                 ===========  ================  ======================================
 
                 Calling ``pi`` should return:
@@ -141,30 +144,31 @@ class LAC(tf.keras.Model):
                 Symbol       Shape             Description
                 ===========  ================  ======================================
                 ``a``        (batch, act_dim)  | Tensor containing actions from policy
-                                            | given observations.
+                                               | given observations.
                 ``logp_pi``  (batch,)          | Tensor containing log probabilities of
-                                            | actions in ``a``. Importantly: gradients
-                                            | should be able to flow back into ``a``.
+                                               | actions in ``a``. Importantly:
+                                               | gradients should be able to flow back
+                                               | into ``a``.
                 ===========  ================  ======================================
 
-                Defaults to `:class:LyapunovActorCritic` if ``use_lyapunov=True``
-                else `:class:SoftActorCritic`.
+                Defaults to :class:`~machine_learning_control.control.algos.tf2.policies.lyapunov_actor_critic.LyapunovActorCritic`
+                if ``use_lyapunov=True`` else :class:`~machine_learning_control.control.algos.tf2.policies.soft_actor_critic.SoftActorCritic`
             ac_kwargs (dict, optional): Any kwargs appropriate for the ActorCritic
                 object you provided to LAC. Defaults to:
 
                 ====================  ===============================================
                 kwarg                 Value
                 ====================  ===============================================
-                hidden_sizes_actor    64 x 2
-                hidden_sizes_critic   128 x 2
-                activation            nn.relu
-                output_activation     nn.relu
+                hidden_sizes_actor    ``64 x 2``
+                hidden_sizes_critic   ``128 x 2``
+                activation            :class:`tf.nn.relu`
+                output_activation     :class:`tf.nn.relu`
                 ====================  ===============================================
             use_lyapunov (bool, optional): Whether the Lyapunov Critic is used
-                (use_lyapunov=True) or the regular Q-critic (use_lyapunov=false).
+                (``use_lyapunov=True``) or the regular Q-critic (``use_lyapunov=false``).
                 Defaults to ``True``.
             opt_type (str, optional): The optimization type you want to use. Options
-                "maximize" and "minimize". Defaults to maximize.
+                ``maximize`` and ``minimize``. Defaults to ``maximize``.
             alpha (float, optional): Entropy regularization coefficient (Equivalent to
                 inverse of reward scale in the original SAC paper). Defaults to
                 ``0.99``.
@@ -196,11 +200,9 @@ class LAC(tf.keras.Model):
                 ``1e-4``.
             lr_c (float, optional): Learning rate used for the (lyapunov) critic.
                 Defaults to ``1e-4``.
-            device (str, optional): The device the networks are placed on (cpu or gpu).
-                Defaults to "gpu".
-            name (str, optional): Additional alias for the LAC algorithm (this is what
-                shows up in the graph). By default "LAC".
-        """
+            device (str, optional): The device the networks are placed on (``cpu``
+                or ``gpu``). Defaults to ``cpu``.
+        """  # noqa: E501
         super().__init__(name=name)
         self._was_build = False
 
@@ -307,12 +309,12 @@ class LAC(tf.keras.Model):
         receive actions directly by invoking ``LAC(observations)``.
 
         Args:
-            s (np.numpy): The current state.
+            s (numpy.ndarray): The current state.
             deterministic (bool, optional): Whether to return a deterministic action.
                 Defaults to ``False``.
 
         Returns:
-            np.numpy: The current action.
+            numpy.ndarray: The current action.
         """
         return self.get_action(s, deterministic=deterministic)
 
@@ -321,12 +323,12 @@ class LAC(tf.keras.Model):
         """Returns the current action of the policy.
 
         Args:
-            s (np.numpy): The current state.
+            s (numpy.ndarray): The current state.
             deterministic (bool, optional): Whether to return a deterministic action.
                 Defaults to ``False``.
 
         Returns:
-            np.numpy: The current action.
+            numpy.ndarray: The current action.
         """
         # Make sure s is float32 tensorflow tensor
         if not isinstance(s, tf.Tensor):
@@ -564,7 +566,8 @@ class LAC(tf.keras.Model):
         """Restores a already trained policy. Used for transfer learning.
 
         Args:
-            path (str): The path where the model 'state_dict' of the policy is found.
+            path (str): The path where the model :attr:`state_dict` of the policy is
+                found.
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
                 the lagrance multipliers. By fault ``False``.
 
@@ -612,7 +615,7 @@ class LAC(tf.keras.Model):
             )
 
     def export(self, path):
-        """Can be used to export the model in the 'SavedModel' format such that it can
+        """Can be used to export the model in the ``SavedModel`` format such that it can
         be deployed to hardware.
 
         Args:
@@ -744,14 +747,15 @@ class LAC(tf.keras.Model):
 
     @property
     def alpha(self):
-        """Property used to clip alpha to be equal or bigger than 0.0 to prevent it from
-        becoming nan when log_alpha becomes -inf. For alpha no upper bound is used.
+        """Property used to clip :attr:`alpha` to be equal or bigger than ``0.0`` to
+        prevent it from becoming nan when :attr:`log_alpha` becomes ``-inf``. For
+        :attr:`alpha` no upper bound is used.
         """
         return tf.clip_by_value(tf.exp(self.log_alpha), *SCALE_ALPHA_MIN_MAX)
 
     @alpha.setter
     def alpha(self, set_val):
-        """Property used to make sure alpha and log_alpha are related."""
+        """Property used to make sure :attr:`alpha` and :attr:`log_alpha` are related."""
         self.log_alpha.assign(
             tf.convert_to_tensor(
                 np.log(1e-37 if set_val < 1e-37 else set_val),
@@ -761,10 +765,10 @@ class LAC(tf.keras.Model):
 
     @property
     def labda(self):
-        """Property used to clip lambda to be equal or bigger than 0.0 in order to
-        prevent it from becoming nan when log_labda becomes -inf. Further we clip it to
-        be lower or equal than 1.0 in order to prevent lambda from exploding when the
-        the hyperparameters are chosen badly.
+        """Property used to clip :attr:`lambda` to be equal or bigger than ``0.0`` in
+        order to prevent it from becoming ``nan`` when log_labda becomes -inf. Further
+        we clip it to be lower or equal than ``1.0`` in order to prevent lambda from
+        exploding when the the hyperparameters are chosen badly.
         """
         return tf.clip_by_value(tf.exp(self.log_labda), *SCALE_LAMBDA_MIN_MAX)
 
@@ -780,6 +784,9 @@ class LAC(tf.keras.Model):
 
     @property
     def target_entropy(self):
+        """The target entropy used while learning the entropy temperature
+        :attr:`alpha`.
+        """
         return self._target_entropy
 
     @target_entropy.setter
@@ -794,6 +801,9 @@ class LAC(tf.keras.Model):
 
     @property
     def device(self):
+        """The device the networks are placed on (``cpu`` or ``gpu``). Defaults to
+        ``cpu``.
+        """
         return self._device
 
     @device.setter
@@ -805,6 +815,9 @@ class LAC(tf.keras.Model):
 
     @property
     def use_lyapunov(self):
+        """Whether the Lyapunov Critic is used (``use_lyapunov=True``) or the regular
+        Q-critic (``use_lyapunov=false``).
+        """
         return self._use_lyapunov
 
     @use_lyapunov.setter
@@ -889,7 +902,7 @@ def lac(
             ``act``      (batch, act_dim)  | Numpy array of actions for each
                                            | observation.
             ``Q*/L``     (batch,)          | Tensor containing one current estimate
-                                           | of Q* for the provided observations
+                                           | of ``Q*/L`` for the provided observations
                                            | and actions. (Critical: make sure to
                                            | flatten this!)
             ===========  ================  ======================================
@@ -906,24 +919,25 @@ def lac(
                                            | should be able to flow back into ``a``.
             ===========  ================  ======================================
 
-            Defaults to `:class:LyapunovActorCritic` if ``use_lyapunov=True``
-            else `:class:SoftActorCritic`.
+
+            Defaults to :class:`~machine_learning_control.control.algos.tf2.policies.lyapunov_actor_critic.LyapunovActorCritic`
+            if ``use_lyapunov=True`` else :class:`~machine_learning_control.control.algos.tf2.policies.soft_actor_critic.SoftActorCritic`
         ac_kwargs (dict, optional): Any kwargs appropriate for the ActorCritic
             object you provided to LAC. Defaults to:
 
-            ====================  ===============================================
-            kwarg                 Value
-            ====================  ===============================================
-            hidden_sizes_actor    64 x 2
-            hidden_sizes_critic   128 x 2
-            activation            nn.relu
-            output_activation     nn.relu
-            ====================  ===============================================
+            =======================  ============================================
+            Kwarg                    Value
+            =======================  ============================================
+            ``hidden_sizes_actor``    ``64 x 2``
+            ``hidden_sizes_critic``   ``128 x 2``
+            ``activation``            :class:`tf.nn.ReLU`
+            ``output_activation``     :class:`tf.nn.ReLU`
+            =======================  ============================================
         use_lyapunov (bool, optional): Whether the Lyapunov Critic is used
-            (use_lyapunov=True) or the regular Q-critic (use_lyapunov=false).
+            (``use_lyapunov=True``) or the regular Q-critic (``use_lyapunov=false``).
             Defaults to ``True``.
         opt_type (str, optional): The optimization type you want to use. Options
-            "maximize" and "minimize". Defaults to minimize.
+            ``maximize`` and ``minimize``. Defaults to ``maximize``.
         max_ep_len (int, optional): Maximum length of trajectory / episode /
             rollout. Defaults to ``500``.
         epochs (int, optional): Number of epochs to run and train agent. Defaults
@@ -990,16 +1004,16 @@ def lac(
         replay_size (int, optional): Maximum length of replay buffer. Defaults to
             ``1e6``.
         seed (int): Seed for random number generators. Defaults to ``None``.
-        device (str, optional): The device the networks are placed on (cpu or gpu).
-            Defaults to "cpu".
+        device (str, optional): The device the networks are placed on (``cpu``
+            or ``gpu``). Defaults to ``cpu``.
         logger_kwargs (dict, optional): Keyword args for EpochLogger.
         save_freq (int, optional): How often (in terms of gap between epochs) to save
             the current policy and value function.
         start_policy (str): Path of a already trained policy to use as the starting
             point for the training. By default a new policy is created.
-        export (bool): Wether you want to export the model in the 'SavedModel' format
-            such that it can be deployed to hardware. By default 'False'.
-    """
+        export (bool): Wether you want to export the model in the ``SavedModel`` format
+            such that it can be deployed to hardware. By default ``False``.
+    """  # noqa: E501
     total_steps = steps_per_epoch * epochs
 
     validate_args(**locals())

@@ -17,6 +17,7 @@ help:
 .PHONY: clean
 clean:
 	@rm -rf $(BUILDDIR)/*
+	@rm -rf $(SOURCEDIR)/dev/api/_autosummary
 	@echo "Build folder cleaned"
 
 # Publish gh-pages command
@@ -26,7 +27,7 @@ gh-pages:
 	git submodule update --recursive && \
 	git checkout gh-pages && \
 	git rm -rf . && git clean -fxd && \
-	git checkout main $(GH_PAGES_SOURCES) && \
+	git checkout melodic-devel $(GH_PAGES_SOURCES) && \
 	git reset HEAD && \
 	cd docs && \
 	make clean && \
@@ -38,13 +39,14 @@ gh-pages:
 	touch .nojekyll && \
 	rm -rf $(GH_PAGES_SOURCES) && \
 	git add -A && \
-	git commit -m ":pencil: Generated gh-pages for `git log main -1 --pretty=short --abbrev-commit`" && \
+	git commit -m ":pencil: Generated gh-pages for `git log melodic-devel -1 --pretty=short --abbrev-commit`" && \
 	git push origin gh-pages && \
-	git checkout main && \
+	git checkout melodic-devel && \
 	git submodule update --recursive
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 # TODO: Add code API generation
 %: Makefile
+	git submodule update --init --recursive
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

@@ -1,4 +1,6 @@
-"""Lyapunov actor critic policy.
+"""
+Lyapunov actor critic policy
+============================
 
 This module contains a Pytorch implementation of the Lyapunov Actor Critic policy of
 `Han et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
@@ -6,10 +8,11 @@ This module contains a Pytorch implementation of the Lyapunov Actor Critic polic
 
 import torch
 import torch.nn as nn
-from machine_learning_control.control.algos.pytorch.policies.actors import (
-    SquashedGaussianActor,
-)
-from machine_learning_control.control.algos.pytorch.policies.critics import LCritic
+
+# fmt: off
+from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.pytorch.policies.critics.L_critic import LCritic  # noqa: E501
+# fmt: on
 from machine_learning_control.control.common.helpers import strict_dict_update
 from machine_learning_control.control.utils.log_utils import log
 
@@ -24,10 +27,11 @@ class LyapunovActorCritic(nn.Module):
     """Lyapunov (soft) Actor-Critic network.
 
     Attributes:
-        self.pi (:obj:`SquashedGaussianActor`): The squashed gaussian policy network
-            (actor).
-        self.L (:obj:`LCritic`); The soft L-network (critic).
-    """
+        self.pi (:class:`~machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor.SquashedGaussianActor`):
+            The squashed gaussian policy network (actor).
+        self.L (:obj:`~machine_learning_control.control.algos.pytorch.policies.critics.L_critic.LCritic`):
+            The soft L-network (critic).
+    """  # noqa: E501
 
     def __init__(
         self,
@@ -41,21 +45,22 @@ class LyapunovActorCritic(nn.Module):
         network object.
 
         Args:
-            observation_space (gym.space.box.Box): A gym observation space.
-            action_space (gym.space.box.Box): A gym action space.
+            observation_space (:obj:`gym.space.box.Box`): A gym observation space.
+            action_space (:obj:`gym.space.box.Box`): A gym action space.
             hidden_sizes (Union[dict, tuple, list], optional): Sizes of the hidden
-                layers for the actor. Defaults to (256, 256).
-            activation (Union[dict, torch.nn.modules.activation], optional): The (actor
-                and critic) hidden layers activation function. Defaults to
-                torch.nn.ReLU.
-            output_activation (Union[dict, torch.nn.modules.activation], optional): The
-                actor  output activation function. Defaults to torch.nn.ReLU.
+                layers for the actor. Defaults to ``(256, 256)``.
+            activation (Union[:obj:`dict`, :obj:`torch.nn.modules.activation`], optional):
+                The (actor and critic) hidden layers activation function. Defaults to
+                :class:`torch.nn.ReLU`.
+            output_activation (Union[:obj:`dict`, :obj:`torch.nn.modules.activation`], optional):
+                The (actor and critic) output activation function. Defaults to
+                :class:`torch.nn.ReLU` for the actor and nn.Identity for the critic.
 
         .. note::
             It is currently not possible to set the critic output activation function
             when using the LyapunovActorCritic. This is since it by design requires the
             critic output activation to by of type :meth:`torch.square`.
-        """
+        """  # noqa: E501
         super().__init__()
         obs_dim = observation_space.shape[0]
         act_dim = action_space.shape[0]
@@ -104,15 +109,14 @@ class LyapunovActorCritic(nn.Module):
         Returns:
             (tuple): tuple containing:
 
-                pi_action (torch.Tensor): The actions given by the policy
-                logp_pi (torch.Tensor): The log probabilities of each of these
-                    actions.
-                L (torch.Tensor): Critic L values.
+                - pi_action (:obj:`torch.Tensor`): The actions given by the policy.
+                - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.
+                - L (:obj:`torch.Tensor`): Critic L values.
 
         .. note::
             Usefull for when you want to print out the full network graph using
             tensorboard.
-        """
+        """  # noqa: E501
         pi_action, logp_pi = self.pi(obs)
         L = self.L(obs, act)
         return pi_action, logp_pi, L
@@ -124,11 +128,10 @@ class LyapunovActorCritic(nn.Module):
             obs (torch.Tensor): The current observation (state).
             deterministic (bool, optional): Whether we want to use a deterministic
                 policy (used at test time). When true the mean action of the stochastic
-                policy is returned. If false the action is sampled from the stochastic
-                policy. Defaults to ``False``.
+                policy is returned. If ``False`` the action is sampled from the
+                stochastic policy. Defaults to ``False``.
         Returns:
-            numpy.ndarray: The action from the current state given the current
-            policy.
+            numpy.ndarray: The action from the current state given the current policy.
         """
         with torch.no_grad():
             a, _ = self.pi(obs, deterministic, False)

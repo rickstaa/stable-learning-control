@@ -1,7 +1,8 @@
 """Module used for ploting the training results.
 
-This module was cloned from the
-`spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/plot.py>`_.
+.. note::
+    This module was based on
+    `Spinning Up repository <https://github.com/openai/spinningup/blob/master/spinup/utils/plot.py>`__.
 """  # noqa
 
 import json
@@ -98,9 +99,9 @@ def plot_data(
 def get_datasets(logdir, condition=None):
     """
     Recursively look through logdir for output files produced by
-    machine_learning_control.control.utils.log_utils EpochLogger.
+    :class:`~machine_learning_control.control.utils.log_utils.EpochLogger`.
 
-    Assumes that any file "progress.(csv|txt)" is a valid hit.
+    Assumes that any file ``progress.(csv|txt)`` is a valid hit.
 
     Args:
         logdir (str): The log directory to search in.
@@ -287,21 +288,8 @@ def make_plots(
     plt.show()
 
 
-def main():
-    import argparse
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("logdir", nargs="*")
-    parser.add_argument("--legend", "-l", nargs="*")
-    parser.add_argument("--xaxis", "-x", default="TotalEnvInteracts")
-    parser.add_argument("--value", "-y", default="Performance", nargs="*")
-    parser.add_argument("--count", action="store_true")
-    parser.add_argument("--smooth", "-s", type=int, default=1)
-    parser.add_argument("--select", nargs="*")
-    parser.add_argument("--exclude", nargs="*")
-    parser.add_argument("--est", default="mean")
-    args = parser.parse_args()
-    """
+def plot():
+    """Run the plot utility.
 
     Args:
         logdir (list[str]): As many log directories (or prefixes to log
@@ -341,6 +329,19 @@ def main():
         exclude (list[str]): Optional exclusion rule: plotter will only show
             curves from logdirs that do not contain these substrings.
     """
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("logdir", nargs="*")
+    parser.add_argument("--legend", "-l", nargs="*")
+    parser.add_argument("--xaxis", "-x", default="TotalEnvInteracts")
+    parser.add_argument("--value", "-y", default="Performance", nargs="*")
+    parser.add_argument("--count", action="store_true")
+    parser.add_argument("--smooth", "-s", type=int, default=1)
+    parser.add_argument("--select", nargs="*")
+    parser.add_argument("--exclude", nargs="*")
+    parser.add_argument("--est", default="mean")
+    args = parser.parse_args()
 
     make_plots(
         args.logdir,
@@ -356,4 +357,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    plot()

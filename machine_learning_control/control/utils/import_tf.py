@@ -19,7 +19,7 @@ def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
             (eg. tensorflow.nn). By default ``None``, meaning the Tensorflow package is
             imported.
         class_name (str): The python class you want to import (eg. Adam
-            from :module:`tensorflow.keras.optimizers`). By default ``None``.
+            from :mod:`tensorflow.keras.optimizers`). By default ``None``.
         frail (bool, optional): Throw ImportError when tensorflow can not be imported.
             Defaults to ``true``.
         dry_run (bool, optional): Do not actually import tensorflow if available.
@@ -29,8 +29,9 @@ def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
         ImportError: A custom import error if tensorflow is not installed.
 
     Returns:
-        union[tf, bool]: Tensorflow module or class if ``dry_run`` is set to ``False``.
-            Returns a success bool if ``dry_run`` is set to ``True``.
+        Union[:obj:`tf`, :obj:`bool`]:
+            - Tensorflow module or class if ``dry_run`` is set to ``False``.
+            - Returns a success bool if ``dry_run`` is set to ``True``.
     """
     module_name = "tensorflow" if module_name is None else module_name
     try:

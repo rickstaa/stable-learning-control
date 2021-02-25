@@ -1,5 +1,6 @@
-"""Module that contains utilities that can be used with the
+"""Contains utilities that can be used with the
 `openai gym package <https://github.com/openai/gym>`_.
+
 """
 
 import importlib
@@ -34,7 +35,7 @@ def is_continuous_space(space):
     """Checks whether a given space is continuous.
 
     Args:
-        space (gym.spaces): The gym space object.
+        space (:obj:`gym.spaces`): The gym space object.
 
     Returns:
         bool: Boolean specifying whether the space is discrete.
@@ -46,7 +47,7 @@ def is_discrete_space(space):
     """Checks whether a given space is discrete.
 
     Args:
-        space (gym.spaces): The gym space object.
+        space (:obj:`gym.spaces`): The gym space object.
 
     Returns:
         bool: Boolean specifying whether the space is discrete.
@@ -113,8 +114,9 @@ def import_gym_env_pkg(module_name, frail=True, dry_run=False):
         ImportError: A import error if the package could not be imported.
 
     Returns:
-        union[tf, bool]: Custom env package if ``dry_run`` is set to ``False``.
-            Returns a success bool if ``dry_run`` is set to ``True``.
+        Union[:obj:`gym.env`, bool]:
+            - Custom env package if ``dry_run`` is set to ``False``.
+            - Returns a success bool if ``dry_run`` is set to ``True``.
     """
     module_name = module_name[0] if isinstance(module_name, list) else module_name
     try:

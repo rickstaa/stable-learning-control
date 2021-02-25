@@ -1,10 +1,10 @@
-"""Module containing some simple multi-purpose logger.
+"""Contains a multi-purpose logger that can be used to log data and save trained models.
 
-This module extends the logx module of
-`the SpinningUp repository <https://github.com/openai/spinningup/blob/master/spinup/utils/logx.py>`_
-so that besides logging to tab-separated-values file
-(path/to/output_directory/progress.txt)
-it also logs the data to a tensorboard file.
+.. note::
+    This module extends the logx module of
+    `the SpinningUp repository <https://github.com/openai/spinningup/blob/master/spinup/utils/logx.py>`_
+    so that besides logging to tab-separated-values file (path/to/output_directory/progress.txt)
+    it also logs the data to a tensorboard file.
 """  # noqa
 
 import atexit
@@ -20,7 +20,7 @@ import numpy as np
 import torch
 from machine_learning_control.control.common.helpers import is_scalar
 from machine_learning_control.control.utils import import_tf
-from machine_learning_control.control.utils.mpi_tools import (
+from machine_learning_control.control.utils.mpi_utils.mpi_tools import (
     mpi_statistics_scalar,
     proc_id,
 )
@@ -68,9 +68,9 @@ class Logger:
             verbose (bool, optional): Whether you want to log to the std_out. Defaults
                 to ``True``.
             verbose_fmt (str, optional): The format in which the statistics are
-                displayed to the terminal. Options are "tab" which supplies them as a
-                table and "line" which prints them in one line. Default is set in the
-                :py:mod:`user_config` file.
+                displayed to the terminal. Options are ``tab`` which supplies them as a
+                table and ``line`` which prints them in one line. Default is set in the
+                :mod:`~machine_learning_control.user_config` file.
             verbose_vars (list, optional): A list of variables you want to log to the
                 std_out. By default all variables are logged.
             save_checkpoints (bool, optional): Save checkpoints during training.
@@ -81,7 +81,7 @@ class Logger:
         Attributes:
             tb_writer (torch.utils.tensorboard.writer.SummaryWriter): A tensorboard
                 writer. This is only created when you log a variable to tensorboard or
-                set the :py:attr:`.use_tensorboard` variable to `True`.
+                set the :py:attr:`.Logger.use_tensorboard` variable to ``True``.
             output_dir (str): The directory in which the log data and models are saved.
             output_file (str): The name of the file in which the progress data is saved.
             exp_name (str): Experiment name.
@@ -144,17 +144,18 @@ class Logger:
         *args,
         **kwargs,
     ):
-        """Print a colorized message to stdout.
+        """Print a colorized message to ``stdout``.
 
         Args:
             msg (str): Message you want to log.
-            color (str, optional): Color you want the message to have. Defaults to "".
+            color (str, optional): Color you want the message to have. Defaults to
+                ``""``.
             bold (bool, optional): Whether you want the text to be bold text has to be
                 bold.
             highlight (bool, optional):  Whether you want to highlight the text.
-                Defaults to False.
-            type (str, optional): The log message type. Options are: "info", "warning"
-                and "error". Defaults to ``None``.
+                Defaults to ``False``.
+            type (str, optional): The log message type. Options are: ``info``,
+                ``warning`` and ``error``. Defaults to ``None``.
             *args: All args to pass to the print function.
             **kwargs: All kwargs to pass to the print function.
         """
@@ -178,8 +179,8 @@ class Logger:
             tb_prefix(str, optional): A prefix which can be added to group the
                 variables.
             tb_alias (str, optional): A tb alias for the variable you want to store
-                store. Defaults to empty dict(). If not supplied the variable name is
-                used.
+                store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                is used.
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
         """
@@ -199,27 +200,28 @@ class Logger:
         """Log a value of some diagnostic.
 
         Call this only once for each diagnostic quantity, each iteration.
-        After using ``log_tabular`` to store values for each diagnostic,
-        make sure to call ``dump_tabular`` to write them out to file, tensorboard and
-        stdout (otherwise they will not get saved anywhere).
+        After using :meth:`log_tabular` to store values for each diagnostic,
+        make sure to call :meth:`dump_tabular` to write them out to file,
+        tensorboard and ``stdout`` (otherwise they will not get saved anywhere).
 
         Args:
             key (str): The name of the diagnostic. If you are logging a
                 diagnostic whose state has previously been saved with
-                ``store``, the key here has to match the key you used there.
+                :meth:`.EpochLogger.store`, the key here has to match the key you used
+                there.
             val: A value for the diagnostic. If you have previously saved
-                values for this key via ``store``, do *not* provide a ``val``
-                here.
+                values for this key via :meth:`.EpochLogger.store`, do *not* provide a
+                ``val`` here.
             tb_write (bool, optional): Boolean specifying whether you also want to write
                 the value to the tensorboard logfile. Defaults to ``False``.
-            tb_metrics (union[list[str], str], optional): List containing the metrics
-                you want to write to tensorboard. Options are ``['avg', 'std', 'min',
-                'max']. Defaults to ``avg``.
+            tb_metrics (Union[list[str], str], optional): List containing the metrics
+                you want to write to tensorboard. Options are [``avg``, ``std``,
+                ``min``, ``max``].`` Defaults to ``avg``.
             tb_prefix(str, optional): A prefix which can be added to group the
                 variables.
             tb_alias (str, optional): A tb alias for the variable you want to store
-                store. Defaults to empty dict(). If not supplied the variable name is
-                used.
+                store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                is used.
         """
         if self._first_row:
             self._log_headers.append(key)
@@ -243,11 +245,11 @@ class Logger:
     def dump_tabular(self, global_step=None):
         """Write all of the diagnostics from the current iteration.
 
-        Writes both to stdout, tensorboard and to the output file.
+        Writes both to ``stdout``, tensorboard and to the output file.
 
         Args:
             global_step (int, optional): Global step value to record. Uses internal step
-            counter if global step is not supplied.
+                counter if global step is not supplied.
         """
         if proc_id() == 0:
             vals = []
@@ -346,15 +348,17 @@ class Logger:
         self._first_row = False
 
     def get_logdir(self, *args, **kwargs):
-        """Get Logger and Tensorboard Summary writer logdirs.
+        """Get Logger and Tensorboard SummaryWriter logdirs.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
 
-        Returns(dict): dict containing:
-            output_dir(str): Logger output directory.
-            tb_output_dir(str): Tensorboard writer output directory.
+        Returns:
+            (dict): dict containing:
+
+                - output_dir(:obj:`str`): Logger output directory.
+                - tb_output_dir(:obj:`str`): Tensorboard writer output directory.
         """
         if self._use_tensorboard:
             return {
@@ -375,12 +379,11 @@ class Logger:
         handling anything which can't be serialized in a graceful way (writing
         as informative a string as possible).
 
-        Example use:
+        Example:
+            .. code-block:: python
 
-        .. code-block:: python
-
-            logger = EpochLogger(**logger_kwargs)
-            logger.save_config(locals())
+                logger = EpochLogger(**logger_kwargs)
+                logger.save_config(locals())
         """
         config_json = convert_json(config)
         if self.exp_name is not None:
@@ -402,8 +405,8 @@ class Logger:
         Args:
             input_object (object): The input object you want to save.
             output_filename (str): The output filename.
-            output_path (str): The output path. By default the :attr:`.output_dir` is
-                used.
+            output_path (str): The output path. By default the
+                :attr:`.Logger.output_dir`  is used.
         """
         if proc_id() == 0:
             input_object_json = convert_json(input_object)
@@ -430,11 +433,13 @@ class Logger:
     def save_state(self, state_dict, itr=None, epoch=None):
         """Saves the state of an experiment.
 
-        To be clear: this is about saving *state*, not logging diagnostics.
-        All diagnostic logging is separate from this function. This function
-        will save whatever is in ``state_dict``---usually just a copy of the
-        environment---and the most recent parameters for the model you
-        previously set up saving for with ``setup_tf_saver``.
+        .. important::
+            To be clear: this is about saving *state*, not logging diagnostics.
+            All diagnostic logging is separate from this function. This function
+            will save whatever is in ``state_dict``---usually just a copy of the
+            environment---and the most recent parameters for the model you
+            previously set up saving for with :meth:`setup_tf_saver` or
+            :meth:`setup_pytorch_saver`.
 
         Call with any frequency you prefer. If you only want to maintain a
         single state and overwrite it at each call with the most recent
@@ -444,8 +449,8 @@ class Logger:
         Args:
             state_dict (dict): Dictionary containing essential elements to
                 describe the current state of training.
-            itr (int/None): Current iteration of training. Defaults to None
-            epoch (int/None): Current epoch of the SGD. Defaults to None
+            itr (Union[int, None]): Current iteration of training. Defaults to None
+            epoch (Union[int, None]): Current epoch of the SGD. Defaults to None
         """
         if proc_id() == 0:
             fname = "vars.pkl" if itr is None else "vars%d.pkl" % itr
@@ -461,12 +466,6 @@ class Logger:
     def setup_tf_saver(self, what_to_save):
         """Set up easy model saving for a single Tensorlow model.
 
-        Because Tensorlow saving and loading is especially painless, this is
-        very minimal; we just need references to whatever we would like to
-        pickle. This is integrated into the logger because the logger
-        knows where the user would like to save information about this
-        training run.
-
         Args:
             what_to_save (object): Any PyTorch model or serializable object containing
                 Tensorflow models.
@@ -479,12 +478,6 @@ class Logger:
     def setup_pytorch_saver(self, what_to_save):
         """Set up easy model saving for a single PyTorch model.
 
-        Because PyTorch saving and loading is especially painless, this is
-        very minimal; we just need references to whatever we would like to
-        pickle. This is integrated into the logger because the logger
-        knows where the user would like to save information about this
-        training run.
-
         Args:
             what_to_save (object): Any PyTorch model or serializable object containing
                 PyTorch models.
@@ -493,10 +486,10 @@ class Logger:
         self.log("Policy will be saved to '{}'.\n".format(self.output_dir), type="info")
 
     def _tf_save(self, itr=None, epoch=None):
-        """Saves the PyTorch model/models using their 'state_dict'.
+        """Saves the PyTorch model/models using their ``state_dict``.
 
         Args:
-            itr(int/None): Current iteration of training. Defaults to None
+            itr(Union[int, None]): Current iteration of training. Defaults to None
         """
         if proc_id() == 0:
 
@@ -560,17 +553,17 @@ class Logger:
                 self._checkpoint += 1  # Increase epoch
 
     def _pytorch_save(self, itr=None, epoch=None):
-        """Saves the PyTorch model/models using their 'state_dict'.
+        """Saves the PyTorch model/models using their ``state_dict``.
 
         Args:
-            itr(int/None): Current iteration of training. Defaults to None
+            itr(Union[int, None]): Current iteration of training. Defaults to ``None``.
         """
         if proc_id() == 0:
 
             save_fail_warning = (
                 "The object you tried to save doesn't have a 'state_dict' we can"
                 "use to retrieve the model weights. Please make sure you supplied the "
-                "'setup_pytorch_saver' method with a valid 'torch.nn.module' object or "
+                "'setup_pytorch_saver' method with a valid 'torch.nn.Module' object or "
                 "implemented a'state_dict' method on your object."
             )
 
@@ -632,11 +625,12 @@ class Logger:
         """Writes data to tensorboard log file.
 
         It currently works with scalars, histograms and images. For other data types
-        please use :py:attr:`tb_writer`. directly.
+        please use :py:attr:`.Logger.tb_writer`. directly.
 
         Args:
             var_name (str): Data identifier.
-            data (int, float, numpy.ndarray, torch.Tensor): Data you want to write.
+            data (Union[int, float, numpy.ndarray, torch.Tensor]): Data you want to
+                write.
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
         """
@@ -696,12 +690,16 @@ class Logger:
 
     @property
     def use_tensorboard(self):
+        """Variable specifying whether the logger uses Tensorboard. A Tensorboard writer
+        is created on the :attr:`.Logger.tb_writer` attribute when
+        :attr:`~.Logger.use_tensorboard` is set to ``True``
+        """
         return self._use_tensorboard
 
     @use_tensorboard.setter
     def use_tensorboard(self, value):
         """Custom setter that makes sure a Tensorboard writer is present on the
-        :attr:`.MyClass.tb_writer` attribute when ``use_tensorboard`` is set to ``True``
+        :attr:`.Logger.tb_writer` attribute when ``use_tensorboard`` is set to ``True``
         . This tensorboard writer can be used to write to the Tensorboard.
 
         Args:
@@ -745,9 +743,9 @@ class Logger:
     def add_hparams(self, *args, **kwargs):
         """Adds_hparams to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_hparams` method while first making
-        sure a SummaryWriter object exits. The `add_hparams` method adds a set of
-        hyperparameters to be compared in TensorBoard.
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_hparams`
+        method while first making sure a SummaryWriter object exits. The ``add_hparams``
+        method adds a set of hyperparameters to be compared in TensorBoard.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -755,7 +753,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -768,8 +766,8 @@ class Logger:
     def add_scalar(self, *args, **kwargs):
         """Add scalar to tb summary.
 
-        Wrapper that calls the ``SummaryWriter.add_scalar`` or
-        ``tf.summary.scalar`` (depending on the backend) method while first making
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_scalar`
+        or :obj:`tf.summary.scalar` (depending on the backend) method while first making
         sure a SummaryWriter object exits. These methods can be used to add a scalar
         to the summary.
 
@@ -787,21 +785,21 @@ class Logger:
             return self.tb_writer.add_scalar(*args, **kwargs)
 
     def scalar(self, *args, **kwargs):
-        """Wrapper for making the :meth:``add_scalar` method available directly under
+        """Wrapper for making the :meth:`add_scalar` method available directly under
         the ``scalar`` alias.
 
         Args:
-            *args: All args to pass to the :meth:``add_scalar` method.
-            **kwargs: All kwargs to pass to the :meth:``add_scalar` method.
+            *args: All args to pass to the :meth:`add_scalar` method.
+            **kwargs: All kwargs to pass to the :meth:`add_scalar` method.
         """
         self.add_scalar(*args, **kwargs)
 
     def add_scalars(self, *args, **kwargs):
         """Add scalars to tb summary.
 
-        Wrapper that calls the ``SummaryWriter.add_scalars`` method while first making
-        sure a SummaryWriter object exits. The ``add_scalars`` method can be used to add
-        many scalar data to the summary.
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_scalars`
+        method while first making sure a SummaryWriter object exits. The ``add_scalars``
+        method can be used to add many scalar data to the summary.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -809,7 +807,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -822,8 +820,9 @@ class Logger:
     def add_histogram(self, *args, **kwargs):
         """Add historgram to tb summary.
 
-        Wrapper that calls the ``SummaryWriter.add_histogram`` or
-        ``tf.summary.histogram`` (depending on the backend) method while first making
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_histogram` or
+        :obj:`tf.summary.histogram` (depending on the backend) method while first making
         sure a SummaryWriter object exits. These methods can be used to add a histogram
         to the summary.
 
@@ -841,21 +840,22 @@ class Logger:
             return self.tb_writer.add_histogram(*args, **kwargs)
 
     def histogram(self, *args, **kwargs):
-        """Wrapper for making the :meth:``add_histogram` method available directly under
+        """Wrapper for making the :meth:`add_histogram` method available directly under
         the ``histogram`` alias.
 
         Args:
-            *args: All args to pass to the :meth:``add_histogram` method.
-            **kwargs: All kwargs to pass to the :meth:``add_histogram` method.
+            *args: All args to pass to the :meth:`add_histogram` method.
+            **kwargs: All kwargs to pass to the :meth:`add_histogram` method.
         """
         self.add_histogram(*args, **kwargs)
 
     def add_histogram_raw(self, *args, **kwargs):
         """Adds raw histogram to tb summary.
 
-        Wrapper that calls the ``SummaryWriter.add_histogram_raw`` method while first
-        making sure a SummaryWriter object exits. The ``add_histogram_raw`` method can
-        be used to add histograms with raw data to the summary.
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_histogram_raw` method while
+        first making sure a SummaryWriter object exits. The ``add_histogram_raw`` method
+        can be used to add histograms with raw data to the summary.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -863,7 +863,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -876,9 +876,10 @@ class Logger:
     def add_image(self, *args, **kwargs):
         """Add image to tb summary.
 
-        Wrapper that calls the ``SummaryWriter.add_image`` or ``tf.summary.image``
-        (depending on the backend) method while first making sure a SummaryWriter
-        object exits. These methods can be used to add a histogram to the summary.
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_image`
+        or :obj:`tf.summary.image` (depending on the backend) method while first making
+        sure a SummaryWriter object exits. These methods can be used to add a image
+        to the summary.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -894,21 +895,21 @@ class Logger:
             return self.tb_writer.add_image(*args, **kwargs)
 
     def image(self, *args, **kwargs):
-        """Wrapper for making the :meth:``add_image` method available directly under
+        """Wrapper for making the :meth:`add_image` method available directly under
         the ``image`` alias.
 
         Args:
-            *args: All args to pass to the :meth:``add_image` method.
-            **kwargs: All kwargs to pass to the :meth:``add_image` method.
+            *args: All args to pass to the :meth:`add_image` method.
+            **kwargs: All kwargs to pass to the :meth:`add_image` method.
         """
         self.add_image(*args, **kwargs)
 
     def add_images(self, *args, **kwargs):
         """Add images to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_images` method while first making
-        sure a SummaryWriter object exits. The `add_images` method is used to add
-        batched image data to summary.
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_images`
+        method while first making sure a SummaryWriter object exits. The ``add_images``
+        method is used to add batched image data to summary.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -916,7 +917,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -929,8 +930,9 @@ class Logger:
     def add_image_with_boxes(self, *args, **kwargs):
         """Add a image with boxes to summary.
 
-        Wrapper that calls the `SummaryWriter.add_image_with_boxes` method while
-        first making sure a SummaryWriter object exits. The `add_image_with_boxes`
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_image_with_boxes` method while
+        first making sure a SummaryWriter object exits. The ``add_image_with_boxes``
         method is used to add image and draw bounding boxes on the image.
 
         Args:
@@ -939,7 +941,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -952,8 +954,8 @@ class Logger:
     def add_figure(self, *args, **kwargs):
         """Add figure to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_figure` method while
-        first making sure a SummaryWriter object exits. The `add_figure`
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_figure`
+        method while first making sure a SummaryWriter object exits. The ``add_figure``
         method is used to render a matplotlib figure into an image and add it to
         summary.
 
@@ -963,7 +965,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -976,8 +978,8 @@ class Logger:
     def add_video(self, *args, **kwargs):
         """Add video to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_video` method while
-        first making sure a SummaryWriter object exits. The `add_video`
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_video`
+        method while first making sure a SummaryWriter object exits. The ``add_video``
         method is used to add video data to summary.
 
         Args:
@@ -986,7 +988,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -999,8 +1001,8 @@ class Logger:
     def add_audio(self, *args, **kwargs):
         """Add audio to tb summary.
 
-        Wrapper that calls the ``SummaryWriter.add_audio`` or
-        ``tf.summary.audio`` (depending on the backend) method while first making
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_audio`
+        or :obj:`tf.summary.audio` (depending on the backend) method while first making
         sure a SummaryWriter object exits. These methods can be used to add audio data
         to the summary.
 
@@ -1018,21 +1020,22 @@ class Logger:
             return self.tb_writer.add_audio(*args, **kwargs)
 
     def audio(self, *args, **kwargs):
-        """Wrapper for making the :meth:``add_audio` method available directly under
-        the ``image`` alias.
+        """Wrapper for making the :meth:`add_audio` method available directly under
+        the ``audio`` alias.
 
         Args:
-            *args: All args to pass to the :meth:``add_audio` method.
-            **kwargs: All kwargs to pass to the :meth:``add_audio` method.
+            *args: All args to pass to the :meth:`add_audio` method.
+            **kwargs: All kwargs to pass to the :meth:`add_audio` method.
         """
         self.add_audio(*args, **kwargs)
 
     def add_text(self, *args, **kwargs):
         """Add text to tb summary.
 
-        Wrapper that calls the ``SummaryWriter.add_text`` or
-        ``tf.summary.text`` (depending on the backend) method while first making
-        sure a SummaryWriter object exits. These methods can be used to add text data
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_text` or
+        :obj:`tf.summary.add_text` (depending on the backend) method while first making
+        sure a SummaryWriter object exits. These methods can be used to add text
         to the summary.
 
         Args:
@@ -1049,20 +1052,21 @@ class Logger:
             return self.tb_writer.add_text(*args, **kwargs)
 
     def text(self, *args, **kwargs):
-        """Wrapper for making the :meth:``add_text` method available directly under
-        the ``image`` alias.
+        """Wrapper for making the :meth:`add_text` method available directly under
+        the ``text`` alias.
 
         Args:
-            *args: All args to pass to the :meth:``add_text` method.
-            **kwargs: All kwargs to pass to the :meth:``add_text` method.
+            *args: All args to pass to the :meth:`add_text` method.
+            **kwargs: All kwargs to pass to the :meth:`add_text` method.
         """
         self.add_text(*args, **kwargs)
 
     def add_onnx_graph(self, *args, **kwargs):
         """Add onnyx graph to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_onnx_graph` method while
-        first making sure a SummaryWriter object exits. The `add_onnx_graph`
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_onnx_graph` method while first
+        making sure a SummaryWriter object exits. The ``add_onnx_graph``
         method is used to add a onnx graph data to summary.
 
         Args:
@@ -1071,7 +1075,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1084,8 +1088,8 @@ class Logger:
     def add_graph(self, *args, **kwargs):
         """Add graph to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_graph` method while
-        first making sure a SummaryWriter object exits. The `add_graph`
+        Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_graph`
+        method while first making sure a SummaryWriter object exits. The ``add_graph``
         method is used to add a graph data to summary.
 
         Args:
@@ -1094,7 +1098,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1107,9 +1111,10 @@ class Logger:
     def add_embedding(self, *args, **kwargs):
         """Add embedding to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_embedding` method while
-        first making sure a SummaryWriter object exits. The `add_embedding`
-        method is used to add embedding projector data to summary.
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_embedding` while first making
+        sure a SummaryWriter object exits. The ``add_embedding`` method is used to add
+        embedding projector data to summary.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -1117,7 +1122,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1130,8 +1135,8 @@ class Logger:
     def add_pr_curve(self, *args, **kwargs):
         """Add pr curve to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_pr_curve` method while
-        first making sure a SummaryWriter object exits. The `add_pr_curve`
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_pr_curve` while first making
+        while first making sure a SummaryWriter object exits. The ``add_pr_curve``
         method is used to add a precision recall curve.
 
         Args:
@@ -1140,7 +1145,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1153,8 +1158,8 @@ class Logger:
     def add_pr_curve_raw(self, *args, **kwargs):
         """Add raw pr curve to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_pr_curve_raw` method while
-        first making sure a SummaryWriter object exits. The `add_pr_curve_raw`
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_pr_curve_raw` while first making
+        first making sure a SummaryWriter object exits. The ``add_pr_curve_raw``
         method is used to add a precision recall curve with raw data.
 
         Args:
@@ -1163,7 +1168,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1176,10 +1181,11 @@ class Logger:
     def add_custom_scalars_multilinechart(self, *args, **kwargs):
         """Add custom scalars multilinechart to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_custom_scalars_multilinechart`
-        method while first making sure a SummaryWriter object exits. The
-        `add_custom_scalars_multilinechart`, which is shorthand for creating
-        `multilinechart` is similar to `add_custom_scalars`, but the only necessary
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_custom_scalars_multilinechart`
+        while first making method while first making sure a SummaryWriter object exits.
+        The ``add_custom_scalars_multilinechart``, which is shorthand for creating
+        ``multilinechart`` is similar to ``add_custom_scalars``, but the only necessary
         argument is *tags*.
 
         Args:
@@ -1188,7 +1194,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1201,11 +1207,12 @@ class Logger:
     def add_custom_scalars_marginchart(self, *args, **kwargs):
         """Adds custom scalars marginchart to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_custom_scalars_marginchart`
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_custom_scalars_marginchart`
         method while first making sure a SummaryWriter object exits. The
-        `add_custom_scalars_marginchart`, which is shorthand for creating marginchart
-        is similar the `add_custom_scalars`, but the only necessary argument is *tags*,
-        which should have exactly 3 elements.
+        ``add_custom_scalars_marginchart``, which is shorthand for creating marginchart
+        is similar the ``add_custom_scalars``, but the only necessary argument is
+        *tags*, which should have exactly 3 elements.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -1213,7 +1220,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1226,12 +1233,16 @@ class Logger:
     def add_custom_scalars(self, *args, **kwargs):
         """Add custom scalar to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_custom_scalars` method while
-        first making sure a SummaryWriter object exits. The `add_custom_scalars`
+
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_custom_scalars`
+        while first making sure a SummaryWriter object exits. The ``add_custom_scalars``
         method is used to create special charts by collecting charts tags in 'scalars'.
-        Note that this function can only be called once for each `SummaryWriter` object.
-        Because it only provides metadata to tensorboard, the function can be called
-        before or after the training loop.
+
+        .. note::
+            Note that this function can only be called once for each SummaryWriter object.
+            Because it only provides metadata to tensorboard, the function can be called
+            before or after the training loop.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -1239,7 +1250,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1252,9 +1263,10 @@ class Logger:
     def add_mesh(self, *args, **kwargs):
         """Add mesh to tb summary.
 
-        Wrapper that calls the `SummaryWriter.add_mesh` method while
-        first making sure a SummaryWriter object exits. The `add_mesh`
-        method is used to add meshes or 3D point clouds to TensorBoard.
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.add_mesh` while first making sure a
+        SummaryWriter object exits. The ``add_mesh`` method is used to add meshes or
+        3D point clouds to TensorBoard.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
@@ -1262,7 +1274,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Tensorflow backend.
+                Tensorflow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
@@ -1275,16 +1287,18 @@ class Logger:
     def flush(self, *args, **kwargs):
         """Flush tb event file to disk.
 
-        Wrapper that calls the ``SummaryWriter.flush`` or
-        ``tf.summary.flush`` (depending on the backend) method while
-        first making sure a SummaryWriter object exits. The `flush`
-        method is used to flush the event file to disk.
+
+        Wrapper that calls the
+        :obj:`torch.utils.tensorboard.SummaryWriter.flush` or
+        :obj:`tf.summary.flush` (depending on the backend) method while first making
+        sure a SummaryWriter object exits. These methods can be used to flush the event
+        file to disk.
 
         Args:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists\
+        self.use_tensorboard = True  # Make sure SummaryWriter exists
         if self._use_tf_backend:
             global tf
             with self.tb_writer.as_default():
@@ -1295,8 +1309,8 @@ class Logger:
     def record_if(self, *args, **kwargs):
         """Sets summary recording on or off per the provided boolean value.
 
-        Wrapper that calls the ``tf.summary.record_if`` method while
-        first making sure a SummaryWriter object exits.
+        Wrapper that calls the :obj:`tf.summary.record_if` method while first making
+        sure a SummaryWriter object exits.
 
         Args:
             *args: All args to pass to the Summary object.
@@ -1304,7 +1318,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Torch backend.
+                Torch backend.
         """
         if not self._use_tf_backend:
             raise NotImplementedError(
@@ -1317,12 +1331,12 @@ class Logger:
     def should_record_summaries(self):
         """Returns boolean Tensor which is true if summaries should be recorded.
 
-        Wrapper that calls the ``tf.summary.should_record_summaries`` method while
+        Wrapper that calls the :obj:`tf.summary.should_record_summaries` method while
         first making sure a SummaryWriter object exits.
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-            Torch backend.
+                Torch backend.
         """
         if not self._use_tf_backend:
             raise NotImplementedError(
@@ -1335,16 +1349,16 @@ class Logger:
     def trace_export(self, *args, **kwargs):
         """Stops and exports the active trace as a Summary and/or profile file.
 
-        Wrapper that calls the ``tf.summary.trace_export`` method while
-        first making sure a SummaryWriter object exits.
+        Wrapper that calls the :obj:`tf.summary.trace_export` method while first making
+        sure a SummaryWriter object exits.
 
         Args:
             *args: All args to pass to the Summary object.
             **kwargs: All kwargs to pass to the Summary object.
 
         Raises:
-            NotImplementedError: Raised if you try to call this method when using the
-            Torch backend.
+            NotImplementedError:
+                Raised if you try to call this method when using the Torch backend.
         """
         if not self._use_tf_backend:
             raise NotImplementedError(
@@ -1357,12 +1371,12 @@ class Logger:
     def trace_off(self):
         """Stops the current trace and discards any collected information.
 
-        Wrapper that calls the ``tf.summary.trace_export`` method while
-        first making sure a SummaryWriter object exits.
+        Wrapper that calls the :obj:`tf.summary.trace_off` method while first making
+        sure a SummaryWriter object exits.
 
         Raises:
-            NotImplementedError: Raised if you try to call this method when using the
-            Torch backend.
+            NotImplementedError:
+                Raised if you try to call this method when using the Torch backend.
         """
         if not self._use_tf_backend:
             raise NotImplementedError(
@@ -1375,12 +1389,12 @@ class Logger:
     def trace_on(self):
         """Starts a trace to record computation graphs and profiling information.
 
-        Wrapper that calls the ``tf.summary.trace_export`` method while
-        first making sure a SummaryWriter object exits.
+        Wrapper that calls the :obj:`tf.summary.trace_on` method while first making
+        sure a SummaryWriter object exits.
 
         Raises:
-            NotImplementedError: Raised if you try to call this method when using the
-            Torch backend.
+            NotImplementedError:
+                Raised if you try to call this method when using the Torch backend.
         """
         if not self._use_tf_backend:
             raise NotImplementedError(
@@ -1392,16 +1406,16 @@ class Logger:
     def write(self, *args, **kwargs):
         """Starts a trace to record computation graphs and profiling information.
 
-        Wrapper that calls the ``tf.summary.trace_export`` method while
-        first making sure a SummaryWriter object exits.
+        Wrapper that calls the :obj:`tf.summary.write` method while first making sure a
+        SummaryWriter object exits.
 
         Args:
             *args: All args to pass to the Summary object.
             **kwargs: All kwargs to pass to the Summary object.
 
         Raises:
-            NotImplementedError: Raised if you try to call this method when using the
-            Torch backend.
+            NotImplementedError:
+                Raised if you try to call this method when using the Torch backend.
         """
         if not self._use_tf_backend:
             raise NotImplementedError(
@@ -1413,11 +1427,11 @@ class Logger:
 
 class EpochLogger(Logger):
     """
-    A variant of Logger tailored for tracking average values over epochs.
+    A variant of :class:`.Logger` tailored for tracking average values over epochs.
 
-    Typical use case: there is some quantity which is calculated many times
+    **Typical use case:** there is some quantity which is calculated many times
     throughout an epoch, and at the end of the epoch, you would like to
-    report the average / std / min / max value of that quantity.
+    report the average/std/min/max value of that quantity.
 
     With an EpochLogger, each time the quantity is calculated, you would
     use
@@ -1437,11 +1451,13 @@ class EpochLogger(Logger):
 
     Attributes:
         epoch_dict (dict): Dictionary used to store variables you want to log into the
-            epoch_loggers current state.
+           :class:`.EpochLogger` current state.
     """
 
     def __init__(self, *args, **kwargs):
-        """Constructs all the necessary attributes for the EpochLogger object."""
+        """Constructs all the necessary attributes for the :class:`.EpochLogger`
+        object.
+        """
         super().__init__(*args, **kwargs)
         self.epoch_dict = dict()
         self._tb_index_dict = dict()
@@ -1455,19 +1471,19 @@ class EpochLogger(Logger):
         global_step=None,
         **kwargs,
     ):
-        """Save something into the epoch_logger's current state.
+        """Save something into the :class:`.EpochLogger`'s current state.
 
         Provide an arbitrary number of keyword arguments with numerical
         values.
 
         Args:
-            tb_write (union[bool, dict], optional): Boolean or dict of key boolean pairs
+            tb_write (Union[bool, dict], optional): Boolean or dict of key boolean pairs
                 specifying whether you also want to write the value to the tensorboard
                 logfile. Defaults to ``False``.
             tb_aliases (dict, optional): Dictionary that can be used to set aliases for
-                the variables you want to store. Defaults to empty dict().
+                the variables you want to store. Defaults to empty :obj:`dict`.
             extend (bool, optional): Boolean specifying whether you want to extend the
-                values to the log buffer. By default ``false`` meaning the values are
+                values to the log buffer. By default ``False`` meaning the values are
                 appended to the buffer.
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
@@ -1523,17 +1539,17 @@ class EpochLogger(Logger):
         supplied, this pair will be directly logged to Tensorboard.
 
         Args:
-            keys (union[list[str], str]): The name(s) of the diagnostic.
+            keys (Union[list[str], str]): The name(s) of the diagnostic.
             val: A value for the diagnostic.
-            with_min_and_max (bool): If true, log min and max values of the
+            with_min_and_max (bool): If ``True``, log min and max values of the
                 diagnostic.
-            average_only (bool): If true, do not log the standard deviation
+            average_only (bool): If ``True``, do not log the standard deviation
                 of the diagnostic.
             tb_prefix(str, optional): A prefix which can be added to group the
                 variables.
             tb_alias (str, optional): A tb alias for the variable you want to store
-                store. Defaults to empty dict(). If not supplied the variable name is
-                used.
+                store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                is used.
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
         """
@@ -1581,21 +1597,21 @@ class EpochLogger(Logger):
         Args:
             key (str): The name of the diagnostic. If you are logging a
                 diagnostic whose state has previously been saved with
-                ``store``, the key here has to match the key you used there.
+                :meth:`store`, the key here has to match the key you used there.
             val: A value for the diagnostic. If you have previously saved
-                values for this key via ``store``, do *not* provide a ``val``
+                values for this key via :meth:`store`, do *not* provide a ``val``
                 here.
-            with_min_and_max (bool): If true, log min and max values of the
+            with_min_and_max (bool): If ``True``, log min and max values of the
                 diagnostic over the epoch.
-            average_only (bool): If true, do not log the standard deviation
+            average_only (bool): If ``True``, do not log the standard deviation
                 of the diagnostic over the epoch.
             tb_write (bool, optional): Boolean specifying whether you also want to write
                 the value to the tensorboard logfile. Defaults to False.
             tb_prefix(str, optional): A prefix which can be added to group the
                 variables.
             tb_alias (str, optional): A tb alias for the variable you want to store
-                store. Defaults to empty dict(). If not supplied the variable name is
-                used.
+                store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                is used.
         """
         if val is not None:
             super().log_tabular(
@@ -1647,8 +1663,9 @@ class EpochLogger(Logger):
         self.epoch_dict[key] = []
 
     def dump_tabular(self, *args, **kwargs):
-        """Small wrapper around the :class:`.Logger` parent class which makes sure that
-        the tensorboard index track dictionary is reset after the table is dumped.
+        """Small wrapper around the :meth:`.Logger.dump_tabular` method which
+        makes sure that the tensorboard index track dictionary is reset after the table
+        is dumped.
 
         Args:
             *args: All args to pass to parent method.
@@ -1668,10 +1685,11 @@ class EpochLogger(Logger):
 
         Returns:
             (tuple): tuple containing:
-                mean(float): The current mean value.
-                std(float): The current  mean standard deviation.
-                min(float): The current mean value.
-                max(float): The current mean value.
+
+                - mean(:obj:`float`): The current mean value.
+                - std(:obj:`float`): The current  mean standard deviation.
+                - min(:obj:`float`): The current mean value.
+                - max(:obj:`float`): The current mean value.
         """
         v = self.epoch_dict[key]
         vals = (
@@ -1694,16 +1712,16 @@ class EpochLogger(Logger):
         Loggers internal storage.
 
         Args:
-            key (union[list[str], str]): The name of the diagnostic.
-            with_min_and_max (bool): If true, log min and max values of the
+            key (Union[list[str], str]): The name of the diagnostic.
+            with_min_and_max (bool): If ``True``, log min and max values of the
                 diagnostic.
-            average_only (bool): If true, do not log the standard deviation
+            average_only (bool): If ``True``, do not log the standard deviation
                 of the diagnostic.
             tb_prefix(str, optional): A prefix which can be added to group the
                 variables.
             tb_alias (str, optional): A tb alias for the variable you want to store
-                store. Defaults to empty dict(). If not supplied the variable name is
-                used.
+                store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                is used.
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
         """

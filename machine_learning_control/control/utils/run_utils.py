@@ -1,7 +1,9 @@
-"""Module used for managing MPI processes.
+"""Contains utilities and helper functions/classes that can be used for calling
+experiments.
 
-This module was cloned from the
-`spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/run_utils.py>`_.
+.. note::
+    This module was based on
+    `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/run_utils.py>`__.
 """  # noqa
 
 import base64
@@ -20,9 +22,8 @@ import cloudpickle
 import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import psutil
-from machine_learning_control.control.utils.gym_utils import import_gym_env_pkg
 from machine_learning_control.control.common.helpers import all_bools, valid_str
-from machine_learning_control.control.utils.mpi_tools import mpi_fork
+from machine_learning_control.control.utils.mpi_utils.mpi_tools import mpi_fork
 from machine_learning_control.control.utils.serialization_utils import convert_json
 from machine_learning_control.user_config import DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
 from tqdm import trange
@@ -33,7 +34,7 @@ DIV_LINE_WIDTH = 80
 def call_experiment(
     exp_name, thunk, seed=0, num_cpu=1, data_dir=None, datestamp=False, **kwargs
 ):
-    """Run a function (thunk) with hyperparameters (kwargs), plus configuration.
+    """Run a function (thunk) with hyperparameters (:obj:`**kwargs`), plus configuration.
 
     This wraps a few pieces of functionality which are useful when you want
     to run many experiments in sequence, including logger configuration and
@@ -61,7 +62,7 @@ def call_experiment(
         data_dir (str): Used in configuring the logger, to decide where
             to store experiment results. Note: if left as None, data_dir will
             default to ``DEFAULT_DATA_DIR`` from
-            ``machine_learning_control/user_config.py``.
+            :mod:`machine_learning_control.user_config`.
         datestamp (bool): Whether a datestamp should be added to the experiment name.
         **kwargs: All kwargs to pass to thunk.
     """
@@ -94,11 +95,13 @@ def call_experiment(
         print("Note: Call experiment is not handling logger_kwargs.\n")
 
     def thunk_plus():
+        """Setup environment used in the experiment."""
         # Make 'env_fn' from 'env_name'
         if "env_name" in kwargs:
 
             # Import gym environments
             import gym
+
             # import machine_learning_control.simzoo.simzoo  # noqa: F401
             try:
                 import machine_learning_control.env_config  # noqa: F401
@@ -286,8 +289,8 @@ class ExperimentGrid:
 
         By default, if a shorthand isn't given, one is automatically generated
         from the key using the first three letters of each colon-separated
-        term. To disable this behavior, change ``DEFAULT_SHORTHAND`` in the
-        ``machine_learning_control/user_config.py`` file to ``False``.
+        term. To disable this behavior, change :attr:`DEFAULT_SHORTHAND` in the
+        :mod:`machine_learning_control.user_config` file to ``False``.
 
         Args:
             key (str): Name of parameter.
@@ -468,8 +471,8 @@ class ExperimentGrid:
         a string, it must be the name of a parameter whose values are all
         callable functions.
 
-        Uses ``call_experiment`` to actually launch each experiment, and gives
-        each variant a name using ``self.variant_name()``.
+        Uses :meth:call_experiment` to actually launch each experiment, and gives
+        each variant a name using :meth:`variant_name`.
 
         Maintenance note: the args for ExperimentGrid.run should track closely
         to the args for call_experiment. However, ``seed`` is omitted because
@@ -484,7 +487,7 @@ class ExperimentGrid:
             data_dir (str): Used in configuring the logger, to decide where
                 to store experiment results. Note: if left as None, data_dir will
                 default to ``DEFAULT_DATA_DIR`` from
-                ``machine_learning_control/user_config.py``.
+                :mod:`machine_learning_control.user_config`.
             datestamp (bool): Whether a datestamp should be added to the experiment
                 name.
         """
