@@ -14,6 +14,7 @@ machine\_learning\_control.control.algos.pytorch.policies.critics.L\_critic
    .. autosummary::
       :toctree:
    
+      log_to_std_out
       mlp
    
    

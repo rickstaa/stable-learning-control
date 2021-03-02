@@ -34,15 +34,15 @@ Further Reading
 ---------------
 
 The version implemented here was based on the version that is implemented in the `SpinningUp repository`_. For more information on the SAC algorithm
-you are therefore referred to the `SpinningUp documentation`_ or the original paper of `Haarnoja et al., 2019`_. Our implementation slightly differs
+, you are referred to the `SpinningUp documentation`_ or the original paper of `Haarnoja et al., 2019`_. Our implementation slightly differs
 from the SpinningUp version in the sense that we also added Automatic Entropy Tuning scheme that was introduced by `Haarnoja et al., 2019`_. As a
-result during training the entropy Lagrange Multiplier :math:`\alpha` is updated by
+result, during training, the entropy Lagrange Multiplier :math:`\alpha` is updated by
 
 .. math::
 
     \alpha \leftarrow \max(0, \alpha + \delta \bigtriangledown_{\alpha}J(\alpha)))
 
-where :math:`\delta` is the learning rate. As explained in `Haarnoja et al., 2019`_ this is done contrain the average entropy of the policy.
+where :math:`\delta` is the learning rate. As explained in `Haarnoja et al., 2019`_, this is done to constrain the policy's average entropy.
 
 .. _`Haarnoja et al., 2019`: https://arxiv.org/pdf/1812.05905.pdf
 .. _`SpinningUp repository`: https://spinningup.openai.com/en/latest/algorithms/sac.html
@@ -66,7 +66,7 @@ Saved Model Contents: PyTorch Version
 -------------------------------------
 
 The PyTorch version of the SAC algorithm is implemented by subclassing the :class:`torch.nn.Module` class. As a
-result the model weights are saved using the 'model_state' dictionary (
+result, the model weights are saved using the 'model_state' dictionary (
 :attr:`~machine_learning_control.control.algos.pytorch.sac.SAC.state_dict`). This saved weights can be found in
 the ``torch_save/model_state.pt`` file. For an example of how to load a model using this file, see
 :ref:`saving_and_loading` or the `PyTorch documentation`_.
@@ -85,7 +85,7 @@ Saved Model Contents: Tensorflow Version
 The Tensorflow version of the SAC algorithm is implemented by subclassing the :class:`tf.nn.Model` class. As
 a result, both the full model and the current model weights are saved. The full model
 can be found in the ``saved_model.pb`` file while the current weights checkpoint is found
-in the ``tf_safe/weights_checkpoint*`` file. For an example of how to use these two methods
+in the ``tf_safe/weights_checkpoint*`` file. For an example of how to use these two methods,
 see :ref:`saving_and_loading` or the `Tensorflow documentation`_.
 
 .. _`Tensorflow documentation`: https://www.tensorflow.org/tutorials/keras/save_and_load

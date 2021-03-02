@@ -6,7 +6,7 @@ Saving and Loading Experiment Outputs
 
 .. contents:: Table of Contents
 
-In this section we'll cover
+In this section, we'll cover
 
 - what outputs come from Machine Learning Control algorithm implementations,
 - what formats they're stored in and how they're organised,
@@ -146,104 +146,15 @@ Loading and Running Trained Policies
 Test Policy utility
 -------------------
 
-If Environment Saves Successfully
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-:mlc:`Machine Learning Control <>` ships with an evaluation utility that can be used to plot diagnostics from experiments. For cases where the environment
+:mlc:`Machine Learning Control <>` ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
 is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
+
 
 .. parsed-literal::
 
     python -m machine_learning_control.run test_policy path/to/output_directory
 
-
-There are a few flags for options:
-
-
-.. option:: -l L, --len=L, default=0
-
-    *int*. Maximum length of test episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has
-    reached a terminal state in the environment. (Note: setting L=0 will not prevent Gym envs wrapped by TimeLimit wrappers from ending when they reach
-    their pre-set maximum episode length.)
-
-.. option:: -n N, --episodes=N, default=100
-
-    *int*. Number of test episodes to run the agent for.
-
-.. option:: -nr, --norender
-
-    Do not render the test episodes to the screen. In this case, ``test_policy`` will only print the episode returns and lengths. (Use case: the renderer
-    slows down the testing process, and you just want to get a fast sense of how the agent is performing, so you don't particularly care to watch it.)
-
-.. option:: -i I, --itr=I, default=-1
-
-    *int*. This is an option for a special case which is not supported by algorithms in this package as-shipped, but which they are easily modified to do.
-    Use case: Sometimes, it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can
-    do this---save snapshots of the agent from those different points, so they can be run and watched later. In this case, you use this flag to specify which
-    iteration to run. But again: machine_learning_control algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
-
-    The default value of this flag means "use the latest snapshot."
-
-    To modify an algo, so it does produce multiple snapshots, find the following line (which is present in all of the algorithms):
-
-    .. code-block:: python
-
-        logger.save_state({'env': env}, None)
-
-    and tweak it to
-
-    .. code-block:: python
-
-        logger.save_state({'env': env}, epoch)
-
-    Make sure to then also set ``save_freq`` to something reasonable (because if it defaults to 1, for instance, you'll flood your output directory with one
-    ``save`` folder for each snapshot---which adds up fast).
-
-
-.. option:: -d, --deterministic
-
-    Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The :mlc:`MLC<>` implementation trains a stochastic
-    policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
-    by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
-    for any other algorithms.
-
-
-Environment Not Found Error
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If the environment wasn't saved successfully, you can expect ``test_policy.py`` to crash with something that looks like
-
-.. parsed-literal::
-
-    Traceback (most recent call last):
-      File "machine_learning_control/control/utils/test_policy.py", line 153, in <module>
-        run_policy(env, get_action, args.len, args.episodes, not(args.norender))
-      File "machine_learning_control/control/utils/test_policy.py", line 114, in run_policy
-        "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
-    AssertionError: Environment not found!
-
-     It looks like the environment wasn't saved, and we can't run the agent in it. :(
-
-     Check out the readthedocs page on Experiment Outputs for how to handle this situation.
-
-
-In this case, watching your agent perform is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
-
->>> from machine_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
->>> import your_env
->>> _, get_action = load_policy_and_env('/path/to/output_directory')
->>> env = your_env.make()
->>> run_policy(env, get_action)
-Logging data to /tmp/experiments/1536150702/progress.txt
-Episode 0    EpRet -163.830      EpLen 93
-Episode 1    EpRet -346.164      EpLen 99
-...
-
-Using Trained Value Functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The ``test_policy.py`` tool doesn't help you look at trained value functions, and if you want to use those, you will have
-to load the policy manually. Please see the :ref:`manual_policy_testing` documentation for an example on how to do this.
+For more information on how to use this utility see the :ref:`test_policy <test_policy>` documentation or the code :ref:`api`.
 
 .. _manual_policy_testing:
 
@@ -251,7 +162,7 @@ Manual policy testing
 ---------------------
 
 Load Pytorch Policy
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Pytorch Policies can be loaded using the :obj:`torch.load` method. For more information on how to load PyTorch models see
 the `PyTorch documentation`_.
@@ -263,7 +174,7 @@ the `PyTorch documentation`_.
     import torch
     import os.path as osp
 
-    from machine_learning_control.control.utils.log_utils.logx import EpochLogger
+    from machine_learning_control.utils.log_utils.logx import EpochLogger
 
     from machine_learning_control.control.algos.pytorch import LAC
 
@@ -293,8 +204,8 @@ the `PyTorch documentation`_.
 In this example, observe that
 
 * On line 6, we import the algorithm we want to load.
-* On line 12-14, we use the :meth:`~machine_learning_control.control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
-* on line 15, we use the :meth:`~machine_learning_control.control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
+* On line 12-14, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
+* on line 15, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
 
@@ -304,7 +215,7 @@ wrapper around the :obj:`torch.load` and  :obj:`torch.nn.Module.load_state_dict`
 .. _`Pytorch Documentation`: https://pytorch.org/tutorials/beginner/saving_loading_models.html
 
 Load Tensorflow Policy
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
     :linenos:
@@ -313,7 +224,7 @@ Load Tensorflow Policy
     import tensorflow as tf
     import os.path as osp
 
-    from machine_learning_control.control.utils.log_utils.logx import EpochLogger
+    from machine_learning_control.utils.log_utils.logx import EpochLogger
 
     from machine_learning_control.control.algos.tf2 import LAC
 
@@ -343,8 +254,8 @@ Load Tensorflow Policy
 In this example, observe that
 
 * On line 6, we import the algorithm we want to load.
-* On line 12-14, we use the :meth:`~machine_learning_control.control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
-* on line 15, we use the :meth:`~machine_learning_control.control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
+* On line 12-14, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
+* on line 15, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
 

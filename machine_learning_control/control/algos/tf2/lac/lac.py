@@ -21,8 +21,8 @@ import sys
 import time
 
 import gym
-import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
+from machine_learning_control.common.helpers import combine_shapes
 from machine_learning_control.control.algos.tf2.common import get_lr_scheduler
 from machine_learning_control.control.algos.tf2.common.helpers import (
     count_vars,
@@ -35,18 +35,20 @@ from machine_learning_control.control.algos.tf2.policies.soft_actor_critic impor
     SoftActorCritic,
 )
 from machine_learning_control.control.common.buffers import ReplayBuffer
-from machine_learning_control.control.common.helpers import (
-    combine_shapes,
-    heuristic_target_entropy,
-)
-from machine_learning_control.control.utils.import_tf import import_tf
-from machine_learning_control.control.utils.safer_eval import safer_eval
+from machine_learning_control.control.common.helpers import heuristic_target_entropy
 from machine_learning_control.control.utils.eval_utils import test_agent
 from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
 )
-from machine_learning_control.control.utils.log_utils.logx import EpochLogger
+from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.control.utils.safer_eval import safer_eval
+from machine_learning_control.utils.log_utils import (
+    EpochLogger,
+    colorize,
+    log_to_std_out,
+    setup_logger_kwargs,
+)
 
 tf = import_tf()
 nn = import_tf(module_name="tensorflow.nn")
@@ -90,7 +92,7 @@ class LAC(tf.keras.Model):
             regular Q-critic will be used.
     """
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         env,
         actor_critic=None,
@@ -219,18 +221,18 @@ class LAC(tf.keras.Model):
                 "need this."
             )
 
-        log_utils.log(
+        log_to_std_out(
             "You are using the {} environment.".format(env.unwrapped.spec.id),
             type="info",
         )
         if use_lyapunov:
-            log_utils.log("You are using the LAC algorithm.", type="info")
+            log_to_std_out("You are using the LAC algorithm.", type="info")
         else:
-            log_utils.log(
+            log_to_std_out(
                 (
-                    log_utils.colorize("You are using the ", color="green", bold=True)
-                    + log_utils.colorize("SAC", "yellow", bold=True)
-                    + log_utils.colorize(" algorithm.", "green", bold=True)
+                    colorize("You are using the ", color="green", bold=True)
+                    + colorize("SAC", "yellow", bold=True)
+                    + colorize(" algorithm.", "green", bold=True)
                 ),
                 type="info",
             )
@@ -608,9 +610,9 @@ class LAC(tf.keras.Model):
         if not restore_lagrance_multipliers:
             self.log_alpha.assign(log_alpha_init)
             self.log_labda.assign(log_labda_init)
-            log_utils.log("Restoring lagrance multipliers.", type="info")
+            log_to_std_out("Restoring lagrance multipliers.", type="info")
         else:
-            log_utils.log(
+            log_to_std_out(
                 "Keeping lagrance multipliers at their initial value.", type="info"
             )
 
@@ -622,7 +624,7 @@ class LAC(tf.keras.Model):
             path (str): The path where you want to export the policy too.
         """
         if tf.config.functions_run_eagerly():
-            log_utils.log(
+            log_to_std_out(
                 "Exporting the tensorflow model is not supported in eager mode.",
                 type="error",
             )
@@ -844,7 +846,7 @@ def validate_args(**kwargs):
         )
 
 
-def lac(
+def lac(  # noqa: C901
     env_fn,
     actor_critic=None,
     ac_kwargs=dict(
@@ -1353,7 +1355,6 @@ def lac(
 
 
 if __name__ == "__main__":
-    # TODO: Add env kwargs
 
     # Import gym environments
     import machine_learning_control.simzoo.simzoo.envs  # noqa: F401
@@ -1665,7 +1666,7 @@ if __name__ == "__main__":
     )
 
     # Setup output dir for logger and return output kwargs
-    logger_kwargs = log_utils.setup_logger_kwargs(
+    logger_kwargs = setup_logger_kwargs(
         args.exp_name,
         args.seed,
         save_checkpoints=args.save_checkpoints,

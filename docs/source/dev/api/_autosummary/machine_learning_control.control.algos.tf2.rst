@@ -9,25 +9,9 @@ machine\_learning\_control.control.algos.tf2
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-      :toctree:
-   
-      import_tf
-   
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :toctree:
-      :template: custom-class-template.rst
-   
-      LAC
-      SAC
    
    
 

@@ -81,7 +81,7 @@ Critic network definition
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The LAC algorithm uses a single Lyapunov Critic instead of the double Q-Critic that is used in the :ref:`SAC <sac>` algorithm. This
-new Lyapunov critic is similar to the Q-Critic but instead of an Identity output activation function a square output activation
+new Lyapunov critic is similar to the Q-Critic, but instead of an Identity output activation function, a square output activation
 function is used. This is done to ensure that the network output is positive, such that
 :ref:`condition (2) <lyap_condition_2>` of the :ref:`Lyapunov's stability conditions <lyap_conditions>` holds.
 
@@ -182,7 +182,7 @@ Quick Fact
 Further Reading
 ---------------
 
-For more information on the LAC algorithm please checkout the original paper of `Han et al., 2020`_.
+For more information on the LAC algorithm, please check out the original paper of `Han et al., 2020`_.
 
 .. _`Han et al., 2020`: http://arxiv.org/abs/2004.14288
 
@@ -211,7 +211,7 @@ Pseudocode
     \end{algorithmic}
     \end{algorithm}
 
-.. _`11 of Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
+.. _ '11 of Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
 .. _`eq. (7) and (14) from Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
 
 Documentation
@@ -234,7 +234,7 @@ Saved Model Contents: PyTorch Version
 The PyTorch version of the LAC algorithm is implemented by subclassing the :class:`torch.nn.Module` class. As a
 result the model weights are saved using the 'model_state' dictionary (
 :attr:`~machine_learning_control.control.algos.pytorch.lac.LAC.state_dict`). This saved weights can be found in
-the ``torch_save/model_state.pt`` file. For an example of how to load a model using this file, see
+the "torch_save/model_state.pt "file. For an example of how to load a model using this file, see
 :ref:`saving_and_loading` or the `PyTorch documentation`_.
 
 .. _`PyTorch documentation`: https://pytorch.org/tutorials/beginner/saving_loading_models.html
@@ -251,8 +251,8 @@ Saved Model Contents: Tensorflow Version
 
 The Tensorflow version of the SAC algorithm is implemented by subclassing the :class:`tf.nn.Model` class. As
 a result, both the full model and the current model weights are saved. The full model
-can be found in the ``saved_model.pb`` file while the current weights checkpoint is found
-in the ``tf_safe/weights_checkpoint*`` file. For an example of how to use these two methods
+can be found in the "saved_model.pb "file, while the current weights checkpoint is found
+in the "tf_safe/weights_checkpoint* "file. For an example of how to use these two methods,
 see :ref:`saving_and_loading` or the `Tensorflow documentation`_.
 
 .. _`Tensorflow documentation`: https://www.tensorflow.org/tutorials/keras/save_and_load

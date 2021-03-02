@@ -22,7 +22,7 @@ Action space
 
 Environment goal
 ----------------
-The agent's goal in the Ex3_EKF environment is to act in such a way that
+The agent's goal in the Ex3_EKF environment is to act so that
 the estimator correctly estimated the original noisy system. By doing this, it serves
 as an RL based stationary Kalman filter.
 

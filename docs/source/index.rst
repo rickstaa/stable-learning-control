@@ -67,6 +67,7 @@ Apart from these main modules, it also comes with several (shared) Utilities:
    control/plotting
    control/robustness_eval
    control/bench
+   control/control_utils
 
 .. toctree::
    :maxdepth: 3
@@ -86,6 +87,7 @@ Apart from these main modules, it also comes with several (shared) Utilities:
    :maxdepth: 3
    :caption: Shared Utilities
 
+   utils/runner
    utils/loggers
    utils/mpi
 

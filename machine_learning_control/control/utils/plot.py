@@ -99,7 +99,7 @@ def plot_data(
 def get_datasets(logdir, condition=None):
     """
     Recursively look through logdir for output files produced by
-    :class:`~machine_learning_control.control.utils.log_utils.EpochLogger`.
+    :class:`~machine_learning_control.utils.log_utils.logx.EpochLogger`.
 
     Assumes that any file ``progress.(csv|txt)`` is a valid hit.
 

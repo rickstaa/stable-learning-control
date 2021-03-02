@@ -8,11 +8,14 @@ This module contains a Tensorflow 2.x implementation of the Soft Actor Critic po
 
 import tensorflow as tf
 
-# fmt: off
-from machine_learning_control.control.algos.tf2.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
-from machine_learning_control.control.algos.tf2.policies.critics.Q_critic import QCritic  # noqa: E501
 # fmt: on
-from machine_learning_control.control.common.helpers import strict_dict_update
+from machine_learning_control.common.helpers import strict_dict_update
+
+# fmt: off
+from machine_learning_control.control.algos.tf2.policies.actors.squashed_gaussian_actor import \
+    SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.tf2.policies.critics.Q_critic import \
+    QCritic  # noqa: E501
 from tensorflow import nn
 
 HIDDEN_SIZES_DEFAULT = {"actor": (256, 256), "critic": (256, 256)}

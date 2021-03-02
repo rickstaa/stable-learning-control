@@ -14,12 +14,12 @@ as a stand-alone package.
 .. _`OpenAI gym environments`: https://gym.openai.com/
 
 Environments
-------------
+============
 
 It contains several easier data-only (no-render method) environments as well as more difficult Robotics environments.
 
 Data-only environments
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 The data-only environments are included in this module:
 
@@ -30,7 +30,7 @@ The data-only environments are included in this module:
    envs/data_only/ex3_ekf
 
 Robotics environment
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 The following Robotics environments are included in this module:
 
@@ -46,7 +46,7 @@ The following Robotics environments are included in this module:
 .. _`Gazebo`: http://gazebosim.org/
 
 How to use
-----------
+==========
 
 Here's a bare minimum example of using one of our environments. This will run an instance of the
 :ref:`Oscillator-v1 <oscillator>` environment for 800 timesteps. You should see the observations
@@ -74,7 +74,7 @@ being printed to the console.
     The Environments that are currently in the Simzoo package don't have a render method.
 
 Add new Environments
---------------------
+====================
 
 Please follow the steps provided in the `Openai Gym documentation`_ when creating a new environment. After
 you created your environment, you can use the `simzoo/simzoo/__init__.py`_ file to register them to the
@@ -83,7 +83,7 @@ you created your environment, you can use the `simzoo/simzoo/__init__.py`_ file 
 .. _`simzoo/simzoo/__init__.py`: https://github.com/rickstaa/simzoo/blob/main/simzoo/__init__.py
 
 Simzoo/simzoo/__init__.py
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 .. literalinclude:: ../../../machine_learning_control/simzoo/simzoo/__init__.py
    :language: python

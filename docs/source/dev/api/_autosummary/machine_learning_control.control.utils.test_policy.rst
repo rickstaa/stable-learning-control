@@ -19,6 +19,7 @@ machine\_learning\_control.control.utils.test\_policy
       load_policy_and_env
       load_pytorch_policy
       load_tf_policy
+      log_to_std_out
       run_policy
    
    

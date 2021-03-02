@@ -13,12 +13,12 @@
     https://stackoverflow.com/questions/2701998/sphinx-autodoc-is-not-automatic-enough/62613202#62613202%3E
 """  # noqa
 
-# Import modules to which you want users to have access
-import torch  # noqa: F401
 import machine_learning_control as machine_learning_control  # noqa: F401
 import machine_learning_control as mlc  # noqa: F401
-
 import machine_learning_control.simzoo.simzoo  # noqa: F401
+
+# Import modules to which you want users to have access
+import torch  # noqa: F401
 from machine_learning_control.control.utils.import_tf import import_tf
 
 tf = import_tf(frail=False)

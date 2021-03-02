@@ -15,6 +15,7 @@ machine\_learning\_control.control.algos.pytorch.policies.actors.squashed\_gauss
       :toctree:
    
       clamp
+      log_to_std_out
       mlp
    
    

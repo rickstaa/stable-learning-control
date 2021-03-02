@@ -8,11 +8,10 @@ import os.path as osp
 import time
 
 import joblib
-import machine_learning_control.control.utils.log_utils as log_utils
 import torch
 from machine_learning_control.control.utils.import_tf import import_tf
-from machine_learning_control.control.utils.log_utils.logx import EpochLogger
-from machine_learning_control.control.utils.serialization_utils import load_from_json
+from machine_learning_control.utils.serialization_utils import load_from_json
+from machine_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 
 
 def load_policy_and_env(fpath, itr="last"):
@@ -94,7 +93,7 @@ def load_tf_policy(fpath, itr, env=None):
     tf = import_tf()  # Import tf if installed otherwise throw warning
     fname = osp.join(fpath, "tf2_save" + itr)
     print("\n")
-    log_utils.log("Loading from %s.\n\n" % fname, type="info")
+    log_to_std_out("Loading from %s.\n\n" % fname, type="info")
 
     # Retrieve get_action method
     save_info = load_from_json(osp.join(fname, "save_info.json"))
@@ -123,7 +122,7 @@ def load_pytorch_policy(fpath, itr, env=None):
         "torch_save",
         "model_state" + itr + ".pt",
     )
-    log_utils.log("\n\nLoading from %s.\n\n" % fname, type="info")
+    log_to_std_out("\n\nLoading from %s.\n\n" % fname, type="info")
     model_data = torch.load(fname)
 
     # Retrieve get_action method
@@ -168,7 +167,7 @@ def run_policy(
                 try:
                     a = policy.get_action(o, deterministic=deterministic)
                 except TypeError:
-                    log_utils.log(
+                    log_to_std_out(
                         "Input argument 'deterministic' ignored as the algorithm does "
                         "not support deterministic actions. This is only supported for "
                         "gaussian  algorithms.",

@@ -1,11 +1,13 @@
+.. _algorithms:
 
+================
 Available Agents
-----------------
+================
 
 Reinforcement Learning Algorithms
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=================================
 
-The Reinforcement learning are all implemented with `MLP`_ (non-recurrent) actor-critics,
+The Reinforcement learning algorithms are all implemented with `MLP`_ (non-recurrent) actor-critics,
 making them suitable for fully-observed, non-image-based RL environments, e.g.,
 the `Gym Mujoco`_ environments. The :mlc:`Machine Learning Control <>` currently contains
 the following RL agents:
@@ -20,7 +22,7 @@ the following RL agents:
    algorithms/lac
 
 Imitation Learning Agents
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 .. todo::
    No Imitation Learning agents have been implemented. We are planning to add Imitation Learning

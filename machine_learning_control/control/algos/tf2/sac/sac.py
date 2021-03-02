@@ -15,13 +15,13 @@ import os.path as osp
 import time
 
 import gym
-import machine_learning_control.control.utils.log_utils as log_utils
 from machine_learning_control.control.algos.tf2.lac.lac import LAC, lac
 from machine_learning_control.control.algos.tf2.policies.soft_actor_critic import (
     SoftActorCritic,
 )  # noqa: E501
-from machine_learning_control.control.utils.import_tf import import_tf
 from machine_learning_control.control.utils import safer_eval
+from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.utils.log_utils import setup_logger_kwargs
 
 nn = import_tf(module_name="tensorflow.nn")
 
@@ -405,7 +405,7 @@ if __name__ == "__main__":
     )
 
     # Setup output dir for logger and return output kwargs
-    logger_kwargs = log_utils.setup_logger_kwargs(
+    logger_kwargs = setup_logger_kwargs(
         args.exp_name,
         args.seed,
         save_checkpoints=args.save_checkpoints,

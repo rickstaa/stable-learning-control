@@ -2,12 +2,10 @@
 """
 
 import numpy as np
-import machine_learning_control.control.utils.log_utils as log_utils
 import tensorflow as tf
-from machine_learning_control.control.common.helpers import convert_to_tuple
+from machine_learning_control.common.helpers import convert_to_tuple
 from machine_learning_control.control.common.helpers import get_activation_function
-
-# TODO: Fix log_utils import and move to main folder
+from machine_learning_control.utils.log_utils import log_to_std_out
 
 
 def set_device(device_type="cpu"):
@@ -22,7 +20,7 @@ def set_device(device_type="cpu"):
     """
     if device_type.lower() == "cpu":
         tf.config.set_visible_devices([], "GPU")  # Force disable GPU
-    log_utils.log(f"Tensorflow is using the {device_type.upper()}.", type="info")
+    log_to_std_out(f"Tensorflow is using the {device_type.upper()}.", type="info")
     return device_type.lower()
 
 

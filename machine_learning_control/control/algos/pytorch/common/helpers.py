@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from machine_learning_control.control.common.helpers import get_activation_function
-from machine_learning_control.control.utils.log_utils import log
+from machine_learning_control.utils.log_utils import log_to_std_out
 
 
 def retrieve_device(device_type="cpu"):
@@ -24,7 +24,7 @@ def retrieve_device(device_type="cpu"):
     if torch.cuda.is_available() and device_type == "gpu":
         device = torch.device("cuda")
     elif not torch.cuda.is_available() and device_type == "gpu":
-        log(
+        log_to_std_out(
             (
                 "GPU computing was enabled but the GPU can not be reached. "
                 "Reverting back to using CPU.",
@@ -35,7 +35,7 @@ def retrieve_device(device_type="cpu"):
         device = torch.device("cpu")
     else:
         device = torch.device("cpu")
-    log(f"Torch is using the {device_type.upper()}.", type="info")
+    log_to_std_out(f"Torch is using the {device_type.upper()}.", type="info")
     return device
 
 
@@ -125,7 +125,8 @@ def clamp(data, min_bound, max_bound):
             values.
 
     Returns:
-        numpy.ndarray: Array which has it values clamped between the min and max boundaries.
+        numpy.ndarray: Array which has it values clamped between the min and max
+            boundaries.
     """
     data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
     min_bound = (

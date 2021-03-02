@@ -5,16 +5,16 @@ Running Experiments
 
 .. contents:: Table of Contents
 
-One of the best ways to get a feel for deep RL is to run the algorithms and see how they perform on different tasks. The Spinning Up code library makes small-scale (local) experiments easy to do, and in this section, we'll discuss two ways to run them: either from the command line, or through function calls in scripts.
-
-
 Launching from the Command Line
 ===============================
 
 
-Spinning Up ships with ``machine_learning_control/run.py``, a convenient tool that lets you easily launch any algorithm (with any choices of hyperparameters) from the command line. It also serves as a thin wrapper over the utilities for watching trained policies and plotting, although we will not discuss that functionality on this page (for those details, see the pages on `experiment outputs`_ and `plotting`_).
+:mlc:`Machine Learning Control <>` ships with :ref:`machine_learning_control/run.py <runner>`, a convenient tool that lets you easily
+launch any algorithm (with any choices of hyperparameters) from the command line. It also serves as a thin wrapper over
+the utilities for watching trained policies and plotting, although we will not discuss that functionality on this page
+(for those details, see the pages on `experiment outputs`_ and `plotting`_).
 
-The standard way to run a Spinning Up algorithm from the command line is
+The standard way to run a Machine Learning Control algorithm from the command line is
 
 .. parsed-literal::
 
@@ -31,7 +31,9 @@ eg:
 
 .. admonition:: You Should Know
 
-    If you are using ZShell: ZShell interprets square brackets as special characters. Spinning Up uses square brackets in a few ways for command line arguments; make sure to escape them, or try the solution recommended `here <http://kinopyo.com/en/blog/escape-square-bracket-by-default-in-zsh>`_ if you want to escape them by default.
+    If you are using ZShell: ZShell interprets square brackets as special characters. Machine Learning Control uses square brackets
+    in a few ways for command-line arguments; make sure to escape them or try the solution recommended
+    `here <http://kinopyo.com/en/blog/escape-square-bracket-by-default-in-zsh>`_ if you want to escape them by default.
 
 .. admonition:: Detailed Quickstart Guide
 
@@ -43,9 +45,10 @@ eg:
 
     runs SAC in the ``Ant-v2`` Gym environment, with various settings controlled by the flags.
 
-    By default, the PyTorch version will run (except for with TRPO, since Spinning Up doesn't have a PyTorch TRPO yet). Substitute ``sac`` with ``sac_tf`` for the Tensorflow version.
+    By default, the PyTorch version will run. Substitute ``sac`` with ``sac_tf2`` for the Tensorflow version.
 
-    ``clip_ratio``, ``hid``, and ``act`` are flags to set some algorithm hyperparameters. You can provide multiple values for hyperparameters to run multiple experiments. Check the docs to see what hyperparameters you can set (click here for the `SAC documentation`_).
+    ``clip_ratio``, ``hid``, and ``act`` are flags to set some algorithm hyperparameters. You can provide multiple values for hyperparameters to run
+    multiple experiments. Check the docs to see what hyperparameters you can set (click here for the `SAC documentation`_).
 
     ``hid`` and ``act`` are `special shortcut flags`_ for setting the hidden sizes and activation function for the neural networks trained by the algorithm.
 
@@ -53,9 +56,12 @@ eg:
 
     The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in ``machine_learning_control/user_config.py``).
 
-    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``, which will be a subfolder ``data`` in the ``machine_learning_control`` folder (unless you change it).
+    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``, which will be a subfolder
+    ``data`` in the ``machine_learning_control`` folder (unless you change it).
 
-    `Save directory names`_ are based on ``exp_name`` and any flags which have multiple values. Instead of the full flag, a shorthand will appear in the directory name. Shorthands can be provided by the user in square brackets after the flag, like ``--hid[h]``; otherwise, shorthands are substrings of the flag (``clip_ratio`` becomes ``cli``). To illustrate, the save directory for the run with ``clip_ratio=0.1``, ``hid=[32,32]``, and ``seed=10`` will be:
+    `Save directory names`_ are based on ``exp_name`` and any flags which have multiple values. Instead of the full flag, a shorthand will appear in the directory name. Shorthands can be provided
+    by the user in square brackets after the flag, like ``--hid[h]``; otherwise, shorthands are substrings of the flag (``clip_ratio`` becomes ``cli``). To illustrate, the save directory for the
+    run with ``clip_ratio=0.1``, ``hid=[32,32]``, and ``seed=10`` will be:
 
     .. parsed-literal::
 
@@ -64,6 +70,7 @@ eg:
 .. _`SAC documentation`: ../algorithms/sac.html#machine_learning_control.sac
 .. _`special shortcut flags`: ../user/running.html#shortcut-flags
 .. _`Save directory names`: ../user/running.html#where-results-are-saved
+
 
 Choosing PyTorch or Tensorflow from the Command Line
 ----------------------------------------------------
@@ -78,14 +85,18 @@ To use a Tensorflow version of an algorithm, run with
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run [algo]_tf1
+    python -m machine_learning_control.run [algo]_tf2
 
-If you run ``python -m machine_learning_control.run [algo]`` without ``_pytorch`` or ``_tf1``, the runner will look in ``machine_learning_control/user_config.py`` for which version it should default to for that algorithm.
+If you run ``python -m machine_learning_control.run [algo]`` without ``_pytorch`` or ``_tf2``, the runner will look in ``machine_learning_control/user_config.py`` for which version it should
+default to for that algorithm.
 
 Setting Hyperparameters from the Command Line
 ---------------------------------------------
 
-Every hyperparameter in every algorithm can be controlled directly from the command line. If ``kwarg`` is a valid keyword arg for the function call of an algorithm, you can set values for it with the flag ``--kwarg``. To find out what keyword args are available, see either the docs page for an algorithm, or try
+Every hyperparameter in every algorithm can be controlled directly from the command line. If ``kwarg`` is a valid keyword arg for the function call of an algorithm, you can set values for
+it with the flag ``--kwarg``.
+
+To find out what keyword args are available, see either the docs page for :ref:`an algorithm <algorithms>`, :ref:`api` or try
 
 .. parsed-literal::
 
@@ -95,13 +106,14 @@ to see a readout of the docstring.
 
 .. admonition:: You Should Know
 
-    Values pass through ``eval()`` before being used, so you can describe some functions and objects directly from the command line. For example:
+    Values pass through :meth:`~machine_learning_control.control.utils.safer_eval.safer_eval()` before being used, so you can describe some functions and objects directly from
+    the command line. For example:
 
     .. parsed-literal::
 
         python -m machine_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ELU
 
-    sets ``torch.nn.ELU`` as the activation function. (Tensorflow equivalent: run ``sac_tf`` with ``--act tf.nn.elu``.)
+    sets ``torch.nn.ELU`` as the activation function. (Tensorflow equivalent: run ``sac_tf`` with ``--act tf.nn.relu``.)
 
 .. admonition:: You Should Know
 
@@ -132,20 +144,23 @@ For example, to launch otherwise-equivalent runs with different random seeds (0,
 
 Experiments don't launch in parallel because they soak up enough resources that executing several at the same time wouldn't get a speedup.
 
-
-
 Special Flags
 -------------
 
 A few flags receive special treatment.
 
-
-Environment Flag
-^^^^^^^^^^^^^^^^
+Environment Flags
+^^^^^^^^^^^^^^^^^
 
 .. option:: --env, --env_name
 
-    *string*. The name of an environment in the OpenAI Gym. All Spinning Up algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn`` must be a callable function that builds a copy of the RL environment. Since the most common use case is Gym environments, though, all of which are built through ``gym.make(env_name)``, we allow you to just specify ``env_name`` (or ``env`` for short) at the command line, which gets converted to a lambda-function that builds the correct gym environment.
+    *string*. The name of an environment in the OpenAI Gym. All Machine Learning Control algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn``
+    must be a callable function that builds a copy of the RL environment. Since the most common use case is Gym environments, though, all of which are built through ``gym.make(env_name)``,
+    we allow you to just specify ``env_name`` (or ``env`` for short) at the command line, which gets converted to a lambda-function that builds the correct gym environment.
+
+.. option:: --env_kwargs
+
+    *python object*. Additional keyword arguments you want to pass to the gym environment.
 
 
 Shortcut Flags
@@ -155,22 +170,51 @@ Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
 .. option:: --hid, --ac_kwargs:hidden_sizes
 
-    *list of ints*. Sets the sizes of the hidden layers in the neural networks (policies and value functions).
+    *list of ints*. Sets the sizes of the hidden layers in the neural networks of both the actor and critic.
+
+.. option:: --hid, --ac_kwargs:hidden_sizes:actor
+
+    *list of ints*. Sets the sizes of the hidden layers in the neural networks of the actor.
+
+.. option:: --hid, --ac_kwargs:hidden_sizes:critic
+
+    *list of ints*. Sets the sizes of the hidden layers in the neural networks of the critic.
 
 .. option:: --act, --ac_kwargs:activation
 
     *tf op*. The activation function for the neural networks in the actor and critic.
 
-These flags are valid for all current Spinning Up algorithms.
+.. option:: --act, --ac_kwargs:output_activation
+
+    *tf op*. The activation function for the neural networks in the actor and critic.
+
+.. option:: --act_a, --ac_kwargs:activation:actor
+
+    *tf op*. The activation function for the neural networks in the actor.
+
+.. option:: --act_c, --ac_kwargs:activation:critic
+
+    *tf op*. The activation function for the neural networks in the critic.
+
+.. option:: --act_out_a, --ac_kwargs:output_activation:actor
+
+    *tf op*. The activation function for the output activation function of the actor.
+
+.. option:: --act_out_c, --ac_kwargs:output_activation:critic
+
+    *tf op*. The activation function for the output activation function of the critic.
+
+These flags are valid for all current Machine Learning Control algorithms.
 
 Config Flags
 ^^^^^^^^^^^^
 
-These flags are not hyperparameters of any algorithm, but change the experimental configuration in some way.
+These flags are not hyperparameters of any algorithm but change the experimental configuration in some way.
 
 .. option:: --cpu, --num_cpu
 
-    *int*. If this flag is set, the experiment is launched with this many processes, one per cpu, connected by MPI. Some algorithms are amenable to this sort of parallelization but not all. An error will be raised if you try setting ``num_cpu`` > 1 for an incompatible algorithm. You can also set ``--num_cpu auto``, which will automatically use as many CPUs as are available on the machine.
+    *int*. If this flag is set, the experiment is launched with this many processes, one per cpu, connected by MPI. Some algorithms are amenable to this sort of parallelization but not all.
+    An error will be raised if you try setting ``num_cpu`` > 1 for an incompatible algorithm. You can also set ``--num_cpu auto``, which will automatically use as many CPUs as are available on the machine.
 
 .. option:: --exp_name
 
@@ -183,7 +227,6 @@ These flags are not hyperparameters of any algorithm, but change the experimenta
 .. option:: --datestamp
 
     *bool*. Include date and time in the name for the save directory of the experiment.
-
 
 Where Results are Saved
 -----------------------
@@ -204,9 +247,11 @@ where
 How is Suffix Determined?
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Suffixes are only included if you run multiple experiments at once, and they only include references to hyperparameters that differ across experiments, except for random seed. The goal is to make sure that results for similar experiments (ones which share all params except seed) are grouped in the same folder.
+Suffixes are only included if you run multiple experiments at once, and they only include references to hyperparameters that differ across experiments, except for random seed. The goal is to
+ensure that results for similar experiments (ones that share all params except seed) are grouped in the same folder.
 
-Suffixes are constructed by combining *shorthands* for hyperparameters with their values, where a shorthand is either 1) constructed automatically from the hyperparameter name or 2) supplied by the user. The user can supply a shorthand by writing in square brackets after the kwarg flag.
+Suffixes are constructed by combining *shorthands* for hyperparameters with their values, where a shorthand is either 1) constructed automatically from the hyperparameter name or 2) supplied by
+the user. The user can supply a shorthand by writing in square brackets after the kwarg flag.
 
 For example, consider:
 
@@ -226,15 +271,16 @@ The suffixes produced in this case are:
 
 Note that the ``h`` was given by the user. the ``ac-act`` shorthand was constructed from ``ac_kwargs:activation`` (the true name for the ``act`` flag).
 
-
 Extra
 -----
 
 .. admonition:: You Don't Actually Need to Know This One
 
-    Each individual algorithm is located in a file ``machine_learning_control/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line with a limited set of arguments (some of which differ from what's available to ``machine_learning_control/run.py``). The command line susacrt in the individual algorithm files is essentially vestigial, however, and this is **not** a recommended way to perform experiments.
+    Each individual algorithm is located in a file ``machine_learning_control/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line
+    with a limited set of arguments (some of which differ from what's available to ``machine_learning_control/run.py``). The command line support in thet in the individual algorithm files
+    is essentially vestigial, however, and this is **not** a recommended way to perform experiments.
 
-    This documentation page will not describe those command line calls, and will *only* describe calls through ``machine_learning_control/run.py``.
+    This documentation page will not describe those command line calls and *only* describe calls through ``machine_learning_control/run.py``.
 
 Launching from Scripts
 ======================
@@ -259,39 +305,55 @@ See the documentation page for each algorithm for a complete account of possible
 
     sac(env_fn=env_fn, ac_kwargs=ac_kwargs, steps_per_epoch=5000, epochs=250, logger_kwargs=logger_kwargs)
 
+Use transfer learning
+=====================
+
+The ``start_policy`` command-line flag allows you to use an already trained algorithm as the starting point for your new algorithm:
+
+.. option:: --start_policy
+
+    *str*. This flag can be used to train your policy while taking an already started policy as the starting point. It should contain the path to the folder
+    where the already trained policy is found.
+
+Using custom environments
+=========================
+
+There are two methods for adding custom environments to the :mlc:`MLC <>` package. The first and easiest way is to make use of `OpenAi gym`_ it's internal module import
+mechanism:
+
+.. parsed-literal::
+
+    python -m machine_learning_control.run sac --env custom_env_module:CustomEnv-v0
+
+This imports the ``custom_env_module`` and then looks for the ``CustomEnv-v0`` in this environment.
+
+.. warning::
+
+    This method only works if you created your environment according to the `OpenAi gym custom gym environment guide`_.
+
+.. _`OpenAi gym`: https://gym.openai.com/
+.. _`OpenAi gym custom gym environment guide`: https://github.com/openai/gym/blob/master/docs/creating-environments.md
+
+Additionally you can also add the setup code for registering your environment in the :mod:`machine_learning_control.env_config` module.
+
+Tune Hyperparameters
+====================
 
 Using ExperimentGrid
 --------------------
 
-It's often useful in machine learning research to run the same algorithm with many possible hyperparameters. Spinning Up ships with a simple tool for facilitating this, called `ExperimentGrid`_.
+It's often useful in machine learning research to run the same algorithm with many possible hyperparameters. Machine Learning Control ships with a simple tool for facilitating
+this, called `ExperimentGrid`_.
 
 
-Consider the example in ``machine_learning_control/examples/pytorch/bench_sac_cartpole.py``:
+Consider the example in ``machine_learning_control/examples/pytorch/sac_exp_grid_search.py``:
 
-.. code-block:: python
+.. literalinclude:: /../../examples/pytorch/sac_exp_grid_search.py
+   :language: python
    :linenos:
+   :lines: 17-
 
-    from machine_learning_control.control.utils.run_utils import ExperimentGrid
-    from machine_learning_controlcontrol import sac_pytorch
-    import torch
-
-    if __name__ == '__main__':
-        import argparse
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--cpu', type=int, default=4)
-        parser.add_argument('--num_runs', type=int, default=3)
-        args = parser.parse_args()
-
-        eg = ExperimentGrid(name='sac-pyt-bench')
-        eg.add('env_name', 'CartPole-v0', '', True)
-        eg.add('seed', [10*i for i in range(args.num_runs)])
-        eg.add('epochs', 10)
-        eg.add('steps_per_epoch', 4000)
-        eg.add('ac_kwargs:hidden_sizes', [(32,), (64,64)], 'hid')
-        eg.add('ac_kwargs:activation', [torch.nn.Tanh, torch.nn.ReLU], '')
-        eg.run(sac_pytorch, num_cpu=args.cpu)
-
-(An equivalent Tensorflow example is available in ``machine_learning_control/examples/tf1/bench_sac_cartpole.py``.)
+(An equivalent Tensorflow example is available in ``machine_learning_control/examples/tf2/sac_exp_grid_search.py``.)
 
 After making the ExperimentGrid object, parameters are added to it with
 
@@ -307,10 +369,28 @@ After all parameters have been added,
 
     eg.run(thunk, \*\*run_kwargs)
 
-runs all experiments in the grid (one experiment per valid configuration), by providing the configurations as kwargs to the function ``thunk``. ``ExperimentGrid.run`` uses a function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs`` specify behaviors for ``call_experiment``. See `the documentation page`_ for details.
+runs all experiments in the grid (one experiment per valid configuration), by providing the configurations as kwargs to the function ``thunk``. ``ExperimentGrid.run`` uses a
+function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs`` specify behaviors for ``call_experiment``.
+See `the documentation page`_ for details.
 
 Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behaviour of ``ExperimentGrid`` is the same as running things from the command line. (In fact, ``machine_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
 
-.. _`ExperimentGrid`: ..utils/run_utils.html#experimentgrid
-.. _`the documentation page`: ../utils/run_utils.html#experimentgrid
-.. _`call_experiment`: ..utils/run_utils.html#machine_learning_control.control.utils.run_utils.call_experiment
+.. _`ExperimentGrid`: ..utils/control_utils.html#experimentgrid
+.. _`the documentation page`: ../utils/control_utils.html#experimentgrid
+.. _`call_experiment`: ..utils/control_utils.html#machine_learning_control.control.utils.run_utils.call_experiment\
+
+Using the Ray tuning package
+-----------------------------
+
+The :mlc:`Machine Learning Control` package can also be used with more advanced tuning algorithms. An example of how to use :mlc:`MLC <>` with
+the Ray Tuning package can be found in ``machine_learning_control/examples/torch/sac_ray_hyper_parameter_tuning.py`` and
+``machine_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``. The requirements for this example can be installed using
+the following command:
+
+.. code-block:: bash
+
+    pip install .[tuning]
+
+For more information on how the ray tuning package works see the `Ray tuning documentation`_.
+
+.. _`Ray tuning documentation`: https://docs.ray.io/en/latest/tune/index.html

@@ -26,7 +26,7 @@ import sys
 dirname = osp.dirname
 top_folder = dirname(dirname(dirname(__file__)))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control"))
-sys.path.insert(0, osp.join(top_folder, "scripts"))
+sys.path.insert(0, osp.join(top_folder, "examples"))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "control"))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "hardware"))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "modeling"))

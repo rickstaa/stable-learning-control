@@ -15,6 +15,7 @@ machine\_learning\_control.control.utils.gym\_utils
       :toctree:
    
       dedent
+      friendly_err
       import_gym_env_pkg
       is_continuous_space
       is_discrete_space

@@ -39,8 +39,6 @@ machine\_learning\_control.control.utils
    machine_learning_control.control.utils.eval_utils
    machine_learning_control.control.utils.gym_utils
    machine_learning_control.control.utils.import_tf
-   machine_learning_control.control.utils.log_utils
-   machine_learning_control.control.utils.mpi_utils
    machine_learning_control.control.utils.plot
    machine_learning_control.control.utils.run_entrypoint
    machine_learning_control.control.utils.run_utils

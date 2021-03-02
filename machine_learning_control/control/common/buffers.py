@@ -3,7 +3,7 @@ Tensorflow algorithms.
 """
 
 import numpy as np
-from machine_learning_control.control.common.helpers import combine_shapes
+from machine_learning_control.common.helpers import combine_shapes
 
 
 class ReplayBuffer:

@@ -14,7 +14,6 @@ import os.path as osp
 import time
 
 import gym
-import machine_learning_control.control.utils.log_utils as log_utils
 import torch
 import torch.nn as nn
 from machine_learning_control.control.algos.pytorch.lac.lac import LAC, lac
@@ -22,6 +21,7 @@ from machine_learning_control.control.algos.pytorch.policies.soft_actor_critic i
     SoftActorCritic,
 )
 from machine_learning_control.control.utils import safer_eval
+from machine_learning_control.utils.log_utils import setup_logger_kwargs
 
 # Script settings
 STD_OUT_LOG_VARS_DEFAULT = [
@@ -403,7 +403,7 @@ if __name__ == "__main__":
     )
 
     # Setup output dir for logger and return output kwargs
-    logger_kwargs = log_utils.setup_logger_kwargs(
+    logger_kwargs = setup_logger_kwargs(
         args.exp_name,
         args.seed,
         save_checkpoints=args.save_checkpoints,

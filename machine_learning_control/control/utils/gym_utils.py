@@ -8,8 +8,8 @@ import sys
 from textwrap import dedent
 
 import gym
-import machine_learning_control.control.utils.log_utils as log_utils
 from gym import spaces
+from machine_learning_control.utils.log_utils import friendly_err
 
 DISCRETE_SPACES = (
     spaces.Discrete,
@@ -78,7 +78,7 @@ def validate_gym_env(arg_dict):
 
     # Special handling for environment: make sure that env_name is a real,
     # registered gym environment.
-    assert "env_name" in arg_dict, log_utils.friendly_err(
+    assert "env_name" in arg_dict, friendly_err(
         "You did not give a value for --env_name! Add one and try again."
     )
     for env_name in arg_dict["env_name"]:

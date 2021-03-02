@@ -1,4 +1,4 @@
-﻿machine\_learning\_control.control.common.helpers
+machine\_learning\_control.control.common.helpers
 =================================================
 
 .. automodule:: machine_learning_control.control.common.helpers
@@ -23,7 +23,6 @@
       import_tf
       is_continuous_space
       is_discrete_space
-      is_scalar
       strict_dict_update
       sum_tuples
       valid_str

@@ -1,6 +1,6 @@
-========
-Modeling
-========
+=========
+Modelling
+=========
 
 
 This module that can be used to create `OpenAI gym environments`_ out of real data. It uses state of the

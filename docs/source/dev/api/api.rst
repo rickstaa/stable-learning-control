@@ -1,3 +1,5 @@
+.. _api:
+
 ========
 Code API
 ========
@@ -22,11 +24,12 @@ MLC modules
    machine_learning_control.hardware
    machine_learning_control.modeling
    machine_learning_control.simzoo
+   machine_learning_control.utils
+   machine_learning_control.common
    machine_learning_control.run
 
 MLC configuration files
 -----------------------
-
 
 .. autosummary::
    :toctree: _autosummary
@@ -36,14 +39,3 @@ MLC configuration files
 
    machine_learning_control.user_config
    machine_learning_control.env_config
-
-MLC scripts
------------
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-module-template.rst
-   :recursive:
-
-   mlc_exp_grid_search
-   ray_hyper_parameter_tuner

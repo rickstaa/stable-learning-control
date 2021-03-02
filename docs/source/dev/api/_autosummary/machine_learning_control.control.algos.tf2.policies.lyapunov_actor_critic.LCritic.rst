@@ -1,4 +1,4 @@
-﻿machine\_learning\_control.control.algos.tf2.policies.lyapunov\_actor\_critic.LCritic
+machine\_learning\_control.control.algos.tf2.policies.lyapunov\_actor\_critic.LCritic
 =====================================================================================
 
 .. currentmodule:: machine_learning_control.control.algos.tf2.policies.lyapunov_actor_critic

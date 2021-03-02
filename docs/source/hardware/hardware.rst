@@ -6,11 +6,11 @@ Hardware
 
 This module can be used to deploy algorithms that ware trained using the `control module`_
 onto the hardware of your choice. At the moment, we did not yet implement tools to ease the
-deploy of our algorithms onto hardware. As a result you have to use the methods provided by
+deploy of our algorithms onto hardware. As a result, you have to use the methods provided by
 the backend to deploy our algorithms onto hardware.
 
 Deploy PyTorch Algorithms
--------------------------
+=========================
 
 .. attention::
     PyTorch also provides multiple ways to deploy trained models to hardware (see the `PyTorch serving documentation`_).
@@ -18,11 +18,11 @@ Deploy PyTorch Algorithms
     For more information, see `this issue <https://github.com/pytorch/pytorch/issues/29843>`_.
 
 Deploy Tensorflow Algorithms
-----------------------------
+============================
 
 .. _tf_deploy:
 
-To deploy a TensorFlow algorithm onto hardware you first have to make sure you set the ``--export`` cmd-line argument
+To deploy a TensorFlow algorithm onto hardware, you first have to make sure you set the ``--export`` cmd-line argument
 to ``True`` when training the algorithm. This will cause the complete TensorFlow program, including trained parameters
 (i.e, tf.Variables) and computation, to be saved in the ``tf2_save/saved_model.pb`` file. This `SavedModel`_ can
 then be loaded onto the hardware using the :obj:`tf.saved_model.load` method.
@@ -32,7 +32,7 @@ then be loaded onto the hardware using the :obj:`tf.saved_model.load` method.
 
     import os
     import tensorflow as tf
-    from machine_learning_control.control.utils.log_utils.logx import EpochLogger
+    from machine_learning_control.utils.log_utils.logx import EpochLogger
 
     model_path = "./data/lac/oscillator-v1/runs/run_1614673367/tf2_save"
 
@@ -45,7 +45,7 @@ then be loaded onto the hardware using the :obj:`tf.saved_model.load` method.
     a = loaded_model.get_action(obs)
     print(f"\nThe model thinks it is a good idea to take action: {a.numpy()}")
 
-For more information on deploying tensorflow models, see `the tensorflow documentation`_.
+For more information on deploying TensorFlow models, see `the TensorFlow documentation`_.
 
 .. _`PyTorch serving documentation`: https://pytorch.org/blog/model-serving-in-pyorch/
 .. _`the tensorflow documentation`: https://www.tensorflow.org/guide/saved_model

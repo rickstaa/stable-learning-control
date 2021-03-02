@@ -10,7 +10,9 @@ TF_IMPORT_WARNING = (
 )
 
 
-def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
+def import_tf(  # noqa: C901
+    module_name=None, class_name=None, frail=True, dry_run=False
+):
     """Tries to import tensorflow and throws custom warning if tensorflow is not
     installed.
 
