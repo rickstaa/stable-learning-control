@@ -43,6 +43,8 @@ machine\_learning\_control.control.utils.test\_policy.EpochLogger
       ~EpochLogger.get_stats
       ~EpochLogger.histogram
       ~EpochLogger.image
+      ~EpochLogger.load_config
+      ~EpochLogger.load_env
       ~EpochLogger.load_from_json
       ~EpochLogger.log
       ~EpochLogger.log_tabular

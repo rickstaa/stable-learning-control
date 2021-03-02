@@ -17,7 +17,8 @@ machine\_learning\_control.control.algos.pytorch.common.helpers
       clamp
       compare_models
       count_vars
-      log
+      get_activation_function
+      log_to_std_out
       mlp
       retrieve_device
    

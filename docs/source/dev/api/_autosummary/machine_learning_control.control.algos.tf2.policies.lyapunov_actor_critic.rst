@@ -14,6 +14,7 @@ machine\_learning\_control.control.algos.tf2.policies.lyapunov\_actor\_critic
    .. autosummary::
       :toctree:
    
+      log_to_std_out
       strict_dict_update
    
    

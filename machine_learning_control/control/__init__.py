@@ -8,5 +8,5 @@ from machine_learning_control.control.utils.import_tf import import_tf
 from machine_learning_control.version import __version__
 
 if import_tf(dry_run=True, frail=False):
-    from machine_learning_control.control.algos.tf2.lac.lac import lac as lac_tf
-    from machine_learning_control.control.algos.tf2.sac.sac import sac as sac_tf
+    from machine_learning_control.control.algos.tf2.lac.lac import lac as lac_tf2
+    from machine_learning_control.control.algos.tf2.sac.sac import sac as sac_tf2

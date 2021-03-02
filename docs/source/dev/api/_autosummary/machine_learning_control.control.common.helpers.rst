@@ -18,10 +18,11 @@ machine\_learning\_control.control.common.helpers
       combine_shapes
       convert_to_tuple
       flatten
+      get_activation_function
       heuristic_target_entropy
+      import_tf
       is_continuous_space
       is_discrete_space
-      is_scalar
       strict_dict_update
       sum_tuples
       valid_str

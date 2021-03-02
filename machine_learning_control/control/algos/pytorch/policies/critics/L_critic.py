@@ -4,10 +4,10 @@ This module contains a Pytorch implementation of the Lyapunov Critic policy of
 `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
 
-import machine_learning_control.control.utils.log_utils as log_utils
 import torch
 import torch.nn as nn
 from machine_learning_control.control.algos.pytorch.common.helpers import mlp
+from machine_learning_control.utils.log_utils import log_to_std_out
 
 
 class LCritic(nn.Module):
@@ -79,7 +79,7 @@ class LCritic(nn.Module):
                     )
                     + "during the forward pass slows down the algorithm."
                 )
-                log_utils.log(device_warn_msg, type="warning")
+                log_to_std_out(device_warn_msg, type="warning")
                 self.__device_warning_logged = True
             obs = (
                 obs.to(self.L[0].weight.device)

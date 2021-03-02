@@ -5,8 +5,7 @@ Installation
 .. contents:: Table of Contents
 
 :mlc:`Machine Learning Control <>` requires `Python3`_ and `OpenAI Gym`_ to work. It is
-currently only supported on Linux and OSX. Although it should work on Windows it has not
-been thoroughly tested.
+currently only supported on Linux and OSX.
 
 .. admonition:: You Should Know
 
@@ -19,6 +18,9 @@ been thoroughly tested.
     algorithms with the included :mlc:`Machine Learning Control <>` `simzoo`_ gym environments. Additionally, you can also provide your own gym
     environments or use the `MuJoCo`_ the `Classic Control`_ and `Box2d`_ environments in Gym, which are totally free to use.
 
+.. warning::
+
+    Although it could work on Windows, it has not been thoroughly tested.
 
 .. _`Python3`: https://www.python.org/
 .. _`OpenAi gym`: https://gym.openai.com/
@@ -40,7 +42,7 @@ Then create a Conda Python 3.7 env for organizing packages used in the Machine L
 
     conda create -n mlc python=3.7
 
-To use Python from the environment you just created, activate the environment with:
+To use Python from the environment, you just created, activate the environment with:
 
 .. code-block:: bash
 
@@ -68,15 +70,34 @@ To use Python from the environment you just created, activate the environment wi
 Installing the MLC package
 ==========================
 
-After you successfully setup your python environment, you can install the :mlc:`Machine Learning Control <>` package and its dependencies using the
-`pip package manager`_. This is done by running the following command in your terminal:
+After you successfully setup your python environment, you can install the :mlc:`Machine Learning Control <>` package and its dependencies in
+this environment. The :mlc:`Machine Learning Control <>` has two versions you can install:
+
+    - A version which uses `Pytorch`_ as the backend of the RL/IL algorithms.
+    - A version which uses `Tensorflow 2.0`_ as the RL/IL algorithms.
+
+Install the Pytorch version
+---------------------------
+
+By default, the version with the Pytorch backend is installed you can install this version using the following bash command:
 
 .. code-block:: bash
 
     pip install -e .
 
-.. _`pip package manager`: https://pip.pypa.io/en/stable/installing/
 
+Install the Tensorflow version
+------------------------------
+
+If you want to use the `Tensorflow 2.0`_ version please use the following command inside your Conda environment:
+
+.. code-block:: bash
+
+    pip install -e .[tf]
+
+.. _`pip package manager`: https://pip.pypa.io/en/stable/installing/
+.. _`Pytorch`: https://pytorch.org/
+.. _`Tensorflow 2.0`: https://www.tensorflow.org/guide/effective_tf2
 
 Installing MuJoCo (Optional)
 ============================

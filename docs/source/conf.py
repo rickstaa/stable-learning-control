@@ -26,7 +26,7 @@ import sys
 dirname = osp.dirname
 top_folder = dirname(dirname(dirname(__file__)))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control"))
-sys.path.insert(0, osp.join(top_folder, "scripts"))
+sys.path.insert(0, osp.join(top_folder, "examples"))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "control"))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "hardware"))
 sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "modeling"))
@@ -268,6 +268,9 @@ texinfo_documents = [
 extlinks = {
     "mlc": ("https://github.com/rickstaa/machine-learning-control/%s", None),
     "issue": ("https://github.com/rickstaa/machine-learning-control/issues/%s", None),
+    "torch": ("https://pytorch.org/%s", None),
+    "tf": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
+    "tb": ("https://www.tensorflow.org/tensorboard/%s", None),
 }
 
 # -- Add extra style sheets --------------------------------------------------

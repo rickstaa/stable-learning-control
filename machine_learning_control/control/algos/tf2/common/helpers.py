@@ -2,9 +2,10 @@
 """
 
 import numpy as np
-import machine_learning_control.control.utils.log_utils as log_utils
 import tensorflow as tf
-from machine_learning_control.control.common.helpers import convert_to_tuple
+from machine_learning_control.common.helpers import convert_to_tuple
+from machine_learning_control.control.common.helpers import get_activation_function
+from machine_learning_control.utils.log_utils import log_to_std_out
 
 
 def set_device(device_type="cpu"):
@@ -19,7 +20,7 @@ def set_device(device_type="cpu"):
     """
     if device_type.lower() == "cpu":
         tf.config.set_visible_devices([], "GPU")  # Force disable GPU
-    log_utils.log(f"Tensorflow is using the {device_type.upper()}.", type="info")
+    log_to_std_out(f"Tensorflow is using the {device_type.upper()}.", type="info")
     return device_type.lower()
 
 
@@ -28,16 +29,21 @@ def mlp(sizes, activation, output_activation=None, name=""):
 
     Args:
         sizes (list): The size of each of the layers.
-        activation (:obj:`tf.keras.activations`): The activation function used for the
-            hidden layers.
-        output_activation (:obj:`tf.keras.activations`, optional): The activation
-            function used for the output layers. Defaults to ``None``.
+        activation (union[:obj:`tf.keras.activations`, :obj:`str`]): The activation
+            function used for the hidden layers.
+        output_activation (union[:obj:`tf.keras.activations`, :obj:`str`], optional):
+            The activation function used for the output layers. Defaults to ``None``.
         name (str, optional): A nameprefix that is added before the layer name. Defaults
             to an empty string.
 
     Returns:
         tf.keras.Sequential: The multi-layered perceptron.
     """
+    if isinstance(activation, str):
+        activation = get_activation_function(activation, backend="tf")
+    if isinstance(output_activation, str):
+        output_activation = get_activation_function(output_activation, backend="tf")
+
     layers = []
     for j in range(len(sizes) - 1):
         act = activation if j < len(sizes) - 2 else output_activation

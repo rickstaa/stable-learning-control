@@ -14,7 +14,7 @@ machine\_learning\_control.control.algos.pytorch.policies.lyapunov\_actor\_criti
    .. autosummary::
       :toctree:
    
-      log
+      log_to_std_out
       strict_dict_update
    
    

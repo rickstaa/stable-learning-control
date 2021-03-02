@@ -19,13 +19,13 @@ from subprocess import CalledProcessError
 from textwrap import dedent
 
 import cloudpickle
-import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import psutil
-from machine_learning_control.control.common.helpers import all_bools, valid_str
-from machine_learning_control.control.utils.mpi_utils.mpi_tools import mpi_fork
-from machine_learning_control.control.utils.serialization_utils import convert_json
+from machine_learning_control.common.helpers import all_bools, valid_str
 from machine_learning_control.user_config import DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
+from machine_learning_control.utils.log_utils import colorize, setup_logger_kwargs
+from machine_learning_control.utils.mpi_utils.mpi_tools import mpi_fork
+from machine_learning_control.utils.serialization_utils import convert_json
 from tqdm import trange
 
 DIV_LINE_WIDTH = 80
@@ -74,16 +74,16 @@ def call_experiment(
     kwargs["seed"] = seed
 
     # Be friendly and print out your kwargs, so we all know what's up
-    print(log_utils.colorize("Running experiment:\n", color="cyan", bold=True))
+    print(colorize("Running experiment:\n", color="cyan", bold=True))
     print(exp_name + "\n")
-    print(log_utils.colorize("with kwargs:\n", color="cyan", bold=True))
+    print(colorize("with kwargs:\n", color="cyan", bold=True))
     kwargs_json = convert_json(kwargs)
     print(json.dumps(kwargs_json, separators=(",", ":\t"), indent=4, sort_keys=True))
     print("\n")
 
     # Set up logger output directory
     if "logger_kwargs" not in kwargs:
-        kwargs["logger_kwargs"] = log_utils.setup_logger_kwargs(
+        kwargs["logger_kwargs"] = setup_logger_kwargs(
             exp_name, seed, data_dir, datestamp
         )
 
@@ -157,16 +157,16 @@ def call_experiment(
     plot_cmd = (
         "python -m machine_learning_control.run plot " + logger_kwargs["output_dir"]
     )
-    plot_cmd = log_utils.colorize(plot_cmd, "green")
+    plot_cmd = colorize(plot_cmd, "green")
 
     test_cmd = (
         "python -m machine_learning_control.run test_policy "
         + logger_kwargs["output_dir"]
     )
-    test_cmd = log_utils.colorize(test_cmd, "green")
+    test_cmd = colorize(test_cmd, "green")
 
     eval_cmd = "python -m elpg_pack.run eval_robustness " + logger_kwargs["output_dir"]
-    eval_cmd = log_utils.colorize(eval_cmd, "green")
+    eval_cmd = colorize(eval_cmd, "green")
 
     output_msg = (
         "\n" * 5
@@ -238,11 +238,11 @@ class ExperimentGrid:
             msg = base_msg % name_insert
         else:
             msg = base_msg % (name_insert + "\n")
-        print(log_utils.colorize(msg, color="green", bold=True))
+        print(colorize(msg, color="green", bold=True))
 
         # List off parameters, shorthands, and possible values.
         for k, v, sh in zip(self.keys, self.vals, self.shs):
-            color_k = log_utils.colorize(k.ljust(40), color="cyan", bold=True)
+            color_k = colorize(k.ljust(40), color="cyan", bold=True)
             print("", color_k, "[" + sh + "]" if sh is not None else "", "\n")
             for i, val in enumerate(v):
                 print("\t" + str(convert_json(val)))
@@ -502,7 +502,7 @@ class ExperimentGrid:
         var_names = set([self.variant_name(var) for var in variants])
         var_names = sorted(list(var_names))
         line = "=" * DIV_LINE_WIDTH
-        preparing = log_utils.colorize(
+        preparing = colorize(
             "Preparing to run the following experiments...", color="green", bold=True
         )
         joined_var_names = "\n".join(var_names)
@@ -511,7 +511,7 @@ class ExperimentGrid:
 
         if WAIT_BEFORE_LAUNCH > 0:
             delay_msg = (
-                log_utils.colorize(
+                colorize(
                     dedent(
                         """
             Launch delayed to give you a few seconds to review your experiments.

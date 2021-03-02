@@ -49,6 +49,9 @@ legend {
   font-family: Colfax, sans-serif !important; */
   font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif !important;
 }
+h1 {
+  word-wrap: break-word;
+}
 
 a {
   color: var(--color--mediumblue) !important;

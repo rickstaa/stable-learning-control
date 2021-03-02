@@ -16,9 +16,11 @@ machine\_learning\_control.control.utils.run\_utils
    
       all_bools
       call_experiment
+      colorize
       convert_json
       dedent
       mpi_fork
+      setup_logger_kwargs
       trange
       valid_str
    

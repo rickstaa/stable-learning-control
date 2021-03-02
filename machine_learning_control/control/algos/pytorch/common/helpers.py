@@ -4,7 +4,8 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from machine_learning_control.control.utils.log_utils import log
+from machine_learning_control.control.common.helpers import get_activation_function
+from machine_learning_control.utils.log_utils import log_to_std_out
 
 
 def retrieve_device(device_type="cpu"):
@@ -23,7 +24,7 @@ def retrieve_device(device_type="cpu"):
     if torch.cuda.is_available() and device_type == "gpu":
         device = torch.device("cuda")
     elif not torch.cuda.is_available() and device_type == "gpu":
-        log(
+        log_to_std_out(
             (
                 "GPU computing was enabled but the GPU can not be reached. "
                 "Reverting back to using CPU.",
@@ -34,7 +35,7 @@ def retrieve_device(device_type="cpu"):
         device = torch.device("cpu")
     else:
         device = torch.device("cpu")
-    log(f"Torch is using the {device_type.upper()}.", type="info")
+    log_to_std_out(f"Torch is using the {device_type.upper()}.", type="info")
     return device
 
 
@@ -43,14 +44,20 @@ def mlp(sizes, activation, output_activation=nn.Identity):
 
     Args:
         sizes (list): The size of each of the layers.
-        activation (:obj:`torch.nn.modules.activation`): The activation function used for the
-            hidden layers.
-        output_activation (:obj:`torch.nn.modules.activation`, optional): The activation
-            function used for the output layers. Defaults to torch.nn.Identity.
+        activation (union[:obj:`torch.nn.modules.activation`, :obj:`str`]): The
+            activation function used for the hidden layers.
+        output_activation (union[:obj:`torch.nn.modules.activation`, :obj:`str`], optional):
+            The activation function used for the output layers. Defaults to torch.nn.Identity.
 
     Returns:
         torch.nn.Sequential: The multi-layered perceptron.
-    """
+    """  # noqa: E501
+    # Try to retrieve the activation function if a string was supplied
+    if isinstance(activation, str):
+        activation = get_activation_function(activation, backend="torch")
+    if isinstance(output_activation, str):
+        output_activation = get_activation_function(output_activation, backend="torch")
+
     layers = []
     for j in range(len(sizes) - 1):
         act = activation if j < len(sizes) - 2 else output_activation
@@ -118,7 +125,8 @@ def clamp(data, min_bound, max_bound):
             values.
 
     Returns:
-        numpy.ndarray: Array which has it values clamped between the min and max boundaries.
+        numpy.ndarray: Array which has it values clamped between the min and max
+            boundaries.
     """
     data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data
     min_bound = (

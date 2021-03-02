@@ -3,18 +3,21 @@ Lyapunov actor critic policy
 ============================
 
 This module contains a Pytorch implementation of the Lyapunov Actor Critic policy of
-`Han et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
+`Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
 
 import torch
 import torch.nn as nn
 
-# fmt: off
-from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
-from machine_learning_control.control.algos.pytorch.policies.critics.L_critic import LCritic  # noqa: E501
 # fmt: on
-from machine_learning_control.control.common.helpers import strict_dict_update
-from machine_learning_control.control.utils.log_utils import log
+from machine_learning_control.common.helpers import strict_dict_update
+
+# fmt: off
+from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import \
+    SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.pytorch.policies.critics.L_critic import \
+    LCritic  # noqa: E501
+from machine_learning_control.utils.log_utils import log_to_std_out
 
 HIDDEN_SIZES_DEFAULT = {"actor": (64, 64), "critic": (128, 128)}
 ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.ReLU}
@@ -74,7 +77,7 @@ class LyapunovActorCritic(nn.Module):
         act_limits = {"low": action_space.low, "high": action_space.high}
 
         if "critic" in ignored:
-            log(
+            log_to_std_out(
                 (
                     "Critic output activation function ignored since it is "
                     "not possible to set the critic output activation function when "

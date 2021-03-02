@@ -5,7 +5,7 @@ Release package
 .. contents:: Table of Contents
 
 Code formatting guidelines
---------------------------
+==========================
 
 To increase code quality, readability and usability, we use several language guidelines.
 
@@ -33,10 +33,10 @@ Markdown guidelines:
 .. _`Github Actions`: https://github.com/rickstaa/machine-learning-control/actions
 
 General guidelines
-------------------
+==================
 
 Release guidelines
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Before releasing the package, make sure the following steps are performed:
 
@@ -51,10 +51,10 @@ Before releasing the package, make sure the following steps are performed:
 .. _`pull request checks`: https://github.com/rickstaa/machine-learning-control/actions
 
 Commit guidelines
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Make sure you add a good descriptive commit message while committing to this repository. A
-good guide can be found `here`_. To make searching to commits even easier your welcome to
+good guide can be found `here`_. To make searching to commits even easier, you're welcome to
 replace the ``scope`` attribute with `gitmojis`_.
 
 
@@ -62,6 +62,6 @@ replace the ``scope`` attribute with `gitmojis`_.
 .. _`gitmojis`: https://gitmoji.dev/
 
 Versioning guidelines
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Additionally, please use the `versioning guidelines specified at semver.org <https://semver.org/>`_.

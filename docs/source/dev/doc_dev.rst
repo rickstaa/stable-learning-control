@@ -8,15 +8,15 @@ The :mlc:`Machine Learning Control <>` framework contains two `Github actions`_ 
 deploy new documentation:
 
     * The `docs_check_ci`_ action checks your changes to see if the documentation still builds.
-    * The `docs_publish_ci`_ action deploys your documentation if a new version of the mlc framework is released.
+    * The `docs_publish_ci`_ action deploys your documentation if a new version of the MLC framework is released.
 
 Automatic build instructions
-----------------------------
+============================
 
 To successfully deploy your new documentation, you have to follow the following development steps:
 
-#. Create a new branch on for the changes you want to make to the documentation (e.g. ``docs_change`` branch).
-#. Make your changes on this branch.
+#. Create a new branch for the changes you want to make to the documentation (e.g. ``docs_change`` branch).
+#. Make your changes to this branch.
 #. Commit your changes. This will trigger the `docs_check_ci`_ action to run.
 #. Create a pull request into the main branch if this action ran without errors.
 #. Add a version bump label (``bump:patch``, ``bump:minor`` or ``bump:major``) to the pull request.
@@ -29,13 +29,13 @@ To successfully deploy your new documentation, you have to follow the following 
 .. tip::
 
     It is a good idea to `manually build the documentation <#build-the-documentation>`_ before pushing your changes to
-    your branch. This way you spot syntax errors early on in the development process.
+    your branch. This way, you spot syntax errors early on in the development process.
 
 Manual build instructions
--------------------------
+=========================
 
 Install requirements
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 Building the :mlc:`Machine Learning Control <>`'s `HTML`_ documentation requires `sphinx`_,
 the :mlc:`Machine Learning Control <>` package and several plugins. All of the above can be
@@ -54,12 +54,12 @@ package.
 .. _`texlive-full`: https://tug.org/texlive/
 
 Build the documentation
-~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 Build HTML documentation
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-To build the `HTML`_ documentation go into the `docs/`_ directory and run the
+To build the `HTML`_ documentation, go into the `docs/`_ directory and run the
 ``make html`` command. This command will generate the html documentation
 inside the ``docs/build/html`` directory.
 
@@ -70,16 +70,16 @@ inside the ``docs/build/html`` directory.
 .. _`HTML`: https://www.w3schools.com/html/
 
 Build LATEX documentation
-^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To build the `LATEX`_ documentation go into the `docs/`_ directory and run the
+To build the `LATEX`_ documentation, go into the `docs/`_ directory and run the
 ``make latex`` command. This command will generate the html documentation
 inside the ``docs/build/latex`` directory.
 
 .. _`LATEX`: https://www.latex-project.org/help/documentation/
 
 Deploying
-~~~~~~~~~
+---------
 
 To deploy documentation to the Github Pages site for the repository,
 push the documentation to the `main`_ branch and run the
@@ -88,7 +88,7 @@ push the documentation to the `main`_ branch and run the
 .. warning::
 
     Please make sure you are on the `main`_ branch while building the documentation. Otherwise,
-    you will be greeted by errors.
+    errors will greet you.
 
 .. _`docs/`: https://github.com/rickstaa/machine-learning-control/tree/main/docs
 .. _`main`: https://github.com/rickstaa/machine-learning-control/tree/main

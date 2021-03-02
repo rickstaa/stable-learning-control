@@ -10,11 +10,14 @@ This module contains a Pytorch implementation of the Soft Actor Critic policy of
 import torch
 import torch.nn as nn
 
-# fmt: off
-from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
-from machine_learning_control.control.algos.pytorch.policies.critics.Q_critic import QCritic  # noqa: E501
 # fmt: on
-from machine_learning_control.control.common.helpers import strict_dict_update
+from machine_learning_control.common.helpers import strict_dict_update
+
+# fmt: off
+from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import \
+    SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.pytorch.policies.critics.Q_critic import \
+    QCritic  # noqa: E501
 
 HIDDEN_SIZES_DEFAULT = {"actor": (256, 256), "critic": (256, 256)}
 ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.ReLU}

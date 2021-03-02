@@ -1,35 +1,35 @@
-==================
-Experiment Outputs
-==================
+.. _saving_and_loading:
+
+=====================================
+Saving and Loading Experiment Outputs
+=====================================
 
 .. contents:: Table of Contents
 
-In this section we'll cover
+In this section, we'll cover
 
-- what outputs come from Spinning Up algorithm implementations,
-- what formats they're stored in and how they're organized,
+- what outputs come from Machine Learning Control algorithm implementations,
+- what formats they're stored in and how they're organised,
 - where they are stored and how you can change that,
 - and how to load and run trained policies.
-
-.. admonition:: You Should Know
-
-    Spinning Up implementations currently have no way to resume training for partially-trained agents. If you consider this feature important, please let us know---or consider it a hacking project!
 
 Algorithm Outputs
 =================
 
-Each algorithm is set up to save a training run's hyperparameter configuration, learning progress, trained agent and value functions, and a copy of the environment if possible (to make it easy to load up the agent and environment simultaneously). The output directory contains the following:
+Each algorithm is set up to save a training run's hyperparameter configuration, learning progress, trained agent
+and value functions, and a copy of the environment if possible (to make it easy to load up the agent and environment
+simultaneously). The output directory contains the following:
 
 +---------------------------------------------------------------------------------------+
 | **Output Directory Structure**                                                        |
 +-----------------------+---------------------------------------------------------------+
-|``pyt_save/``          | | **PyTorch implementations only.** A directory containing    |
+|``torch_save/``        | | **PyTorch implementations only.** A directory containing    |
 |                       | | everything needed to restore the trained agent and value    |
-|                       | | functions. (`Details for PyTorch saves below.`_)            |
+|                       | | functions (`Details for PyTorch saves below`_).             |
 +-----------------------+---------------------------------------------------------------+
-|``tf1_save/``          | | **Tensorflow implementations only.** A directory containing |
+|``tf2_save/``          | | **Tensorflow implementations only.** A directory containing |
 |                       | | everything needed to restore the trained agent and value    |
-|                       | | functions. (`Details for Tensorflow saves below.`_)         |
+|                       | | functions (`Details for Tensorflow saves below`_).          |
 +-----------------------+---------------------------------------------------------------+
 |``config.json``        | | A dict containing an as-complete-as-possible description    |
 |                       | | of the args and kwargs you used to launch the training      |
@@ -50,60 +50,81 @@ Each algorithm is set up to save a training run's hyperparameter configuration, 
 
 .. admonition:: You Should Know
 
-    Sometimes environment-saving fails because the environment can't be pickled, and ``vars.pkl`` is empty. This is known to be a problem for Gym Box2D environments in older versions of Gym, which can't be saved in this manner.
+    Sometimes environment-saving fails because the environment can't be pickled, and ``vars.pkl`` is empty. This is known
+    to be a problem for Gym Box2D environments in older versions of Gym, which can't be saved in this manner.
 
 .. admonition:: You Should Know
 
-    As of 1/30/20, the save directory structure has changed slightly. Previously, Tensorflow graphs were saved in the ``simple_save/`` folder; this has been replaced with ``tf1_save/``.
-
-.. admonition:: You Should Know
-
-    The only file in here that you should ever have to use "by hand" is the ``config.json`` file. Our agent testing utility will load things from the ``tf1_save/`` or ``pyt_save/`` directory, and our plotter interprets the contents of ``progress.txt``, and those are the correct tools for interfacing with these outputs. But there is no tooling for ``config.json``---it's just there so that if you forget what hyperparameters you ran an experiment with, you can double-check.
-
-
+    The only file in here that you should ever have to use "by hand" is the ``config.json`` file. Our agent testing utility
+    will load things from the ``tf2_save/`` or ``torch_save/`` directory, and our plotter interprets the contents of ``progress.txt``,
+    and those are the correct tools for interfacing with these outputs. But there is no tooling for ``config.json``--it's just
+    there as a reference for the hyperparameters used when you ran the experiment.
 
 PyTorch Save Directory Info
 ---------------------------
-.. _`Details for PyTorch saves below.`:
+.. _`Details for PyTorch saves below`:
 
-The ``pyt_save`` directory contains:
+The ``torch_save`` directory contains:
 
 +----------------------------------------------------------------------------------+
 | **Pyt_Save Directory Structure**                                                 |
-+------------------+---------------------------------------------------------------+
-|``model.pt``      | | A file created with ``torch.save``, essentially just a      |
-|                  | | pickled PyTorch ``nn.Module``. Loading it will restore      |
-|                  | | a trained agent as an ActorCritic object with an ``act``    |
-|                  | | method.                                                     |
-+------------------+---------------------------------------------------------------+
-
++-------------------+--------------------------------------------------------------+
+|``checkpoints/``   | | Folder that when the ``save_checkpoints`` cmd line argument|
+|                   | | is set to ``True`` contains the state of the model at      |
+|                   | | multiple ``checkpoints`` during training.                  |
++-------------------+--------------------------------------------------------------+
+|``model_state.pt`` | | This file contains the 'state_dict' that contains the      |
+|                   | | saved model weights. These weights can be used to restore  |
+|                   | | the trained agent's state on an initiated instance of the  |
+|                   | | respective Algorithm Class.                                |
++-------------------+--------------------------------------------------------------+
+|``save_info.json`` | | A file used by the :mlc:`MLC <>` package to ease model     |
+|                   | | loading. This file is not meant for the user.              |
++-------------------+--------------------------------------------------------------+
 
 Tensorflow Save Directory Info
 ------------------------------
-.. _`Details for Tensorflow saves below.`:
+.. _`Details for Tensorflow saves below`:
 
-The ``tf1_save`` directory contains:
+The ``tf2_save`` directory contains:
 
-+----------------------------------------------------------------------------------+
-| **TF1_Save Directory Structure**                                                 |
-+------------------+---------------------------------------------------------------+
-|``variables/``    | | A directory containing outputs from the Tensorflow Saver.   |
-|                  | | See documentation for `Tensorflow SavedModel`_.             |
-+------------------+---------------------------------------------------------------+
-|``model_info.pkl``| | A dict containing information (map from key to tensor name) |
-|                  | | which helps us unpack the saved model after loading.        |
-+------------------+---------------------------------------------------------------+
-|``saved_model.pb``| | A protocol buffer, needed for a `Tensorflow SavedModel`_.   |
-+------------------+---------------------------------------------------------------+
++-------------------------------------------------------------------------------------------+
+| **TF2_Save Directory Structure**                                                          |
++---------------------------+---------------------------------------------------------------+
+|``checkpoints/``           | | Folder that when the ``save_checkpoints`` cmd line argument |
+|                           | | is set to ``True`` contains the state of the model at       |
+|                           | | multiple ``checkpoints`` during training.                   |
++---------------------------+---------------------------------------------------------------+
+|``variables/``             | | A directory containing outputs from the Tensorflow Saver.   |
+|                           | | See the `Tensorflow save and load documentation`_ for more  |
+|                           | | info.                                                       |
++---------------------------+---------------------------------------------------------------+
+|``checkpoint``             | | A checkpoint summary file that stores information about the |
+|                           | | saved checkpoints.                                          |
++---------------------------+---------------------------------------------------------------+
+|``weights_checkpoint.*``   | | Two checkpoint data files ending with the ``.data*`` and    |
+|                           | | ``.index`` file extensions. These are the actual files that |
+|                           | | are used by the :obj:`tf.train.Checkpoint` method to        |
+|                           | | restore the model.                                          |
++---------------------------+---------------------------------------------------------------+
+|``save_info.json``         | | A file used by the :mlc:`MLC <>` package to ease model      |
+|                           | | loading  this file is not meant for the user.               |
++---------------------------+---------------------------------------------------------------+
+|``saved_model.json``       | | The full TensorFlow program saved in the `SavedModel`       |
+|                           | | format. This file can be used to deploy your model to       |
+|                           | | hardware. See the `hardware deployment documentation`_ for  |
+|                           | | more info.                                                  |
++---------------------------+---------------------------------------------------------------+
 
-
-.. _`Tensorflow SavedModel`: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/README.md
-
+.. _`hardware deployment documentation`: ../hardware/hardware.html
+.. _`SavedModel`: https://www.tensorflow.org/guide/saved_model
+.. _`Tensorflow save and load documentation`: https://www.tensorflow.org/tutorials/keras/save_and_load
 
 Save Directory Location
 =======================
 
-Experiment results will, by default, be saved in the same directory as the Spinning Up package, in a folder called ``data``:
+Experiment results will, by default, be saved in the same directory as the Machine Learning Control package,
+in a folder called ``data``:
 
 .. parsed-literal::
 
@@ -119,100 +140,143 @@ Experiment results will, by default, be saved in the same directory as the Spinn
 
 You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``.
 
-
 Loading and Running Trained Policies
 ====================================
 
+Test Policy utility
+-------------------
 
-If Environment Saves Successfully
----------------------------------
-
-For cases where the environment is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
+:mlc:`Machine Learning Control <>` ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
+is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
 
 
 .. parsed-literal::
 
     python -m machine_learning_control.run test_policy path/to/output_directory
 
+For more information on how to use this utility see the :ref:`test_policy <test_policy>` documentation or the code :ref:`api`.
 
-There are a few flags for options:
+.. _manual_policy_testing:
+
+Manual policy testing
+---------------------
+
+Load Pytorch Policy
+~~~~~~~~~~~~~~~~~~~
+
+Pytorch Policies can be loaded using the :obj:`torch.load` method. For more information on how to load PyTorch models see
+the `PyTorch documentation`_.
+
+.. code-block:: python
+    :linenos:
+    :emphasize-lines: 6, 12-14, 15, 17, 18-19
+
+    import torch
+    import os.path as osp
+
+    from machine_learning_control.utils.log_utils.logx import EpochLogger
+
+    from machine_learning_control.control.algos.pytorch import LAC
+
+    MODEL_LOAD_FOLDER = "./data/lac/oscillator-v1/runs/run_1614680001"
+    MODEL_PATH = osp.join(MODEL_LOAD_FOLDER, "torch_save/model_state.pt")
+
+    # Restore the model
+    config = EpochLogger.load_config(
+        MODEL_LOAD_FOLDER
+    )  # Retrieve the experiment configuration
+    env = EpochLogger.load_env(MODEL_LOAD_FOLDER)
+    model = LAC(env=env, ac_kwargs=config["ac_kwargs"])
+    restored_model_state_dict = torch.load(MODEL_PATH, map_location="cpu")
+    model.load_state_dict(
+        restored_model_state_dict,
+    )
+
+    # Create dummy observations and retrieve the best action
+    obs = torch.rand(env.observation_space.shape)
+    a = model.get_action(obs)
+    L_value = model.ac.L(obs, torch.from_numpy(a))
+
+    # Print results
+    print(f"The LAC agent thinks it is a good idea to take action {a}.")
+    print(f"It assigns a Lyapunov Value of {L_value} to this action.")
+
+In this example, observe that
+
+* On line 6, we import the algorithm we want to load.
+* On line 12-14, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
+* on line 15, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
+* on line 17, we import the model weights.
+* on line 18-19, we load the saved weights onto the algorithm.
+
+Additionally, each algorithm also contains a :obj:`~machine_learning_control.control.algos.pytorch.lac.LAC.restore` method which serves as a
+wrapper around the :obj:`torch.load` and  :obj:`torch.nn.Module.load_state_dict` methods.
+
+.. _`Pytorch Documentation`: https://pytorch.org/tutorials/beginner/saving_loading_models.html
+
+Load Tensorflow Policy
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+    :linenos:
+    :emphasize-lines: 6, 12-14, 15, 17, 18-19
+
+    import tensorflow as tf
+    import os.path as osp
+
+    from machine_learning_control.utils.log_utils.logx import EpochLogger
+
+    from machine_learning_control.control.algos.tf2 import LAC
+
+    MODEL_LOAD_FOLDER = "./data/lac/oscillator-v1/runs/run_1614673367"
+    MODEL_PATH = osp.join(MODEL_LOAD_FOLDER, "tf2_save")
+
+    # Restore the model
+    config = EpochLogger.load_config(
+        MODEL_LOAD_FOLDER
+    )  # Retrieve the experiment configuration
+    env = EpochLogger.load_env(MODEL_LOAD_FOLDER)
+    model = LAC(env=env, ac_kwargs=config["ac_kwargs"])
+    weights_checkpoint = tf.train.latest_checkpoint(MODEL_PATH)
+    model.load_weights(
+        weights_checkpoint,
+    )
+
+    # Create dummy observations and retrieve the best action
+    obs = tf.random.uniform((1, env.observation_space.shape[0]))
+    a = model.get_action(obs)
+    L_value = model.ac.L([obs, tf.expand_dims(a, axis=0)])
+
+    # Print results
+    print(f"The LAC agent thinks it is a good idea to take action {a}.")
+    print(f"It assigns a Lyapunov Value of {L_value} to this action.")
+
+In this example, observe that
+
+* On line 6, we import the algorithm we want to load.
+* On line 12-14, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
+* on line 15, we use the :meth:`~machine_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
+* on line 17, we import the model weights.
+* on line 18-19, we load the saved weights onto the algorithm.
+
+Additionally, each algorithm also contains a :obj:`~machine_learning_control.control.algos.tf2.lac.LAC.restore` method which serves as a
+wrapper around the :obj:`tf.train.latest_checkpoint` and  :obj:`tf.keras.Model.load_weights` methods.
+
+Deploy the saved result onto hardware
+=====================================
+
+As stated above, the Tensorflow version of the algorithm also saves the full model in the `SavedModel format`_ this format is very useful for sharing or deploying
+with `TFLite`_, `TensorFlow.js`_, `TensorFlow Serving`_, or `TensorFlow Hub`_. For more information, see :ref:`the hardware deployment documentation <hardware>`.
+
+.. important::
+    TensorFlow also PyTorch multiple ways to deploy trained models to hardware (see the `PyTorch serving documentation`_). However, at the time of writing,
+    these methods currently do not support the agents used in the :mlc:`MLC <>` package. For more information, see
+    `this issue <https://github.com/pytorch/pytorch/issues/29843>`_.
 
 
-.. option:: -l L, --len=L, default=0
-
-    *int*. Maximum length of test episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has reached a terminal state in the environment. (Note: setting L=0 will not prevent Gym envs wrapped by TimeLimit wrappers from ending when they reach their pre-set maximum episode length.)
-
-.. option:: -n N, --episodes=N, default=100
-
-    *int*. Number of test episodes to run the agent for.
-
-.. option:: -nr, --norender
-
-    Do not render the test episodes to the screen. In this case, ``test_policy`` will only print the episode returns and lengths. (Use case: the renderer slows down the testing process, and you just want to get a fast sense of how the agent is performing, so you don't particularly care to watch it.)
-
-.. option:: -i I, --itr=I, default=-1
-
-    *int*. This is an option for a special case which is not supported by algorithms in this package as-shipped, but which they are easily modified to do. Use case: Sometimes it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can do this---save snapshots of the agent from those different points, so they can be run and watched later. In this case, you use this flag to specify which iteration to run. But again: machine_learning_control algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
-
-    The default value of this flag means "use the latest snapshot."
-
-    To modify an algo so it does produce multiple snapshots, find the following line (which is present in all of the algorithms):
-
-    .. code-block:: python
-
-        logger.save_state({'env': env}, None)
-
-    and tweak it to
-
-    .. code-block:: python
-
-        logger.save_state({'env': env}, epoch)
-
-    Make sure to then also set ``save_freq`` to something reasonable (because if it defaults to 1, for instance, you'll flood your output directory with one ``save`` folder for each snapshot---which adds up fast).
-
-
-.. option:: -d, --deterministic
-
-    Another special case, which is only used for SAC. The Spinning Up SAC implementation trains a stochastic policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used for any other algorithms.
-
-
-
-Environment Not Found Error
----------------------------
-
-If the environment wasn't saved successfully, you can expect ``test_policy.py`` to crash with something that looks like
-
-.. parsed-literal::
-
-    Traceback (most recent call last):
-      File "machine_learning_control/control/utils/test_policy.py", line 153, in <module>
-        run_policy(env, get_action, args.len, args.episodes, not(args.norender))
-      File "machine_learning_control/control/utils/test_policy.py", line 114, in run_policy
-        "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
-    AssertionError: Environment not found!
-
-     It looks like the environment wasn't saved, and we can't run the agent in it. :(
-
-     Check out the readthedocs page on Experiment Outputs for how to handle this situation.
-
-
-In this case, watching your agent perform is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
-
->>> from machine_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
->>> import your_env
->>> _, get_action = load_policy_and_env('/path/to/output_directory')
->>> env = your_env.make()
->>> run_policy(env, get_action)
-Logging data to /tmp/experiments/1536150702/progress.txt
-Episode 0    EpRet -163.830      EpLen 93
-Episode 1    EpRet -346.164      EpLen 99
-...
-
-
-Using Trained Value Functions
------------------------------
-
-The ``test_policy.py`` tool doesn't help you look at trained value functions, and if you want to use those, you will have to do some digging by hand. For the PyTorch case, load the saved model file with ``torch.load`` and check the documentation for each algorithm to see what modules the ActorCritic object has. For the Tensorflow case, load the saved computation graph with the restore_tf_graph function, and check the documentation for each algorithm to see what functions were saved.
-
-.. todo::
-    Replace
+.. _`TFLITE`: https://www.tensorflow.org/lite
+.. _`Tensorflow.js`: https://js.tensorflow.org
+.. _`TensorFlow Serving`: https://www.tensorflow.org/tfx/tutorials/serving/rest_simple
+.. _`TensorFlow Hub`: https://www.tensorflow.org/hub
+.. _`SavedModel format`: https://www.tensorflow.org/guide/saved_model
+.. _`PyTorch serving documentation`: https://pytorch.org/blog/model-serving-in-pyorch/

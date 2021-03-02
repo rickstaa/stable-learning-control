@@ -4,12 +4,12 @@ This module contains a Pytorch implementation of the Squashed Gaussian Actor pol
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
 
-import machine_learning_control.control.utils.log_utils as log_utils
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from machine_learning_control.control.algos.pytorch.common.helpers import clamp, mlp
+from machine_learning_control.utils.log_utils import log_to_std_out
 from torch.distributions.normal import Normal
 
 
@@ -104,7 +104,7 @@ class SquashedGaussianActor(nn.Module):
                     )
                     + "during the forward pass slows down the algorithm."
                 )
-                log_utils.log(device_warn_msg, type="warning")
+                log_to_std_out(device_warn_msg, type="warning")
                 self.__device_warning_logged = True
             obs = obs.to(self.net[0].weight.device)
 
@@ -184,4 +184,4 @@ class SquashedGaussianActor(nn.Module):
             numpy.ndarray: The action from the current state given the current
                 policy.
         """
-        self.act(obs, deterministic=deterministic)
+        return self.act(obs, deterministic=deterministic)

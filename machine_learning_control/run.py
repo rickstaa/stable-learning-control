@@ -9,13 +9,14 @@ import sys
 from copy import deepcopy
 from textwrap import dedent
 
+from machine_learning_control.control.utils.gym_utils import validate_gym_env
+
 # Import mlc algorithms and environments
 from machine_learning_control.control.utils.import_tf import import_tf
-from machine_learning_control.control.utils.safer_eval import safer_eval
-from machine_learning_control.control.utils.gym_utils import validate_gym_env
-from machine_learning_control.control.utils.log_utils import friendly_err
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
+from machine_learning_control.control.utils.safer_eval import safer_eval
 from machine_learning_control.user_config import DEFAULT_BACKEND
+from machine_learning_control.utils.log_utils import friendly_err
 from machine_learning_control.version import __version__
 
 # Command line args that will go to ExperimentGrid.run, and must possess unique
@@ -29,10 +30,10 @@ SUBSTITUTIONS = {
     "hid_a": "ac_kwargs:hidden_sizes:actor",
     "hid_c": "ac_kwargs:hidden_sizes:critic",
     "act": "ac_kwargs:activation",
-    "act_a": "ac_kwargs:activation",
+    "act_a": "ac_kwargs:activation:actor",
     "act_out_a": "ac_kwargs:output_activation:actor",
-    "act_c": "ac_kwargs:activation",
-    "act_out_c": "ac_kwargs:output_activation:actor",
+    "act_c": "ac_kwargs:activation:critic",
+    "act_out_c": "ac_kwargs:output_activation:critic",
     "cpu": "num_cpu",
     "dt": "datestamp",
     "v": "verbose",
@@ -106,7 +107,7 @@ def _add_with_backends(algo_list):
     """
     algo_list_with_backends = deepcopy(algo_list)
     for algo in algo_list:
-        algo_list_with_backends += [algo + "_tf", algo + "_pytorch"]
+        algo_list_with_backends += [algo + "_tf2", algo + "_pytorch"]
     return algo_list_with_backends
 
 
@@ -231,7 +232,7 @@ def run(input_args):
     modules.
 
     Args:
-        cmd (list): List with command line argument.
+        input_args (list): List with command line argument.
     """
 
     cmd = sys.argv[1] if len(input_args) > 1 else "help"

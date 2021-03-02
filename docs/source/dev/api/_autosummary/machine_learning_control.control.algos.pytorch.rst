@@ -13,15 +13,6 @@ machine\_learning\_control.control.algos.pytorch
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-      :toctree:
-      :template: custom-class-template.rst
-   
-      LAC
-      SAC
-   
    
 
    
