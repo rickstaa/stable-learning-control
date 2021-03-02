@@ -1,9 +1,5 @@
 .. _`Machine Learning Control`: https://github.com/rickstaa/machine-learning-control
 
-.. todo::
-    Update text
-    Add New Logger Format
-
 =========
 MPI Tools
 =========
@@ -20,7 +16,11 @@ Core MPI Utilities
 MPI + PyTorch Utilities
 =======================
 
-``machine_learning_control.control.utils.mpi_utils.mpi_pytorch`` contains a few tools to make it easy to do data-parallel PyTorch optimization across MPI processes. The two main ingredients are syncing parameters and averaging gradients before they are used by the adaptive optimizer. Also there's a hacky fix for a problem where the PyTorch instance in each separate process tries to get too many threads, and they start to clobber each other.
+``machine_learning_control.control.utils.mpi_utils.mpi_pytorch`` contains a few tools to make it easy to do
+data-parallel PyTorch optimization across MPI processes. The two main ingredients are syncing parameters and
+averaging gradients before they are used by the adaptive optimizer. Also there's a hacky fix for a problem
+where the PyTorch instance in each separate process tries to get too many threads, and they start to clobber
+each other.
 
 The pattern for using these tools looks something like this:
 
@@ -46,4 +46,5 @@ MPI + Tensorflow Utilities
 ==========================
 
 .. todo::
-    REMOVE
+    Tools to make it easy to do data-parallel Tensorflow 2.x optimization across MPI
+    processes are not yet implemented.

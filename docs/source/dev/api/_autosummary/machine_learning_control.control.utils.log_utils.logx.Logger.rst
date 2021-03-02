@@ -42,6 +42,8 @@ machine\_learning\_control.control.utils.log\_utils.logx.Logger
       ~Logger.get_logdir
       ~Logger.histogram
       ~Logger.image
+      ~Logger.load_config
+      ~Logger.load_env
       ~Logger.load_from_json
       ~Logger.log
       ~Logger.log_tabular

@@ -1,19 +1,15 @@
 # TODOS
 
 -   [ ] Fix robustness eval.
--   [ ] Create windows/mac/ubuntu tests
--   [ ] Check if libopenmpi-dev is still needed.
--   [ ] MPI fallback
 -   [ ] Add yaml load option.
--   [ ] Check if logger (tensorboard) commands work in command line.
 
 ## Docs
 
--   [ ] Add new logger arguments.
--   [ ] Add custom env guide.
--   [ ] Add env kwargs to docs.
+-   [ ] Rewrite running experiments.
+    -   [ ] Add hyperparameter tuning guide.
+        -   [ ] Add pip hyperparameter install options [torch/tensorflow/hyperparameter/ect]
+    -   [ ] Add custom env guide.
+    -   [ ] Add new config file run method.
 -   [ ] Add robustness eval guide.
--   [ ] Add new config file run method.
--   [ ] Add pip install options [torch/tensorflow/hyperparameter/ect]
-    -   [ ] State that default is torch if people want to use tensorflow use pip install .[tf]
--   [ ] Tensorboard instructions.
+-   [ ] Update gazebo-panda-gym documentation.
+-   [ ] Transfer learning note

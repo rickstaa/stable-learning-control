@@ -16,9 +16,9 @@
    
       import_tf
       lac_pytorch
-      lac_tf
+      lac_tf2
       sac_pytorch
-      sac_tf
+      sac_tf2
    
    
 

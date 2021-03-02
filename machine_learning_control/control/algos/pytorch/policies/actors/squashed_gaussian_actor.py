@@ -184,4 +184,4 @@ class SquashedGaussianActor(nn.Module):
             numpy.ndarray: The action from the current state given the current
                 policy.
         """
-        self.act(obs, deterministic=deterministic)
+        return self.act(obs, deterministic=deterministic)

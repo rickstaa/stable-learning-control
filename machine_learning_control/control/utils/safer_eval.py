@@ -31,7 +31,7 @@ def safer_eval(*args, backend=None):
     more save.
 
     Args:
-        backend (str): The machine_learning backend you want to use. By default
+        backend (str): The machine learning backend you want to use. By default
             ``None``, meaning no backend is assumed.
     Returns:
         args: The eval return values.

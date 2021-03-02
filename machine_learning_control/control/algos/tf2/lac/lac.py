@@ -577,7 +577,7 @@ class LAC(tf.keras.Model):
 
         latest = tf.train.latest_checkpoint(path)
         if latest is None:
-            latest = tf.train.latest_checkpoint(osp.join(path, "tf_save"))
+            latest = tf.train.latest_checkpoint(osp.join(path, "tf2_save"))
             if latest is None:
                 raise Exception(
                     f"No models found in '{path}'. Please check your policy restore"
@@ -633,7 +633,7 @@ class LAC(tf.keras.Model):
                 combine_shapes(1, self._obs_dim), dtype=tf.float32
             )
             self.ac.pi.get_action(obs_dummy)  # Make sure the full graph was traced
-            self.ac.pi.save(path)
+            self.ac.pi.save(osp.join(path, "tf2_save"))
 
     def build(self):
         """Function that can be used to build the full model structure such that it can
@@ -1353,6 +1353,7 @@ def lac(
 
 
 if __name__ == "__main__":
+    # TODO: Add env kwargs
 
     # Import gym environments
     import machine_learning_control.simzoo.simzoo.envs  # noqa: F401
@@ -1433,7 +1434,7 @@ if __name__ == "__main__":
         help="maximum episode length (default: 500)",
     )
     parser.add_argument(
-        "--epochs", type=int, default=2, help="the number of epochs (default: 50)"
+        "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
     )
     parser.add_argument(
         "--steps_per_epoch",
@@ -1579,7 +1580,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--export",
         type=str,
-        default=True,
+        default=False,
         help=(
             "Wether you want to export the model in the 'SavedModel' format "
             "such that it can be deployed to hardware (Default: False)"
@@ -1624,7 +1625,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_checkpoints",
         type=bool,
-        default=True,
+        default=False,
         help="use model checkpoints (default: False)",
     )
     parser.add_argument(

@@ -106,7 +106,7 @@ def _add_with_backends(algo_list):
     """
     algo_list_with_backends = deepcopy(algo_list)
     for algo in algo_list:
-        algo_list_with_backends += [algo + "_tf", algo + "_pytorch"]
+        algo_list_with_backends += [algo + "_tf2", algo + "_pytorch"]
     return algo_list_with_backends
 
 

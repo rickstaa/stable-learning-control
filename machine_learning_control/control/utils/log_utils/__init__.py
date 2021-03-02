@@ -11,3 +11,4 @@ from machine_learning_control.control.utils.log_utils.helpers import (
     setup_logger_kwargs,
     log,
 )
+from machine_learning_control.control.utils.log_utils.logx import EpochLogger, Logger

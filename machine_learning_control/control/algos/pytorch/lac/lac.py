@@ -602,8 +602,9 @@ class LAC(nn.Module):
                     f"Multiple models found in path '{path}'. Please check your policy "
                     "restore path and try again."
                 )
+            load_path = load_path[0]
 
-        restored_model_state_dict = torch.load(load_path[0], map_location=self._device)
+        restored_model_state_dict = torch.load(load_path, map_location=self._device)
         self.load_state_dict(
             restored_model_state_dict,
             restore_lagrance_multipliers,
@@ -644,15 +645,34 @@ class LAC(nn.Module):
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
                 the lagrance multipliers. By fault ``True``.
         """
+        if (
+            "alg_name" in self.state_dict()
+            and "alg_name" in state_dict.keys()
+            and self.state_dict()["alg_name"] != state_dict["alg_name"]
+        ):
+            raise ValueError(
+                log_utils.friendly_err(
+                    "The supplied 'state_dict' could not be loaded onto the {} ".format(
+                        self.state_dict()["alg_name"]
+                    )
+                    + "agent as it belongs to a {} agent. Please supply a {} ".format(
+                        state_dict["alg_name"], self.state_dict()["alg_name"]
+                    )
+                    + "compatible 'state_dict' and try again."
+                )
+            )
         if self.state_dict().keys() != state_dict.keys():
             raise ValueError(
-                "The 'state_dict' you tried to load does not seem to be right. It "
-                "contains the {} keys while the {} keys are expected ".format(
-                    list(state_dict.keys()), list(self.state_dict().keys())
+                log_utils.friendly_err(
+                    "The 'state_dict' you tried to load does not seem to be right. It "
+                    "contains keys: \n\n{}\n\n while keys: \n\n{}\n\n keys ".format(
+                        list(state_dict.keys()), list(self.state_dict().keys())
+                    )
+                    + "are expected for the '{}' model.".format(
+                        self.state_dict()["alg_name"]
+                    )
                 )
-                + "for the '{}' model.".format(self.__class__.__name__)
             )
-
         if not restore_lagrance_multipliers:
             log_utils.log(
                 "Keeping lagrance multipliers at their initial value.", type="info"
@@ -666,19 +686,19 @@ class LAC(nn.Module):
 
         try:
             super().load_state_dict(state_dict, strict=False)
-        except AttributeError as e:
+        except (AttributeError, RuntimeError) as e:
             raise type(e)(
                 "The 'state_dict' could not be loaded successfully.",
             ) from e
 
     def state_dict(self):
-        """Simple wrapper around the :meth:`tf.nn.Module.state_dict` method that saves
+        """Simple wrapper around the :meth:`torch.nn.Module.state_dict` method that saves
         the current class name. This is used to enable easy loading of the model.
         """
         state_dict = super().state_dict()
-        state_dict[
-            "class_name"
-        ] = self.__class__.__name__  # Save Class name in state dict
+        state_dict["alg_name"] = (
+            "LAC" if self._use_lyapunov else "SAC"
+        )  # Save algorithm name state dict
         return state_dict
 
     def _update_targets(self):
@@ -1443,7 +1463,7 @@ if __name__ == "__main__":
         help="maximum episode length (default: 500)",
     )
     parser.add_argument(
-        "--epochs", type=int, default=2, help="the number of epochs (default: 50)"
+        "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
     )
     parser.add_argument(
         "--steps_per_epoch",
@@ -1601,7 +1621,7 @@ if __name__ == "__main__":
         "--exp_name",
         type=str,
         default="lac",
-        help="the name of the experiment (default: sac)",
+        help="the name of the experiment (default: lac)",
     )
     parser.add_argument(
         "--verbose",

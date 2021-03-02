@@ -3,7 +3,7 @@ Lyapunov actor critic policy
 ============================
 
 This module contains a Pytorch implementation of the Lyapunov Actor Critic policy of
-`Han et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
+`Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
 
 import torch

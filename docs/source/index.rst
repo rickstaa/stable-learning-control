@@ -8,6 +8,11 @@ Welcome to Machine Learning Control!
 
 .. image:: https://d1rkab7tlqy5f1.cloudfront.net/_processed_/8/9/csm_SR_mecor_7576_a9342f9469.jpg
 
+.. warning::
+
+   The Machine Learning Control framework is still in its development state. We can, therefore, not guarantee
+   that it is bug-free. Please open :issue:`an issue<>` if you experience problems or something is unclear.
+
 Welcome to the :mlc:`Machine Learning Control <>` (MLC) framework! The Machine Learning Control framework enables
 you to automatically create, train and deploy various Reinforcement Learning (RL) and
 Imitation learning (IL) control algorithms directly from real-world data. This framework
@@ -18,11 +23,19 @@ is made up of four main modules:
 * `Control`_: Module used to train several :mlc:`Machine Learning Control <>` RL/IL agents on the built gym environments.
 * `Hardware`_: Module that can be used to deploy the trained RL/IL agents onto the hardware of your choice.
 
-This framework was build upon the `SpinningUp`_ educational resource. By doing this, we hope to make
-it easier for new researchers to get started with our Algorithms. If you are new to RL, you are therefore highly
-encouraged first to check out the SpinningUp documentation and play with before diving into our codebase. Our
-implementation sometimes deviates from the `SpinningUp`_ version to increase code maintainability, extensibility, and readability.
+Apart from these main modules, it also comes with several (shared) Utilities:
 
+* `Loggers`_: Several loggers that can be used to log data to the stdout, a file or Tensorboard.
+* `MPI Tools`_: Tools for running your scripts across data-parallel MPI processes
+
+.. note::
+   This framework was build upon the `SpinningUp`_ educational resource. By doing this, we hope to make
+   it easier for new researchers to get started with our Algorithms. If you are new to RL, you are highly
+   encouraged to check out the SpinningUp documentation and play with it before diving into our codebase. Our
+   implementation sometimes deviates from the `SpinningUp`_ version to increase code maintainability, extensibility, and readability.
+
+.. _`Loggers`: ./utils/loggers.html
+.. _`MPI Tools`: ./utils/mpi.html
 .. _`Modeling`: ./modeling/modeling.html
 .. _`Simzoo`: ./simzoo/simzoo.html
 .. _`Control`: ./control/control.html
@@ -30,63 +43,54 @@ implementation sometimes deviates from the `SpinningUp`_ version to increase cod
 .. _`SpinningUp`: ./hardware/hardware.html
 .. _`Openai gym`: https://gym.openai.com/
 
-.. warning::
-
-    The Machine Learning Control framework is still in its development state. We can therefore not guarantee that it is bug free.
-    Please open :issue:`an issue<>` if you experience problems or something is unclear.
-
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Getting Started
 
    user/installation
    user/usage
 
+.. toctree::
+   :maxdepth: 3
+   :caption: Modeling
+
+   modeling/modeling
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Control
 
-   control/control
-   control/algorithms/algorithms
+   control/algorithms
    control/running
    control/saving_and_loading
    control/plotting
-   control/bench/bench
-   control/utils/utils
+   control/robustness_eval
+   control/bench
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Hardware
 
    hardware/hardware
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Modeling
-
-   modeling/modeling
-
-.. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Simzoo
 
    simzoo/simzoo
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Utilities Docs
+   :maxdepth: 3
+   :caption: Shared Utilities
 
-   control/utils/logger
-   control/utils/plotter
-   control/utils/mpi
-   control/utils/run_utils
+   utils/loggers
+   utils/mpi
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Developer Zone
 
    dev/api/api.rst
@@ -94,7 +98,7 @@ implementation sometimes deviates from the `SpinningUp`_ version to increase cod
    dev/doc_dev.rst
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Etc.
 
    etc/acknowledgements

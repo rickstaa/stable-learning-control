@@ -8,6 +8,7 @@
 """  # noqa
 
 import atexit
+import glob
 import json
 import os
 import os.path as osp
@@ -26,8 +27,8 @@ from machine_learning_control.control.utils.mpi_utils.mpi_tools import (
 )
 from machine_learning_control.control.utils.serialization_utils import (
     convert_json,
-    save_to_json,
     load_from_json,
+    save_to_json,
 )
 from machine_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from torch.utils.tensorboard import SummaryWriter
@@ -384,6 +385,9 @@ class Logger:
 
                 logger = EpochLogger(**logger_kwargs)
                 logger.save_config(locals())
+
+        Args:
+           config (object): Configuration Python object you want to save.
         """
         config_json = convert_json(config)
         if self.exp_name is not None:
@@ -396,6 +400,65 @@ class Logger:
             self.log(output)
             with open(osp.join(self.output_dir, "config.json"), "w") as out:
                 out.write(output)
+
+    @classmethod
+    def load_config(cls, config_path):
+        """Loads an experiment configuration.
+
+        Args:
+           config_path (str): Folder that contains the config files you want to load.
+
+        Returns:
+            (object): Object containing the loaded configuration.
+        """
+        if proc_id() == 0:
+            if not osp.basename(config_path).endswith(".json"):
+                load_path = glob.glob(
+                    osp.join(config_path, "**", "config.json"), recursive=True
+                )
+                if len(load_path) == 0:
+                    raise FileNotFoundError(
+                        f"No 'config.json' file found in '{config_path}'. Please check "
+                        "your `config_path` and try again."
+                    )
+                load_path = load_path[0]
+            else:
+                load_path = config_path
+            return load_from_json(load_path)
+
+    @classmethod
+    def load_env(cls, env_path):
+        """Loads a pickled environment.
+
+        Args:
+           config_path (str): Folder that contains the pickled environment.
+
+        Returns:
+            (:obj:`gym.env`): The gym environment.
+        """
+        if proc_id() == 0:
+            if not osp.basename(env_path).endswith(".pkl"):
+                load_path = glob.glob(
+                    osp.join(env_path, "**", "vars.pkl"), recursive=True
+                )
+                if len(load_path) == 0:
+                    raise FileNotFoundError(
+                        f"No 'vars.pkl' file found in '{env_path}'. Please check  "
+                        "your 'env_path' and try again."
+                    )
+                load_path = load_path[0]
+            else:
+                load_path = env_path
+        # try to load environment from save
+        # NOTE: Sometimes this will fail because the environment could not be pickled.
+        try:
+            state = joblib.load(load_path)
+            return state["env"]
+        except Exception:
+            raise ValueError(
+                "Something went wrong while trying to load the pickled environment "
+                "please check the environment and try again."
+            )
 
     def save_to_json(self, input_object, output_filename, output_path=None):
         """Save python object to Json file. This method will serialize the object to
@@ -505,7 +568,7 @@ class Logger:
             ), "First have to setup saving with self.setup_tf_saver"
 
             # Create filename
-            fpath = "tf_save" + ("%d" % itr if itr is not None else "")
+            fpath = "tf2_save" + ("%d" % itr if itr is not None else "")
             fpath = osp.join(self.output_dir, fpath)
             os.makedirs(fpath, exist_ok=True)
 

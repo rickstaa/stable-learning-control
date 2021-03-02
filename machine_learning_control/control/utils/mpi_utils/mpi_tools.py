@@ -53,7 +53,7 @@ def pprint(input_str="", end="\n", comm=MPI.COMM_WORLD):
     Args:
         input_str (str): The string you want to print.
         end(str): The print end character.
-        comm(mpi4py.MPI.COMM_WORLD): MPI communicator.
+        comm(:obj:`mpi4py.MPI.COMM_WORLD`): MPI communicator.
     """
     if comm.rank == 0:
         print(str(input_str) + end)

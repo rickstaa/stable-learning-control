@@ -268,6 +268,9 @@ texinfo_documents = [
 extlinks = {
     "mlc": ("https://github.com/rickstaa/machine-learning-control/%s", None),
     "issue": ("https://github.com/rickstaa/machine-learning-control/issues/%s", None),
+    "torch": ("https://pytorch.org/%s", None),
+    "tf": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
+    "tb": ("https://www.tensorflow.org/tensorboard/%s", None),
 }
 
 # -- Add extra style sheets --------------------------------------------------

@@ -1,6 +1,7 @@
 """Functions that are used in multiple Pytorch and Tensorflow algorithms.
 """
 
+import importlib
 import itertools
 import string
 from collections.abc import Iterable
@@ -11,6 +12,10 @@ from machine_learning_control.control.utils.gym_utils import (
     is_continuous_space,
     is_discrete_space,
 )
+from machine_learning_control.control.utils.import_tf import import_tf
+
+tf = import_tf(frail=False)
+tensorflow = tf
 
 
 def convert_to_tuple(input_var):
@@ -228,3 +233,43 @@ def valid_str(v):
     valid_chars = "-_%s%s" % (string.ascii_letters, string.digits)
     str_v = "".join(c if c in valid_chars else "-" for c in str_v)
     return str_v
+
+
+def get_activation_function(activation_fn_name, backend="torch"):
+    """Get a given torch activation function.
+
+    Args:
+        activation_fn_name (str): The name of the activation function you want to
+            retrieve.
+        backend (str): The machine learning backend you want to use. By default
+            ``None``, meaning no backend is assumed.
+
+    Raises:
+        ValueError: Thrown if the activation function does not exist withing the
+            backend.
+
+    Returns:
+        :obj:`torch.nn.modules.activation`: The torch activation function.
+    """
+    if backend.lower() in ["tf", "tf2", "tensorflow"]:
+        backend_prefix = ["tensorflow", "nn"]
+    else:
+        backend_prefix = ["torch", "nn"]
+
+    # Retrieve activation function
+    if len(activation_fn_name.split(".")) == 1:
+        activation_fn_name = ".".join(backend_prefix) + "." + activation_fn_name
+    elif len(activation_fn_name.split(".")) == 2:
+        if activation_fn_name.split(".")[0] == "nn":
+            activation_fn_name = backend_prefix[0] + "." + activation_fn_name
+    try:
+        return getattr(
+            importlib.import_module(".".join(activation_fn_name.split(".")[:-1])),
+            activation_fn_name.split(".")[-1],
+        )
+    except (ModuleNotFoundError, AttributeError):
+        raise ValueError(
+            "'{}' is not a valid '{}' activation function.".format(
+                activation_fn_name, backend_prefix[0]
+            )
+        )

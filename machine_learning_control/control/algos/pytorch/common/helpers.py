@@ -4,6 +4,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
+from machine_learning_control.control.common.helpers import get_activation_function
 from machine_learning_control.control.utils.log_utils import log
 
 
@@ -43,14 +44,20 @@ def mlp(sizes, activation, output_activation=nn.Identity):
 
     Args:
         sizes (list): The size of each of the layers.
-        activation (:obj:`torch.nn.modules.activation`): The activation function used for the
-            hidden layers.
-        output_activation (:obj:`torch.nn.modules.activation`, optional): The activation
-            function used for the output layers. Defaults to torch.nn.Identity.
+        activation (union[:obj:`torch.nn.modules.activation`, :obj:`str`]): The
+            activation function used for the hidden layers.
+        output_activation (union[:obj:`torch.nn.modules.activation`, :obj:`str`], optional):
+            The activation function used for the output layers. Defaults to torch.nn.Identity.
 
     Returns:
         torch.nn.Sequential: The multi-layered perceptron.
-    """
+    """  # noqa: E501
+    # Try to retrieve the activation function if a string was supplied
+    if isinstance(activation, str):
+        activation = get_activation_function(activation, backend="torch")
+    if isinstance(output_activation, str):
+        output_activation = get_activation_function(output_activation, backend="torch")
+
     layers = []
     for j in range(len(sizes) - 1):
         act = activation if j < len(sizes) - 2 else output_activation

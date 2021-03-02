@@ -2,7 +2,7 @@
 Plotting Results
 ================
 
-Spinning Up ships with a simple plotting utility for interpreting results. Run it with:
+:mlc:`Machine Learning Control <>` ships with a simple plotting utility that can be used to plot diagnostics from experiments. Run it with:
 
 .. parsed-literal::
 

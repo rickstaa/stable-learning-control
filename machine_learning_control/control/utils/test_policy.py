@@ -32,7 +32,7 @@ def load_policy_and_env(fpath, itr="last"):
     """
 
     # determine if tf save or pytorch save
-    if any(["tf_save" in x for x in os.listdir(fpath)]):
+    if any(["tf2_save" in x for x in os.listdir(fpath)]):
         backend = "tf"
     else:
         backend = "pytorch"
@@ -40,7 +40,7 @@ def load_policy_and_env(fpath, itr="last"):
     # handle which epoch to load from
     if itr == "last":
         if backend == "tf":
-            tf_save_path = osp.join(fpath, "tf_save")
+            tf_save_path = osp.join(fpath, "tf2_save")
             saves = [
                 int(osp.basename(item).split(".")[0][18:])
                 for item in glob.glob(
@@ -92,7 +92,7 @@ def load_tf_policy(fpath, itr, env=None):
         tf.keras.Model: The policy.
     """
     tf = import_tf()  # Import tf if installed otherwise throw warning
-    fname = osp.join(fpath, "tf_save" + itr)
+    fname = osp.join(fpath, "tf2_save" + itr)
     print("\n")
     log_utils.log("Loading from %s.\n\n" % fname, type="info")
 

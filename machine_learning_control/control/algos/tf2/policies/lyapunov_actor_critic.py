@@ -3,15 +3,15 @@ Lyapunov actor critic policy
 ============================
 
 This module contains a Tensorflow 2.x implementation of the Lyapunov Actor Critic policy
-of `Han et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
+of `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
 
 
 import tensorflow as tf
 
 # fmt: off
-from machine_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
-from machine_learning_control.control.algos.pytorch.policies.critics.L_critic import LCritic  # noqa: E501
+from machine_learning_control.control.algos.tf2.policies.actors.squashed_gaussian_actor import SquashedGaussianActor  # noqa: E501
+from machine_learning_control.control.algos.tf2.policies.critics.L_critic import LCritic  # noqa: E501
 # fmt: on
 from machine_learning_control.control.common.helpers import strict_dict_update
 import machine_learning_control.control.utils.log_utils as log_utils
@@ -30,7 +30,7 @@ class LyapunovActorCritic(tf.keras.Model):
     Attributes:
         self.pi (:class:`~machine_learning_control.control.algos.tf2.policies.actors.squashed_gaussian_actor.SquashedGaussianActor`):
             The squashed gaussian policy network (actor).
-        self.L (:obj:`~machine_learning_control.control.algos.pytorch.policies.critics.L_critic.LCritic`):
+        self.L (:obj:`~machine_learning_control.control.algos.tf2.policies.critics.L_critic.LCritic`):
             The soft L-network (critic).
     """  # noqa: E501
 

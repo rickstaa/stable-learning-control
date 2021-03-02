@@ -17,6 +17,7 @@ machine\_learning\_control.control.algos.tf2.common.helpers
       clamp
       convert_to_tuple
       count_vars
+      get_activation_function
       mlp
       set_device
    
