@@ -1,9 +1,9 @@
 # Checks the code quality of every commit and pr.
 name: Code Quality CI
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   pull_request:
     branches:
       - main

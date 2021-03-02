@@ -1,9 +1,9 @@
 # Makes sure the package build on linux.
 name: Mac CI
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   pull_request:
     branches:
       - main

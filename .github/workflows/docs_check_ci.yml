@@ -3,11 +3,11 @@
 # documentation still builds
 name: Docs build check CI
 on:
-  push:
-    paths:
-      - "docs/**"
-    branches:
-      - main
+  # push:
+  #   paths:
+  #     - "docs/**"
+  #   branches:
+  #     - main
   pull_request:
     paths:
       - "docs/**"
@@ -41,7 +41,7 @@ jobs:
       - name: Install the mlc package with its dependencies
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
-            pip install -e .[docs]
+          pip install -e .[docs]
       - name: Lints sphinx documentation and posts comments
         uses: rickstaa/sphinx-action-composite@v1.0.0
         with:
