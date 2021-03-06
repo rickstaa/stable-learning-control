@@ -76,7 +76,7 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
             if not osp.exists(exp_cfg_file_path):
                 project_path = osp.abspath(osp.join(osp.dirname(__file__), ".."))
                 exp_cfg_file_path = osp.abspath(
-                    osp.join(project_path, "experiments/cfgs", exp_cfg_file_path)
+                    osp.join(project_path, "experiments", exp_cfg_file_path)
                 )
                 if not osp.exists(exp_cfg_file_path):
                     raise FileNotFoundError(
