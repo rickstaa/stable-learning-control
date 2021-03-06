@@ -63,7 +63,7 @@ Consider the example in ``machine_learning_control/examples/pytorch/sac_ray_hype
    :language: python
    :linenos:
    :lines: 18-
-   :emphasize-lines: 23-38, 52-58, 65-77, 83-97
+   :emphasize-lines: 18-33, 60-66, 67-72, 78-93
 
 (An equivalent Tensorflow example is available in ``machine_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``.)
 

@@ -78,7 +78,7 @@ The ``torch_save`` directory contains:
 |                   | | the trained agent's state on an initiated instance of the  |
 |                   | | respective Algorithm Class.                                |
 +-------------------+--------------------------------------------------------------+
-|``save_info.json`` | | A file used by the MLC package to ease model     |
+|``save_info.json`` | | A file used by the MLC package to ease model               |
 |                   | | loading. This file is not meant for the user.              |
 +-------------------+--------------------------------------------------------------+
 
@@ -107,7 +107,7 @@ The ``tf2_save`` directory contains:
 |                           | | are used by the :obj:`tf.train.Checkpoint` method to        |
 |                           | | restore the model.                                          |
 +---------------------------+---------------------------------------------------------------+
-|``save_info.json``         | | A file used by the MLC package to ease model      |
+|``save_info.json``         | | A file used by the MLC package to ease model                |
 |                           | | loading  this file is not meant for the user.               |
 +---------------------------+---------------------------------------------------------------+
 |``saved_model.json``       | | The full TensorFlow program saved in the `SavedModel`       |
@@ -154,7 +154,9 @@ is successfully saved alongside the agent, it's a cinch to watch the trained age
 
     python -m machine_learning_control.run test_policy path/to/output_directory
 
-For more information on how to use this utility see the :ref:`test_policy <test_policy>` documentation or the code :ref:`api`.
+.. seealso::
+
+    For more information on how to use this utility see the :ref:`test_policy <test_policy>` documentation or the code :ref:`api`.
 
 .. _manual_policy_testing:
 

@@ -9,7 +9,7 @@ import time
 
 import joblib
 import torch
-from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.utils.import_utils import import_tf
 from machine_learning_control.utils.serialization_utils import load_from_json
 from machine_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 

@@ -10,7 +10,9 @@ MLC ships with a simple plotting utility that can be used to plot diagnostics fr
         [--xaxis XAXIS] [--value [VALUE ...]] [--count] [--smooth S]
         [--select [SEL ...]] [--exclude [EXC ...]]
 
-For more information on using this utility, see the :ref:`plot utility <plot>` documentation or code :ref:`api`.
+.. seealso::
+
+    For more information on using this utility, see the :ref:`plot utility <plot>` documentation or code :ref:`api`.
 
 .. figure:: ../images/plots/lac/example_lac_performance_plot.svg
     :align: center

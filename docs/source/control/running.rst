@@ -237,7 +237,7 @@ Using experimental configuration files (yaml)
 The MLC CLI comes with a handy configuration file loader that can be used to load `YAML`_ configuration files. These configuration files provide a convenient way to store your experiments'
 hyperparameter such that results can be reproduced. You can supply the CLI with an experiment configuration file using the ``--exp-cfg`` flag.
 
-.. options:: --exp-cfg
+.. option:: --exp-cfg
 
     :obj:`path str`. Sets the path to the ``yml`` config file used for loading experiment hyperparameter.
 

@@ -1,8 +1,7 @@
 """A set of common utilities used within the algorithm code.
 """
 
-from machine_learning_control.control.utils.import_tf import (
-    TF_IMPORT_WARNING,
+from machine_learning_control.utils.import_utils import (
     import_tf,
 )
 

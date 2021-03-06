@@ -13,7 +13,7 @@ import ruamel.yaml as yaml
 
 from machine_learning_control.common.helpers import flatten
 from machine_learning_control.control.utils.gym_utils import validate_gym_env
-from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.utils.import_utils import import_tf
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
 from machine_learning_control.control.utils.safer_eval import safer_eval
 from machine_learning_control.user_config import DEFAULT_BACKEND

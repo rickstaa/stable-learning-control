@@ -20,7 +20,7 @@ from machine_learning_control.control.algos.tf2.policies.soft_actor_critic impor
     SoftActorCritic,
 )  # noqa: E501
 from machine_learning_control.control.utils import safer_eval
-from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.utils.import_utils import import_tf
 from machine_learning_control.utils.log_utils import setup_logger_kwargs
 
 nn = import_tf(module_name="tensorflow.nn")

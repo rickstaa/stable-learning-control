@@ -50,6 +50,7 @@ from machine_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
 )
+from machine_learning_control.utils.import_utils import lazy_importer
 from machine_learning_control.utils.log_utils import (
     EpochLogger,
     colorize,
@@ -58,6 +59,9 @@ from machine_learning_control.utils.log_utils import (
     setup_logger_kwargs,
 )
 from torch.optim import Adam
+
+# Import ray tuner if instealled
+tune = lazy_importer(module_name="ray.tune")
 
 # Script settings
 SCALE_LAMBDA_MIN_MAX = (
@@ -1038,12 +1042,23 @@ def lac(  # noqa: C901
     validate_args(**locals())
 
     logger_kwargs["verbose_vars"] = (
-        STD_OUT_LOG_VARS_DEFAULT
-        if logger_kwargs["verbose_vars"] is None
-        else logger_kwargs["verbose_vars"]
+        logger_kwargs["verbose_vars"]
+        if (
+            "verbose_vars" in logger_kwargs.keys()
+            and logger_kwargs["verbose_vars"] is not None
+        )
+        else STD_OUT_LOG_VARS_DEFAULT
     )  # NOTE: Done to ensure the std_out doesn't get cluttered.
-    tb_low_log_freq = logger_kwargs.pop("tb_log_freq").lower() == "low"
-    use_tensorboard = logger_kwargs.pop("use_tensorboard")
+    tb_low_log_freq = (
+        logger_kwargs.pop("tb_log_freq").lower() == "low"
+        if "tb_log_freq" in logger_kwargs.keys()
+        else True
+    )
+    use_tensorboard = (
+        logger_kwargs.pop("use_tensorboard")
+        if "use_tensorboard" in logger_kwargs.keys()
+        else False
+    )
     logger = EpochLogger(**logger_kwargs)
     hyper_paramet_dict = {
         k: v for k, v in locals().items() if k not in ["logger"]
@@ -1274,6 +1289,15 @@ def lac(  # noqa: C901
                 policy.bound_lr(
                     lr_a_final, lr_c_final, lr_a_final, lr_a_final
                 )  # Make sure lr is bounded above the final lr
+
+            # Log performance measure to ray tuning
+            # NOTE: Only executed when the ray tuner invokes the script
+            if hasattr(tune, "session") and tune.session._session is not None:
+                mean_ep_ret = logger.get_stats("EpRet")
+                mean_ep_len = logger.get_stats("EpLen")
+                tune.report(
+                    mean_ep_ret=mean_ep_ret[0], epoch=epoch, mean_ep_len=mean_ep_len[0]
+                )
 
             # Log info about epoch
             logger.log_tabular("Epoch", epoch)

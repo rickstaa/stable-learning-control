@@ -19,7 +19,7 @@ import machine_learning_control.simzoo.simzoo  # noqa: F401
 
 # Import modules to which you want users to have access
 import torch  # noqa: F401
-from machine_learning_control.control.utils.import_tf import import_tf
+from machine_learning_control.utils.import_utils import import_tf
 
 tf = import_tf(frail=False)
 tensorflow = tf
