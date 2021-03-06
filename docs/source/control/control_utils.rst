@@ -9,7 +9,7 @@ Utilities
 Plot utility
 ============
 
-:mlc:`Machine Learning Control <>` ships with a simple plotting utility that can be used to plot diagnostics from experiments. Run it with:
+MLC ships with a simple plotting utility that can be used to plot diagnostics from experiments. Run it with:
 
 .. parsed-literal::
 
@@ -87,7 +87,7 @@ Test policy utility
 Environment Found
 -----------------
 
-:mlc:`Machine Learning Control <>` ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
+MLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
 is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
 
 .. parsed-literal::
@@ -140,7 +140,7 @@ There are a few flags for options:
 
 .. option:: -d, --deterministic
 
-    Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The :mlc:`MLC<>` implementation trains a stochastic
+    Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The MLC implementation trains a stochastic
     policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
     by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
     for any other algorithms.
@@ -193,7 +193,7 @@ Robustness eval utility
 ExperimentGrid utility
 ======================
 
-:mlc:`Machine Learning Control <>` ships with a tool called ExperimentGrid for making hyperparameter ablations easier. This is based on (but simpler than) `the rllab tool`_ called VariantGenerator.
+MLC ships with a tool called ExperimentGrid for making hyperparameter ablations easier. This is based on (but simpler than) `the rllab tool`_ called VariantGenerator.
 
 .. _`the rllab tool`: https://github.com/rll/rllab/blob/master/rllab/misc/instrument.py#L173
 

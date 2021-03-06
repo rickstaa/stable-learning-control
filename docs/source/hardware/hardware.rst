@@ -14,7 +14,7 @@ Deploy PyTorch Algorithms
 
 .. attention::
     PyTorch also provides multiple ways to deploy trained models to hardware (see the `PyTorch serving documentation`_).
-    However, at the time of writing, these methods currently do not support the agents used in the :mlc:`MLC <>` package.
+    However, at the time of writing, these methods currently do not support the agents used in the MLC package.
     For more information, see `this issue <https://github.com/pytorch/pytorch/issues/29843>`_.
 
 Deploy Tensorflow Algorithms

@@ -4,7 +4,7 @@ Release documentation
 
 .. contents:: Table of Contents
 
-The :mlc:`Machine Learning Control <>` framework contains two `Github actions`_ that automatically check and
+The MLC framework contains two `Github actions`_ that automatically check and
 deploy new documentation:
 
     * The `docs_check_ci`_ action checks your changes to see if the documentation still builds.
@@ -37,8 +37,8 @@ Manual build instructions
 Install requirements
 --------------------
 
-Building the :mlc:`Machine Learning Control <>`'s `HTML`_ documentation requires `sphinx`_,
-the :mlc:`Machine Learning Control <>` package and several plugins. All of the above can be
+Building the MLC's `HTML`_ documentation requires `sphinx`_,
+the MLC package and several plugins. All of the above can be
 installed using the following `pip`_ command:
 
 .. code-block:: bash
@@ -64,7 +64,7 @@ To build the `HTML`_ documentation, go into the `docs/`_ directory and run the
 inside the ``docs/build/html`` directory.
 
 .. note::
-    Make sure you are in the Conda environment in which you installed the Machine Learning Control package
+    Make sure you are in the Conda environment in which you installed the MLC package
     with it's dependencies.
 
 .. _`HTML`: https://www.w3schools.com/html/

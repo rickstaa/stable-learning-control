@@ -10,7 +10,7 @@ Python Code API
 ===============
 
 All Python modules, classes, scripts, utilities and functions of the
-:mlc:`Machine Learning Control <>` package will be documented here.
+MLC package will be documented here.
 
 MLC modules
 -----------

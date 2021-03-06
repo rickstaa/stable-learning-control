@@ -28,7 +28,7 @@ Quick Facts
 * SAC is an off-policy algorithm.
 * The version of SAC implemented here can only be used for environments with continuous action spaces.
 * An alternate version of SAC, which slightly changes the policy update rule, can be implemented to handle discrete action spaces.
-* The Machine Learning Control implementation of SAC does not support parallelisation.
+* The MLC implementation of SAC does not support parallelisation.
 
 Further Reading
 ---------------
@@ -53,7 +53,7 @@ Documentation
 
 .. admonition:: You Should Know
 
-    In what follows, we give documentation for the PyTorch and Tensorflow implementations of SAC in Machine Learning Control.
+    In what follows, we give documentation for the PyTorch and Tensorflow implementations of SAC in MLC.
     They have nearly identical function calls and docstrings, except for details relating to model construction.
     However, we include both full docstrings for completeness.
 

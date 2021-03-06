@@ -3,6 +3,9 @@ control/logs
 data/
 logs/*
 
+# Docs
+_autosummary/
+
 # Cache
 __pycache__/
 *.pyc

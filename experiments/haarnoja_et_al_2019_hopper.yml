@@ -1,0 +1,13 @@
+alg_name: sac
+exp_name: haarnoja_et_al_2019_hopper
+env_name: "Hopper-v2"
+opt_type: "maximize"
+ac_kwargs:
+  hidden_sizes:
+    actor: [256, 256]
+    critic: [256, 256]
+lr_a: "3e-4"
+lr_c: "3e-4"
+gamma: 0.99
+batch_size: 256
+replay_size: 1e6

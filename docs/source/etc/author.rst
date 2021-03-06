@@ -2,7 +2,7 @@
 About the Author
 ================
 
-The Machine Learning Control is developed and maintained by the `Cognitive Robotics department`_
+The MLC package is developed and maintained by the `Cognitive Robotics department`_
 of the `TU Delft`_. It was created out of a Master Thesis of `Rick Staa`_ under the supervision of
 `dr. Wei Pan`_.
 

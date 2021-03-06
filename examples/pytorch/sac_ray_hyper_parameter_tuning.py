@@ -25,8 +25,8 @@ try:
     import ray
 except ImportError:
     raise ImportError(
-        "The ray package appears to be missing. Did you run the `pip install .[tuning]`"
-        " command?"
+        "The ray package appears to be missing. Did you run the `pip install "
+        ".[tuning]` command?"
     )
 from hyperopt import hp
 

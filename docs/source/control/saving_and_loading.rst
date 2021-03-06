@@ -8,7 +8,7 @@ Saving and Loading Experiment Outputs
 
 In this section, we'll cover
 
-- what outputs come from Machine Learning Control algorithm implementations,
+- what outputs come from MLC algorithm implementations,
 - what formats they're stored in and how they're organised,
 - where they are stored and how you can change that,
 - and how to load and run trained policies.
@@ -78,7 +78,7 @@ The ``torch_save`` directory contains:
 |                   | | the trained agent's state on an initiated instance of the  |
 |                   | | respective Algorithm Class.                                |
 +-------------------+--------------------------------------------------------------+
-|``save_info.json`` | | A file used by the :mlc:`MLC <>` package to ease model     |
+|``save_info.json`` | | A file used by the MLC package to ease model     |
 |                   | | loading. This file is not meant for the user.              |
 +-------------------+--------------------------------------------------------------+
 
@@ -107,7 +107,7 @@ The ``tf2_save`` directory contains:
 |                           | | are used by the :obj:`tf.train.Checkpoint` method to        |
 |                           | | restore the model.                                          |
 +---------------------------+---------------------------------------------------------------+
-|``save_info.json``         | | A file used by the :mlc:`MLC <>` package to ease model      |
+|``save_info.json``         | | A file used by the MLC package to ease model      |
 |                           | | loading  this file is not meant for the user.               |
 +---------------------------+---------------------------------------------------------------+
 |``saved_model.json``       | | The full TensorFlow program saved in the `SavedModel`       |
@@ -123,7 +123,7 @@ The ``tf2_save`` directory contains:
 Save Directory Location
 =======================
 
-Experiment results will, by default, be saved in the same directory as the Machine Learning Control package,
+Experiment results will, by default, be saved in the same directory as the MLC package,
 in a folder called ``data``:
 
 .. parsed-literal::
@@ -146,7 +146,7 @@ Loading and Running Trained Policies
 Test Policy utility
 -------------------
 
-:mlc:`Machine Learning Control <>` ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
+MLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
 is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
 
 
@@ -270,7 +270,7 @@ with `TFLite`_, `TensorFlow.js`_, `TensorFlow Serving`_, or `TensorFlow Hub`_. F
 
 .. important::
     TensorFlow also PyTorch multiple ways to deploy trained models to hardware (see the `PyTorch serving documentation`_). However, at the time of writing,
-    these methods currently do not support the agents used in the :mlc:`MLC <>` package. For more information, see
+    these methods currently do not support the agents used in the MLC package. For more information, see
     `this issue <https://github.com/pytorch/pytorch/issues/29843>`_.
 
 

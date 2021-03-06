@@ -3,7 +3,7 @@
 Evaluating Robustness
 =====================
 
-The :mlc:`MLC <>` package comes with a handy utility for evaluating the policy's robustness.
+The MLC package comes with a handy utility for evaluating the policy's robustness.
 
 .. TODO::
 

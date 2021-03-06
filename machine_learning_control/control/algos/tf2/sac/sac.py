@@ -70,6 +70,9 @@ def apply_sac_defaults(args, kwargs):
             output_activation={"actor": nn.relu, "critic": None},
         )
     )
+    kwargs["opt_type"] = (
+        kwargs["opt_type"] if "opt_type" in kwargs.keys() else "maximize"
+    )
     return args, kwargs
 
 

@@ -9,12 +9,12 @@ Launching from the Command Line
 ===============================
 
 
-:mlc:`Machine Learning Control <>` ships with :ref:`machine_learning_control/run.py <runner>`, a convenient tool that lets you easily
+MLC ships with, a convenient :ref:`command line interface (CLI) <runner>` that lets you easily
 launch any algorithm (with any choices of hyperparameters) from the command line. It also serves as a thin wrapper over
-the utilities for watching trained policies and plotting, although we will not discuss that functionality on this page
-(for those details, see the pages on `experiment outputs`_ and `plotting`_).
+the utilities for watching/evaluating the trained policies and plotting, although we will not discuss that functionality on this page
+(for those details, see the pages on `experiment outputs`_, `robustness eval`_ and `plotting`_).
 
-The standard way to run a Machine Learning Control algorithm from the command line is
+The standard way to run a MLC algorithm from the command line is
 
 .. parsed-literal::
 
@@ -26,12 +26,13 @@ eg:
 
     python -m machine_learning_control.run sac --env Walker2d-v2 --exp_name walker
 
-.. _`experiment outputs`: ../user/saving_and_loading.html
-.. _`plotting`: ../user/plotting.html
+.. _`experiment outputs`: ../control/saving_and_loading.html
+.. _`robustness eval`: ../control/robustness_eval.html
+.. _`plotting`: ../control/plotting.html
 
 .. admonition:: You Should Know
 
-    If you are using ZShell: ZShell interprets square brackets as special characters. Machine Learning Control uses square brackets
+    If you are using ZShell: ZShell interprets square brackets as special characters. MLC uses square brackets
     in a few ways for command-line arguments; make sure to escape them or try the solution recommended
     `here <http://kinopyo.com/en/blog/escape-square-bracket-by-default-in-zsh>`_ if you want to escape them by default.
 
@@ -50,13 +51,13 @@ eg:
     ``clip_ratio``, ``hid``, and ``act`` are flags to set some algorithm hyperparameters. You can provide multiple values for hyperparameters to run
     multiple experiments. Check the docs to see what hyperparameters you can set (click here for the `SAC documentation`_).
 
-    ``hid`` and ``act`` are `special shortcut flags`_ for setting the hidden sizes and activation function for the neural networks trained by the algorithm.
+    ``hid`` and ``act`` are :ref:`special shortcut flags <shortcut_flags>` for setting the hidden sizes and activation function for the neural networks trained by the algorithm.
 
     The ``seed`` flag sets the seed for the random number generator. RL algorithms have high variance, so try multiple seeds to get a feel for how performance varies.
 
-    The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in ``machine_learning_control/user_config.py``).
+    The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in :mod:`machine_learning_control.user_config`).
 
-    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py``, which will be a subfolder
+    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in :mod:`machine_learning_control.user_config`, which will be a subfolder
     ``data`` in the ``machine_learning_control`` folder (unless you change it).
 
     `Save directory names`_ are based on ``exp_name`` and any flags which have multiple values. Instead of the full flag, a shorthand will appear in the directory name. Shorthands can be provided
@@ -67,9 +68,9 @@ eg:
 
         path/to/data/YY-MM-DD_sac_ant_cli0-1_h32-32/YY-MM-DD_HH-MM-SS-sac_ant_cli0-1_h32-32_seed10
 
-.. _`SAC documentation`: ../algorithms/sac.html#machine_learning_control.sac
-.. _`special shortcut flags`: ../user/running.html#shortcut-flags
-.. _`Save directory names`: ../user/running.html#where-results-are-saved
+.. _`SAC documentation`: ../control/algorithms/sac.html#documentation
+.. _`special shortcut flags`: ../control/running.html#shortcut-flags
+.. _`Save directory names`: ../control/running.html#where-results-are-saved
 
 
 Choosing PyTorch or Tensorflow from the Command Line
@@ -154,14 +155,16 @@ Environment Flags
 
 .. option:: --env, --env_name
 
-    *string*. The name of an environment in the OpenAI Gym. All Machine Learning Control algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn``
+    :obj:`str`. The name of an environment in the OpenAI Gym. All MLC algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn``
     must be a callable function that builds a copy of the RL environment. Since the most common use case is Gym environments, though, all of which are built through ``gym.make(env_name)``,
     we allow you to just specify ``env_name`` (or ``env`` for short) at the command line, which gets converted to a lambda-function that builds the correct gym environment.
 
 .. option:: --env_kwargs
 
-    *python object*. Additional keyword arguments you want to pass to the gym environment.
+    :obj:`object`. Additional keyword arguments you want to pass to the gym environment.
 
+
+.. _`shortcut_flags`:
 
 Shortcut Flags
 ^^^^^^^^^^^^^^
@@ -170,41 +173,41 @@ Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
 .. option:: --hid, --ac_kwargs:hidden_sizes
 
-    *list of ints*. Sets the sizes of the hidden layers in the neural networks of both the actor and critic.
+    :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of both the actor and critic.
 
 .. option:: --hid, --ac_kwargs:hidden_sizes:actor
 
-    *list of ints*. Sets the sizes of the hidden layers in the neural networks of the actor.
+    :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of the actor.
 
 .. option:: --hid, --ac_kwargs:hidden_sizes:critic
 
-    *list of ints*. Sets the sizes of the hidden layers in the neural networks of the critic.
+    :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of the critic.
 
 .. option:: --act, --ac_kwargs:activation
 
-    *tf op*. The activation function for the neural networks in the actor and critic.
+    :obj:`tf op`. The activation function for the neural networks in the actor and critic.
 
 .. option:: --act, --ac_kwargs:output_activation
 
-    *tf op*. The activation function for the neural networks in the actor and critic.
+   :obj:`tf op`. The activation function for the neural networks in the actor and critic.
 
 .. option:: --act_a, --ac_kwargs:activation:actor
 
-    *tf op*. The activation function for the neural networks in the actor.
+   :obj:`tf op`. The activation function for the neural networks in the actor.
 
 .. option:: --act_c, --ac_kwargs:activation:critic
 
-    *tf op*. The activation function for the neural networks in the critic.
+   :obj:`tf op`. The activation function for the neural networks in the critic.
 
 .. option:: --act_out_a, --ac_kwargs:output_activation:actor
 
-    *tf op*. The activation function for the output activation function of the actor.
+   :obj:`tf op`. The activation function for the output activation function of the actor.
 
 .. option:: --act_out_c, --ac_kwargs:output_activation:critic
 
-    *tf op*. The activation function for the output activation function of the critic.
+   :obj:`tf op`. The activation function for the output activation function of the critic.
 
-These flags are valid for all current Machine Learning Control algorithms.
+These flags are valid for all current MLC algorithms.
 
 Config Flags
 ^^^^^^^^^^^^
@@ -213,20 +216,39 @@ These flags are not hyperparameters of any algorithm but change the experimental
 
 .. option:: --cpu, --num_cpu
 
-    *int*. If this flag is set, the experiment is launched with this many processes, one per cpu, connected by MPI. Some algorithms are amenable to this sort of parallelization but not all.
+    :obj:`int`. If this flag is set, the experiment is launched with this many processes, one per cpu, connected by MPI. Some algorithms are amenable to this sort of parallelization but not all.
     An error will be raised if you try setting ``num_cpu`` > 1 for an incompatible algorithm. You can also set ``--num_cpu auto``, which will automatically use as many CPUs as are available on the machine.
 
 .. option:: --exp_name
 
-    *string*. The experiment name. This is used in naming the save directory for each experiment. The default is "cmd" + [algo name].
+    :obj:`str`. The experiment name. This is used in naming the save directory for each experiment. The default is "cmd" + [algo name].
 
 .. option:: --data_dir
 
-    *path*. Set the base save directory for this experiment or set of experiments. If none is given, the ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py`` will be used.
+    :obj:`path str`. Set the base save directory for this experiment or set of experiments. If none is given, the ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py`` will be used.
 
 .. option:: --datestamp
 
-    *bool*. Include date and time in the name for the save directory of the experiment.
+    :obj:`bool`. Include date and time in the name for the save directory of the experiment.
+
+Using experimental configuration files (yaml)
+---------------------------------------------
+
+The MLC CLI comes with a handy configuration file loader that can be used to load `YAML`_ configuration files. These configuration files provide a convenient way to store your experiments'
+hyperparameter such that results can be reproduced. You can supply the CLI with an experiment configuration file using the ``--exp-cfg`` flag.
+
+.. options:: --exp-cfg
+
+    :obj:`path str`. Sets the path to the ``yml`` config file used for loading experiment hyperparameter.
+
+For example, we can use the following command to train a SAC algorithm using the original hyperparameters used by `Haarnoja et al., 2019`_.
+
+.. code-block:: bash
+
+    python -m machine_learning_control.run --exp-cfg ./experiments/haarnoja_et_al_2019.yml
+
+.. _`YAML`: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+.. _`Haarnoja et al., 2019`: https://arxiv.org/abs/1801.01290
 
 Where Results are Saved
 -----------------------
@@ -318,7 +340,7 @@ The ``start_policy`` command-line flag allows you to use an already trained algo
 Using custom environments
 =========================
 
-There are two methods for adding custom environments to the :mlc:`MLC <>` package. The first and easiest way is to make use of `OpenAi gym`_ it's internal module import
+There are two methods for adding custom environments to the MLC package. The first and easiest way is to make use of `OpenAi gym`_ it's internal module import
 mechanism:
 
 .. parsed-literal::
@@ -335,62 +357,3 @@ This imports the ``custom_env_module`` and then looks for the ``CustomEnv-v0`` i
 .. _`OpenAi gym custom gym environment guide`: https://github.com/openai/gym/blob/master/docs/creating-environments.md
 
 Additionally you can also add the setup code for registering your environment in the :mod:`machine_learning_control.env_config` module.
-
-Tune Hyperparameters
-====================
-
-Using ExperimentGrid
---------------------
-
-It's often useful in machine learning research to run the same algorithm with many possible hyperparameters. Machine Learning Control ships with a simple tool for facilitating
-this, called `ExperimentGrid`_.
-
-
-Consider the example in ``machine_learning_control/examples/pytorch/sac_exp_grid_search.py``:
-
-.. literalinclude:: /../../examples/pytorch/sac_exp_grid_search.py
-   :language: python
-   :linenos:
-   :lines: 17-
-
-(An equivalent Tensorflow example is available in ``machine_learning_control/examples/tf2/sac_exp_grid_search.py``.)
-
-After making the ExperimentGrid object, parameters are added to it with
-
-.. parsed-literal::
-
-    eg.add(param_name, values, shorthand, in_name)
-
-where ``in_name`` forces a parameter to appear in the experiment name, even if it has the same value across all experiments.
-
-After all parameters have been added,
-
-.. parsed-literal::
-
-    eg.run(thunk, \*\*run_kwargs)
-
-runs all experiments in the grid (one experiment per valid configuration), by providing the configurations as kwargs to the function ``thunk``. ``ExperimentGrid.run`` uses a
-function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs`` specify behaviors for ``call_experiment``.
-See `the documentation page`_ for details.
-
-Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behaviour of ``ExperimentGrid`` is the same as running things from the command line. (In fact, ``machine_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
-
-.. _`ExperimentGrid`: ..utils/control_utils.html#experimentgrid
-.. _`the documentation page`: ../utils/control_utils.html#experimentgrid
-.. _`call_experiment`: ..utils/control_utils.html#machine_learning_control.control.utils.run_utils.call_experiment\
-
-Using the Ray tuning package
------------------------------
-
-The :mlc:`Machine Learning Control` package can also be used with more advanced tuning algorithms. An example of how to use :mlc:`MLC <>` with
-the Ray Tuning package can be found in ``machine_learning_control/examples/torch/sac_ray_hyper_parameter_tuning.py`` and
-``machine_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``. The requirements for this example can be installed using
-the following command:
-
-.. code-block:: bash
-
-    pip install .[tuning]
-
-For more information on how the ray tuning package works see the `Ray tuning documentation`_.
-
-.. _`Ray tuning documentation`: https://docs.ray.io/en/latest/tune/index.html

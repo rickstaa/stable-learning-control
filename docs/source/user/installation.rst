@@ -4,19 +4,8 @@ Installation
 
 .. contents:: Table of Contents
 
-:mlc:`Machine Learning Control <>` requires `Python3`_ and `OpenAI Gym`_ to work. It is
+MLC requires `Python3`_ and `OpenAI Gym`_ to work. It is
 currently only supported on Linux and OSX.
-
-.. admonition:: You Should Know
-
-    Many examples and benchmarks in :mlc:`Machine Learning Control <>` refer to RL environments that use the `MuJoCo`_ physics engine.
-    MuJoCo is proprietary software that requires a license, which is free to trial and free for students, but otherwise is not free.
-    As a result, installing it is optional, but because of its importance to the research community---it is the de facto standard for
-    benchmarking deep RL algorithms in continuous control---it is preferred.
-
-    Don't worry if you decide not to install MuJoCo, though. You can definitely get started using the Machine Learning Framework by running RL
-    algorithms with the included :mlc:`Machine Learning Control <>` `simzoo`_ gym environments. Additionally, you can also provide your own gym
-    environments or use the `MuJoCo`_ the `Classic Control`_ and `Box2d`_ environments in Gym, which are totally free to use.
 
 .. warning::
 
@@ -24,10 +13,6 @@ currently only supported on Linux and OSX.
 
 .. _`Python3`: https://www.python.org/
 .. _`OpenAi gym`: https://gym.openai.com/
-.. _`Classic Control`: https://gym.openai.com/envs/#classic_control
-.. _`Box2d`: https://gym.openai.com/envs/#box2d
-.. _`MuJoCo`: http://www.mujoco.org/index.html
-.. _`simzoo`: ../simzoo/simzoo.html
 
 Installing Python
 =================
@@ -36,7 +21,7 @@ We recommend installing Python through Anaconda. Anaconda is a library that incl
 Python, as well as an environment manager called Conda that makes package management simple.
 
 Follow `the installation instructions`_ for Anaconda here. Download and install Anaconda3 (at time of writing, `Anaconda3-5.3.1`_).
-Then create a Conda Python 3.7 env for organizing packages used in the Machine Learning Control package:
+Then create a Conda Python 3.7 env for organizing packages used in the MLC package:
 
 .. code-block:: bash
 
@@ -70,11 +55,21 @@ To use Python from the environment, you just created, activate the environment w
 Installing the MLC package
 ==========================
 
-After you successfully setup your python environment, you can install the :mlc:`Machine Learning Control <>` package and its dependencies in
-this environment. The :mlc:`Machine Learning Control <>` has two versions you can install:
+After you successfully setup your python environment, you can install the MLC package and its dependencies in
+this environment. The MLC has two versions you can install:
 
     - A version which uses `Pytorch`_ as the backend of the RL/IL algorithms.
     - A version which uses `Tensorflow 2.0`_ as the RL/IL algorithms.
+
+.. attention::
+
+    We choose PyTorch as the default backend as it, in our opinion, is easier to work with than Tensorflow. However, at the time of writing, it
+    is slightly slower than the Tensorflow backend. This is caused because the agents used in the MLC package use components that are
+    not yet supported by `TorchScript`_ (responsible for creating a fast compiled version of PyTorch script). As PyTorch has shown to be faster
+    in most implementations, this will likely change in the future. You can track the status of this speed problem
+    `here <https://github.com/pytorch/pytorch/issues/29843>`_.
+
+.. _`TorchScript`: https://pytorch.org/docs/stable/jit.html
 
 Install the Pytorch version
 ---------------------------
@@ -102,8 +97,16 @@ If you want to use the `Tensorflow 2.0`_ version please use the following comman
 Installing MuJoCo (Optional)
 ============================
 
-First, go to the `mujoco-py`_ github page. Follow the installation instructions in the README, which describe how to install
-the MuJoCo physics engine and the mujoco-py package (which allows the use of MuJoCo from Python).
+
+The MLC package comes bundled with several gym environments. Out of the box it includes the following environments:
+
+* The Openai gym `Algorithmic`_ environments.
+* The Openai gym `ToyText`_.
+* The Openai gym `Classic Control`_ environments.
+* The :ref:`MLC Simzoo <simzoo_module>` environments.
+
+Out of the box, the MLC package does not include the Openai gym `MuJoCo`_ and `Robotics`_ environments, often used in RL benchmarks. If you want to
+use the MLC package with these environments first go to the `mujoco-py`_ github page. Follow the README installation instructions, which describe how to install the `MuJoCo physics engine`_ and the `mujoco-py` package (which allows the use of MuJoCo from Python).
 
 .. admonition:: You Should Know
 
@@ -116,11 +119,18 @@ Once you have installed MuJoCo, install the corresponding Gym environments with
 
     pip install gym[mujoco, robotics]
 
-And then check that things are working by running PPO in the Walker2d-v2 environment with
+And then check that things are working by running SAC in the Walker2d-v2 environment with
 
 .. parsed-literal::
 
     python -m machine_learning_control.run sac --hid "[32, 32]" --env Walker2d-v2 --exp_name mujocotest
 
+.. _`MuJoCo`: https://gym.openai.com/envs/#mujoco
+.. _`Robotics`: https://gym.openai.com/envs/#robotics
+.. _`Algorithmic`: https://gym.openai.com/envs/#algorithmic
+.. _`ToyText`: https://gym.openai.com/envs/#toy_text
+.. _`Classic Control`: https://gym.openai.com/envs/#classic_control
 .. _`mujoco-py`: https://github.com/openai/mujoco-py
 .. _`MuJoCo license`: https://www.roboti.us/license.html
+.. _`Box2d`: https://gym.openai.com/envs/#box2d
+.. _`MuJoCo physics engine`: http://www.mujoco.org/index.html

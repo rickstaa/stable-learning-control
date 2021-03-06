@@ -22,7 +22,7 @@ Markdown guidelines:
 .. _`remark-lint`: https://github.com/remarkjs/remark-lint
 
 .. note::
-    The :mlc:`Machine Learning Control <>` framework contains several `GitHub actions`_, which check code changes
+    The MLC framework contains several `GitHub actions`_, which check code changes
     against these coding guidelines. As a result, when the above guidelines are not met, you will
     receive an error/warning when you create a pull request. Some of these actions will create pull requests
     which you can use to fix some of these violations. For other errors/warning, you are expected to handle

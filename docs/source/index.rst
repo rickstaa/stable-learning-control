@@ -13,20 +13,21 @@ Welcome to Machine Learning Control!
    The Machine Learning Control framework is still in its development state. We can, therefore, not guarantee
    that it is bug-free. Please open :issue:`an issue<>` if you experience problems or something is unclear.
 
-Welcome to the :mlc:`Machine Learning Control <>` (MLC) framework! The Machine Learning Control framework enables
+Welcome to the :mlc:`Machine Learning Control <>` (MLC) framework! The MLC framework enables
 you to automatically create, train and deploy various Reinforcement Learning (RL) and
 Imitation learning (IL) control algorithms directly from real-world data. This framework
 is made up of four main modules:
 
 * `Modeling`_: Module that uses state of the art System Identification and State Estimation techniques to create an `Openai gym`_ environment out of real data.
-* `Simzoo`_: Module that contains several already created :mlc:`Machine Learning Control <>` `Openai gym`_ environments.
-* `Control`_: Module used to train several :mlc:`Machine Learning Control <>` RL/IL agents on the built gym environments.
+* `Simzoo`_: Module that contains several already created MLC `Openai gym`_ environments.
+* `Control`_: Module used to train several MLC RL/IL agents on the built gym environments.
 * `Hardware`_: Module that can be used to deploy the trained RL/IL agents onto the hardware of your choice.
 
-Apart from these main modules, it also comes with several (shared) Utilities:
+Apart from these main modules, it also comes with several (shared) utilities:
 
-* `Loggers`_: Several loggers that can be used to log data to the stdout, a file or Tensorboard.
-* `MPI Tools`_: Tools for running your scripts across data-parallel MPI processes
+* :ref:`CLI <runner>`: A command-line interface (CLI) that can be used to run all the modules inside the MLC framework.
+* :ref:`Loggers <loggers>`: Several loggers that can be used to log data to the stdout, a file or Tensorboard.
+* :ref:`MPI Tools <mpi>`: Tools for running your scripts across data-parallel MPI processes
 
 .. note::
    This framework was build upon the `SpinningUp`_ educational resource. By doing this, we hope to make
@@ -63,6 +64,7 @@ Apart from these main modules, it also comes with several (shared) Utilities:
 
    control/algorithms
    control/running
+   control/tuning
    control/saving_and_loading
    control/plotting
    control/robustness_eval

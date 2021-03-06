@@ -1,4 +1,4 @@
-.. _`Simzoo`: https://github.com/rickstaa/simzoo
+_`simzoo_module`:
 
 ======
 Simzoo
@@ -6,11 +6,11 @@ Simzoo
 
 .. contents:: Table of Contents
 
-
-The `Simzoo`_ module contains the machine_learning_control `OpenAI gym environments`_. It is automatically
-installed when you install the :mlc:`Machine Learning Control <>` package but can also be installed
+The `Simzoo <simzoo_repo>`_ module contains the machine_learning_control `OpenAI gym environments`_. It is automatically
+installed when you install the MLC package but can also be installed
 as a stand-alone package.
 
+.. _`simzoo_repo`: https://github.com/rickstaa/simzoo
 .. _`OpenAI gym environments`: https://gym.openai.com/
 
 Environments
@@ -78,7 +78,7 @@ Add new Environments
 
 Please follow the steps provided in the `Openai Gym documentation`_ when creating a new environment. After
 you created your environment, you can use the `simzoo/simzoo/__init__.py`_ file to register them to the
-:mlc:`Machine Learning Control <>` package.
+MLC package.
 
 .. _`simzoo/simzoo/__init__.py`: https://github.com/rickstaa/simzoo/blob/main/simzoo/__init__.py
 

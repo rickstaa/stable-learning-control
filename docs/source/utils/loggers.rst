@@ -1,3 +1,5 @@
+.. _loggers:
+
 =======
 Loggers
 =======
@@ -7,7 +9,7 @@ Loggers
 Using a Logger
 ==============
 
-:mlc:`Machine Learning Control <>` ships with basic logging tools, implemented in the classes
+MLC ships with basic logging tools, implemented in the classes
 :class:`~machine_learning_control.utils.log_utils.logx.Logger`
 and :class:`~machine_learning_control.utils.log_utils.logx.EpochLogger`. The Logger
 class contains most of the basic functionality for saving diagnostics,
@@ -17,7 +19,7 @@ and max value of a diagnostic over each epoch and across MPI workers.
 
 .. admonition:: You Should Know
 
-    All :mlc:`Machine Learning Control <>` algorithm implementations use an EpochLogger.
+    All MLC algorithm implementations use an EpochLogger.
 
 
 These loggers allow you to write these diagnostic to the ``stdout``, a ``csv/txt`` file and/or :tb:`Tensorboard <>`.
@@ -262,7 +264,7 @@ Logging and MPI
 .. admonition:: You Should Know
 
     Several RL algorithms are easily parallelized by using MPI to average gradients and/or other
-    key quantities. The :mlc:`Machine Learning Control <>` loggers are designed to be well-behaved when using
+    key quantities. The MLC loggers are designed to be well-behaved when using
     MPI: things will only get written to stdout, file or Tensorboard from the process with rank 0. But
     information from other processes isn't lost if you use the EpochLogger: everything which
     is passed into EpochLogger via ``store``, regardless of which process it's stored in, gets
@@ -294,7 +296,7 @@ Loading Saved Models (PyTorch Only)
 .. TODO::
     Implement below
 
-To load an actor-critic model saved by a PyTorch :mlc:`Machine Learning Control <>` implementation, run:
+To load an actor-critic model saved by a PyTorch MLC implementation, run:
 
 .. code-block:: python
 
@@ -314,7 +316,7 @@ Loading Saved Graphs (Tensorflow Only)
 .. todo::
     Replace use autofunction
 
-When you use this method to restore a graph saved by a Tensorflow :mlc:`Machine Learning Control <>` implementation,
+When you use this method to restore a graph saved by a Tensorflow MLC implementation,
 you can minimally expect it to include the following:
 
 ======  ===============================================

@@ -2,7 +2,7 @@
 
 Example:
     This module allows you to add your own custom gym environments to the
-    :mlc:`Machine Learning Control <>` package. These environments should inherit from
+    MLC package. These environments should inherit from
     the :class:`gym.env` class. See
     `this issue on the Openai github <https://github.com/openai/gym/blob/master/docs/creating-environments.md>`_
     for more information on how to create custom environments. Environments that are

@@ -2,7 +2,7 @@
 Plotting Results
 ================
 
-:mlc:`Machine Learning Control <>` ships with a simple plotting utility that can be used to plot diagnostics from experiments. You can run it with:
+MLC ships with a simple plotting utility that can be used to plot diagnostics from experiments. You can run it with:
 
 .. parsed-literal::
 

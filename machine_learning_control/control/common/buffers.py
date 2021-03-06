@@ -30,19 +30,19 @@ class ReplayBuffer:
         # Preallocate memory for experience buffer (s, s', a, r, d)
         # NOTE: Squeeze is needed to remove length 1 axis.
         self.obs_buf = np.zeros(
-            combine_shapes(size, obs_dim), dtype=np.float32
+            combine_shapes(int(size), obs_dim), dtype=np.float32
         ).squeeze()
         self.obs_next_buf = np.zeros(
-            combine_shapes(size, obs_dim), dtype=np.float32
+            combine_shapes(int(size), obs_dim), dtype=np.float32
         ).squeeze()
         self.act_buf = np.zeros(
-            combine_shapes(size, act_dim), dtype=np.float32
+            combine_shapes(int(size), act_dim), dtype=np.float32
         ).squeeze()
         self.rew_buf = np.zeros(
-            combine_shapes(size, rew_dim), dtype=np.float32
+            combine_shapes(int(size), rew_dim), dtype=np.float32
         ).squeeze()
-        self.done_buf = np.zeros(size, dtype=np.float32)
-        self.ptr, self.size, self.max_size = 0, 0, size
+        self.done_buf = np.zeros(int(size), dtype=np.float32)
+        self.ptr, self.size, self.max_size = 0, 0, int(size)
 
     def store(self, obs, act, rew, next_obs, done):
         """Add experience tuple to buffer.

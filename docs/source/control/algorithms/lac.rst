@@ -9,13 +9,12 @@ Lyapunov Actor-Critic
 .. seealso::
     This document assumes you are already familiar with the `Soft Actor-Critic (SAC)`_ algorithm. It is not meant
     to be a comprehensive guide but mainly depicts the difference between the :ref:`SAC <sac>` and `Lyapunov Actor-Critic (LAC)`_
-    algorithms. For more information, readers are therefore referred to the original papers of `Haarnoja et al, 2019 (SAC) <Haarnoja et al, 2019>`_
-    and `Han et al. 2020 (LAC) <Han et al, 2020>`_.
+    algorithms. For more information, readers are therefore referred to the original papers of `Haarnoja et al, 2019`_ (SAC) and `Han et al., 2020`_ (LAC).
 
 .. _`Soft Actor-Critic (SAC)`: https://arxiv.org/abs/1801.01290
 .. _`Haarnoja et al, 2019`: https://arxiv.org/abs/1801.01290
 .. _`Lyapunov Actor-Critic (LAC)`: http://arxiv.org/abs/2004.14288
-.. _`Han et al, 2020`: http://arxiv.org/abs/2004.14288
+.. _`Han et al., 2020`: http://arxiv.org/abs/2004.14288
 
 Background
 ==========
@@ -95,7 +94,7 @@ using the following objective function
     J(L_{c}) = E_{\mathcal{D}}\left[\frac{1}{2}(L_{c}(s,a)-L_{target}(s,a))^2\right]
 
 
-Where :math:`L_{target}` is the approximation target received from the `infinite-horizon discounted return value function <value Function>`_
+Where :math:`L_{target}` is the approximation target received from the `infinite-horizon discounted return value function`_
 
 .. math::
    :nowrap:
@@ -109,9 +108,10 @@ Where :math:`L_{target}` is the approximation target received from the `infinite
 and :math:`\mathcal{D}` the set of collected transition pairs.
 
 .. note::
-    As explained in `Han et al, 2020`_ the sum of cost over a finite time horizon can also be used as the approximation target. This version
-    is, however, not yet implemented in the :mlc:`MLC <>` framework.
+    As explained in `Han et al., 2020`_ the sum of cost over a finite time horizon can also be used as the approximation target. This version
+    is, however, not yet implemented in the MLC framework.
 
+.. _`infinite-horizon discounted return value function`: https://spinningup.openai.com/en/latest/spinningup/rl_intro.html#value-functions
 .. _`Belman equation`: https://spinningup.openai.com/en/latest/spinningup/rl_intro.html#bellman-equations
 
 Policy function definition
@@ -153,7 +153,7 @@ is in the LAC algorithm replaced by
 
 As a result, in the LAC algorithm, the loss function now increases the probability of actions that cause the system to be close to the
 equilibrium or reference value while decreasing the likelihood of actions that drive the system away from these values.
-The math:`a3c` `quadratic regularisation`_ term is used to ensure that the mean cost is positive. The :math:`\lambda` term
+The :math:`a_{3}c` `quadratic regularisation`_ term is used to ensure that the mean cost is positive. The :math:`\lambda` term
 represents the Lyapunov Lagrange multiplier and is responsible for weighting the relative importance of the stability condition.
 Similar to the entropy Lagrange multiplier :math:`\alpha` used in the :ref:`SAC <sac>` algorithm this term is updated by
 
@@ -177,7 +177,7 @@ Quick Fact
 * It is guaranteed to be stable in mean cost.
 * The version of LAC implemented here can only be used for environments with continuous action spaces.
 * An alternate version of LAC, which slightly changes the policy update rule, can be implemented to handle discrete action spaces.
-* The Machine Learning Control implementation of LAC does not support parallelisation.
+* The MLC implementation of LAC does not support parallelisation.
 
 Further Reading
 ---------------
@@ -211,7 +211,7 @@ Pseudocode
     \end{algorithmic}
     \end{algorithm}
 
-.. _ '11 of Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
+.. _`11 of Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
 .. _`eq. (7) and (14) from Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
 
 Documentation
@@ -219,7 +219,7 @@ Documentation
 
 .. admonition:: You Should Know
 
-    In what follows, we give documentation for the PyTorch and Tensorflow implementations of LAC in Machine Learning Control.
+    In what follows, we give documentation for the PyTorch and Tensorflow implementations of LAC in MLC.
     They have nearly identical function calls and docstrings, except for details relating to model construction.
     However, we include both full docstrings for completeness.
 

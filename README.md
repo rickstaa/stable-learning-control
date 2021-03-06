@@ -8,7 +8,7 @@
 
 ## Package Overview
 
-Welcome to the `Machine Learning Control` (MLC) framework! The Machine Learning Control framework enables
+Welcome to the Machine Learning Control (MLC) framework! The Machine Learning Control framework enables
 you to automatically create, train and deploy various Reinforcement Learning (RL) and
 Imitation learning (IL) control algorithms directly from real-world data. This framework
 is made up of four main modules:
