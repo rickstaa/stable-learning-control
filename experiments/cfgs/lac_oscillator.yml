@@ -1,0 +1,4 @@
+alg_name: lac
+exp_name: elpg_cartpole_spinup_ret
+env_name: "Oscillator-v0"
+use_lyapunov: True

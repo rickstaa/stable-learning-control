@@ -9,14 +9,15 @@ import sys
 from copy import deepcopy
 from textwrap import dedent
 
-from machine_learning_control.control.utils.gym_utils import validate_gym_env
+import ruamel.yaml as yaml
 
-# Import mlc algorithms and environments
+from machine_learning_control.common.helpers import flatten
+from machine_learning_control.control.utils.gym_utils import validate_gym_env
 from machine_learning_control.control.utils.import_tf import import_tf
 from machine_learning_control.control.utils.run_utils import ExperimentGrid
 from machine_learning_control.control.utils.safer_eval import safer_eval
 from machine_learning_control.user_config import DEFAULT_BACKEND
-from machine_learning_control.utils.log_utils import friendly_err
+from machine_learning_control.utils.log_utils import friendly_err, log_to_std_out
 from machine_learning_control.version import __version__
 
 # Command line args that will go to ExperimentGrid.run, and must possess unique
@@ -44,6 +45,106 @@ MPI_COMPATIBLE_ALGOS = []
 
 # Algo names (used in a few places)
 BASE_ALGO_NAMES = ["sac", "lac"]
+
+
+def _parse_exp_cfg(cmd_line_args):  # noqa: C901
+    """This function parses the cmd line args to see if it contains the 'exp_cfg' flag.
+    If this flag is present it uses the 'exp_cfg' file path (next cmd_line arg) to add
+    any hyperparameters found in this experimental configuration file to the cmd line
+    arguments.
+
+    Args:
+        cmd_line_args (list): The cmd line input arguments.
+
+    Returns:
+        list: Modified cmd line argument list that also contains any hyperparameters
+            that were specified in a experimental cfg file.
+    """
+    if "--exp_cfg" in cmd_line_args:
+        cfg_error = False
+        exp_cfg_idx = cmd_line_args.index("--exp_cfg")
+        cmd_line_args.pop(exp_cfg_idx)  # Remove exp_cfg argument
+
+        # Validate config path
+        try:
+            exp_cfg_file_path = cmd_line_args.pop(exp_cfg_idx)
+            exp_cfg_file_path = (
+                exp_cfg_file_path
+                if exp_cfg_file_path.endswith(".yml")
+                else exp_cfg_file_path + ".yml"
+            )
+            if not osp.exists(exp_cfg_file_path):
+                project_path = osp.abspath(osp.join(osp.dirname(__file__), ".."))
+                exp_cfg_file_path = osp.abspath(
+                    osp.join(project_path, "experiments/cfgs", exp_cfg_file_path)
+                )
+                if not osp.exists(exp_cfg_file_path):
+                    raise FileNotFoundError(
+                        "No experiment configuration file found at "
+                        f"'{exp_cfg_file_path}'."
+                    )
+        except (IndexError, FileNotFoundError) as e:
+            cfg_error = True
+            if isinstance(e, IndexError):
+                log_to_std_out(
+                    "You did not supply a experiment configuration path. As a result "
+                    "the --exp-cfg argument has been ignored.",
+                    type="warning",
+                )
+            else:
+                log_to_std_out(
+                    e.args[0] + " As a result the --exp-cfg argument has been ignored.",
+                    type="warning",
+                )
+
+        # Read configuration values
+        if not cfg_error:
+            with open(exp_cfg_file_path) as stream:
+                try:
+                    log_to_std_out(
+                        f"Experiment hyperparameters loded from '{exp_cfg_file_path}'",
+                        type="info",
+                    )
+                    exp_cfg_params = yaml.safe_load(stream)
+                    if not exp_cfg_params:
+                        log_to_std_out(
+                            "No hyperparameters were found in your your experiment "
+                            "config. As a result the --exp-cfg has been ignored.",
+                            type="warning",
+                        )
+                    else:
+                        # Retrieve algorithm if not supplied by user
+                        if exp_cfg_idx == 1:
+                            if "alg_name" in exp_cfg_params.keys():
+                                cmd_line_args.insert(
+                                    1, exp_cfg_params.pop("alg_name", None)
+                                )
+                        else:
+                            exp_cfg_params.pop("alg_name")
+
+                        # Append cfg hyperparamters to input arguments
+                        exp_cfg_params = {
+                            (key if key.startswith("--") else "--" + key): val
+                            for key, val in exp_cfg_params.items()
+                        }
+                        exp_cfg_params = list(
+                            flatten(
+                                [
+                                    [str(key), str(val)]
+                                    for key, val in exp_cfg_params.items()
+                                ]
+                            )
+                        )
+                    cmd_line_args.extend(exp_cfg_params)
+                except yaml.YAMLError:
+                    log_to_std_out(
+                        "Something went wrong while trying to load the experiment  "
+                        f"config in '{exp_cfg_file_path}. As a result the --exp-cfg "
+                        "argument has been ignored.",
+                        type="warning",
+                    )
+
+    return cmd_line_args
 
 
 def _add_backend_to_cmd(cmd):
@@ -241,6 +342,10 @@ def run(input_args):
     valid_help = ["--help", "-h", "help"]
     valid_version = ["--version"]
     valid_cmds = valid_algos + valid_utils + valid_help + valid_version
+
+    # Load hyperparameters from a experimental configuration file if supplied.
+    sys.argv = _parse_exp_cfg(sys.argv)
+
     if cmd not in valid_cmds:
         raise ValueError(
             friendly_err(
