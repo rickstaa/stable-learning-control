@@ -493,7 +493,7 @@ class Logger:
         if proc_id() == 0:
             return load_from_json(path)
 
-    def save_state(self, state_dict, itr=None, epoch=None):
+    def save_state(self, state_dict, itr=None):
         """Saves the state of an experiment.
 
         .. important::
@@ -512,19 +512,41 @@ class Logger:
         Args:
             state_dict (dict): Dictionary containing essential elements to
                 describe the current state of training.
-            itr (Union[int, None]): Current iteration of training. Defaults to None
-            epoch (Union[int, None]): Current epoch of the SGD. Defaults to None
+            itr (Union[int, None]): Current iteration of training (e.g. epoch). Defaults
+                to None
         """
         if proc_id() == 0:
-            fname = "vars.pkl" if itr is None else "vars%d.pkl" % itr
+
+            # Save training state (environment, ...)
             try:
-                joblib.dump(state_dict, osp.join(self.output_dir, fname))
+                joblib.dump(state_dict, osp.join(self.output_dir, "vars.pkl"))
             except (ValueError, pickle.PicklingError):
                 self.log("Warning: could not pickle state_dict.", color="red")
+
+            # Save model state
             if hasattr(self, "tf_saver_elements"):
+                backend_folder_name = "tf2_save"
                 self._tf_save(itr)
             if hasattr(self, "pytorch_saver_elements"):
-                self._pytorch_save(itr, epoch)
+                backend_folder_name = "torch_save"
+                self._pytorch_save(itr)
+
+            # Save checkpoint state
+            if self._save_checkpoints and itr is not None:
+                epoch_name = (
+                    "epoch%d" % itr
+                    if itr is not None
+                    else "epoch" + str(self._checkpoint)
+                )
+                fpath = osp.join(
+                    self.output_dir, backend_folder_name, "checkpoints", str(epoch_name)
+                )
+                fname = osp.join(fpath, "vars.pkl")
+                os.makedirs(fpath, exist_ok=True)
+                try:
+                    joblib.dump(state_dict, fname)
+                except (ValueError, pickle.PicklingError):
+                    self.log("Warning: could not pickle state_dict.", color="red")
 
     def setup_tf_saver(self, what_to_save):
         """Set up easy model saving for a single Tensorlow model.
@@ -548,18 +570,19 @@ class Logger:
         self.pytorch_saver_elements = what_to_save
         self.log("Policy will be saved to '{}'.\n".format(self.output_dir), type="info")
 
-    def _tf_save(self, itr=None, epoch=None):
+    def _tf_save(self, itr=None):
         """Saves the PyTorch model/models using their ``state_dict``.
 
         Args:
-            itr(Union[int, None]): Current iteration of training. Defaults to None
+            itr (Union[int, None]): Current iteration of training (e.g. epoch). Defaults
+                to None
         """
         if proc_id() == 0:
 
             save_fail_warning = (
                 "The object you tried to save doesn't have a 'save_weights' we "
                 "can use to retrieve the model weights. Please make sure you supplied "
-                "the 'setup_pytorch_saver' method with a valid 'tf.keras.Model' object "
+                "the 'setup_tf_saver' method with a valid 'tf.keras.Model' object "
                 "or implemented a 'save_weights' method on your object.",
             )
 
@@ -568,19 +591,19 @@ class Logger:
             ), "First have to setup saving with self.setup_tf_saver"
 
             # Create filename
-            fpath = "tf2_save" + ("%d" % itr if itr is not None else "")
-            fpath = osp.join(self.output_dir, fpath)
+            fpath = osp.join(self.output_dir, "tf2_save")
+            fname = osp.join(fpath, "weights_checkpoint")
             os.makedirs(fpath, exist_ok=True)
 
-            # Create Checkpoints Name
-            if self._save_checkpoints:
+            # Create Checkpoints name
+            if self._save_checkpoints and itr is not None:
                 epoch_name = (
-                    "epoch%d" % epoch
-                    if epoch is not None
+                    "epoch%d" % itr
+                    if itr is not None
                     else "epoch" + str(self._checkpoint)
                 )
-                model_name = "model%d" % itr if itr is not None else ""
-                cpath = osp.join(fpath, "checkpoints", model_name, str(epoch_name))
+                cpath = osp.join(fpath, "checkpoints", str(epoch_name))
+                cname = osp.join(cpath, "weights_checkpoint")
                 os.makedirs(cpath, exist_ok=True)
 
             # Save additional algorithm information
@@ -596,30 +619,27 @@ class Logger:
             if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
                 self.tf_saver_elements, "save_weights"
             ):
-                self.tf_saver_elements.save_weights(
-                    osp.join(fpath, "weights_checkpoint")
-                )
+                self.tf_saver_elements.save_weights(fname)
             else:
                 self.log(save_fail_warning, type="warning")
 
             # Save checkpoint
-            if self._save_checkpoints:
+            if self._save_checkpoints and itr is not None:
                 if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
                     self.tf_saver_elements, "save_weights"
                 ):
-                    self.tf_saver_elements.save_weights(
-                        osp.join(cpath, "weights_checkpoint")
-                    )
+                    self.tf_saver_elements.save_weights(cname)
                 else:
                     self.log(save_fail_warning, type="warning")
 
                 self._checkpoint += 1  # Increase epoch
 
-    def _pytorch_save(self, itr=None, epoch=None):
+    def _pytorch_save(self, itr=None):
         """Saves the PyTorch model/models using their ``state_dict``.
 
         Args:
-            itr(Union[int, None]): Current iteration of training. Defaults to ``None``.
+            itr (Union[int, None]): Current iteration of training (e.g. epoch). Defaults
+                to None
         """
         if proc_id() == 0:
 
@@ -635,23 +655,19 @@ class Logger:
             ), "First have to setup saving with self.setup_pytorch_saver"
 
             # Create filename
-            fpath = "torch_save"
-            fpath = osp.join(self.output_dir, fpath)
-            fname = "model_state" + ("%d" % itr if itr is not None else "") + ".pt"
-            fname = osp.join(fpath, fname)
+            fpath = osp.join(self.output_dir, "torch_save")
+            fname = osp.join(fpath, "model_state.pt")
             os.makedirs(fpath, exist_ok=True)
 
             # Create Checkpoints Name
-            if self._save_checkpoints:
+            if self._save_checkpoints and itr is not None:
                 epoch_name = (
-                    "epoch%d" % epoch
-                    if epoch is not None
+                    "epoch%d" % itr
+                    if itr is not None
                     else "epoch" + str(self._checkpoint)
                 )
-                model_name = "model%d" % itr if itr is not None else ""
-                cpath = osp.join(fpath, "checkpoints", model_name, str(epoch_name))
-                cname = "model_state" + ("%d" % itr if itr is not None else "") + ".pt"
-                cname = osp.join(cpath, cname)
+                cpath = osp.join(fpath, "checkpoints", str(epoch_name))
+                cname = osp.join(cpath, "model_state.pt")
                 os.makedirs(cpath, exist_ok=True)
 
             # Save additional algorithm information

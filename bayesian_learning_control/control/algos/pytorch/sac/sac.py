@@ -361,8 +361,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_freq",
         type=int,
-        default=2,
-        help="how often (in epochs) the policy should be saved (default: 2)",
+        default=1,
+        help="how often (in epochs) the policy should be saved (default: 1)",
     )
     parser.add_argument(
         "--save_checkpoints",

@@ -1270,7 +1270,7 @@ def lac(  # noqa: C901
 
             # Save model
             if (epoch % save_freq == 0) or (epoch == epochs):
-                logger.save_state({"env": env}, None, epoch=epoch)
+                logger.save_state({"env": env}, itr=epoch)
 
             # Test the performance of the deterministic version of the agent
             eps_ret, eps_len = test_agent(
@@ -1674,13 +1674,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_freq",
         type=int,
-        default=2,
-        help="how often (in epochs) the policy should be saved (default: 2)",
+        default=1,
+        help="how often (in epochs) the policy should be saved (default: 1)",
     )
     parser.add_argument(
         "--save_checkpoints",
         type=bool,
-        default=False,
+        default=True,  # DEBUG!
         help="use model checkpoints (default: False)",
     )
     parser.add_argument(
