@@ -2,7 +2,7 @@
 
 This utility can helps you to find the right hyperparameters for you agent and environment using a
 grid search. This is equivalent to running the
-``python -m machine_learning_control.run`` command line command with multiple
+``python -m bayesian_learning_control.run`` command line command with multiple
 parameters.
 
 You can modify this script to your liking to run a grid search for your algorithm
@@ -19,8 +19,8 @@ import argparse
 import torch
 
 # Import the RL agent you want to perform the grid search for
-from machine_learning_control.control.algos.pytorch.sac.sac import sac
-from machine_learning_control.control.utils.run_utils import ExperimentGrid
+from bayesian_learning_control.control.algos.pytorch.sac.sac import sac
+from bayesian_learning_control.control.utils.run_utils import ExperimentGrid
 
 # Script parametesr
 ENV_NAME = "Oscillator-v1"  # The environment on which you want to train the agent.

@@ -5,13 +5,13 @@ How to use
 Through the CLI
 ===============
 
-The MLC package comes with a handy :ref:`CLI <runner>`. You can use this CLI to invoke
-the utilities of each of the four directly MLC modules. You can use the
+The BLC package comes with a handy :ref:`CLI <runner>`. You can use this CLI to invoke
+the utilities of each of the four directly BLC modules. You can use the
 following command to check which utilities are available quickly:
 
 .. code-block:: bash
 
-    python -m machine_learning_control.run --help
+    python -m bayesian_learning_control.run --help
 
 See the corresponding module documentation for more information on a given utility.
 

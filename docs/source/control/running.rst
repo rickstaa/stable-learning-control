@@ -9,22 +9,22 @@ Launching from the Command Line
 ===============================
 
 
-MLC ships with, a convenient :ref:`command line interface (CLI) <runner>` that lets you easily
+BLC ships with, a convenient :ref:`command line interface (CLI) <runner>` that lets you easily
 launch any algorithm (with any choices of hyperparameters) from the command line. It also serves as a thin wrapper over
 the utilities for watching/evaluating the trained policies and plotting, although we will not discuss that functionality on this page
 (for those details, see the pages on `experiment outputs`_, `robustness eval`_ and `plotting`_).
 
-The standard way to run a MLC algorithm from the command line is
+The standard way to run a BLC algorithm from the command line is
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run [algo name] [experiment flags]
+    python -m bayesian_learning_control.run [algo name] [experiment flags]
 
 eg:
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run sac --env Walker2d-v2 --exp_name walker
+    python -m bayesian_learning_control.run sac --env Walker2d-v2 --exp_name walker
 
 .. _`experiment outputs`: ../control/saving_and_loading.html
 .. _`robustness eval`: ../control/robustness_eval.html
@@ -32,7 +32,7 @@ eg:
 
 .. admonition:: You Should Know
 
-    If you are using ZShell: ZShell interprets square brackets as special characters. MLC uses square brackets
+    If you are using ZShell: ZShell interprets square brackets as special characters. BLC uses square brackets
     in a few ways for command-line arguments; make sure to escape them or try the solution recommended
     `here <http://kinopyo.com/en/blog/escape-square-bracket-by-default-in-zsh>`_ if you want to escape them by default.
 
@@ -40,7 +40,7 @@ eg:
 
     .. parsed-literal::
 
-        python -m machine_learning_control.run sac --exp_name sac_ant --env Ant-v2 --clip_ratio 0.1 0.2
+        python -m bayesian_learning_control.run sac --exp_name sac_ant --env Ant-v2 --clip_ratio 0.1 0.2
             --hid[h] [32,32] [64,32] --act torch.nn.Tanh --seed 0 10 20 --dt
             --data_dir path/to/data
 
@@ -55,10 +55,10 @@ eg:
 
     The ``seed`` flag sets the seed for the random number generator. RL algorithms have high variance, so try multiple seeds to get a feel for how performance varies.
 
-    The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in :mod:`machine_learning_control.user_config`).
+    The ``dt`` flag ensures that the save directory names will have timestamps in them (otherwise they don't, unless you set ``FORCE_DATESTAMP=True`` in :mod:`bayesian_learning_control.user_config`).
 
-    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in :mod:`machine_learning_control.user_config`, which will be a subfolder
-    ``data`` in the ``machine_learning_control`` folder (unless you change it).
+    The ``data_dir`` flag allows you to set the save folder for results. The default value is set by ``DEFAULT_DATA_DIR`` in :mod:`bayesian_learning_control.user_config`, which will be a subfolder
+    ``data`` in the ``bayesian_learning_control`` folder (unless you change it).
 
     `Save directory names`_ are based on ``exp_name`` and any flags which have multiple values. Instead of the full flag, a shorthand will appear in the directory name. Shorthands can be provided
     by the user in square brackets after the flag, like ``--hid[h]``; otherwise, shorthands are substrings of the flag (``clip_ratio`` becomes ``cli``). To illustrate, the save directory for the
@@ -80,15 +80,15 @@ To use a PyTorch version of an algorithm, run with
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run [algo]_pytorch
+    python -m bayesian_learning_control.run [algo]_pytorch
 
 To use a Tensorflow version of an algorithm, run with
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run [algo]_tf2
+    python -m bayesian_learning_control.run [algo]_tf2
 
-If you run ``python -m machine_learning_control.run [algo]`` without ``_pytorch`` or ``_tf2``, the runner will look in ``machine_learning_control/user_config.py`` for which version it should
+If you run ``python -m bayesian_learning_control.run [algo]`` without ``_pytorch`` or ``_tf2``, the runner will look in ``bayesian_learning_control/user_config.py`` for which version it should
 default to for that algorithm.
 
 Setting Hyperparameters from the Command Line
@@ -101,18 +101,18 @@ To find out what keyword args are available, see either the docs page for :ref:`
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run [algo name] --help
+    python -m bayesian_learning_control.run [algo name] --help
 
 to see a readout of the docstring.
 
 .. admonition:: You Should Know
 
-    Values pass through :meth:`~machine_learning_control.control.utils.safer_eval.safer_eval()` before being used, so you can describe some functions and objects directly from
+    Values pass through :meth:`~bayesian_learning_control.control.utils.safer_eval.safer_eval()` before being used, so you can describe some functions and objects directly from
     the command line. For example:
 
     .. parsed-literal::
 
-        python -m machine_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ELU
+        python -m bayesian_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ELU
 
     sets ``torch.nn.ELU`` as the activation function. (Tensorflow equivalent: run ``sac_tf`` with ``--act tf.nn.relu``.)
 
@@ -141,7 +141,7 @@ For example, to launch otherwise-equivalent runs with different random seeds (0,
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run sac --env Walker2d-v2 --exp_name walker --seed 0 10 20
+    python -m bayesian_learning_control.run sac --env Walker2d-v2 --exp_name walker --seed 0 10 20
 
 Experiments don't launch in parallel because they soak up enough resources that executing several at the same time wouldn't get a speedup.
 
@@ -155,7 +155,7 @@ Environment Flags
 
 .. option:: --env, --env_name
 
-    :obj:`str`. The name of an environment in the OpenAI Gym. All MLC algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn``
+    :obj:`str`. The name of an environment in the OpenAI Gym. All BLC algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn``
     must be a callable function that builds a copy of the RL environment. Since the most common use case is Gym environments, though, all of which are built through ``gym.make(env_name)``,
     we allow you to just specify ``env_name`` (or ``env`` for short) at the command line, which gets converted to a lambda-function that builds the correct gym environment.
 
@@ -207,7 +207,7 @@ Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
    :obj:`tf op`. The activation function for the output activation function of the critic.
 
-These flags are valid for all current MLC algorithms.
+These flags are valid for all current BLC algorithms.
 
 Config Flags
 ^^^^^^^^^^^^
@@ -225,7 +225,7 @@ These flags are not hyperparameters of any algorithm but change the experimental
 
 .. option:: --data_dir
 
-    :obj:`path str`. Set the base save directory for this experiment or set of experiments. If none is given, the ``DEFAULT_DATA_DIR`` in ``machine_learning_control/user_config.py`` will be used.
+    :obj:`path str`. Set the base save directory for this experiment or set of experiments. If none is given, the ``DEFAULT_DATA_DIR`` in ``bayesian_learning_control/user_config.py`` will be used.
 
 .. option:: --datestamp
 
@@ -234,10 +234,10 @@ These flags are not hyperparameters of any algorithm but change the experimental
 Using experimental configuration files (yaml)
 ---------------------------------------------
 
-The MLC CLI comes with a handy configuration file loader that can be used to load `YAML`_ configuration files. These configuration files provide a convenient way to store your experiments'
-hyperparameter such that results can be reproduced. You can supply the CLI with an experiment configuration file using the ``--exp-cfg`` flag.
+The BLC CLI comes with a handy configuration file loader that can be used to load `YAML`_ configuration files. These configuration files provide a convenient way to store your experiments'
+hyperparameter such that results can be reproduced. You can supply the CLI with an experiment configuration file using the ``--exp_cfg`` flag.
 
-.. options:: --exp-cfg
+.. option:: --exp_cfg
 
     :obj:`path str`. Sets the path to the ``yml`` config file used for loading experiment hyperparameter.
 
@@ -245,7 +245,7 @@ For example, we can use the following command to train a SAC algorithm using the
 
 .. code-block:: bash
 
-    python -m machine_learning_control.run --exp-cfg ./experiments/haarnoja_et_al_2019.yml
+    python -m bayesian_learning_control.run --exp_cfg ./experiments/haarnoja_et_al_2019.yml
 
 .. _`YAML`: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
 .. _`Haarnoja et al., 2019`: https://arxiv.org/abs/1801.01290
@@ -261,7 +261,7 @@ Results for a particular experiment (a single run of a configuration of hyperpar
 
 where
 
-* ``data_dir`` is the value of the ``--data_dir`` flag (defaults to ``DEFAULT_DATA_DIR`` from ``machine_learning_control/user_config.py`` if ``--data_dir`` is not given),
+* ``data_dir`` is the value of the ``--data_dir`` flag (defaults to ``DEFAULT_DATA_DIR`` from ``bayesian_learning_control/user_config.py`` if ``--data_dir`` is not given),
 * the ``outer_prefix`` is a ``YY-MM-DD_`` timestamp if the ``--datestamp`` flag is raised, otherwise nothing,
 * the ``inner_prefix`` is a ``YY-MM-DD_HH-MM-SS-`` timestamp if the ``--datestamp`` flag is raised, otherwise nothing,
 * and ``suffix`` is a special string based on the experiment hyperparameters.
@@ -279,7 +279,7 @@ For example, consider:
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run sac_tf --env Hopper-v2 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
+    python -m bayesian_learning_control.run sac_tf --env Hopper-v2 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
 
 Here, the ``--hid`` flag is given a **user-supplied shorthand**, ``h``. The ``--act`` flag is not given a shorthand by the user, so one will be constructed for it automatically.
 
@@ -298,24 +298,24 @@ Extra
 
 .. admonition:: You Don't Actually Need to Know This One
 
-    Each individual algorithm is located in a file ``machine_learning_control/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line
-    with a limited set of arguments (some of which differ from what's available to ``machine_learning_control/run.py``). The command line support in thet in the individual algorithm files
+    Each individual algorithm is located in a file ``bayesian_learning_control/algos/BACKEND/ALGO_NAME/ALGO_NAME.py``, and these files can be run directly from the command line
+    with a limited set of arguments (some of which differ from what's available to ``bayesian_learning_control/run.py``). The command line support in thet in the individual algorithm files
     is essentially vestigial, however, and this is **not** a recommended way to perform experiments.
 
-    This documentation page will not describe those command line calls and *only* describe calls through ``machine_learning_control/run.py``.
+    This documentation page will not describe those command line calls and *only* describe calls through ``bayesian_learning_control/run.py``.
 
 Launching from Scripts
 ======================
 
-Each algorithm is implemented as a python function, which can be imported directly from the ``machine_learning_control`` package, eg
+Each algorithm is implemented as a python function, which can be imported directly from the ``bayesian_learning_control`` package, eg
 
->>> from machine_learning_control.control import sac_pytorch as sac
+>>> from bayesian_learning_control.control import sac_pytorch as sac
 
 See the documentation page for each algorithm for a complete account of possible arguments. These methods can be used to set up specialized custom experiments, for example:
 
 .. code-block:: python
 
-    from machine_learning_control.control import sac_tf2 as sac
+    from bayesian_learning_control.control import sac_tf2 as sac
     import tensorflow as tf
     import gym
 
@@ -340,12 +340,12 @@ The ``start_policy`` command-line flag allows you to use an already trained algo
 Using custom environments
 =========================
 
-There are two methods for adding custom environments to the MLC package. The first and easiest way is to make use of `OpenAi gym`_ it's internal module import
+There are two methods for adding custom environments to the BLC package. The first and easiest way is to make use of `OpenAi gym`_ it's internal module import
 mechanism:
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run sac --env custom_env_module:CustomEnv-v0
+    python -m bayesian_learning_control.run sac --env custom_env_module:CustomEnv-v0
 
 This imports the ``custom_env_module`` and then looks for the ``CustomEnv-v0`` in this environment.
 
@@ -356,4 +356,4 @@ This imports the ``custom_env_module`` and then looks for the ``CustomEnv-v0`` i
 .. _`OpenAi gym`: https://gym.openai.com/
 .. _`OpenAi gym custom gym environment guide`: https://github.com/openai/gym/blob/master/docs/creating-environments.md
 
-Additionally you can also add the setup code for registering your environment in the :mod:`machine_learning_control.env_config` module.
+Additionally you can also add the setup code for registering your environment in the :mod:`bayesian_learning_control.env_config` module.

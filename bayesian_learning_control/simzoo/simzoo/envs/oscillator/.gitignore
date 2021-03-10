@@ -1,0 +1,11 @@
+# tests
+.coverage
+
+# Cache
+__pycache__/
+
+# IDEA
+.vscode/
+
+# Node
+node_modules/

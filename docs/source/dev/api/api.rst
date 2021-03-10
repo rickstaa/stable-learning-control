@@ -10,9 +10,9 @@ Python Code API
 ===============
 
 All Python modules, classes, scripts, utilities and functions of the
-MLC package will be documented here.
+BLC package will be documented here.
 
-MLC modules
+BLC modules
 -----------
 
 .. autosummary::
@@ -20,15 +20,15 @@ MLC modules
    :template: custom-module-template.rst
    :recursive:
 
-   machine_learning_control.control
-   machine_learning_control.hardware
-   machine_learning_control.modeling
-   machine_learning_control.simzoo
-   machine_learning_control.utils
-   machine_learning_control.common
-   machine_learning_control.run
+   bayesian_learning_control.control
+   bayesian_learning_control.hardware
+   bayesian_learning_control.modeling
+   bayesian_learning_control.simzoo
+   bayesian_learning_control.utils
+   bayesian_learning_control.common
+   bayesian_learning_control.run
 
-MLC configuration files
+BLC configuration files
 -----------------------
 
 .. autosummary::
@@ -37,5 +37,5 @@ MLC configuration files
    :recursive:
 
 
-   machine_learning_control.user_config
-   machine_learning_control.env_config
+   bayesian_learning_control.user_config
+   bayesian_learning_control.env_config

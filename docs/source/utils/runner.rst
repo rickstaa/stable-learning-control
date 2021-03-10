@@ -3,14 +3,14 @@
 Command Line Interface
 ======================
 
-This CLI can be used to invoke the utilities of each of the four MLC modules directly. You
+This CLI can be used to invoke the utilities of each of the four BLC modules directly. You
 can use the following command to check which utilities are available quickly:
 
 .. code-block:: bash
 
-    python -m machine_learning_control.run --help
+    python -m bayesian_learning_control.run --help
 
-The MLC package currently contains the following utilities:
+The BLC package currently contains the following utilities:
 
 +---------+--------------------+------------------------------------------------------------------------------------------------------------------------------+
 | Module  | Utility            | description                                                                                                                  |
@@ -28,4 +28,4 @@ The MLC package currently contains the following utilities:
 
 See the corresponding module documentation for more information on a given utility.
 
-.. autofunction:: machine_learning_control.run.run
+.. autofunction:: bayesian_learning_control.run.run

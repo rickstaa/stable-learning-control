@@ -9,11 +9,11 @@ Utilities
 Plot utility
 ============
 
-MLC ships with a simple plotting utility that can be used to plot diagnostics from experiments. Run it with:
+BLC ships with a simple plotting utility that can be used to plot diagnostics from experiments. Run it with:
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run plot [path/to/output_directory ...] [--legend [LEGEND ...]]
+    python -m bayesian_learning_control.run plot [path/to/output_directory ...] [--legend [LEGEND ...]]
         [--xaxis XAXIS] [--value [VALUE ...]] [--count] [--smooth S]
         [--select [SEL ...]] [--exclude [EXC ...]]
 
@@ -42,7 +42,7 @@ MLC ships with a simple plotting utility that can be used to plot diagnostics fr
 
         .. parsed-literal::
 
-            python machine_learning_control/control/utils/plot.py data/bench_algo
+            python bayesian_learning_control/control/utils/plot.py data/bench_algo
 
         relying on the autocomplete to find both ``data/bench_algo1`` and ``data/bench_algo2``.
 
@@ -87,12 +87,12 @@ Test policy utility
 Environment Found
 -----------------
 
-MLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
+BLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
 is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run test_policy path/to/output_directory
+    python -m bayesian_learning_control.run test_policy path/to/output_directory
 
 
 There are a few flags for options:
@@ -118,7 +118,10 @@ There are a few flags for options:
     *int*. This is an option for a special case that is not supported by algorithms in this package as-shipped, but they are easily modified.
     Use case: Sometimes, it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can
     do this --save snapshots of the agent from those different points to be run and watched later. In this case, you use this flag to specify which
-    iteration to run. But again: machine_learning_control algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
+    iteration to run. But again: bayesian_learning_control algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
+
+    .. TODO::
+        This is inplemented!
 
     The default value of this flag means "use the latest snapshot."
 
@@ -140,7 +143,7 @@ There are a few flags for options:
 
 .. option:: -d, --deterministic
 
-    Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The MLC implementation trains a stochastic
+    Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The BLC implementation trains a stochastic
     policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
     by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
     for any other algorithms.
@@ -154,9 +157,9 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
 .. parsed-literal::
 
     Traceback (most recent call last):
-      File "machine_learning_control/control/utils/test_policy.py", line 153, in <module>
+      File "bayesian_learning_control/control/utils/test_policy.py", line 153, in <module>
         run_policy(env, get_action, args.len, args.episodes, not(args.norender))
-      File "machine_learning_control/control/utils/test_policy.py", line 114, in run_policy
+      File "bayesian_learning_control/control/utils/test_policy.py", line 114, in run_policy
         "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
     AssertionError: Environment not found!
 
@@ -167,7 +170,7 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
 
 In this case, watching your agent perform is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
 
->>> from machine_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
+>>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
 >>> import your_env
 >>> _, get_action = load_policy_and_env('/path/to/output_directory')
 >>> env = your_env.make()
@@ -193,15 +196,15 @@ Robustness eval utility
 ExperimentGrid utility
 ======================
 
-MLC ships with a tool called ExperimentGrid for making hyperparameter ablations easier. This is based on (but simpler than) `the rllab tool`_ called VariantGenerator.
+BLC ships with a tool called ExperimentGrid for making hyperparameter ablations easier. This is based on (but simpler than) `the rllab tool`_ called VariantGenerator.
 
 .. _`the rllab tool`: https://github.com/rll/rllab/blob/master/rllab/misc/instrument.py#L173
 
-.. autoclass:: machine_learning_control.control.utils.run_utils.ExperimentGrid
+.. autoclass:: bayesian_learning_control.control.utils.run_utils.ExperimentGrid
     :members:
 
 
 Calling Experiments utility
 ===========================
 
-.. autofunction:: machine_learning_control.control.utils.run_utils.call_experiment
+.. autofunction:: bayesian_learning_control.control.utils.run_utils.call_experiment

@@ -14,7 +14,7 @@ Deploy PyTorch Algorithms
 
 .. attention::
     PyTorch also provides multiple ways to deploy trained models to hardware (see the `PyTorch serving documentation`_).
-    However, at the time of writing, these methods currently do not support the agents used in the MLC package.
+    However, at the time of writing, these methods currently do not support the agents used in the BLC package.
     For more information, see `this issue <https://github.com/pytorch/pytorch/issues/29843>`_.
 
 Deploy Tensorflow Algorithms
@@ -32,7 +32,7 @@ then be loaded onto the hardware using the :obj:`tf.saved_model.load` method.
 
     import os
     import tensorflow as tf
-    from machine_learning_control.utils.log_utils.logx import EpochLogger
+    from bayesian_learning_control.utils.log_utils.logx import EpochLogger
 
     model_path = "./data/lac/oscillator-v1/runs/run_1614673367/tf2_save"
 

@@ -4,7 +4,7 @@ Installation
 
 .. contents:: Table of Contents
 
-MLC requires `Python3`_ and `OpenAI Gym`_ to work. It is
+BLC requires `Python3`_ and `OpenAI Gym`_ to work. It is
 currently only supported on Linux and OSX.
 
 .. warning::
@@ -21,17 +21,17 @@ We recommend installing Python through Anaconda. Anaconda is a library that incl
 Python, as well as an environment manager called Conda that makes package management simple.
 
 Follow `the installation instructions`_ for Anaconda here. Download and install Anaconda3 (at time of writing, `Anaconda3-5.3.1`_).
-Then create a Conda Python 3.7 env for organizing packages used in the MLC package:
+Then create a Conda Python 3.7 env for organizing packages used in the BLC package:
 
 .. code-block:: bash
 
-    conda create -n mlc python=3.7
+    conda create -n blc python=3.7
 
 To use Python from the environment, you just created, activate the environment with:
 
 .. code-block:: bash
 
-    conda activate mlc
+    conda activate blc
 
 .. admonition:: You Should Know
 
@@ -52,11 +52,11 @@ To use Python from the environment, you just created, activate the environment w
 .. _`documentation page from Conda`: https://conda.io/docs/user-guide/tasks/manage-environments.html
 .. _`this Github issue for Tensorflow`: https://github.com/tensorflow/tensorflow/issues/20444
 
-Installing the MLC package
+Installing the BLC package
 ==========================
 
-After you successfully setup your python environment, you can install the MLC package and its dependencies in
-this environment. The MLC has two versions you can install:
+After you successfully setup your python environment, you can install the BLC package and its dependencies in
+this environment. The BLC has two versions you can install:
 
     - A version which uses `Pytorch`_ as the backend of the RL/IL algorithms.
     - A version which uses `Tensorflow 2.0`_ as the RL/IL algorithms.
@@ -64,7 +64,7 @@ this environment. The MLC has two versions you can install:
 .. attention::
 
     We choose PyTorch as the default backend as it, in our opinion, is easier to work with than Tensorflow. However, at the time of writing, it
-    is slightly slower than the Tensorflow backend. This is caused because the agents used in the MLC package use components that are
+    is slightly slower than the Tensorflow backend. This is caused because the agents used in the BLC package use components that are
     not yet supported by `TorchScript`_ (responsible for creating a fast compiled version of PyTorch script). As PyTorch has shown to be faster
     in most implementations, this will likely change in the future. You can track the status of this speed problem
     `here <https://github.com/pytorch/pytorch/issues/29843>`_.
@@ -98,15 +98,15 @@ Installing MuJoCo (Optional)
 ============================
 
 
-The MLC package comes bundled with several gym environments. Out of the box it includes the following environments:
+The BLC package comes bundled with several gym environments. Out of the box it includes the following environments:
 
 * The Openai gym `Algorithmic`_ environments.
 * The Openai gym `ToyText`_.
 * The Openai gym `Classic Control`_ environments.
-* The :ref:`MLC Simzoo <simzoo_module>` environments.
+* The :ref:`BLC Simzoo <simzoo_module>` environments.
 
-Out of the box, the MLC package does not include the Openai gym `MuJoCo`_ and `Robotics`_ environments, often used in RL benchmarks. If you want to
-use the MLC package with these environments first go to the `mujoco-py`_ github page. Follow the README installation instructions, which describe how to install the `MuJoCo physics engine`_ and the `mujoco-py` package (which allows the use of MuJoCo from Python).
+Out of the box, the BLC package does not include the Openai gym `MuJoCo`_ and `Robotics`_ environments, often used in RL benchmarks. If you want to
+use the BLC package with these environments first go to the `mujoco-py`_ github page. Follow the README installation instructions, which describe how to install the `MuJoCo physics engine`_ and the `mujoco-py` package (which allows the use of MuJoCo from Python).
 
 .. admonition:: You Should Know
 
@@ -123,7 +123,7 @@ And then check that things are working by running SAC in the Walker2d-v2 environ
 
 .. parsed-literal::
 
-    python -m machine_learning_control.run sac --hid "[32, 32]" --env Walker2d-v2 --exp_name mujocotest
+    python -m bayesian_learning_control.run sac --hid "[32, 32]" --env Walker2d-v2 --exp_name mujocotest
 
 .. _`MuJoCo`: https://gym.openai.com/envs/#mujoco
 .. _`Robotics`: https://gym.openai.com/envs/#robotics

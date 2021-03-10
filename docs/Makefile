@@ -1,12 +1,12 @@
-# Makefile for Machine Learning Control Sphinx documentation
+# Makefile for Bayesian Learning Control Sphinx documentation
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = Machine Learning Control
+SPHINXPROJ    = Bayesian Learning Control
 SOURCEDIR     = source
 BUILDDIR      = build
-GH_PAGES_SOURCES = docs machine_learning_control
+GH_PAGES_SOURCES = docs bayesian_learning_control
 
 # Put it first so that "make" without argument is like "make help".
 .PHONY: help Makefile

@@ -4,11 +4,11 @@ Release documentation
 
 .. contents:: Table of Contents
 
-The MLC framework contains two `Github actions`_ that automatically check and
+The BLC framework contains two `Github actions`_ that automatically check and
 deploy new documentation:
 
     * The `docs_check_ci`_ action checks your changes to see if the documentation still builds.
-    * The `docs_publish_ci`_ action deploys your documentation if a new version of the MLC framework is released.
+    * The `docs_publish_ci`_ action deploys your documentation if a new version of the BLC framework is released.
 
 Automatic build instructions
 ============================
@@ -23,8 +23,8 @@ To successfully deploy your new documentation, you have to follow the following 
 #. Merge the pull request into the main branch. The documentation will now be deployed using the `docs_publish_ci`_ action.
 
 .. _`Github actions`: https://github.com/features/actions
-.. _`docs_check_ci`: https://github.com/rickstaa/machine-learning-control/blob/main/.github/workflows/docs_check_ci.yml
-.. _`docs_publish_ci`: https://github.com/rickstaa/machine-learning-control/blob/main/.github/workflows/docs_publish_ci.yml
+.. _`docs_check_ci`: https://github.com/rickstaa/bayesian-learning-control/blob/main/.github/workflows/docs_check_ci.yml
+.. _`docs_publish_ci`: https://github.com/rickstaa/bayesian-learning-control/blob/main/.github/workflows/docs_publish_ci.yml
 
 .. tip::
 
@@ -37,8 +37,8 @@ Manual build instructions
 Install requirements
 --------------------
 
-Building the MLC's `HTML`_ documentation requires `sphinx`_,
-the MLC package and several plugins. All of the above can be
+Building the BLC's `HTML`_ documentation requires `sphinx`_,
+the BLC package and several plugins. All of the above can be
 installed using the following `pip`_ command:
 
 .. code-block:: bash
@@ -64,7 +64,7 @@ To build the `HTML`_ documentation, go into the `docs/`_ directory and run the
 inside the ``docs/build/html`` directory.
 
 .. note::
-    Make sure you are in the Conda environment in which you installed the MLC package
+    Make sure you are in the Conda environment in which you installed the BLC package
     with it's dependencies.
 
 .. _`HTML`: https://www.w3schools.com/html/
@@ -90,5 +90,5 @@ push the documentation to the `main`_ branch and run the
     Please make sure you are on the `main`_ branch while building the documentation. Otherwise,
     errors will greet you.
 
-.. _`docs/`: https://github.com/rickstaa/machine-learning-control/tree/main/docs
-.. _`main`: https://github.com/rickstaa/machine-learning-control/tree/main
+.. _`docs/`: https://github.com/rickstaa/bayesian-learning-control/tree/main/docs
+.. _`main`: https://github.com/rickstaa/bayesian-learning-control/tree/main

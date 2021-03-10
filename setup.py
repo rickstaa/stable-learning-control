@@ -1,4 +1,4 @@
-"""Setup file for the 'machine_learning_control' python package.
+"""Setup file for the 'bayesian_learning_control' python package.
 """
 
 import os.path as osp
@@ -16,7 +16,7 @@ def submodules_available(submodules):
     for submodule in submodules:
         submodule_setup_path = osp.join(
             osp.abspath(osp.dirname(__file__)),
-            "machine_learning_control",
+            "bayesian_learning_control",
             submodule,
             "setup.py",
         )
@@ -31,7 +31,7 @@ def submodules_available(submodules):
 # NOTE: This only works if you don't have a __init__.py file in your parent folder and
 # stand alone_ns_pkgs folder.
 PACKAGES = find_namespace_packages(
-    include=["machine_learning_control*"],
+    include=["bayesian_learning_control*"],
     exclude=["*.tests*", "*.pytest*", "*.node_modules*"],
 )
 redundant_namespaces = [

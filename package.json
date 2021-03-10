@@ -1,9 +1,9 @@
 {
-  "name": "Machine-learning-control",
+  "name": "bayesian-learning-control",
   "version": "0.7.0",
   "repository": {
     "type": "git",
-    "url": "git@github.com:rickstaa/machine-learning-control.git"
+    "url": "git@github.com:rickstaa/bayesian-learning-control.git"
   },
   "license": "UNLICENSED",
   "devDependencies": {

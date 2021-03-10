@@ -3,7 +3,7 @@
 # NOTE: This documentation is build upon the documentation provided by the spinningup
 # project https://spinningup.openai.com/en/latest/.
 #
-# Machine Learning Control documentation build configuration file, created by
+# Bayesian Learning Control documentation build configuration file, created by
 # sphinx-quickstart on Wed Aug 15 04:21:07 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -19,18 +19,18 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-# -- Make sure mlc is accessible without going through setup.py -----------
+# -- Make sure blc is accessible without going through setup.py -----------
 import os.path as osp
 import sys
 
 dirname = osp.dirname
 top_folder = dirname(dirname(dirname(__file__)))
-sys.path.insert(0, osp.join(top_folder, "machine_learning_control"))
+sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control"))
 sys.path.insert(0, osp.join(top_folder, "examples"))
-sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "control"))
-sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "hardware"))
-sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "modeling"))
-sys.path.insert(0, osp.join(top_folder, "machine_learning_control", "simzoo"))
+sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "control"))
+sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "hardware"))
+sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "modeling"))
+sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "simzoo"))
 
 # -- General configuration ------------------------------------------------
 
@@ -97,13 +97,13 @@ intersphinx_mapping = {
 templates_path = ["_templates"]
 
 # Map suffix(es) to parsers
-# source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
+source_suffix = {".rst": "restructuredtext", ".txt": "markdown", ".md": "markdown"}
 
 # The master toctree document.
 master_doc = "index"
 
 # General information about the project.
-project = "machine-learning-control"
+project = "bayesian-learning-control"
 copyright = "2020, Rick Staa"
 author = "Rick Staa"
 git_user_name = "rickstaa"
@@ -163,7 +163,7 @@ html_context = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "MachineLearningControldoc"
+htmlhelp_basename = "BayesianLearningControldoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -223,8 +223,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "MachineLearningControl.tex",
-        "Machine Learning Control Documentation",
+        "BayesianLearningControl.tex",
+        "Bayesian Learning Control Documentation",
         "Joshua Achiam",
         "manual",
     ),
@@ -238,8 +238,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "machine_learning_control",
-        "Machine Learning Control documentation",
+        "bayesian_learning_control",
+        "Bayesian Learning Control documentation",
         [author],
         1,
     ),
@@ -254,10 +254,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "MachineLearningControl",
-        "Machine Learning Control Documentation",
+        "BayesianLearningControl",
+        "Bayesian Learning Control Documentation",
         author,
-        "MachineLearningControl",
+        "BayesianLearningControl",
         "Framework that enables you to automatically create, train and deploy RL control algorithms from data.",
         "Miscellaneous",
     ),
@@ -266,8 +266,8 @@ texinfo_documents = [
 # -- External links dictionary -----------------------------------------------
 # Here you will find some often used global url definitions.
 extlinks = {
-    "mlc": ("https://github.com/rickstaa/machine-learning-control/%s", None),
-    "issue": ("https://github.com/rickstaa/machine-learning-control/issues/%s", None),
+    "blc": ("https://github.com/rickstaa/bayesian-learning-control/%s", None),
+    "issue": ("https://github.com/rickstaa/bayesian-learning-control/issues/%s", None),
     "torch": ("https://pytorch.org/%s", None),
     "tf": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
     "tb": ("https://www.tensorflow.org/tensorboard/%s", None),

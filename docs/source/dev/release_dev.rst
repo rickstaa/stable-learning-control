@@ -22,7 +22,7 @@ Markdown guidelines:
 .. _`remark-lint`: https://github.com/remarkjs/remark-lint
 
 .. note::
-    The MLC framework contains several `GitHub actions`_, which check code changes
+    The BLC framework contains several `GitHub actions`_, which check code changes
     against these coding guidelines. As a result, when the above guidelines are not met, you will
     receive an error/warning when you create a pull request. Some of these actions will create pull requests
     which you can use to fix some of these violations. For other errors/warning, you are expected to handle
@@ -30,7 +30,7 @@ Markdown guidelines:
     or your code structure doesn't allow you to respect the guideline, please state so in the
     pull request.
 
-.. _`Github Actions`: https://github.com/rickstaa/machine-learning-control/actions
+.. _`Github Actions`: https://github.com/rickstaa/bayesian-learning-control/actions
 
 General guidelines
 ==================
@@ -48,7 +48,7 @@ Before releasing the package, make sure the following steps are performed:
     #. Squash and merge your branch with the main branch.
     #. Create a release using the GitHub draft release tool.
 
-.. _`pull request checks`: https://github.com/rickstaa/machine-learning-control/actions
+.. _`pull request checks`: https://github.com/rickstaa/bayesian-learning-control/actions
 
 Commit guidelines
 -----------------
