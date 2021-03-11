@@ -533,13 +533,13 @@ class Logger:
 
             # Save checkpoint state
             if self._save_checkpoints and itr is not None:
-                epoch_name = (
-                    "epoch%d" % itr
+                itr_name = (
+                    "iter%d" % itr
                     if itr is not None
-                    else "epoch" + str(self._checkpoint)
+                    else "iter" + str(self._checkpoint)
                 )
                 fpath = osp.join(
-                    self.output_dir, backend_folder_name, "checkpoints", str(epoch_name)
+                    self.output_dir, backend_folder_name, "checkpoints", str(itr_name)
                 )
                 fname = osp.join(fpath, "vars.pkl")
                 os.makedirs(fpath, exist_ok=True)
@@ -597,12 +597,12 @@ class Logger:
 
             # Create Checkpoints name
             if self._save_checkpoints and itr is not None:
-                epoch_name = (
-                    "epoch%d" % itr
+                itr_name = (
+                    "iter%d" % itr
                     if itr is not None
-                    else "epoch" + str(self._checkpoint)
+                    else "iter" + str(self._checkpoint)
                 )
-                cpath = osp.join(fpath, "checkpoints", str(epoch_name))
+                cpath = osp.join(fpath, "checkpoints", str(itr_name))
                 cname = osp.join(cpath, "weights_checkpoint")
                 os.makedirs(cpath, exist_ok=True)
 
@@ -661,12 +661,12 @@ class Logger:
 
             # Create Checkpoints Name
             if self._save_checkpoints and itr is not None:
-                epoch_name = (
-                    "epoch%d" % itr
+                itr_name = (
+                    "iter%d" % itr
                     if itr is not None
-                    else "epoch" + str(self._checkpoint)
+                    else "iter" + str(self._checkpoint)
                 )
-                cpath = osp.join(fpath, "checkpoints", str(epoch_name))
+                cpath = osp.join(fpath, "checkpoints", str(itr_name))
                 cname = osp.join(cpath, "model_state.pt")
                 os.makedirs(cpath, exist_ok=True)
 

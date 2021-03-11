@@ -2,7 +2,6 @@
 Running Experiments
 ===================
 
-
 .. contents:: Table of Contents
 
 Launching from the Command Line
@@ -149,6 +148,17 @@ Special Flags
 -------------
 
 A few flags receive special treatment.
+
+.. _alg_flags:
+
+Algorithm Flags
+^^^^^^^^^^^^^^^
+
+.. option:: --env, --save_checkpoints
+
+    By default, only the most recent state of the agent and environment is saved. When the ``--save_checkpoints`` flag is supplied, a snapshot (checkpoint) of the agent
+    and environment will be saved at each epoch. These snapshots are saved in a ``checkpoints`` folder inside the Logger output directory (for more information, see
+    :ref:`Saving and Loading Experiment Outputs <checkpoints>`).
 
 Environment Flags
 ^^^^^^^^^^^^^^^^^

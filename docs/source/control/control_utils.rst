@@ -115,31 +115,12 @@ There are a few flags for options:
 
 .. option:: -i I, --itr=I, default=-1
 
-    *int*. This is an option for a special case that is not supported by algorithms in this package as-shipped, but they are easily modified.
-    Use case: Sometimes, it's nice to watch trained agents from many different points in training (eg watch at iteration 50, 100, 150, etc.). The logger can
-    do this --save snapshots of the agent from those different points to be run and watched later. In this case, you use this flag to specify which
-    iteration to run. But again: bayesian_learning_control algorithms by default only save snapshots of the most recent agent, overwriting the old snapshots.
+    Specify the snapshot (checkpoint) for which you want to see the policy performance. Use case: Sometimes, it's nice to watch trained agents from many
+    different points in training (eg watch at iteration 50, 100, 150, etc.). The default value of this flag means "use the latest snapshot."
 
-    .. TODO::
-        This is inplemented!
-
-    The default value of this flag means "use the latest snapshot."
-
-    To modify an algo, so it does produce multiple snapshots, find the following line (which is present in all of the algorithms):
-
-    .. code-block:: python
-
-        logger.save_state({'env': env}, None)
-
-    and tweak it to
-
-    .. code-block:: python
-
-        logger.save_state({'env': env}, epoch)
-
-    Make sure to then also set ``save_freq`` to something reasonable (because if it defaults to 1, for instance, you'll flood your output directory with one
-    ``save`` folder for each snapshot---which adds up fast).
-
+    .. important::
+        This option only works if snapshots were saved while training the agent (i.e. the ``--save_checkpoints`` flag was set). For more information on
+        storing these snapshots see :ref:`alg_flags`.
 
 .. option:: -d, --deterministic
 

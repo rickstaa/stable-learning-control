@@ -60,27 +60,29 @@ simultaneously). The output directory contains the following:
     and those are the correct tools for interfacing with these outputs. But there is no tooling for ``config.json``--it's just
     there as a reference for the hyperparameters used when you ran the experiment.
 
+.. _checkpoints:
+
 PyTorch Save Directory Info
 ---------------------------
 .. _`Details for PyTorch saves below`:
 
 The ``torch_save`` directory contains:
 
-+----------------------------------------------------------------------------------+
-| **Pyt_Save Directory Structure**                                                 |
-+-------------------+--------------------------------------------------------------+
-|``checkpoints/``   | | Folder that when the ``save_checkpoints`` cmd line argument|
-|                   | | is set to ``True`` contains the state of the model at      |
-|                   | | multiple ``checkpoints`` during training.                  |
-+-------------------+--------------------------------------------------------------+
-|``model_state.pt`` | | This file contains the 'state_dict' that contains the      |
-|                   | | saved model weights. These weights can be used to restore  |
-|                   | | the trained agent's state on an initiated instance of the  |
-|                   | | respective Algorithm Class.                                |
-+-------------------+--------------------------------------------------------------+
-|``save_info.json`` | | A file used by the BLC package to ease model               |
-|                   | | loading. This file is not meant for the user.              |
-+-------------------+--------------------------------------------------------------+
++-----------------------------------------------------------------------------------+
+| **Pyt_Save Directory Structure**                                                  |
++-------------------+---------------------------------------------------------------+
+|``checkpoints/``   | | Folder that when the ``save_checkpoints`` cmd line argument |
+|                   | | is set to ``True`` contains the state of both the env and   |
+|                   | | model at multiple ``checkpoints`` during training.          |
++-------------------+---------------------------------------------------------------+
+|``model_state.pt`` | | This file contains the 'state_dict' that contains the       |
+|                   | | saved model weights. These weights can be used to restore   |
+|                   | | the trained agent's state on an initiated instance of the   |
+|                   | | respective Algorithm Class.                                 |
++-------------------+---------------------------------------------------------------+
+|``save_info.json`` | | A file used by the BLC package to ease model                |
+|                   | | loading. This file is not meant for the user.               |
++-------------------+---------------------------------------------------------------+
 
 Tensorflow Save Directory Info
 ------------------------------
@@ -92,8 +94,8 @@ The ``tf2_save`` directory contains:
 | **TF2_Save Directory Structure**                                                          |
 +---------------------------+---------------------------------------------------------------+
 |``checkpoints/``           | | Folder that when the ``save_checkpoints`` cmd line argument |
-|                           | | is set to ``True`` contains the state of the model at       |
-|                           | | multiple ``checkpoints`` during training.                   |
+|                           | | is set to ``True`` contains the state of both the env and   |
+|                           | | model at multiple ``checkpoints`` during training.          |
 +---------------------------+---------------------------------------------------------------+
 |``variables/``             | | A directory containing outputs from the Tensorflow Saver.   |
 |                           | | See the `Tensorflow save and load documentation`_ for more  |
