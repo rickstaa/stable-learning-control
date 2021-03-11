@@ -5,6 +5,7 @@ it was trained on.
 import glob
 import os
 import os.path as osp
+from pathlib import Path
 import time
 
 import joblib
@@ -14,49 +15,105 @@ from bayesian_learning_control.utils.serialization_utils import load_from_json
 from bayesian_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 
 
+def _retrieve_iter_folder(fpath, itr):
+    """Retrieves the path of the requested model iteration.
+
+    Args:
+        fpath (str): The path where the model is found.
+        itr (int): The current policy iteration (checkpoint).
+
+    Raises:
+        IOError: Raised if the model is corrupt.
+        FileNotFoundError: Raised if the model path did not exist.
+
+    Returns:
+        str: The model iteration path.
+    """
+    cpath = Path(fpath).joinpath("checkpoints", f"iter{itr}")
+    if osp.isdir(cpath):
+        log_to_std_out(f"Using model iteration {itr}.", type="info")
+        return cpath
+    else:
+        log_to_std_out(
+            f"Iteration {itr} not found inside the supplied model path '{fpath}'. "
+            "Last iteration used instead.",
+            type="warning",
+        )
+        return fpath
+
+
+def _retrieve_model_folder(fpath):
+    """Tries to retrieve the model folder and backend from the given path.
+
+    Args:
+        fpath (str): The path where the model is found.
+
+    Raises:
+        IOError: Raised if the model is corrupt.
+        FileNotFoundError: Raised if the model path did not exist.
+
+    Returns:
+        (tuple): tuple containing:
+
+            - model_folder (:obj:`func`): The model folder.
+            - backend (:obj:`str`): The inferred backend. Options are ``tf`` and
+                ``torch``.
+    """
+    data_folders = glob.glob(fpath + r"/*_save")
+    if ("tf2_save" in fpath and "torch_save" in fpath) or len(data_folders) > 1:
+        raise IOError(
+            "Policy could not be loaded as the model as the specified model folder "
+            f"'{fpath}' seems to be corrupted. It contains both a 'torch_save' and "
+            "'tf2_save' folder. Please check your model path (fpath) and try again."
+        )
+    elif "tf2_save" in fpath:
+        model_path = os.sep.join(
+            fpath.split(os.sep)[: fpath.split(os.sep).index("tf2_save") + 1]
+        )
+        return model_path, "tf"
+    elif "torch_save" in fpath:
+        model_path = os.sep.join(
+            fpath.split(os.sep)[: fpath.split(os.sep).index("torch_save") + 1]
+        )
+        return model_path, "torch"
+    else:  # Check
+        if len(data_folders) == 0:
+            raise FileNotFoundError(
+                f"No model was found inside the supplied model path '{fpath}'. Please "
+                "check your model path (fpath) and try again."
+            )
+        else:
+            return data_folders[0], (
+                "torch" if "torch_save" in data_folders[0] else "tf"
+            )
+
+
 def load_policy_and_env(fpath, itr="last"):
     """Load a policy from save, whether it's TF or PyTorch, along with RL env.
 
     Args:
         fpath (str): The path where the model is found.
-        itr (str, optional): The current policy iteration. Defaults to ``last``.
+        itr (str, optional): The current policy iteration (checkpoint). Defaults to
+            ``last``.
         deterministic (bool, optional): Whether you want the action from the policy to
             be deterministic. Defaults to ``False``.
 
     Returns:
         (tuple): tuple containing:
 
-            - env(:obj:`gym.env`): The gym environment.
+            - env (:obj:`gym.env`): The gym environment.
             - get_action (:obj:`func`): The policy get_action function.
     """
+    if not os.path.isdir(fpath):
+        raise FileNotFoundError(
+            f"The model folder you specified '{fpath}' does not exist. Please specify "
+            "a valid model folder (fpath) and try again."
+        )
 
-    # determine if tf save or pytorch save
-    if any(["tf2_save" in x for x in os.listdir(fpath)]):
-        backend = "tf"
-    else:
-        backend = "pytorch"
+    # Retrieve model path and backend
+    fpath, backend = _retrieve_model_folder(fpath)
 
-    # handle which epoch to load from
-    if itr == "last":
-        if backend == "tf":
-            tf_save_path = osp.join(fpath, "tf2_save")
-            saves = [
-                int(osp.basename(item).split(".")[0][18:])
-                for item in glob.glob(
-                    osp.join(tf_save_path, "weights_checkpoint*.index")
-                )
-                if len(osp.basename(item).split(".")[0]) > 18
-            ]
-        elif backend == "pytorch":
-            torch_save_path = osp.join(fpath, "torch_save")
-            saves = [
-                int(osp.basename(item).split(".")[0][11:])
-                for item in glob.glob(osp.join(torch_save_path, "model_state*.pt"))
-                if len(osp.basename(item).split(".")[0]) > 11
-            ]
-        itr = "%d" % max(saves) if len(saves) > 0 else ""
-
-    else:
+    if itr != "last":
         assert isinstance(
             itr, int
         ), "Bad value provided for itr (needs to be int or 'last')."
@@ -65,7 +122,7 @@ def load_policy_and_env(fpath, itr="last"):
     # try to load environment from save
     # NOTE: Sometimes this will fail because the environment could not be pickled.
     try:
-        state = joblib.load(osp.join(fpath, "vars" + itr + ".pkl"))
+        state = joblib.load(Path(fpath).parent.joinpath("vars.pkl"))
         env = state["env"]
     except Exception:
         env = None
@@ -79,34 +136,38 @@ def load_policy_and_env(fpath, itr="last"):
     return env, policy
 
 
-def load_tf_policy(fpath, itr, env=None):
+def load_tf_policy(fpath, itr="last", env=None):
     """Load a tensorflow policy saved with Bayesian Learning Control Logger.
 
     Args:
         fpath (str): The path where the model is found.
-        itr (str, optional): The current policy iteration. Defaults to ``last``.
+        itr (str, optional): The current policy iteration. Defaults to "last".
         env (:obj:`gym.env`): The gym environment in which you want to test the policy.
 
     Returns:
         tf.keras.Model: The policy.
     """
+    if itr != "last":
+        model_path = _retrieve_iter_folder(fpath, itr)
+    else:
+        model_path = fpath
     tf = import_tf()  # Import tf if installed otherwise throw warning
-    fname = osp.join(fpath, "tf2_save" + itr)
     print("\n")
-    log_to_std_out("Loading from %s.\n\n" % fname, type="info")
+    log_to_std_out("Loading model from '%s'.\n\n" % fpath, type="info")
 
     # Retrieve get_action method
-    save_info = load_from_json(osp.join(fname, "save_info.json"))
+    save_info = load_from_json(Path(fpath).joinpath("save_info.json"))
     import bayesian_learning_control.control.algos.tf2 as tf2_algos
 
-    model = getattr(tf2_algos, save_info["class_name"])(env=env)
-    latest = tf.train.latest_checkpoint(fname)  # Restore latest checkpoint
+    model = getattr(tf2_algos, save_info["alg_name"])(env=env)
+    latest = tf.train.latest_checkpoint(model_path)  # Restore latest checkpoint
     model.load_weights(latest)
+
     # return model.get_action
     return model
 
 
-def load_pytorch_policy(fpath, itr, env=None):
+def load_pytorch_policy(fpath, itr="last", env=None):
     """Load a pytorch policy saved with Bayesian Learning Control Logger.
 
     Args:
@@ -117,18 +178,20 @@ def load_pytorch_policy(fpath, itr, env=None):
     Returns:
         torch.nn.Module: The policy.
     """
-    fname = osp.join(
-        fpath,
-        "torch_save",
-        "model_state" + itr + ".pt",
+
+    if itr != "last":
+        fpath = _retrieve_iter_folder(fpath, itr)
+    model_file = Path(fpath).joinpath(
+        "model_state.pt",
     )
-    log_to_std_out("\n\nLoading from %s.\n\n" % fname, type="info")
-    model_data = torch.load(fname)
+    print("\n")
+    log_to_std_out("Loading model from '%s'.\n\n" % model_file, type="info")
 
     # Retrieve get_action method
     import bayesian_learning_control.control.algos.pytorch as torch_algos
 
-    model = getattr(torch_algos, model_data["class_name"])(env=env)
+    model_data = torch.load(model_file)
+    model = getattr(torch_algos, model_data["alg_name"])(env=env)
     model.load_state_dict(model_data)  # Retore model parameters
     return model
 

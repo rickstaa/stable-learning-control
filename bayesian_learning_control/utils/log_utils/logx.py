@@ -19,7 +19,7 @@ import joblib
 import numpy as np
 import torch
 from bayesian_learning_control.common.helpers import is_scalar
-from bayesian_learning_control.control.utils import import_tf
+from bayesian_learning_control.utils.import_utils import import_tf
 from bayesian_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from bayesian_learning_control.utils.log_utils import log_to_std_out
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import (
@@ -608,7 +608,7 @@ class Logger:
 
             # Save additional algorithm information
             if not self._save_info_saved:
-                save_info = {"class_name": self.tf_saver_elements.__class__.__name__}
+                save_info = {"alg_name": self.tf_saver_elements.__class__.__name__}
                 self.save_to_json(
                     save_info,
                     output_filename="save_info.json",
@@ -673,7 +673,7 @@ class Logger:
             # Save additional algorithm information
             if not self._save_info_saved:
                 save_info = {
-                    "class_name": self.pytorch_saver_elements.__class__.__name__
+                    "alg_name": self.pytorch_saver_elements.__class__.__name__
                 }
                 self.save_to_json(
                     save_info,

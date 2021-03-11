@@ -87,7 +87,7 @@ def log_to_std_out(
         bold (bool, optional): Whether you want the text to be bold text has to be
             bold.
         highlight (bool, optional):  Whether you want to highlight the text.
-            Defaults to False.
+            Defaults to ``False``.
         type (str, optional): The log message type. Options are: ``info``, ``warning``
             and ``error``. Defaults to ``None``.
         *args: All args to pass to the print function.
