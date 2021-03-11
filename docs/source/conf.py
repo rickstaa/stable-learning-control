@@ -61,7 +61,8 @@ needs_sphinx = "3.0"
 # ones.
 extensions = [
     "sphinx.ext.todo",
-    "sphinx.ext.imgmath",
+    # "sphinx.ext.imgmath",
+    "sphinxcontrib.katex",
     "sphinx.ext.viewcode",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -78,9 +79,9 @@ autosummary_generate_overwrite = True
 autodoc_member_order = "bysource"
 autosummary_imported_members = True
 
-# imgmath settings
-imgmath_image_format = "svg"
-imgmath_font_size = 14
+# # imgmath settings
+# imgmath_image_format = "svg"
+# imgmath_font_size = 14
 
 # Add mappings
 intersphinx_mapping = {
