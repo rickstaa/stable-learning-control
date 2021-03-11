@@ -113,7 +113,7 @@ jobs:
           token: ${{ secrets.GA_SUB }}
           fetch-depth: 0
       - name: Install system dependencies
-        run: sudo apt-get install libopenmpi-dev
+        run: sudo apt update; sudo apt install libopenmpi-dev
       - name: Set up Python environment
         uses: actions/setup-python@v2
         with:
