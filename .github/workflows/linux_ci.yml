@@ -42,7 +42,7 @@ jobs:
         run: |
           pip install -e .[dev]
       - name: Test with Pytest
-        run: pytest ./machine_learning_control --doctest-modules --html=pytest/${{ matrix.python-version }}/html/results.html --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml --cov=./machine_learning_control --cov-report=html:pytest/${{ matrix.python-version }}/cov/
+        run: pytest ./bayesian_learning_control --doctest-modules --html=pytest/${{ matrix.python-version }}/html/results.html --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml --cov=./bayesian_learning_control --cov-report=html:pytest/${{ matrix.python-version }}/cov/
       - name: Upload Pytest test results to artifacts
         uses: actions/upload-artifact@v2
         with:

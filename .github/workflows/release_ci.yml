@@ -62,7 +62,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          file_pattern: machine_learning_control/version.py docs/source/conf.py setup.cfg .bumpversion.cfg package.json package-lock.json
+          file_pattern: bayesian_learning_control/version.py docs/source/conf.py setup.cfg .bumpversion.cfg package.json package-lock.json
           commit_message: ":bookmark: Updates code version to ${{ steps.get_semver.outputs.current_version }}"
   release-changelog:
     runs-on: ubuntu-latest
