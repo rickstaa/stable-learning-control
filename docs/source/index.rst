@@ -14,7 +14,7 @@ Welcome to Bayesian Learning Control!
    that it is bug-free. Please open :issue:`an issue<>` if you experience problems or something is unclear.
 
 Welcome to the :blc:`Bayesian Learning Control <>` (BLC) framework! The BLC framework enables
-you to automatically create, train and deploy various Reinforcement Learning (RL) and
+you to automatically create, train and deploy various safe (stable and robust) Reinforcement Learning (RL) and
 Imitation learning (IL) control algorithms directly from real-world data. This framework
 is made up of four main modules:
 
