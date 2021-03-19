@@ -217,33 +217,48 @@ def run_policy(
         + "and we can't run the agent in it. :( \n\n Check out the readthedocs "
         + "page on Experiment Outputs for how to handle this situation."
     )
+    # TODO: What happended here?
 
     logger = EpochLogger(verbose_fmt="table")
     o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
     supports_deterministic = True  # Only supported with gaussian algorithms
+    render_error = False
     while n < num_episodes:
-        if render:
-            env.render()
-            time.sleep(1e-3)
+        # Render env if requested
+        if render and not render_error:
+            try:
+                env.render()
+                time.sleep(1e-3)
+            except NotImplementedError:
+                render_error = True
+                log_to_std_out(
+                    (
+                        "WARNING: Nothing was rendered since no render method was "
+                        f"implemented for the '{env.unwrapped.spec.id}' environment."
+                    ),
+                    type="warning",
+                )
 
-            if supports_deterministic:
-                try:
-                    a = policy.get_action(o, deterministic=deterministic)
-                except TypeError:
-                    log_to_std_out(
-                        "Input argument 'deterministic' ignored as the algorithm does "
-                        "not support deterministic actions. This is only supported for "
-                        "gaussian  algorithms.",
-                        type="warning",
-                    )
-                    a = policy.get_action(o)
-            else:
+        # Retrieve action
+        if deterministic and supports_deterministic:
+            try:
+                a = policy.get_action(o, deterministic=deterministic)
+            except TypeError:
+                supports_deterministic = False
+                log_to_std_out(
+                    "Input argument 'deterministic' ignored as the algorithm does "
+                    "not support deterministic actions. This is only supported for "
+                    "gaussian  algorithms.",
+                    type="warning",
+                )
                 a = policy.get_action(o)
-            supports_deterministic = False
+        else:
+            a = policy.get_action(o)
+
+        # Perform action in the environment and store result
         o, r, d, _ = env.step(a)
         ep_ret += r
         ep_len += 1
-
         if d or (ep_len == max_ep_len):
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             logger.log("Episode %d \t EpRet %.3f \t EpLen %d" % (n, ep_ret, ep_len))
@@ -269,3 +284,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
     run_policy(env, policy, args.len, args.episodes, not (args.norender))
+
+# TODO: Add warning for when something goes wrong!
