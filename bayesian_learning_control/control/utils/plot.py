@@ -331,6 +331,7 @@ def plot():
     """
     import argparse
 
+    # TODO: Add Help
     parser = argparse.ArgumentParser()
     parser.add_argument("logdir", nargs="*")
     parser.add_argument("--legend", "-l", nargs="*")

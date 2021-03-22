@@ -274,6 +274,8 @@ def run_policy(
 if __name__ == "__main__":
     import argparse
 
+    # TODO: Add help
+    # TODO: Test for multiple policies!
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str)
     parser.add_argument("--len", "-l", type=int, default=0)

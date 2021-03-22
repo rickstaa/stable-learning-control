@@ -3,9 +3,11 @@ algorithm. This is done by evaluating an algorithm's performance under two types
 disturbances: A disturbance that is applied during the environment step and a
 perturbation added to the environmental parameters. For the functions in this
 module to work work, these disturbances should be implemented as methods on the
-environment. See the
+environment. The Simzoo package contains a
+:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class from which a Gym environment
+can inherit to add these methods. See the
 `Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/robustness_eval.html>`
-on how this is done.
+for more information.
 """  # noqa: E501
 
 import os
@@ -18,54 +20,199 @@ import seaborn as sns
 from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
 from bayesian_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 
+# TODO: Add env not working to fallback to docs
+# TODO: Add -d_type and -d_var to docs!
 
-def run_robustness_eval(
+REQUIRED_DISTURBER_OBJECTS = {
+    "methods": [
+        "init_disturber",
+        "disturbed_step",
+        "next_disturbance",
+    ],
+    "attributes": [
+        "disturber_done",
+    ],
+}
+
+
+def _validate_observations(observations, obs_dataframe):
+    """Checks if the request observations exist in the ``obs_dataframe`` displays a
+    warning if they do not.
+    """
+    valid_vals = obs_dataframe.observation.unique()
+    invalid_vals = [obs for obs in map(int, observations) if obs not in valid_vals]
+    valid_observations = [obs for obs in map(int, observations) if obs in valid_vals]
+    if len(observations) == len(invalid_vals):
+        log_to_std_out(
+            "{} not valid. All observations plotted instead.".format(
+                f"Observations {invalid_vals} are"
+                if len(invalid_vals) > 1
+                else f"Observation {invalid_vals[0]} is"
+            ),
+            type="warning",
+        )
+        valid_observations = valid_vals
+    elif invalid_vals:
+        log_to_std_out(
+            "{} not valid.".format(
+                f"Observations {invalid_vals} could not plotted as they are"
+                if len(invalid_vals) > 1
+                else f"Observation {invalid_vals[0]} could not be plotted as it is"
+            ),
+            type="warning",
+        )
+    return valid_observations
+
+
+def _disturber_implemented(env):
+    """Checks if the environment inherits from the
+    :class:`~bayesian_learning_control.simzoo.common.disturber.Disturber`
+    class or that the methods and attributes that are required for the robustness
+    evaluation are present.
+
+    Returns:
+        (tuple): tuple containing:
+
+            - compatible (:obj:`bool`): Wether the environment is compatible with the
+                robustness evaluation tool.
+            - missing_attributes (:obj:`dict`): Dictionary that contains the 'methods'
+                and 'attributes' that are missing.
+    """
+    missing_methods_mask = [
+        not hasattr(env, obj) for obj in REQUIRED_DISTURBER_OBJECTS["methods"]
+    ]
+    missing_attributes_mask = [
+        not hasattr(env, obj) for obj in REQUIRED_DISTURBER_OBJECTS["attributes"]
+    ]
+    missing_methods = [
+        i
+        for (i, v) in zip(REQUIRED_DISTURBER_OBJECTS["methods"], missing_methods_mask)
+        if v
+    ]
+    missing_attributes = [
+        i
+        for (i, v) in zip(
+            REQUIRED_DISTURBER_OBJECTS["attributes"], missing_attributes_mask
+        )
+        if v
+    ]
+    return not all(missing_methods_mask + missing_attributes_mask), {
+        "methods": missing_methods,
+        "attributes": missing_attributes,
+    }
+
+
+def run_disturbed_policy(  # noqa: C901
     env,
     policy,
+    disturbance_type,
+    disturbance_variant=None,
     max_ep_len=None,
     num_episodes=100,
     render=True,
     deterministic=False,
+    save_result=False,
     output_dir=None,
 ):
-    """Evaluates a policy inside a given gym environment.
+    """Evaluates the disturbed policy inside a given gym environment. This function
+    loops to all the disturbances that are specified in the environment and outputs the
+    results of all these episodes in a pandas dataframe.
 
     Args:
         env (:obj:`gym.env`): The gym environment.
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
         max_ep_len (int, optional): The maximum episode length. Defaults to None.
+        disturbance_type (string): The disturbance type you want to apply. Valid options
+            are the onces that are implemented in the gym environment (e.g.
+            ``env_disturbance``, ``step_distubance``, ...).
+        disturbance_variant (string, optional): The variant of the disturbance (e.g.
+            "impulse", "periodic"...)
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
         deterministic (bool, optional): Whether you want the action from the policy to
             be deterministic. Defaults to ``False``.
         render (bool, optional): Whether you want to render the episode to the screen.
             Defaults to ``True``.
+        save_result (bool, optional): Whether you want to save the dataframe with the
+            results to disk.
         output_dir (str, optional): A directory for saving the diagnostics to. If
             ``None``, defaults to a temp directory of the form
             ``/tmp/experiments/somerandomnumber``.
+    Returns:
+        pandas.core.frame.DataFrame: Dataframe that contains information about all the
+            episodes and disturbances.
+
+    Raises:
+        RuntimeError: Thrown when the environment you specified is not compatible with
+            the robustness evaluation tool.
+        ValueError: Thrown when the disturbance type or variant is not supported by the
+            disturber.
+        TypeError: Thrown when no disturbance variant supplied and it is needed for the
+            requested disturbance type.
     """
+    # Validate environment and environment disturber
     assert env is not None, (
         "Environment not found!\n\n It looks like the environment wasn't saved, "
         + "and we can't run the agent in it. :( \n\n Check out the readthedocs "
         + "page on Experiment Outputs for how to handle this situation."
     )
+    disturber_implemented, missing_objects = _disturber_implemented(env)
+    if not disturber_implemented:
+        missing_keys = [key for key, item in missing_objects.items() if len(item) >= 1]
+        missign_methods_str = [
+            key if len(item) > 1 else key[:-1]
+            for key, item in missing_objects.items()
+            if len(item) >= 1
+        ]
+        missing_warn_string = (
+            (
+                f"{missing_objects[missing_keys[0]]} "
+                f"{missign_methods_str[0]} and "
+                f"{missing_objects[missing_keys[1]]} "
+                f"{missign_methods_str[1]}"
+            )
+            if len(missing_keys) > 1
+            else (f"{missing_objects[missing_keys[0]]} " f"{missign_methods_str[0]}")
+        )
+        raise RuntimeError(
+            "The environment does not seem to be compatible with the robustness "
+            f"evaluation tool. The tool expects to find the {missing_warn_string} but "
+            "they are not implemented. Please check the Robustness Evaluation "
+            "documentation and try again."
+        )
 
+    disturbance_type = (
+        disturbance_type.lower() if disturbance_type else disturbance_type
+    )
+    disturbance_variant = (
+        disturbance_variant.lower() if disturbance_variant else disturbance_variant
+    )
     output_dir = (
         Path(output_dir).joinpath("eval") if output_dir is not None else output_dir
     )
     logger = EpochLogger(
         verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
     )
-
     max_ep_len = env._max_episode_steps if max_ep_len is None else max_ep_len
 
     # Initialize the disturber
-    # TODO: Add check if distruber is implemented for the environment.
-    disturbance_type = "step_disturbance"
-    disturbance_variant = "impulse"
-    env.init_disturber(disturbance_type, disturbance_variant)
+    try:
+        env.init_disturber(disturbance_type, disturbance_variant)
+        disturbance_variant = (
+            env.disturbance_info["variant"]
+            if hasattr(env, "disturbance_info")
+            and "variant" in env.disturbance_info.keys()
+            else disturbance_variant
+        )
+    except (TypeError) as e:
+        raise TypeError(
+            "Looks like you didn't specify a disturbance variant while this is "
+            "for the {disturbance_type} disturbance type. Please specify a "
+            "disturbance variant and try again."
+        ) from e
 
     # Loop though all disturbances till disturber is done
+    logger.log("Starting robustness evaluation...", type="info")
     render_error = False
     path = {
         "o": [],
@@ -73,13 +220,16 @@ def run_robustness_eval(
         "reference": [],
         "state_of_interest": [],
     }
-    r_episodes_dfs = []
-    soi_episodes_dfs = []
-    r_disturbances_dfs = []
-    soi_disturbances_dfs = []
+    o_episodes_dfs, r_episodes_dfs, soi_episodes_dfs, ref_episodes_dfs = [], [], [], []
+    (
+        o_disturbances_dfs,
+        r_disturbances_dfs,
+        soi_disturbances_dfs,
+        ref_disturbances_dfs,
+    ) = ([], [], [], [])
     n_disturbance = 0
+    soi_found, ref_found = True, True
     while not env.disturber_done:
-
         o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
         supports_deterministic = True  # Only supported with gaussian algorithms
         while n < num_episodes:
@@ -90,10 +240,11 @@ def run_robustness_eval(
                     time.sleep(1e-3)
                 except NotImplementedError:
                     render_error = True
-                    log_to_std_out(
+                    logger.log(
                         (
                             "WARNING: Nothing was rendered since no render method was "
-                            f"implemented for the '{env.unwrapped.spec.id}' environment."
+                            f"implemented for the '{env.unwrapped.spec.id}' "
+                            "environment."
                         ),
                         type="warning",
                     )
@@ -104,7 +255,7 @@ def run_robustness_eval(
                     a = policy.get_action(o, deterministic=deterministic)
                 except TypeError:
                     supports_deterministic = False
-                    log_to_std_out(
+                    logger.log(
                         "Input argument 'deterministic' ignored as the algorithm does "
                         "not support deterministic actions. This is only supported for "
                         "gaussian  algorithms.",
@@ -114,7 +265,7 @@ def run_robustness_eval(
             else:
                 a = policy.get_action(o)
 
-            # Perform action in the environment and store result
+            # Perform (disturbed) action in the environment and store result
             if disturbance_type == "env_disturbance":
                 o, r, d, info = env.step(a)
             else:
@@ -123,11 +274,31 @@ def run_robustness_eval(
             ep_len += 1
 
             # Store path, cost, reference and state of interest
-            # TODO: Fix for multiple states of interest
             path["o"].append(o)
             path["r"].append(r)
-            path["reference"].append(info["reference"])
-            path["state_of_interest"].append(info["state_of_interest"])
+            if "reference" in info.keys():
+                path["reference"].append(info["reference"])
+            else:
+                ref_found = False
+            if "state_of_interest" in info.keys():
+                path["state_of_interest"].append(info["state_of_interest"])
+            else:
+                soi_found = False
+            if any([not ref_found, not soi_found]):
+                warning_str = (
+                    " 'state_of_interest' and 'reference' "
+                    if all([not ref_found, not soi_found])
+                    else (" 'state_of_interest' " if not soi_found else " 'reference' ")
+                )
+                logger.log(
+                    (
+                        f"No{warning_str}variable found in the info dictionary that "
+                        "was returned from the environment step method. In order to "
+                        "use all feature from the robustness evaluation tool, please "
+                        "make sure your environment returns the reference."
+                    ),
+                    type="warning",
+                )
 
             # Store performance measurements
             if d or (ep_len == max_ep_len):
@@ -138,20 +309,48 @@ def run_robustness_eval(
                     % (n, ep_ret, ep_len, died)
                 )
 
-                # Store episode information
+                # Store observations
+                o_episode_df = pd.DataFrame(path["o"])
+                o_episode_df.insert(0, "step", range(0, ep_len))
+                o_episode_df = pd.melt(
+                    o_episode_df,
+                    id_vars="step",
+                    var_name="observation",
+                )  # Flatten dataframe
+                o_episodes_dfs.append(o_episode_df)
+
+                # Store episode rewards
                 r_episode_df = pd.DataFrame(
-                    {"reward": path["r"], "step": range(0, ep_len)}
+                    {
+                        "step": range(0, ep_len),
+                        "reward": path["r"],
+                    }
                 )
                 r_episode_df.insert(len(r_episode_df.columns), "episode", n)
                 r_episodes_dfs.append(r_episode_df)
-                soi_episode_df = pd.DataFrame(
-                    {
-                        "error": path["state_of_interest"],
-                        "step": range(0, ep_len),
-                    }
-                )
-                soi_episode_df.insert(len(soi_episode_df.columns), "episode", n)
-                soi_episodes_dfs.append(soi_episode_df)
+
+                # Store states of interest
+                if soi_found:
+                    soi_episode_df = pd.DataFrame(path["state_of_interest"])
+                    soi_episode_df.insert(0, "step", range(0, ep_len))
+                    soi_episode_df = pd.melt(
+                        soi_episode_df,
+                        id_vars="step",
+                        var_name="state_of_interest",
+                        value_name="error",
+                    )  # Flatten dataframe
+                    soi_episodes_dfs.append(soi_episode_df)
+
+                # Store reference
+                if ref_found:
+                    ref_episode_df = pd.DataFrame(path["reference"])
+                    ref_episode_df.insert(0, "step", range(0, ep_len))
+                    ref_episode_df = pd.melt(
+                        ref_episode_df,
+                        id_vars="step",
+                        var_name="reference",
+                    )  # Flatten dataframe
+                    ref_episodes_dfs.append(ref_episode_df)
 
                 # Increment counters and reset storage variables
                 n += 1
@@ -163,7 +362,7 @@ def run_robustness_eval(
                     "state_of_interest": [],
                 }
 
-        # Print diagnostics
+        # Print robustness evaluation diagnostics
         if "type" in env.disturbance_info.keys():
             logger.log_tabular("DisturbanceType", env.disturbance_info["type"])
         if "variant" in env.disturbance_info.keys():
@@ -181,12 +380,20 @@ def run_robustness_eval(
         print("")
         logger.dump_tabular()
 
-        # Store disturbance information
+        # Add extra disturbance information to the robustness eval dataframe
         disturbance_label = (
             env.disturbance_info["label"]
             if env.disturbance_info["label"]
             else "Disturbance: {}".format(str(n_disturbance + 1))
         )
+        o_disturbance_df = pd.concat(o_episodes_dfs, ignore_index=True)
+        o_disturbance_df.insert(
+            len(o_disturbance_df.columns), "disturbance", disturbance_label
+        )
+        o_disturbance_df.insert(
+            len(o_disturbance_df.columns), "disturbance_index", n_disturbance
+        )
+        o_disturbances_dfs.append(o_disturbance_df)
         r_disturbance_df = pd.concat(r_episodes_dfs, ignore_index=True)
         r_disturbance_df.insert(
             len(r_disturbance_df.columns), "disturbance", disturbance_label
@@ -203,76 +410,295 @@ def run_robustness_eval(
             len(soi_disturbance_df.columns), "disturbance_index", n_disturbance
         )
         soi_disturbances_dfs.append(soi_disturbance_df)
+        ref_disturbance_df = pd.concat(ref_episodes_dfs, ignore_index=True)
+        ref_disturbance_df.insert(
+            len(ref_disturbance_df.columns), "disturbance", disturbance_label
+        )
+        ref_disturbance_df.insert(
+            len(ref_disturbance_df.columns), "disturbance_index", n_disturbance
+        )
+        ref_disturbances_dfs.append(ref_disturbance_df)
+
+        # Reset storage buckeets and go to next disturbance
+        o_episodes_dfs = []
         r_episodes_dfs = []
         soi_episodes_dfs = []
-
-        # Go to next disturbance
+        ref_episodes_dfs = []
         env.next_disturbance()
         n_disturbance += 1
 
-    # Store robustness evaluation information
-    # TODO: Add support for multiple soi
+    # Merge robustness evaluation information for all disturbances
+    o_disturbances_df = pd.concat(o_disturbances_dfs, ignore_index=True)
     r_disturbances_df = pd.concat(r_disturbances_dfs, ignore_index=True)
     soi_disturbances_df = pd.concat(soi_disturbances_dfs, ignore_index=True)
+    ref_disturbances_df = pd.concat(ref_disturbances_dfs, ignore_index=True)
 
-    # TODO: Store full database
-
-    # Plot results
-    sns.set(style="darkgrid", font_scale=1.5)  # TODO: Add as input arguments
-    reward_plot = sns.lineplot(
-        data=r_disturbances_df, x="step", y="reward", ci="sd", hue="disturbance"
-    ).set_title("Mean costs")
-    plt.show()
-    soi_plot = sns.lineplot(
-        data=soi_disturbances_df, x="step", y="error", ci="sd", hue="disturbance"
-    ).set_title("State of interest")
-    plt.show(aspect="auto")
-
-    # Store figures
-    # TODO: Enable option to set format and disable figures!
-    figs_path = logger.output_dir.joinpath("figures")
-    os.makedirs(figs_path, exist_ok=True)
-    reward_plot.get_figure().savefig(
-        logger.output_dir.joinpath("figures", "rewards.pdf"), bbox_inches="tight"
-    )
-    soi_plot.get_figure().savefig(
-        logger.output_dir.joinpath("figures", "soi.pdf"), bbox_inches="tight"
-    )
-
-    # Store robustness evaluation dataframe
-    # TODO: Make saving optional with input argument!
+    # Return/save robustness evaluation dataframe
+    o_disturbances_df.insert(len(o_disturbances_df.columns), "variable", "observation")
     r_disturbances_df.insert(len(r_disturbances_df.columns), "variable", "reward")
     soi_disturbances_df.insert(
         len(soi_disturbances_df.columns), "variable", "state_of_interest"
     )
+    ref_disturbances_df.insert(
+        len(ref_disturbances_df.columns), "variable", "reference"
+    )
     robustness_eval_df = pd.concat(
         [
+            o_disturbances_df,
             r_disturbances_df,
             soi_disturbances_df,
+            ref_disturbances_df,
         ],
         ignore_index=True,
     )
-    robustness_eval_df.to_csv(logger.output_dir.joinpath("results.csv"), index=False)
+    robustness_eval_df.insert(
+        len(robustness_eval_df.columns),
+        "disturbance_type",
+        disturbance_type,
+    )
+    robustness_eval_df.insert(
+        len(robustness_eval_df.columns),
+        "disturbance_variant",
+        disturbance_variant,
+    )
+
+    # Save robustness evaluation dataframe and return it to the user
+    if save_result:
+        robustness_eval_df.to_csv(
+            logger.output_dir.joinpath("results.csv"), index=False
+        )
+    return robustness_eval_df
+
+
+def plot_robustness_results(
+    dataframe,
+    save_figs,
+    output_dir,
+    font_scale=1.5,
+    observations=None,
+    figs_fmt="pdf",
+):
+    """Create several usefull plot out of the dataframe that was collected in the
+    :meth:`run_disturbed_policy` method.
+
+    Args:
+        dataframe (pandas.DataFrame): The data frame that contains the robustness
+            information.
+        save_figs (bool): Whether you want to save the created plots to disk.
+        output_dir (str): The directory where you want to save the output figures to.
+        font_scale (int): The font scale you want to use for the plot text.
+        observations (list): The observations you want to show in the observations plot.
+            By default all observations are shown.
+        figs_fmt (str, optional): In which format you want to save the plots. Defaults
+            to "pdf".
+    """
+    output_dir = Path(output_dir).joinpath("eval")
+    figs = {
+        "observations": [],
+        "costs": [],
+        "states_of_interest": [],
+    }  # Store all plots (Needed for save)
+    log_to_std_out("Showing robustness evaluation plots...", type="info")
+    sns.set(style="darkgrid", font_scale=font_scale)
+
+    # Unpack required data from dataframe
+    obs_found, rew_found, soi_found, ref_found = True, True, True, True
+    o_disturbances_df, ref_disturbances_df = pd.DataFrame(), pd.DataFrame()
+    if "observation" in dataframe["variable"].unique():
+        o_disturbances_df = dataframe.query("variable == 'observation'").dropna(
+            axis=1, how="all"
+        )
+    else:
+        obs_found = False
+    if "reward" in dataframe["variable"].unique():
+        r_disturbances_df = dataframe.query("variable == 'reward'").dropna(
+            axis=1, how="all"
+        )
+    else:
+        rew_found = False
+    if "state_of_interest" in dataframe["variable"].unique():
+        soi_disturbances_df = dataframe.query("variable == 'state_of_interest'").dropna(
+            axis=1, how="all"
+        )
+    else:
+        soi_found = False
+    if "state_of_interest" in dataframe["variable"].unique():
+        ref_disturbances_df = dataframe.query("variable == 'reference'").dropna(
+            axis=1, how="all"
+        )
+    else:
+        ref_found = False
+
+    # Merge observations and references
+    if obs_found:
+        obs_df_tmp = o_disturbances_df.copy(deep=True)
+        obs_df_tmp["signal"] = "obs_" + (obs_df_tmp["observation"] + 1).astype(str)
+        obs_df_tmp.insert(len(obs_df_tmp.columns), "type", "observation")
+
+        # Retrieve the requested observations
+        if obs_found and observations is not None:
+            observations = _validate_observations(observations, o_disturbances_df)
+        obs_df_tmp = obs_df_tmp.query(f"observation in {observations}")
+    if ref_found:
+        ref_df_tmp = ref_disturbances_df.copy(deep=True)
+        ref_df_tmp["signal"] = "ref_" + (ref_df_tmp["reference"] + 1).astype(str)
+        ref_df_tmp.insert(len(ref_df_tmp.columns), "type", "reference")
+    obs_ref_df = pd.concat([obs_df_tmp, ref_df_tmp], ignore_index=True)
+
+    # Loop though all disturbances and plot the observations and references in one plot
+    num_plots = len(obs_ref_df.disturbance.unique())
+    total_cols = 3
+    total_rows = num_plots // total_cols + 1
+    fig, axes = plt.subplots(
+        nrows=total_rows,
+        ncols=total_cols,
+        figsize=(7 * total_cols, 7 * total_rows),
+        tight_layout=True,
+        sharex=True,
+    )
+    fig.suptitle(
+        "{} under several {}".format(
+            "Observation and reference"
+            if all([obs_found, ref_found])
+            else ("Observation" if obs_found else "reference"),
+            "{} disturbances.".format(obs_ref_df.disturbance_variant[0])
+            if "disturbance_variant" in obs_ref_df.keys()
+            else "disturbances.",
+        )
+    )
+    for ii, var in enumerate(obs_ref_df.disturbance.unique()):
+        row = ii // total_cols
+        pos = ii % total_cols
+        sns.lineplot(
+            data=obs_ref_df.query(f"disturbance == '{var}'"),
+            x="step",
+            y="value",
+            ci="sd",
+            hue="signal",
+            style="type",
+            ax=axes[row][pos],
+            legend="auto" if ii == 0 else False,
+        ).set_title(var)
+    plt.figlegend(loc="center right")
+    axes[0][0].get_legend().remove()
+    figs["observations"].append(fig)
+
+    # Plot mean cost
+    if rew_found:
+        fig = plt.figure(tight_layout=True)
+        figs["costs"].append(fig)
+        sns.lineplot(
+            data=r_disturbances_df, x="step", y="reward", ci="sd", hue="disturbance"
+        ).set_title(
+            "Mean cost under several {}".format(
+                "{} disturbances.".format(obs_ref_df.disturbance_variant[0])
+                if "disturbance_variant" in obs_ref_df.keys()
+                else "disturbances."
+            )
+        )
+    else:
+        log_to_std_out(
+            (
+                "Mean costs plot could not we shown as no 'rewards' field was found ",
+                "in the supplied dataframe.",
+            ),
+            type="warning",
+        )
+
+    # Plot states of interest
+    if soi_found:
+        n_soi = soi_disturbances_df["state_of_interest"].max() + 1
+        for index in range(0, n_soi):
+            fig = plt.figure(tight_layout=True)
+            figs["states_of_interest"].append(fig)
+            sns.lineplot(
+                data=soi_disturbances_df.query(f"state_of_interest == {index}"),
+                x="step",
+                y="error",
+                ci="sd",
+                hue="disturbance",
+            ).set_title(
+                "{} under several {}".format(
+                    "State of interest" if n_soi == 1 else f"State of interest {index}",
+                    "{} disturbances.".format(obs_ref_df.disturbance_variant[0])
+                    if "disturbance_variant" in obs_ref_df.keys()
+                    else "disturbances.",
+                )
+            )
+        plt.show()
+    else:
+        log_to_std_out(
+            (
+                "State of interest plot could not we shown as no 'state_of_interest' "
+                "field was found in the supplied dataframe.",
+            ),
+            type="warning",
+        )
+
+    # Save plots
+    if save_figs:
+        figs_path = output_dir.joinpath("figures")
+        figs_extension = figs_fmt[1:] if figs_fmt.startswith(".") else figs_fmt
+        os.makedirs(figs_path, exist_ok=True)
+        log_to_std_out("Saving plots...", type="info")
+        log_to_std_out(f"Saving figures to path: {figs_path}", type="info")
+        if obs_found or ref_found:
+            figs["observations"][0].savefig(
+                output_dir.joinpath("figures", f"obserations.{figs_extension}"),
+                bbox_inches="tight",
+            )
+        if rew_found:
+            figs["costs"][0].savefig(
+                output_dir.joinpath("figures", f"costs.{figs_extension}"),
+                bbox_inches="tight",
+            )
+        if soi_found:
+            for index, fig in enumerate(figs["states_of_interest"]):
+                fig.savefig(
+                    output_dir.joinpath(
+                        "figures",
+                        f"soi.{figs_extension}" if n_soi == 1 else f"soi_{index}.pdf",
+                    ),
+                    bbox_inches="tight",
+                )
 
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("fpath", type=str)
+    # TODO: Add help
+    # TODO: Check how it handles multple policies!
+    parser.add_argument("fpath", type=str, help="The path where the policy is stored.")
     parser.add_argument("--len", "-l", type=int, default=800)
-    # parser.add_argument("--len", "-l", type=int, default=0)
-    # parser.add_argument("--episodes", "-n", type=int, default=100)
     parser.add_argument("--episodes", "-n", type=int, default=10)
     parser.add_argument("--norender", "-nr", action="store_true")
     parser.add_argument("--itr", "-i", type=int, default=-1)
     parser.add_argument("--deterministic", "-d", action="store_true")
-    parser.add_argument("--disturbance_type", default=None)  # TODO: Add special flag
+    parser.add_argument("--save_results", default=False)
+    parser.add_argument("--save_figs", default=True)
+    parser.add_argument("--figs_fmt", default="pdf")
+    parser.add_argument("--disturbance_type", "-d_type")
+    parser.add_argument("--disturbance_variant", "-d_var", default=None)
+    parser.add_argument("--obs", default=None, nargs="+")
     args = parser.parse_args()
-    env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
-    run_robustness_eval(
-        env, policy, args.len, args.episodes, not (args.norender), output_dir=args.fpath
-    )  # TODO: Return results
-    # plot_results() # Implement
 
-# TODO: Change loging output!
+    # Load policy and perform robustness evaluation
+    env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
+    run_results_df = run_disturbed_policy(
+        env,
+        policy,
+        disturbance_type=args.disturbance_type,
+        disturbance_variant=args.disturbance_variant,
+        max_ep_len=args.len,
+        num_episodes=args.episodes,
+        render=not (args.norender),
+        output_dir=args.fpath,
+    )
+    plot_robustness_results(
+        run_results_df,
+        observations=args.obs,
+        save_figs=args.save_figs,
+        figs_fmt=args.figs_fmt,
+        output_dir=args.fpath,
+    )
