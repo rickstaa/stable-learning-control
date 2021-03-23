@@ -197,7 +197,7 @@ def load_pytorch_policy(fpath, itr="last", env=None):
 
 
 def run_policy(
-    env, policy, max_ep_len=None, num_episodes=100, render=True, deterministic=False
+    env, policy, max_ep_len=None, num_episodes=100, render=True, deterministic=True
 ):
     """Evaluates a policy inside a given gym environment.
 
@@ -208,16 +208,15 @@ def run_policy(
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
         deterministic (bool, optional): Whether you want the action from the policy to
-            be deterministic. Defaults to ``False``.
+            be deterministic. Defaults to ``True``.
         render (bool, optional): Whether you want to render the episode to the screen.
             Defaults to ``True``.
     """
     assert env is not None, (
         "Environment not found!\n\n It looks like the environment wasn't saved, "
-        + "and we can't run the agent in it. :( \n\n Check out the readthedocs "
-        + "page on Experiment Outputs for how to handle this situation."
+        + "and we can't run the agent in it. :( \n\n Check out the documentation "
+        + "page on the Test Policy utility for how to handle this situation."
     )
-    # TODO: What happended here?
 
     logger = EpochLogger(verbose_fmt="table")
     o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
@@ -274,17 +273,37 @@ def run_policy(
 if __name__ == "__main__":
     import argparse
 
-    # TODO: Add help
-    # TODO: Test for multiple policies!
     parser = argparse.ArgumentParser()
-    parser.add_argument("fpath", type=str)
-    parser.add_argument("--len", "-l", type=int, default=0)
-    parser.add_argument("--episodes", "-n", type=int, default=100)
-    parser.add_argument("--norender", "-nr", action="store_true")
-    parser.add_argument("--itr", "-i", type=int, default=-1)
-    parser.add_argument("--deterministic", "-d", action="store_true")
+    parser.add_argument("fpath", type=str, help="The path where the policy is stored")
+    parser.add_argument(
+        "--len", "-l", type=int, default=0, help="The episode length (default: 800)"
+    )
+    parser.add_argument(
+        "--episodes",
+        "-n",
+        type=int,
+        default=100,
+        help="The number of episodes you want to run per disturbance (default: 10)",
+    )
+    parser.add_argument(
+        "--norender",
+        "-nr",
+        action="store_true",
+        help="Whether you want to render the environment step (default: True)",
+    )
+    parser.add_argument(
+        "--itr",
+        "-i",
+        type=int,
+        default=-1,
+        help="The policy iteration (epoch) you want to use (default: 'last')",
+    )
+    parser.add_argument(
+        "--deterministic",
+        "-d",
+        action="store_true",
+        help="Wether you want to use a deterministic policy (default: True)",
+    )
     args = parser.parse_args()
     env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
     run_policy(env, policy, args.len, args.episodes, not (args.norender))
-
-# TODO: Add warning for when something goes wrong!

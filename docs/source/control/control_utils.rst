@@ -108,23 +108,23 @@ There are a few flags for options:
 
     *int*. Number of test episodes to run the agent for.
 
-.. option:: -nr, --norender
+.. option:: -nr, --norender, default=False
 
-    Do not render the test episodes to the screen. In this case, ``test_policy`` will only print the episode returns and lengths. (Use case: the renderer
+    *bool*. Do not render the test episodes to the screen. In this case, ``test_policy`` will only print the episode returns and lengths. (Use case: the renderer
     slows down the testing process, and you just want to get a fast sense of how the agent is performing, so you don't particularly care to watch it.)
 
 .. option:: -i I, --itr=I, default=-1
 
-    Specify the snapshot (checkpoint) for which you want to see the policy performance. Use case: Sometimes, it's nice to watch trained agents from many
-    different points in training (eg watch at iteration 50, 100, 150, etc.). The default value of this flag means "use the latest snapshot."
+    *int*. Specify the snapshot (checkpoint) for which you want to see the policy performance. Use case: Sometimes, it's nice to watch trained agents from many
+    different training points (eg watch at iteration 50, 100, 150, etc.). The default value of this flag means "use the latest snapshot."
 
     .. important::
         This option only works if snapshots were saved while training the agent (i.e. the ``--save_checkpoints`` flag was set). For more information on
         storing these snapshots see :ref:`alg_flags`.
 
-.. option:: -d, --deterministic
+.. option:: -d, --deterministic, default=True
 
-    Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The BLC implementation trains a stochastic
+    *bool*. Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The BLC implementation trains a stochastic
     policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
     by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
     for any other algorithms.
@@ -141,21 +141,22 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
       File "bayesian_learning_control/control/utils/test_policy.py", line 153, in <module>
         run_policy(env, get_action, args.len, args.episodes, not(args.norender))
       File "bayesian_learning_control/control/utils/test_policy.py", line 114, in run_policy
-        "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
+        "and we can't run the agent in it. :( \n\n Check out the documentation " +
     AssertionError: Environment not found!
 
     It looks like the environment wasn't saved, and we can't run the agent in it. :(
 
-    Check out the readthedocs page on Experiment Outputs for how to handle this situation.
+    Check out the documentation page on the Test Policy utility for how to handle this situation.
 
 
 In this case, watching your agent perform is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
 
+>>> import gym
 >>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
 >>> import your_env
->>> _, get_action = load_policy_and_env('/path/to/output_directory')
->>> env = your_env.make()
->>> run_policy(env, get_action)
+>>> _, policy = load_policy_and_env('/path/to/output_directory')
+>>> env = gym.make('<YOUR_ENV_NAME>')
+>>> run_policy(env, policy)
 Logging data to /tmp/experiments/1536150702/progress.txt
 Episode 0    EpRet -163.830      EpLen 93
 Episode 1    EpRet -346.164      EpLen 99
@@ -173,6 +174,118 @@ to load the policy manually. Please see the :ref:`manual_policy_testing` documen
 Robustness eval utility
 =======================
 
+Environment Found
+-----------------
+
+BLC ships with an evaluation utility that can be used to check the robustness of the trained policy. For cases where the environment
+is successfully saved alongside the agent, the robustness can be evaluated using the following command:
+
+.. parsed-literal::
+
+    python -m bayesian_learning_control.run eval_robustness path/to/output_directory
+
+
+There are a few flags for options:
+
+.. option:: -l L, --len=L, default=0
+
+    *int*. Maximum length of evaluation episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has
+    reached a terminal state in the environment. (Note: setting L=0 will not prevent Gym envs wrapped by TimeLimit wrappers from ending when they reach
+    their pre-set maximum episode length.)
+
+.. option:: -n N, --episodes=N, default=10
+
+    *int*. Number of evaluation episodes to run for each disturbance.
+
+.. option:: -r, --render, default=False
+
+    *bool*. Do also render the evaluation episodes to the screen.
+
+.. option:: -i I, --itr=I, default=-1
+
+    *int*. Specify the snapshot (checkpoint) for which you want to see the policy performance. Use case: Sometimes, it's nice to evaluate the robustness of the agent from many
+    different points in training (e.g. at iteration 50, 100, 150, etc.). The default value of this flag means "use the latest snapshot."
+
+    .. important::
+        This option only works if snapshots were saved while training the agent (i.e. the ``--save_checkpoints`` flag was set). For more information on
+        storing these snapshots see :ref:`alg_flags`.
+
+.. option:: -d, --deterministic, default=True
+
+    *bool*. Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The BLC implementation trains a stochastic
+    policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
+    by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
+    for any other algorithms.
+
+.. option:: --save_result, default=False
+
+    *bool*. Whether you want to save the robustness evaluation data frame to disk. It can be useful for creating custom plots see :ref:`robust_custom_plots`.
+
+.. option:: -d_type, --disturbance_type
+
+    *str*. The disturbance type you want to apply. This type should be implemented in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
+    your gym environment inherits from. See :ref:`env_add`.
+
+.. option:: -d_variant, --disturbance_variant
+
+    *str*. The disturbance variant you want to apply. This argument is only required for some disturbance types. The variant should be implemented in the
+    :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
+    your gym environment inherits from. See :ref:`env_add`.
+
+.. option:: --obs
+
+    *list of ints*. The observations you want to show in the observations/reference plots. By default all observations will be shown.
+
+.. option:: --save_figs, default=True
+
+    *bool*. Specifies whether you want to save the generated plots to disk.
+
+.. option:: --figs_fmt, default=``pdf``
+
+    *bool*. The file format you want to use for saving the plot.
+
+.. option:: --font_scale, default=``1.5``
+
+    *float*. The font scale you want to use for the plot text.
+
+Environment Not Found Error
+---------------------------
+
+If the environment wasn't saved successfully, you can expect ``eval_robustness.py`` to crash with something that looks like
+
+.. parsed-literal::
+
+    Traceback (most recent call last):
+      File "bayesian_learning_control/control/utils/eval_robustness.py", line 153, in <module>
+        run_results_df = run_disturbed_policy(env, policy, args.len, args.episodes, args.render))
+      File "bayesian_learning_control/control/utils/eval_robustness.py", line 114, in run_policy
+        "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
+    AssertionError: Environment not found!
+
+    It looks like the environment wasn't saved, and we can't run the agent in it. :(
+
+    Check out the readthedocs page on the robustness evaluation utility for how to handle this situation.
+
+
+In this case, evaluating the robustness is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
+
+>>> import gym
+>>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
+>>> from bayesian_learning_control.control.utils.eval_robustness import run_disturbed_policy, plot_robustness_results
+>>> import your_env
+>>> _, policy = load_policy_and_env('/path/to/output_directory')
+>>> env = gym.make('<YOUR_ENV_NAME>')
+>>> run_results_df = run_disturbed_policy(env, policy, disturbance_type="<TYPE_YOU_WANT_TO_USE>")
+>>> plot_robustness_results(run_results_df)
+INFO: Logging data to /tmp/experiments/1616515040/eval_statistics.csv
+INFO: No disturbance variant given default variant (impulse) used instead.
+INFO: Disturber with disturbance type 'step_disturbance' and variant 'impulse' initialized.
+INFO: Starting with the un-disturbed Step (M: 0.0).
+INFO: Starting robustness evaluation...
+Episode 0        EpRet 321.452   EpLen 800       Died False
+Episode 1        EpRet 337.055   EpLen 800       Died False
+Episode 2        EpRet 330.313   EpLen 800       Died False
+...
 
 ExperimentGrid utility
 ======================
