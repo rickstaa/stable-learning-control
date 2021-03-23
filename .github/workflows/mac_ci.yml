@@ -22,7 +22,7 @@ jobs:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
       - name: Install system dependencies
-        run: sudo apt update; sudo apt install libopenmpi-dev
+        run: brew install openmpi
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
