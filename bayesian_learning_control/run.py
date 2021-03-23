@@ -88,12 +88,16 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
             if isinstance(e, IndexError):
                 log_to_std_out(
                     "You did not supply a experiment configuration path. As a result "
-                    "the --exp_cfg argument has been ignored.",
+                    "the '--exp_cfg' argument has been ignored.",
                     type="warning",
                 )
             else:
                 log_to_std_out(
-                    e.args[0] + " As a result the --exp_cfg argument has been ignored.",
+                    (
+                        e.args[0]
+                        + " As a result the '--exp_cfg' argument has been "
+                        + "ignored."
+                    ),
                     type="warning",
                 )
 
@@ -108,8 +112,8 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
                     exp_cfg_params = yaml.safe_load(stream)
                     if not exp_cfg_params:
                         log_to_std_out(
-                            "No hyperparameters were found in your your experiment "
-                            "config. As a result the --exp_cfg has been ignored.",
+                            "No hyperparameters were found in your experiment config. "
+                            "As a result the '--exp_cfg' flag has been ignored.",
                             type="warning",
                         )
                     else:

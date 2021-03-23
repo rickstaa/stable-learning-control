@@ -332,15 +332,49 @@ def plot():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("logdir", nargs="*")
-    parser.add_argument("--legend", "-l", nargs="*")
-    parser.add_argument("--xaxis", "-x", default="TotalEnvInteracts")
-    parser.add_argument("--value", "-y", default="Performance", nargs="*")
-    parser.add_argument("--count", action="store_true")
-    parser.add_argument("--smooth", "-s", type=int, default=1)
-    parser.add_argument("--select", nargs="*")
-    parser.add_argument("--exclude", nargs="*")
-    parser.add_argument("--est", default="mean")
+    parser.add_argument(
+        "logdir",
+        nargs="*",
+        help="The directory where the results are that you want to plot",
+    )
+    parser.add_argument(
+        "--legend",
+        "-l",
+        nargs="*",
+        help="Optional way to specify a legend for the plot",
+    )
+    parser.add_argument(
+        "--xaxis",
+        "-x",
+        default="TotalEnvInteracts",
+        help="Data used for the x-axis (default: 'TotalEnvInteracts')",
+    )
+    parser.add_argument(
+        "--value",
+        "-y",
+        default="Performance",
+        nargs="*",
+        help="Data used for the y-axis (default: 'performance')",
+    )
+    parser.add_argument(
+        "--count",
+        action="store_true",
+        help="Whether you want to average over all the results",
+    )
+    parser.add_argument(
+        "--smooth", "-s", type=int, default=1, help="The size of the averaging window"
+    )
+    parser.add_argument(
+        "--select", nargs="*", help="Log directories to include in your plot"
+    )
+    parser.add_argument(
+        "--exclude", nargs="*", help="Log directories to exclude in your plot"
+    )
+    parser.add_argument(
+        "--est",
+        default="mean",
+        help="The estimator you want to use in your plot (ie. mean, min max)",
+    )
     args = parser.parse_args()
 
     make_plots(

@@ -672,9 +672,7 @@ class Logger:
 
             # Save additional algorithm information
             if not self._save_info_saved:
-                save_info = {
-                    "alg_name": self.pytorch_saver_elements.__class__.__name__
-                }
+                save_info = {"alg_name": self.pytorch_saver_elements.__class__.__name__}
                 self.save_to_json(
                     save_info,
                     output_filename="save_info.json",

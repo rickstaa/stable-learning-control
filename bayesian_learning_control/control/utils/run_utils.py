@@ -187,7 +187,7 @@ def call_experiment(
     %s
 
 
-    Evaluate it's robustness with (Coming Soon):
+    Evaluate it's robustness with:
 
     %s
 

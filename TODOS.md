@@ -13,3 +13,5 @@
 -   [ ] Update contributing blc
 -   [ ] Add official environment name to gym environments
 -   [ ] Add link to documentation
+-   [ ] Add Wei about submodules --> Makes disturber easier to implement since people can use it as a base when implementing disturbers.
+-   [ ] Add fallback for when environment could not be loaded.
