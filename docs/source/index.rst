@@ -6,7 +6,7 @@
 Welcome to Bayesian Learning Control!
 =====================================
 
-.. image:: https://d1rkab7tlqy5f1.cloudfront.net/_processed_/8/9/csm_SR_mecor_7576_a9342f9469.jpg
+.. image:: ./images/safe_panda.jpg
 
 .. warning::
 
