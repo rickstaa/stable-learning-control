@@ -3,11 +3,6 @@
 # documentation still builds
 name: Docs build check CI
 on:
-  # push:
-  #   paths:
-  #     - "docs/**"
-  #   branches:
-  #     - main
   pull_request:
     paths:
       - "docs/**"

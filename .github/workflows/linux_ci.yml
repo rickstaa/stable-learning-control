@@ -1,9 +1,11 @@
 # Makes sure the package build on linux.
 name: Linux CI
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
   pull_request:
     branches:
       - main
