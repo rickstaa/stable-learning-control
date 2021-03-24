@@ -14,6 +14,28 @@ currently only supported on Linux and OSX.
 .. _`Python3`: https://www.python.org/
 .. _`OpenAi gym`: https://gym.openai.com/
 
+Install system dependencies
+===========================
+
+The BLC package uses `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ to distribute training over multiple CPU's. In order for this to work
+a Message Passing Library should be present on your system. For mac and Linux systems, the `Open MPI <https://www.open-mpi.org/>`_ library can be used.
+On Linux, this library can be
+installed using the following command:
+
+.. code-block:: bash
+
+    sudo apt install libopenmpi-dev
+
+For mac this command can be used:
+
+.. code-block:: bash
+
+    brew install openmpi
+
+.. attention::
+
+    For Windows, the `Microsoft MPI <https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi>`_ package can be used. As we currently do not offer support for our package with Windows, we did not test the BLC package's compatibility.
+
 Installing Python
 =================
 
