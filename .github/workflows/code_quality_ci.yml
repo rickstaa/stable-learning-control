@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - "docs/**"
 jobs:
   spell-check:
     name: runner / misspell

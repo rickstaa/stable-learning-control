@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - "docs/**"
 jobs:
   python-tests:
     name: Perform python-tests
