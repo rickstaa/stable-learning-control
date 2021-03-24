@@ -40,7 +40,7 @@ if __name__ == "__main__":
     eg.add("epochs", 100)
     eg.add("steps_per_epoch", 4000)
     eg.add("ac_kwargs:hidden_sizes", [(32,), (64, 64)], "hid")
-    eg.add("ac_kwargs:activation", [torch.nn.Relu, torch.nn.ReLU], "")
+    eg.add("ac_kwargs:activation", [torch.nn.ReLU, torch.nn.ReLU], "")
 
     # Run the grid search
     eg.run(sac, num_cpu=args.cpu)
