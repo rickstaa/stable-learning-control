@@ -339,8 +339,6 @@ def run(input_args):
     Args:
         input_args (list): List with command line argument.
     """
-
-    cmd = sys.argv[1] if len(input_args) > 1 else "help"
     valid_algos = _add_with_backends(BASE_ALGO_NAMES)
     valid_utils = ["plot", "test_policy", "eval_robustness"]
     valid_help = ["--help", "-h", "help"]
@@ -350,6 +348,7 @@ def run(input_args):
 
     # Load hyperparameters from a experimental configuration file if supplied.
     sys.argv = _parse_exp_cfg(sys.argv)
+    cmd = sys.argv[1] if len(input_args) > 1 else "help"
 
     if cmd not in valid_cmds:
         raise ValueError(
