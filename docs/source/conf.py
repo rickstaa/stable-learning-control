@@ -79,7 +79,7 @@ autosummary_generate_overwrite = True
 autodoc_member_order = "bysource"
 autosummary_imported_members = True
 
-# # imgmath settings
+# imgmath settings
 imgmath_image_format = "svg"
 imgmath_font_size = 14
 
