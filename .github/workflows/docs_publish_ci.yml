@@ -7,13 +7,14 @@ on:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
-    container: sphinxdoc/sphinx-latexpdf
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
           fetch-depth: 0
+      - name: Install texlive
+        run: sudo apt install texlive-full
       - name: Install system dependencies
         run: sudo apt update; sudo apt install libopenmpi-dev
       - name: Set up Python environment
