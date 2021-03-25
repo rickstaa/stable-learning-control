@@ -27,7 +27,7 @@ gh-pages:
 	git submodule update --recursive && \
 	git checkout gh-pages && \
 	git rm -rf . && git clean -fxd && \
-	git checkout melodic-devel $(GH_PAGES_SOURCES) && \
+	git checkout main $(GH_PAGES_SOURCES) && \
 	git reset HEAD && \
 	cd docs && \
 	make clean && \
@@ -39,9 +39,9 @@ gh-pages:
 	touch .nojekyll && \
 	rm -rf $(GH_PAGES_SOURCES) && \
 	git add -A && \
-	git commit -m ":pencil: Generated gh-pages for `git log melodic-devel -1 --pretty=short --abbrev-commit`" && \
+	git commit -m ":pencil: Generated gh-pages for `git log main -1 --pretty=short --abbrev-commit`" && \
 	git push origin gh-pages && \
-	git checkout melodic-devel && \
+	git checkout main && \
 	git submodule update --recursive
 
 # Catch-all target: route all unknown targets to Sphinx using the new
