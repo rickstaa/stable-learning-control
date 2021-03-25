@@ -22,7 +22,6 @@
 # -- Make sure blc is accessible without going through setup.py -----------
 import os.path as osp
 import sys
-import sphinxcontrib.katex as katex
 
 dirname = osp.dirname
 top_folder = dirname(dirname(dirname(__file__)))
