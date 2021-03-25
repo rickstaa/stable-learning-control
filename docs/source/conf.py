@@ -22,6 +22,7 @@
 # -- Make sure blc is accessible without going through setup.py -----------
 import os.path as osp
 import sys
+import sphinxcontrib.katex as katex
 
 dirname = osp.dirname
 top_folder = dirname(dirname(dirname(__file__)))
@@ -61,8 +62,7 @@ needs_sphinx = "3.0"
 # ones.
 extensions = [
     "sphinx.ext.todo",
-    # "sphinx.ext.imgmath",
-    "sphinxcontrib.katex",
+    "sphinx.ext.imgmath",
     "sphinx.ext.viewcode",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -80,8 +80,8 @@ autodoc_member_order = "bysource"
 autosummary_imported_members = True
 
 # # imgmath settings
-# imgmath_image_format = "svg"
-# imgmath_font_size = 14
+imgmath_image_format = "svg"
+imgmath_font_size = 14
 
 # Add mappings
 intersphinx_mapping = {
@@ -168,13 +168,18 @@ html_context = {
 htmlhelp_basename = "BayesianLearningControldoc"
 
 # -- Options for LaTeX output ---------------------------------------------
-
-imgmath_latex_preamble = r"""
+latex_packages = r"""
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{amsmath}
 \usepackage{cancel}
-
+"""
+latex_macros = r"""
+\newcommand{\E}{{\mathrm E}}
+\newcommand{\underE}[2]{\underset{\begin{subarray}{c}#1 \end{subarray}}{\E}\left[ #2 \right]}
+\newcommand{\Epi}[1]{\underset{\begin{subarray}{c}\tau \sim \pi \end{subarray}}{\E}\left[ #1 \right]}
+"""
+imgmath_latex_overwrites = r"""
 \usepackage[verbose=true,letterpaper]{geometry}
 \geometry{
     textheight=12in,
@@ -184,39 +189,10 @@ imgmath_latex_preamble = r"""
     headsep=25pt,
     footskip=30pt
     }
-
-\newcommand{\E}{{\mathrm E}}
-
-\newcommand{\underE}[2]{\underset{\begin{subarray}{c}#1 \end{subarray}}{\E}\left[ #2 \right]}
-
-\newcommand{\Epi}[1]{\underset{\begin{subarray}{c}\tau \sim \pi \end{subarray}}{\E}\left[ #1 \right]}
 """
-
+imgmath_latex_preamble = latex_packages + imgmath_latex_overwrites + latex_macros
 latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    #
-    "preamble": r"""
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{amsmath}
-\usepackage{cancel}
-
-
-\newcommand{\E}{{\mathrm E}}
-
-\newcommand{\underE}[2]{\underset{\begin{subarray}{c}#1 \end{subarray}}{\E}\left[ #2 \right]}
-
-\newcommand{\Epi}[1]{\underset{\begin{subarray}{c}\tau \sim \pi \end{subarray}}{\E}\left[ #1 \right]}
-""",
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
+    "preamble": latex_packages + latex_macros,
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -227,7 +203,7 @@ latex_documents = [
         master_doc,
         "BayesianLearningControl.tex",
         "Bayesian Learning Control Documentation",
-        "Joshua Achiam",
+        "Rick Staa",
         "manual",
     ),
 ]
