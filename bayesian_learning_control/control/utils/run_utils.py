@@ -34,14 +34,14 @@ DIV_LINE_WIDTH = 80
 def call_experiment(
     exp_name, thunk, seed=0, num_cpu=1, data_dir=None, datestamp=False, **kwargs
 ):
-    """Run a function (thunk) with hyperparameters (:obj:`**kwargs`), plus configuration.
+    """Run a function (thunk) with hyperparameters (:obj:`kwargs`), plus configuration.
 
     This wraps a few pieces of functionality which are useful when you want
     to run many experiments in sequence, including logger configuration and
     splitting into multiple processes for MPI.
 
     There's also a SpinningUp-specific convenience added into executing the
-    thunk: if ``env_name`` is one of the kwargs passed to call_experiment, it's
+    thunk: if ``env_name`` is one of the **kwargs** passed to call_experiment, it's
     assumed that the thunk accepts an argument called ``env_fn``, and that
     the ``env_fn`` should make a gym environment with the given ``env_name``.
 
@@ -64,7 +64,7 @@ def call_experiment(
             default to ``DEFAULT_DATA_DIR`` from
             :mod:`bayesian_learning_control.user_config`.
         datestamp (bool): Whether a datestamp should be added to the experiment name.
-        **kwargs: All kwargs to pass to thunk.
+        kwargs: All kwargs to pass to thunk.
     """
 
     # Determine number of CPU cores to run on
@@ -165,7 +165,10 @@ def call_experiment(
     )
     test_cmd = colorize(test_cmd, "green")
 
-    eval_cmd = "python -m elpg_pack.run eval_robustness " + logger_kwargs["output_dir"]
+    eval_cmd = (
+        "python -m bayesian_learning_control.run eval_robustness "
+        + logger_kwargs["output_dir"]
+    )
     eval_cmd = colorize(eval_cmd, "green")
 
     output_msg = (
@@ -471,7 +474,7 @@ class ExperimentGrid:
         a string, it must be the name of a parameter whose values are all
         callable functions.
 
-        Uses :meth:call_experiment` to actually launch each experiment, and gives
+        Uses :meth:`call_experiment` to actually launch each experiment, and gives
         each variant a name using :meth:`variant_name`.
 
         Maintenance note: the args for ExperimentGrid.run should track closely
