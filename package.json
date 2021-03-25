@@ -1,6 +1,6 @@
 {
   "name": "bayesian-learning-control",
-  "version": "0.9.6",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:rickstaa/bayesian-learning-control.git"
