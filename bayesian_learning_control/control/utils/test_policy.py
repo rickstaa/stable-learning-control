@@ -5,14 +5,15 @@ it was trained on.
 import glob
 import os
 import os.path as osp
-from pathlib import Path
 import time
+from pathlib import Path
 
 import joblib
 import torch
 from bayesian_learning_control.utils.import_utils import import_tf
-from bayesian_learning_control.utils.serialization_utils import load_from_json
 from bayesian_learning_control.utils.log_utils import EpochLogger, log_to_std_out
+from bayesian_learning_control.utils.log_utils.helpers import friendly_err
+from bayesian_learning_control.utils.serialization_utils import load_from_json
 
 
 def _retrieve_iter_folder(fpath, itr):
@@ -114,9 +115,9 @@ def load_policy_and_env(fpath, itr="last"):
     fpath, backend = _retrieve_model_folder(fpath)
 
     if itr != "last":
-        assert isinstance(
-            itr, int
-        ), "Bad value provided for itr (needs to be int or 'last')."
+        assert isinstance(itr, int), friendly_err(
+            "Bad value provided for itr (needs to be int or 'last')."
+        )
         itr = "%d" % itr
 
     # try to load environment from save
@@ -212,7 +213,7 @@ def run_policy(
         render (bool, optional): Whether you want to render the episode to the screen.
             Defaults to ``True``.
     """
-    assert env is not None, (
+    assert env is not None, friendly_err(
         "Environment not found!\n\n It looks like the environment wasn't saved, "
         + "and we can't run the agent in it. :( \n\n Check out the documentation "
         + "page on the Test Policy utility for how to handle this situation."

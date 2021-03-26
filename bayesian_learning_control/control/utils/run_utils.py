@@ -168,6 +168,7 @@ def call_experiment(
     eval_cmd = (
         "python -m bayesian_learning_control.run eval_robustness "
         + logger_kwargs["output_dir"]
+        + " --disturbance_type step_disturbance"
     )
     eval_cmd = colorize(eval_cmd, "green")
 
