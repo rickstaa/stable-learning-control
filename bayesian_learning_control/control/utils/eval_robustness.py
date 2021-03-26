@@ -18,7 +18,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
-from bayesian_learning_control.utils.log_utils import EpochLogger, log_to_std_out
+from bayesian_learning_control.utils.log_utils import (
+    EpochLogger,
+    friendly_err,
+    log_to_std_out,
+)
 
 REQUIRED_DISTURBER_OBJECTS = {
     "methods": [
@@ -160,8 +164,8 @@ def run_disturbed_policy(  # noqa: C901
         TypeError: Thrown when no disturbance variant supplied and it is needed for the
             requested disturbance type.
     """  # noqa: E501
-    # Validate environment and environment disturber
-    assert env is not None, (
+    # Validate environment, environment disturber
+    assert env is not None, friendly_err(
         "Environment not found!\n\n It looks like the environment wasn't saved, "
         + "and we can't run the agent in it. :( \n\n Check out the documentation "
         + "page on the robustness evaluation utility for how to handle this situation."
@@ -191,12 +195,6 @@ def run_disturbed_policy(  # noqa: C901
             "documentation and try again."
         )
 
-    disturbance_type = (
-        disturbance_type.lower() if disturbance_type else disturbance_type
-    )
-    disturbance_variant = (
-        disturbance_variant.lower() if disturbance_variant else disturbance_variant
-    )
     output_dir = (
         Path(output_dir).joinpath("eval") if output_dir is not None else output_dir
     )
@@ -206,7 +204,27 @@ def run_disturbed_policy(  # noqa: C901
     max_ep_len = env._max_episode_steps if max_ep_len is None else max_ep_len
 
     # Initialize the disturber
-    env.init_disturber(disturbance_type, disturbance_variant),
+    disturbance_type = (
+        disturbance_type.lower() if disturbance_type else disturbance_type
+    )
+    disturbance_variant = (
+        disturbance_variant.lower() if disturbance_variant else disturbance_variant
+    )
+    try:
+        env.init_disturber(disturbance_type, disturbance_variant),
+    except (ValueError, TypeError) as e:
+        raise Exception(
+            friendly_err(
+                "You did not give a value for --{}! Add one and try again.".format(
+                    e.args[1]
+                )
+            )
+        )
+    disturbance_type = (
+        env.disturbance_info["type"]
+        if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys()
+        else disturbance_type
+    )
     disturbance_variant = (
         env.disturbance_info["variant"]
         if hasattr(env, "disturbance_info") and "variant" in env.disturbance_info.keys()
@@ -522,7 +540,11 @@ def plot_robustness_results(  # noqa: C901
         time_instant_keys = [
             key for key in env.disturbance_info["cfg"].keys() if "_instant" in key
         ]
-        time_instant = time_instant_keys[0] if time_instant_keys else None
+        time_instant = (
+            env.disturbance_info["cfg"][time_instant_keys[0]]
+            if time_instant_keys
+            else None
+        )
 
     # Unpack required data from dataframe
     obs_found, rew_found, soi_found, ref_found = True, True, True, True
@@ -774,7 +796,7 @@ if __name__ == "__main__":
     run_results_df = run_disturbed_policy(
         env,
         policy,
-        disturbance_type=args.disturbance_type,
+        args.disturbance_type,
         disturbance_variant=args.disturbance_variant,
         max_ep_len=args.len,
         num_episodes=args.episodes,
