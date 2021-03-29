@@ -189,10 +189,11 @@ def load_pytorch_policy(fpath, itr="last", env=None):
     log_to_std_out("Loading model from '%s'.\n\n" % model_file, type="info")
 
     # Retrieve get_action method
+    save_info = load_from_json(Path(fpath).joinpath("save_info.json"))
     import bayesian_learning_control.control.algos.pytorch as torch_algos
 
     model_data = torch.load(model_file)
-    model = getattr(torch_algos, model_data["alg_name"])(env=env)
+    model = getattr(torch_algos, save_info["alg_name"])(env=env)
     model.load_state_dict(model_data)  # Retore model parameters
     return model
 

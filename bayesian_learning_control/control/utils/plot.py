@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from bayesian_learning_control.utils.log_utils import friendly_err
+from bayesian_learning_control.utils.log_utils import friendly_error
 
 DIV_LINE_WIDTH = 50
 VALID_DATA_FILES = ["progress.txt", "progress.csv"]
