@@ -7,7 +7,6 @@ ac_kwargs:
     critic: [64, 64]
   activation: "nn.ReLU"
   output_activation: "nn.ReLU"
-use_lyapunov: True
 opt_type: "minimize"
 max_ep_len: 1000
 epochs: 100
