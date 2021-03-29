@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from bayesian_learning_control.utils.log_utils import friendly_error
+from bayesian_learning_control.utils.log_utils import friendly_err
 
 DIV_LINE_WIDTH = 50
 VALID_DATA_FILES = ["progress.txt", "progress.csv"]
@@ -201,7 +201,7 @@ def get_all_datasets(all_logdirs, legend=None, select=None, exclude=None):
     print("\n" + "=" * DIV_LINE_WIDTH)
 
     # Make sure the legend is compatible with the logdirs
-    assert not (legend) or (len(legend) == len(logdirs)), friendly_error(
+    assert not (legend) or (len(legend) == len(logdirs)), friendly_err(
         "Must give a legend title for each set of experiments."
     )
 
