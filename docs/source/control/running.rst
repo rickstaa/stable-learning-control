@@ -149,17 +149,6 @@ Special Flags
 
 A few flags receive special treatment.
 
-.. _alg_flags:
-
-Algorithm Flags
-^^^^^^^^^^^^^^^
-
-.. option:: --env, --save_checkpoints
-
-    By default, only the most recent state of the agent and environment is saved. When the ``--save_checkpoints`` flag is supplied, a snapshot (checkpoint) of the agent
-    and environment will be saved at each epoch. These snapshots are saved in a ``checkpoints`` folder inside the Logger output directory (for more information, see
-    :ref:`Saving and Loading Experiment Outputs <checkpoints>`).
-
 Environment Flags
 ^^^^^^^^^^^^^^^^^
 
@@ -173,11 +162,21 @@ Environment Flags
 
     :obj:`object`. Additional keyword arguments you want to pass to the gym environment.
 
+.. _alg_flags:
+
+Algorithm Flags
+^^^^^^^^^^^^^^^
+
+.. option:: --save_checkpoints
+
+    By default, only the most recent state of the agent and environment is saved. When the ``--save_checkpoints`` flag is supplied, a snapshot (checkpoint) of the agent
+    and environment will be saved at each epoch. These snapshots are saved in a ``checkpoints`` folder inside the Logger output directory (for more information, see
+    :ref:`Saving and Loading Experiment Outputs <checkpoints>`).
 
 .. _`shortcut_flags`:
 
 Shortcut Flags
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~
 
 Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
@@ -185,11 +184,11 @@ Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
     :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of both the actor and critic.
 
-.. option:: --hid, --ac_kwargs:hidden_sizes:actor
+.. option:: --hid_a, --ac_kwargs:hidden_sizes:actor
 
     :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of the actor.
 
-.. option:: --hid, --ac_kwargs:hidden_sizes:critic
+.. option:: --hid_c, --ac_kwargs:hidden_sizes:critic
 
     :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of the critic.
 
@@ -197,7 +196,7 @@ Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
     :obj:`tf op`. The activation function for the neural networks in the actor and critic.
 
-.. option:: --act, --ac_kwargs:output_activation
+.. option:: --act_out, --ac_kwargs:output_activation
 
    :obj:`tf op`. The activation function for the neural networks in the actor and critic.
 
@@ -218,6 +217,7 @@ Some algorithm arguments are relatively long, and we enabled shortcuts for them:
    :obj:`tf op`. The activation function for the output activation function of the critic.
 
 These flags are valid for all current BLC algorithms.
+
 
 Config Flags
 ^^^^^^^^^^^^
@@ -240,6 +240,38 @@ These flags are not hyperparameters of any algorithm but change the experimental
 .. option:: --datestamp
 
     :obj:`bool`. Include date and time in the name for the save directory of the experiment.
+
+Logger Flags
+^^^^^^^^^^^^
+
+The CLI also contains several (shortcut) flags that can be used to change the behavior of the :class:`bayesian_learning_control.utils.log_utils.logx.EpochLogger`.
+
+.. option:: --use_tensorboard, --logger_kwargs:use_tensorboard
+
+    :obj:`bool`. Enables tensorboard logging.
+
+.. option:: --tb_log_freq, --logger_kwargs:tb_log_freq
+
+    :obj:`str`. The tensorboard log frequency. Options are ``low`` (Recommended: logs at every epoch) and ``high`` (logs at every SGD update
+    batch). Defaults to ``low`` since this is less resource intensive.
+
+.. option:: --verbose, --logger_kwargs:verbose
+
+    :obj:`bool`. Whether you want to log to the std_out. Defaults to ``True``.
+
+.. option:: --verbose_fmt, --logger_kwargs:verbose_fmt
+
+    :obj:`bool`. The format in which the statistics are displayed to the terminal. Options are ``table`` which supplies them as a table and ``line`` which prints
+    them in one line. Defaults to ``line``.
+
+.. option:: --verbose_vars, --logger_kwargs:verbose_vars
+
+    :obj:`list`. A list of variables you want to log to the std_out. By default all variables are logged.
+
+.. important::
+
+    The verbose_vars list should be supplied as a list that can be evaluated in python (e.g. ``--verbose_vars ["Lr_a", "Lr_c"]``).
+
 
 Using experimental configuration files (yaml)
 ---------------------------------------------

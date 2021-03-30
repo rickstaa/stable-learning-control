@@ -87,12 +87,20 @@ def call_experiment(
             exp_name, seed, data_dir, datestamp
         )
 
-        # Force algorithm default if verbose_fmt is line
-        # NOTE: Done since otherwise the stdout gets cluttered.
-        if kwargs["logger_kwargs"]["verbose_fmt"] == "line":
-            kwargs["logger_kwargs"]["verbose_vars"] = None
     else:
         print("Note: Call experiment is not handling logger_kwargs.\n")
+        kwargs["logger_kwargs"] = setup_logger_kwargs(
+            exp_name,
+            seed=seed,
+            data_dir=data_dir,
+            datestamp=datestamp,
+            **kwargs["logger_kwargs"],
+        )
+
+    # Force algorithm default if verbose_fmt is line
+    # NOTE: Done since otherwise the stdout gets cluttered.
+    if kwargs["logger_kwargs"]["verbose_fmt"] == "line":
+        kwargs["logger_kwargs"]["verbose_vars"] = None
 
     def thunk_plus():
         """Setup environment used in the experiment."""

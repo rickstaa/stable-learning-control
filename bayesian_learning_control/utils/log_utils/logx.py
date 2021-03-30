@@ -109,7 +109,7 @@ class Logger:
             self.log("Logging data to %s" % self.output_file.name, type="info")
             self.verbose = verbose
             self.verbose_table = verbose_fmt.lower() != "line"
-            self.verbose_vars = [
+            self.verbose_vars = ["Epoch", "TotalEnvInteracts"] + [
                 item.replace("Avg", "Average") for item in verbose_vars
             ]
         else:
