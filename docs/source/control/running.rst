@@ -167,6 +167,9 @@ Environment Flags
 Algorithm Flags
 ^^^^^^^^^^^^^^^
 
+General Flags
+~~~~~~~~~~~~~
+
 .. option:: --save_checkpoints
 
     By default, only the most recent state of the agent and environment is saved. When the ``--save_checkpoints`` flag is supplied, a snapshot (checkpoint) of the agent
