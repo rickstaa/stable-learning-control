@@ -201,7 +201,7 @@ def get_all_datasets(all_logdirs, legend=None, select=None, exclude=None):
     print("\n" + "=" * DIV_LINE_WIDTH)
 
     # Make sure the legend is compatible with the logdirs
-    assert not (legend) or (len(legend) == len(logdirs)), friendly_error(
+    assert not (legend) or (len(legend) == len(logdirs)), friendly_err(
         "Must give a legend title for each set of experiments."
     )
 

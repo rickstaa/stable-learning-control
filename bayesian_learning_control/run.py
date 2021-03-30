@@ -31,6 +31,7 @@ SUBSTITUTIONS = {
     "hid_a": "ac_kwargs:hidden_sizes:actor",
     "hid_c": "ac_kwargs:hidden_sizes:critic",
     "act": "ac_kwargs:activation",
+    "act_out": "ac_kwargs:output_activation",
     "act_a": "ac_kwargs:activation:actor",
     "act_out_a": "ac_kwargs:output_activation:actor",
     "act_c": "ac_kwargs:activation:critic",
@@ -38,6 +39,12 @@ SUBSTITUTIONS = {
     "cpu": "num_cpu",
     "dt": "datestamp",
     "v": "verbose",
+    "use_tensorboard": "logger_kwargs:use_tensorboard",
+    "save_checkpoints": "logger_kwargs:save_checkpoints",
+    "tb_log_freq": "logger_kwargs:tb_log_freq",
+    "verbose": "logger_kwargs:verbose",
+    "verbose_fmt": "logger_kwargs:verbose_fmt",
+    "verbose_vars": "logger_kwargs:verbose_vars",
 }
 
 # Only some algorithms can be parallelized (have num_cpu > 1):

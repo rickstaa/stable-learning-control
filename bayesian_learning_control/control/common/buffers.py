@@ -3,7 +3,7 @@ Tensorflow algorithms.
 """
 
 import numpy as np
-from bayesian_learning_control.common.helpers import combine_shapes
+from bayesian_learning_control.common.helpers import combine_shapes, atleast_2d
 
 
 class ReplayBuffer:
@@ -29,15 +29,15 @@ class ReplayBuffer:
         """
         # Preallocate memory for experience buffer (s, s', a, r, d)
         # NOTE: Squeeze is needed to remove length 1 axis.
-        self.obs_buf = np.zeros(
-            combine_shapes(int(size), obs_dim), dtype=np.float32
-        ).squeeze()
-        self.obs_next_buf = np.zeros(
-            combine_shapes(int(size), obs_dim), dtype=np.float32
-        ).squeeze()
-        self.act_buf = np.zeros(
-            combine_shapes(int(size), act_dim), dtype=np.float32
-        ).squeeze()
+        self.obs_buf = atleast_2d(
+            np.zeros(combine_shapes(int(size), obs_dim), dtype=np.float32).squeeze()
+        )
+        self.obs_next_buf = atleast_2d(
+            np.zeros(combine_shapes(int(size), obs_dim), dtype=np.float32).squeeze()
+        )
+        self.act_buf = atleast_2d(
+            np.zeros(combine_shapes(int(size), act_dim), dtype=np.float32).squeeze()
+        )
         self.rew_buf = np.zeros(
             combine_shapes(int(size), rew_dim), dtype=np.float32
         ).squeeze()

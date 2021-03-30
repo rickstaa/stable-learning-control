@@ -9,6 +9,25 @@ import numpy as np
 import torch
 
 
+def atleast_2d(array, axis=1):
+    """Similar to :meth:`numpy.atleast_2d` but with an additional ``axis`` argument
+    which can be used to specify where the extra dimension should be-added.
+
+    Args:
+        array (numpy.ndarray): [description]
+        axis (int, optional): Position in the expanded axes where the new axis (or axes)
+            is placed if the dimension is smaller than 2. Defaults to 1.
+
+    Returns:
+        numpy.ndarray: The 2D numpy array.
+    """
+    # IMPROVE: Can be replaced with numpy.atleast_2d when
+    # https://github.com/numpy/numpy/pull/18386 is merged.
+    if array.ndim < 2:
+        array = np.expand_dims(array, axis=axis)
+    return array
+
+
 def convert_to_tuple(input_var):
     """Converts input into a tuple.
 
