@@ -755,7 +755,7 @@ def validate_args(**kwargs):
         )
 
 
-def lac(  # noqa: C901
+def lac2(  # noqa: C901
     env_fn,
     actor_critic=None,
     ac_kwargs=dict(
@@ -1324,6 +1324,7 @@ if __name__ == "__main__":
         "--opt_type",
         type=str,
         default="minimize",
+        # default="minimize", # DEBUG
         help="algorithm optimization type (default: minimize)",
     )
     parser.add_argument(
@@ -1579,7 +1580,7 @@ if __name__ == "__main__":
     )
     torch.set_num_threads(torch.get_num_threads())
 
-    lac(
+    lac2(
         lambda: gym.make(args.env),
         actor_critic=LyapunovActorCritic,
         ac_kwargs=ac_kwargs,
