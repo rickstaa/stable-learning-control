@@ -29,12 +29,12 @@ as an RL based stationary Kalman filter.
 Environment step return
 -----------------------
 
-In addition to the observations, the environment also returns the current reference and
-the error when a step is taken. This results in returning the following array:
+In addition to the observations, the environment also returns an info dictionary that contains
+the current reference and the error when a step is taken. This results in returning the following array:
 
 .. code-block:: python
 
-    [hat_x_1, hat_x_2, x_1, x_2, reference, error]
+    [hat_x_1, hat_x_2, x_1, x_2, info_dict]
 
 
 How to use
