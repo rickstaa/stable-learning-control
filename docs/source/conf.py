@@ -172,6 +172,7 @@ latex_packages = r"""
 \usepackage{algorithmic}
 \usepackage{amsmath}
 \usepackage{cancel}
+\usepackage{physics}
 """
 latex_macros = r"""
 \newcommand{\E}{{\mathrm E}}

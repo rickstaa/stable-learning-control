@@ -33,6 +33,16 @@ The goal of the agent in the oscillator environment is to act in such a way that
 of the proteins of the synthetic oscillatory network follows a supplied reference
 signal.
 
+
+Cost function
+-------------
+
+The Oscillator environment uses the absolute difference between the reference and the state of interest as the cost function:
+
+.. math::
+
+    C = \abs{p_1 - r_1}
+
 Environment step return
 -----------------------
 

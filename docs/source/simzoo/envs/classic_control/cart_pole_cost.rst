@@ -1,41 +1,70 @@
-.. _ex3_ekf:
+.. _cart_pole_cost:
 
-Ex3_EKF gym environment
-=======================
+CartPoleCost gym environment
+============================
 
-A gym environment for a noisy master-slave system. This environment can be used to train a
-RL based stationary Kalman filter.
+An un-actuated joint attaches a pole to a cart, which moves along a frictionless track. This environment
+corresponds to the `CartPole-v1 <https://gym.openai.com/envs/CartPole-v1/>`_ environment that is included in the
+openAi gym package. It is different in the fact that:
+
+-   In this version, the action space is continuous, wherein the OpenAi version
+    it is discrete.
+-   The reward is replaced with a cost. This cost is defined as the difference between a state variable and a reference value (error).
 
 Observation space
 -----------------
 
--   **hat_x_1:** The estimated angle.
--   **hat_x_2:** The estimated frequency.
--   **x_1:** Actual angle.
--   **x_2:** Actual frequency.
+-   **x**: Cart Position.
+-   **x_dot**: Cart Velocity.
+-   **w**: Pole angle.
+-   **w_dot**: Pole angle velocity.
 
 Action space
----------------
+------------
 
--   **u1:** First action coming from the RL Kalman filter.
--   **u2:** Second action coming from the RL Kalman filter.
+-   **u1:** The x-force applied on the cart.
 
 Environment goal
 ----------------
-The agent's goal in the Ex3_EKF environment is to act so that
-the estimator correctly estimated the original noisy system. By doing this, it serves
-as an RL based stationary Kalman filter.
+
+The pendulum starts upright, and the goal is to prevent it from falling over by increasing and reducing the cart's
+velocity. This needs to be done while the cart does not violate set position constraints. These constraints are defined
+in the cost function.
+
+Cost function
+-------------
+
+The cost function of this environment is designed in such a way that it tries to minimize the error of a set of states and a set of reference
+states. It contains two types of tasks:
+
+-   A reference tracking task. In this task, the agent tries to make a state track a given reference.
+-   A stabilization task. In this task, the agent attempts to stabilize a given state (e.g. keep the pole angle and or cart position zero)
+
+The exact definition of these tasks can be found in the environment :meth:`~bayesian_learning_control.simzoo.simzoo.envs.classic_control.cart_pole_cost.CartPoleCost.cost`
+method.
+
+.. todo::
+
+    Add cost function formula.
 
 Environment step return
 -----------------------
 
-In addition to the observations, the environment also returns an info dictionary that contains
-the current reference and the error when a step is taken. This results in returning the following array:
+In addition to the observations, the environment also returns a info dictionary:
 
 .. code-block:: python
 
     [hat_x_1, hat_x_2, x_1, x_2, info_dict]
 
+
+This info dictionary contains the following keys:
+
+-   **cons_pos**: The current x-position constraint.
+-   **cons_theta**: The current pole angle constraint.
+-   **target**: The target position. Only present when performing a reference tracking task.
+-   **violation_of_x_threshold**: Whether the environment x-threshold was violated.
+-   **reference**: The current reference (position and angles). Only present when performing a reference tracking task.
+-   **state_of_interest**: The current state_of_interest which we try to minimize.
 
 How to use
 ----------

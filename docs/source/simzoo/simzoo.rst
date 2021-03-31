@@ -1,4 +1,4 @@
-_`simzoo_module`:
+.. _simzoo_module:
 
 ======
 Simzoo
@@ -22,19 +22,20 @@ Biological environments
 Gym environments that are based on Biological systems.
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   envs/biological/oscillator
+    envs/biological/oscillator
 
 Classic control environments
 ----------------------------
 
-Classical control theory problems.
+Environments for classical control theory problems.
 
 .. toctree::
     :maxdepth: 1
-   envs/classic_control/ex3_ekf
-   envs/classic_control/cart_pole_cost
+
+    envs/classic_control/ex3_ekf
+    envs/classic_control/cart_pole_cost
 
 Robotics environment
 --------------------
@@ -42,9 +43,9 @@ Robotics environment
 Robotics control problems.
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   envs/robotics/gazebo_panda_gym
+    envs/robotics/gazebo_panda_gym
 
 .. important::
 
