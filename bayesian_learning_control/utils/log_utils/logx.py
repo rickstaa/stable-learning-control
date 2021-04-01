@@ -109,7 +109,7 @@ class Logger:
             self.log("Logging data to %s" % self.output_file.name, type="info")
             self.verbose = verbose
             self.verbose_table = verbose_fmt.lower() != "line"
-            self.verbose_vars = ["Epoch", "TotalEnvInteracts"] + [
+            self.verbose_vars = [
                 item.replace("Avg", "Average") for item in verbose_vars
             ]
         else:
@@ -273,7 +273,15 @@ class Logger:
 
             # Log to stdout
             if self.verbose:
-                key_filter = self.verbose_vars if self.verbose_vars else print_keys
+                if self.verbose_vars:
+                    key_filter = self.verbose_vars
+
+                    # Make sure Epcoh and EnvInteract are always shown if present
+                    for item in reversed(["Epoch", "TotalEnvInteracts"]):
+                        if item not in key_filter and item in print_keys:
+                            key_filter.insert(0, item)
+                else:
+                    key_filter = print_keys
                 if self.verbose_table:
                     key_lens = [len(key) for key in self._log_headers]
                     max_key_len = max(15, max(key_lens))
