@@ -10,7 +10,7 @@ RANDOM_STEP = True
 # ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Ex3EKF-v1"
 ENV_NAME = "CartPole-v1"
-ENV_NAME = "CartPoleCost-v0"
+# ENV_NAME = "CartPoleCost-v0"
 
 if __name__ == "__main__":
 
@@ -22,7 +22,8 @@ if __name__ == "__main__":
     t1 = []
     s = env.reset()
     print(f"Taking {T} steps in the Cartpole environment.")
-    for i in range(int(T / env.dt)):
+    for i in range(int(T / env.tau)):
+        # for i in range(int(T / env.dt)):
         action = (
             env.action_space.sample()
             if RANDOM_STEP
@@ -34,7 +35,7 @@ if __name__ == "__main__":
         except NotImplementedError:
             pass
         path.append(s)
-        t1.append(i * env.dt)
+        t1.append(i * env.tau)
     print("Finished Cartpole environment simulation.")
 
     # Plot results
