@@ -788,7 +788,7 @@ def sac(  # noqa: C901
         opt_type (str, optional): The optimization type you want to use. Options
             ``maximize`` and ``minimize``. Defaults to ``maximize``.
         max_ep_len (int, optional): Maximum length of trajectory / episode /
-            rollout. Defaults to ``500``.
+            rollout. Defaults to the environment maximum.
         epochs (int, optional): Number of epochs to run and train agent. Defaults
             to ``100``.
         steps_per_epoch (int, optional): Number of steps of interaction

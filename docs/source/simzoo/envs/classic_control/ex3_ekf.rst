@@ -1,7 +1,7 @@
 .. _ex3_ekf:
 
-Ex3_EKF gym environment
-=======================
+Ex3EKF gym environment
+======================
 
 A gym environment for a noisy master-slave system. This environment can be used to train a
 RL based stationary Kalman filter.
@@ -22,19 +22,29 @@ Action space
 
 Environment goal
 ----------------
-The agent's goal in the Ex3_EKF environment is to act so that
+The agent's goal in the Ex3EKF environment is to act so that
 the estimator correctly estimated the original noisy system. By doing this, it serves
 as an RL based stationary Kalman filter.
+
+Cost function
+-------------
+
+The Ex3EKF environment uses sum of the squared differences between the estimated and the actual states as
+the cost function:
+
+.. math::
+
+    C = {(\hat{x}_1 - x_1)}^2 + {(\hat{x}_2 - x_2)}^2
 
 Environment step return
 -----------------------
 
-In addition to the observations, the environment also returns the current reference and
-the error when a step is taken. This results in returning the following array:
+In addition to the observations, the environment also returns an info dictionary that contains
+the current reference and the error when a step is taken. This results in returning the following array:
 
 .. code-block:: python
 
-    [hat_x_1, hat_x_2, x_1, x_2, reference, error]
+    [hat_x_1, hat_x_2, x_1, x_2, info_dict]
 
 
 How to use

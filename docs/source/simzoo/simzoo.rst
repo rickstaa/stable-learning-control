@@ -1,4 +1,4 @@
-_`simzoo_module`:
+.. _simzoo_module:
 
 ======
 Simzoo
@@ -6,7 +6,7 @@ Simzoo
 
 .. contents:: Table of Contents
 
-The `Simzoo <simzoo_repo>`_ module contains the bayesian_learning_control `OpenAI gym environments`_. It is automatically
+The `Simzoo <simzoo_repo>`_ module contains several `OpenAI gym environments`_ that can be used with the BLC package. It is automatically
 installed when you install the BLC package but can also be installed
 as a stand-alone package.
 
@@ -16,28 +16,36 @@ as a stand-alone package.
 Environments
 ============
 
-It contains several easier data-only (no-render method) environments as well as more difficult Robotics environments.
+Biological environments
+-----------------------
 
-Data-only environments
-----------------------
-
-The data-only environments are included in this module:
+Gym environments that are based on Biological systems.
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   envs/data_only/oscillator
-   envs/data_only/ex3_ekf
+    envs/biological/oscillator
+
+Classic control environments
+----------------------------
+
+Environments for classical control theory problems.
+
+.. toctree::
+    :maxdepth: 1
+
+    envs/classic_control/ex3_ekf
+    envs/classic_control/cart_pole_cost
 
 Robotics environment
 --------------------
 
-The following Robotics environments are included in this module:
+Robotics control problems.
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   envs/robotics/gazebo_panda_gym
+    envs/robotics/gazebo_panda_gym
 
 .. important::
 

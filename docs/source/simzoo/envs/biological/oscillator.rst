@@ -33,15 +33,25 @@ The goal of the agent in the oscillator environment is to act in such a way that
 of the proteins of the synthetic oscillatory network follows a supplied reference
 signal.
 
+
+Cost function
+-------------
+
+The Oscillator environment uses the absolute difference between the reference and the state of interest as the cost function:
+
+.. math::
+
+    C = \abs{p_1 - r_1}
+
 Environment step return
 -----------------------
 
-In addition to the observations, the environment also returns the current reference and
+In addition to the observations, the environment also returns an info dictionary that contains the current reference and
 the error when a step is taken. This results in returning the following array:
 
 .. code-block:: python
 
-    [m1, m2, m3, p1, p2, p3, reference, error]
+    [hat_x_1, hat_x_2, x_1, x_2, info_dict]
 
 How to use
 ----------
