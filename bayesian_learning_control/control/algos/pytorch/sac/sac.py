@@ -708,7 +708,7 @@ def sac(  # noqa: C901
         output_activation={"actor": nn.ReLU, "critic": nn.Identity},
     ),
     opt_type="maximize",
-    max_ep_len=1000,
+    max_ep_len=None,
     epochs=100,
     steps_per_epoch=2048,
     start_steps=0,
@@ -788,7 +788,7 @@ def sac(  # noqa: C901
         opt_type (str, optional): The optimization type you want to use. Options
             ``maximize`` and ``minimize``. Defaults to ``maximize``.
         max_ep_len (int, optional): Maximum length of trajectory / episode /
-            rollout. Defaults to ``500``.
+            rollout. Defaults to the environment maximum.
         epochs (int, optional): Number of epochs to run and train agent. Defaults
             to ``100``.
         steps_per_epoch (int, optional): Number of steps of interaction
@@ -893,6 +893,22 @@ def sac(  # noqa: C901
     rew_dim = (
         env.reward_range.shape[0] if isinstance(env.reward_range, gym.spaces.Box) else 1
     )
+
+    # Retrieve max episode length
+    if max_ep_len is None:
+        max_ep_len = env._max_episode_steps
+    else:
+        if max_ep_len > env._max_episode_steps:
+            logger.log(
+                (
+                    f"You defined your 'max_ep_len' to be {max_ep_len} "
+                    "while the environment 'max_epsiode_steps' is "
+                    f"{env._max_episode_steps}. As a result the environment "
+                    f"'max_episode_steps' has been increased to {max_ep_len}"
+                ),
+                type="warning",
+            )
+            env._max_episode_steps = max_ep_len
 
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = SoftActorCritic if actor_critic is None else actor_critic
@@ -1238,8 +1254,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max_ep_len",
         type=int,
-        default=500,
-        help="maximum episode length (default: 500)",
+        default=None,
+        help="maximum episode length (default: None)",
     )
     parser.add_argument(
         "--epochs", type=int, default=50, help="the number of epochs (default: 50)"
