@@ -608,12 +608,17 @@ class Logger:
 
             # Save additional algorithm information
             if not self._save_info_saved:
-                save_info = {"alg_name": self.tf_saver_elements.__class__.__name__}
+                save_info = {
+                    "alg_name": self.tf_saver_elements.__class__.__name__,
+                }
+                if hasattr(self.tf_saver_elements, "_setup_kwargs"):
+                    save_info["setup_kwargs"] = self.tf_saver_elements._setup_kwargs
                 self.save_to_json(
                     save_info,
                     output_filename="save_info.json",
                     output_path=fpath,
                 )
+                self._save_info_saved = True
 
             # Save model
             if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
@@ -672,12 +677,19 @@ class Logger:
 
             # Save additional algorithm information
             if not self._save_info_saved:
-                save_info = {"alg_name": self.pytorch_saver_elements.__class__.__name__}
+                save_info = {
+                    "alg_name": self.pytorch_saver_elements.__class__.__name__,
+                }
+                if hasattr(self.pytorch_saver_elements, "_setup_kwargs"):
+                    save_info[
+                        "setup_kwargs"
+                    ] = self.pytorch_saver_elements._setup_kwargs
                 self.save_to_json(
                     save_info,
                     output_filename="save_info.json",
                     output_path=fpath,
                 )
+                self._save_info_saved = True
 
             # Save model
             if isinstance(self.pytorch_saver_elements, torch.nn.Module) or hasattr(

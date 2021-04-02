@@ -138,6 +138,7 @@ def load_policy_and_env(fpath, itr="last"):
 
 
 def load_tf_policy(fpath, itr="last", env=None):
+    # TODO: Fix hyperparameter loading
     """Load a tensorflow policy saved with Bayesian Learning Control Logger.
 
     Args:
@@ -160,7 +161,11 @@ def load_tf_policy(fpath, itr="last", env=None):
     save_info = load_from_json(Path(fpath).joinpath("save_info.json"))
     import bayesian_learning_control.control.algos.tf2 as tf2_algos
 
-    model = getattr(tf2_algos, save_info["alg_name"])(env=env)
+    try:
+        ac_kwargs = {"ac_kwargs": save_info["setup_kwargs"]["ac_kwargs"]}
+    except KeyError:
+        ac_kwargs = {}
+    model = getattr(tf2_algos, save_info["alg_name"])(env=env, **ac_kwargs)
     latest = tf.train.latest_checkpoint(model_path)  # Restore latest checkpoint
     model.load_weights(latest)
 
@@ -193,7 +198,11 @@ def load_pytorch_policy(fpath, itr="last", env=None):
     import bayesian_learning_control.control.algos.pytorch as torch_algos
 
     model_data = torch.load(model_file)
-    model = getattr(torch_algos, save_info["alg_name"])(env=env)
+    try:
+        ac_kwargs = {"ac_kwargs": save_info["setup_kwargs"]["ac_kwargs"]}
+    except KeyError:
+        ac_kwargs = {}
+    model = getattr(torch_algos, save_info["alg_name"])(env=env, **ac_kwargs)
     model.load_state_dict(model_data)  # Retore model parameters
     return model
 
