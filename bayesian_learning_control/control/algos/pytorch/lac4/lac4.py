@@ -1,4 +1,4 @@
-# NOTE: Version in which the lyapunov constrained has been removed but the lyapunov critic is kept.
+# NOTE: Version in which the Lyapunov constraint has been added to the critic loss
 """Lyapunov Actor-Critic algorithm (Version 2)
 
 This module contains a improved version of the pytorch implementation of the LAC algorithm of
@@ -347,7 +347,7 @@ class LAC(nn.Module):
                 "if you need this."
             )
 
-        # Get target Lyapunov values (Bellman-backup)
+        # Get target Lyapunov value (Bellman-backup)
         with torch.no_grad():
             a2_, _ = self.ac_targ.pi(
                 o_
@@ -784,7 +784,7 @@ def validate_args(**kwargs):
         )
 
 
-def lac3(  # noqa: C901
+def lac4(  # noqa: C901
     env_fn,
     actor_critic=None,
     ac_kwargs=dict(
@@ -1624,7 +1624,7 @@ if __name__ == "__main__":
     )
     torch.set_num_threads(torch.get_num_threads())
 
-    lac3(
+    lac4(
         lambda: gym.make(args.env),
         actor_critic=LyapunovActorCritic,
         ac_kwargs=ac_kwargs,

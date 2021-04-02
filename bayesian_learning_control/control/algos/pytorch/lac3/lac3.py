@@ -1,3 +1,4 @@
+# NOTE: Now we added the double Q-track to the LAC algorithm
 """Lyapunov Actor-Critic algorithm
 
 This module contains a pytorch implementation of the LAC algorithm of

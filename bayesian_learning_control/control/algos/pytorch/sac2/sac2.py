@@ -332,8 +332,6 @@ class SAC(nn.Module):
         self._c_optimizer.zero_grad()
 
         # Get target Q values (Bellman-backup)
-        # NOTE: Here we use max-clipping instead of min-clipping used in the SAC
-        # algorithm when we want to maximize/minimize the return.
         with torch.no_grad():
             a2, logp_a2 = self.ac.pi(
                 o_
@@ -349,9 +347,10 @@ class SAC(nn.Module):
                 # )  # Use max clipping  to prevent overestimation bias.
                 q_pi_targ = q1_pi_targ  # NOTE: No double Q trick!
             else:
-                q_pi_targ = torch.min(
-                    q1_pi_targ, q2_pi_targ
-                )  # Use min clipping to prevent overestimation bias
+                # q_pi_targ = torch.min(
+                #     q1_pi_targ, q2_pi_targ
+                # )  # Use min clipping to prevent overestimation bias
+                q1_pi_targ = q1_pi_targ
             q_backup = r + self._gamma * (1 - d) * (q_pi_targ - self.alpha * logp_a2)
 
         # Retrieve the current Q values
@@ -393,7 +392,12 @@ class SAC(nn.Module):
             q_pi = torch.min(q1_pi, q2_pi)
 
         # Calculate entropy-regularized policy loss
-        a_loss = (self.alpha.detach() * logp_pi - q_pi).mean()  # See Haarnoja eq. 7
+        if self._opt_type.lower() == "minimize":
+            a_loss = (
+                self.alpha.detach() * logp_pi + q_pi
+            ).mean()  # Minimization version of Haarnoja eq. 7
+        else:
+            a_loss = (self.alpha.detach() * logp_pi - q_pi).mean()  # See Haarnoja eq. 7
 
         a_loss.backward()
         self._pi_optimizer.step()
