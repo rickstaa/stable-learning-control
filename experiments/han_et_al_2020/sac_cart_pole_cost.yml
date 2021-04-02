@@ -1,4 +1,4 @@
-alg_name: lac
+alg_name: sac
 exp_name: han_sac_cart_pole_cost
 env_name: "CartPoleCost-v0"
 opt_type: "minimize"
