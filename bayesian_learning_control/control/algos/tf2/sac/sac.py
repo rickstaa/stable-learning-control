@@ -96,7 +96,7 @@ class SAC(tf.keras.Model):
         ),
         opt_type="maximize",
         alpha=0.99,
-        gamma=0.9,
+        gamma=0.99,
         polyak=0.995,
         target_entropy=None,
         adaptive_temperature=True,
@@ -162,7 +162,7 @@ class SAC(tf.keras.Model):
                 inverse of reward scale in the original SAC paper). Defaults to
                 ``0.99``.
             gamma (float, optional): Discount factor. (Always between 0 and 1.).
-                Defaults to ``0.9``.
+                Defaults to ``0.99``.
             polyak (float, optional): Interpolation factor in polyak averaging for
                 target networks. Target networks are updated towards main networks
                 according to:
@@ -674,7 +674,7 @@ def sac(  # noqa: C901
     steps_per_update=100,
     num_test_episodes=10,
     alpha=0.99,
-    gamma=0.9,
+    gamma=0.99,
     polyak=0.995,
     target_entropy=None,
     adaptive_temperature=True,
@@ -769,7 +769,7 @@ def sac(  # noqa: C901
             inverse of reward scale in the original SAC paper). Defaults to
             ``0.99``.
         gamma (float, optional): Discount factor. (Always between 0 and 1.).
-            Defaults to ``0.9``.
+            Defaults to ``0.99``.
         polyak (float, optional): Interpolation factor in polyak averaging for
             target networks. Target networks are updated towards main networks
             according to:
@@ -1258,7 +1258,7 @@ if __name__ == "__main__":
         help="the entropy regularization coefficient (default: 0.99)",
     )
     parser.add_argument(
-        "--gamma", type=float, default=0.995, help="discount factor (default: 0.995)"
+        "--gamma", type=float, default=0.99, help="discount factor (default: 0.99)"
     )
     parser.add_argument(
         "--polyak",

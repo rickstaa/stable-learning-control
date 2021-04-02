@@ -98,7 +98,7 @@ class LAC(tf.keras.Model):
         alpha=0.99,
         alpha3=0.2,
         labda=0.99,
-        gamma=0.9,
+        gamma=0.99,
         polyak=0.995,
         target_entropy=None,
         adaptive_temperature=True,
@@ -168,7 +168,7 @@ class LAC(tf.keras.Model):
             labda (float, optional): The Lyapunov lagrance multiplier. Defaults to
                 ``0.99``.
             gamma (float, optional): Discount factor. (Always between 0 and 1.).
-                Defaults to ``0.9``.
+                Defaults to ``0.99``.
             polyak (float, optional): Interpolation factor in polyak averaging for
                 target networks. Target networks are updated towards main networks
                 according to:
@@ -728,7 +728,7 @@ def lac(  # noqa: C901
     alpha=0.99,
     alpha3=0.2,
     labda=0.99,
-    gamma=0.9,
+    gamma=0.99,
     polyak=0.995,
     target_entropy=None,
     adaptive_temperature=True,
@@ -827,7 +827,7 @@ def lac(  # noqa: C901
         labda (float, optional): The Lyapunov lagrance multiplier. Defaults to
             ``0.99``.
         gamma (float, optional): Discount factor. (Always between 0 and 1.).
-            Defaults to ``0.9``.
+            Defaults to ``0.99``.
         polyak (float, optional): Interpolation factor in polyak averaging for
             target networks. Target networks are updated towards main networks
             according to:
@@ -1348,7 +1348,7 @@ if __name__ == "__main__":
         help="the Lyapunov lagrance multiplier (default: 0.99)",
     )
     parser.add_argument(
-        "--gamma", type=float, default=0.995, help="discount factor (default: 0.995)"
+        "--gamma", type=float, default=0.99, help="discount factor (default: 0.99)"
     )
     parser.add_argument(
         "--polyak",

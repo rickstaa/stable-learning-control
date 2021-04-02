@@ -1,3 +1,4 @@
+# NOTE: Version in which the lyapunov constrained has been removed but the lyapunov critic is kept.
 """Lyapunov Actor-Critic algorithm (Version 2)
 
 This module contains a improved version of the pytorch implementation of the LAC algorithm of
