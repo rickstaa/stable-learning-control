@@ -15,6 +15,7 @@ import os.path as osp
 import random
 import sys
 import time
+from pathlib import Path
 
 import gym
 import numpy as np
@@ -41,6 +42,8 @@ from bayesian_learning_control.utils.log_utils import (
     log_to_std_out,
     setup_logger_kwargs,
 )
+from bayesian_learning_control.utils.serialization_utils import save_to_json
+
 
 tf = import_tf()
 nn = import_tf(module_name="tensorflow.nn")
@@ -195,6 +198,9 @@ class LAC(tf.keras.Model):
                 or ``gpu``). Defaults to ``cpu``.
         """  # noqa: E501
         super().__init__(name=name)
+        self._setup_kwargs = {
+            k: v for k, v in locals().items() if k not in ["self", "__class__", "env"]
+        }
         self._was_build = False
 
         # NOTE: The current implementation only works with continuous spaces.
@@ -451,11 +457,12 @@ class LAC(tf.keras.Model):
         self._update_targets()
         return diagnostics
 
-    def save(self, path):
+    def save(self, path, checkpoint_name="checkpoint"):
         """Can be used to save the current model state.
 
         Args:
             path (str): The path where you want to save the policy.
+            checkpoint_name (str): The name you want to use for the checkpoint.
 
         Raises:
             Exception: Raises an exception if something goes wrong during saving.
@@ -469,10 +476,24 @@ class LAC(tf.keras.Model):
             https://www.tensorflow.org/api_docs/python/tf/keras/Model#load_weights). If
             you want to deploy the full model use the :meth:`.export` method instead.
         """
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        save_path = path.joinpath(f"policy/{checkpoint_name}")
         try:
-            self.save_weights(path)
+            self.save_weights(save_path)
         except Exception as e:
             raise Exception("LAC model could not be saved.") from e
+
+        # Save additional information
+        save_info = {
+            "alg_name": self.__class__.__name__,
+            "setup_kwargs": self._setup_kwargs,
+        }
+        save_to_json(
+            input_object=save_info,
+            output_filename="save_info.json",
+            output_path=save_path.parent,
+        )
 
     def restore(self, path, restore_lagrance_multipliers=False):
         """Restores a already trained policy. Used for transfer learning.
@@ -585,24 +606,6 @@ class LAC(tf.keras.Model):
         self.ac.L.L.summary()
         print("")
 
-    @tf.function
-    def _init_targets(self):
-        """Updates the target network weights to the main network weights."""
-        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
-            pi_targ.assign(pi_main)
-        for c_main, c_targ in zip(self.ac.L.variables, self.ac_targ.L.variables):
-            c_targ.assign(c_main)
-
-    @tf.function
-    def _update_targets(self):
-        """Updates the target networks based on a Exponential moving average
-        (Polyak averaging).
-        """
-        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
-            pi_targ.assign(self._polyak * pi_targ + (1 - self._polyak) * pi_main)
-        for c_main, c_targ in zip(self.ac.L.variables, self.ac_targ.L.variables):
-            c_targ.assign(self._polyak * c_targ + (1 - self._polyak) * c_main)
-
     def set_learning_rates(self, lr_a=None, lr_c=None, lr_alpha=None, lr_labda=None):
         """Adjusts the learning rates of the optimizers.
 
@@ -625,6 +628,24 @@ class LAC(tf.keras.Model):
                 self._log_alpha_optimizer.lr.assign(lr_alpha)
         if lr_labda:
             self._log_labda_optimizer.lr.assign(lr_labda)
+
+    @tf.function
+    def _init_targets(self):
+        """Updates the target network weights to the main network weights."""
+        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
+            pi_targ.assign(pi_main)
+        for c_main, c_targ in zip(self.ac.L.variables, self.ac_targ.L.variables):
+            c_targ.assign(c_main)
+
+    @tf.function
+    def _update_targets(self):
+        """Updates the target networks based on a Exponential moving average
+        (Polyak averaging).
+        """
+        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
+            pi_targ.assign(self._polyak * pi_targ + (1 - self._polyak) * pi_main)
+        for c_main, c_targ in zip(self.ac.L.variables, self.ac_targ.L.variables):
+            c_targ.assign(self._polyak * c_targ + (1 - self._polyak) * c_main)
 
     @property
     def alpha(self):
