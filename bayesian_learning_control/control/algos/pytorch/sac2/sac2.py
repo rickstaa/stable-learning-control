@@ -21,6 +21,7 @@ import random
 import sys
 import time
 from copy import deepcopy
+from pathlib import Path
 
 import gym
 import numpy as np
@@ -48,6 +49,9 @@ from bayesian_learning_control.utils.log_utils import (
     friendly_err,
     log_to_std_out,
     setup_logger_kwargs,
+)
+from bayesian_learning_control.utils.serialization_utils import (
+    save_to_json,
 )
 from torch.optim import Adam
 
@@ -98,7 +102,7 @@ class SAC(nn.Module):
         ),
         opt_type="maximize",
         alpha=0.99,
-        gamma=0.9,
+        gamma=0.99,
         polyak=0.995,
         target_entropy=None,
         adaptive_temperature=True,
@@ -163,7 +167,7 @@ class SAC(nn.Module):
                 inverse of reward scale in the original SAC paper). Defaults to
                 ``0.99``.
             gamma (float, optional): Discount factor. (Always between 0 and 1.).
-                Defaults to ``0.9``.
+                Defaults to ``0.99``.
             polyak (float, optional): Interpolation factor in polyak averaging for
                 target networks. Target networks are updated towards main networks
                 according to:
@@ -190,6 +194,9 @@ class SAC(nn.Module):
                 or ``gpu``). Defaults to ``cpu``.
         """  # noqa: E501
         super().__init__()
+        self._setup_kwargs = {
+            k: v for k, v in locals().items() if k not in ["self", "__class__", "env"]
+        }
 
         # Validate gym env
         # NOTE: The current implementation only works with continuous spaces.
@@ -443,12 +450,25 @@ class SAC(nn.Module):
             Exception: Raises an exception if something goes wrong during saving.
         """
         model_state_dict = self.state_dict()
+        path = Path(path)
 
-        save_path = osp.join(path, "policy/model.pt")
+        save_path = path.joinpath("policy/model.pt")
+        save_path.parent.mkdir(parents=True, exist_ok=True)
         try:
             torch.save(model_state_dict, save_path)
         except Exception as e:
             raise Exception("SAC model could not be saved.") from e
+
+        # Save additional information
+        save_info = {
+            "alg_name": self.__class__.__name__,
+            "setup_kwargs": self._setup_kwargs,
+        }
+        save_to_json(
+            input_object=save_info,
+            output_filename="save_info.json",
+            output_path=save_path.parent,
+        )
 
     def restore(self, path, restore_lagrance_multipliers=False):
         """Restores a already trained policy. Used for transfer learning.
@@ -587,6 +607,28 @@ class SAC(nn.Module):
         ] = self.__class__.__name__  # Save algorithm name state dict
         return state_dict
 
+    def bound_lr(self, lr_a_final=None, lr_c_final=None, lr_alpha_final=None):
+        """Function that can be used to make sure the learning rate doesn't go beyond
+        a lower bound.
+
+        Args:
+            lr_a_final (float, optional): The lower bound for the actor learning rate.
+                Defaults to None.
+            lr_c_final (float, optional): The lower bound for the critic learning rate.
+                Defaults to None.
+            lr_alpha_final (float, optional): The lower bound for the alpha Lagrance
+                multiplier learning rate. Defaults to None.
+        """
+        if lr_a_final is not None:
+            if self._pi_optimizer.param_groups[0]["lr"] < lr_a_final:
+                self._pi_optimizer.param_groups[0]["lr"] = lr_a_final
+        if lr_c_final is not None:
+            if self._c_optimizer.param_groups[0]["lr"] < lr_c_final:
+                self._c_optimizer.param_groups[0]["lr"] = lr_c_final
+        if lr_alpha_final is not None:
+            if self._log_alpha_optimizer.param_groups[0]["lr"] < lr_a_final:
+                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_a_final
+
     def _update_targets(self):
         """Updates the target networks based on a Exponential moving average
         (Polyak averaging).
@@ -617,28 +659,6 @@ class SAC(nn.Module):
         if self._adaptive_temperature:
             if lr_alpha:
                 self._log_alpha_optimizer.param_groups[0]["lr"] = lr_alpha
-
-    def bound_lr(self, lr_a_final=None, lr_c_final=None, lr_alpha_final=None):
-        """Function that can be used to make sure the learning rate doesn't go beyond
-        a lower bound.
-
-        Args:
-            lr_a_final (float, optional): The lower bound for the actor learning rate.
-                Defaults to None.
-            lr_c_final (float, optional): The lower bound for the critic learning rate.
-                Defaults to None.
-            lr_alpha_final (float, optional): The lower bound for the alpha Lagrance
-                multiplier learning rate. Defaults to None.
-        """
-        if lr_a_final is not None:
-            if self._pi_optimizer.param_groups[0]["lr"] < lr_a_final:
-                self._pi_optimizer.param_groups[0]["lr"] = lr_a_final
-        if lr_c_final is not None:
-            if self._c_optimizer.param_groups[0]["lr"] < lr_c_final:
-                self._c_optimizer.param_groups[0]["lr"] = lr_c_final
-        if lr_alpha_final is not None:
-            if self._log_alpha_optimizer.param_groups[0]["lr"] < lr_a_final:
-                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_a_final
 
     @property
     def alpha(self):
@@ -719,7 +739,7 @@ def sac(  # noqa: C901
     steps_per_update=100,
     num_test_episodes=10,
     alpha=0.99,
-    gamma=0.9,
+    gamma=0.99,
     polyak=0.995,
     target_entropy=None,
     adaptive_temperature=True,
@@ -815,7 +835,7 @@ def sac(  # noqa: C901
             inverse of reward scale in the original SAC paper). Defaults to
             ``0.99``.
         gamma (float, optional): Discount factor. (Always between 0 and 1.).
-            Defaults to ``0.9``.
+            Defaults to ``0.99``.
         polyak (float, optional): Interpolation factor in polyak averaging for
             target networks. Target networks are updated towards main networks
             according to:
@@ -911,6 +931,7 @@ def sac(  # noqa: C901
                 type="warning",
             )
             env._max_episode_steps = max_ep_len
+
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = SoftActorCritic if actor_critic is None else actor_critic
 
@@ -1308,7 +1329,7 @@ if __name__ == "__main__":
         help="the entropy regularization coefficient (default: 0.99)",
     )
     parser.add_argument(
-        "--gamma", type=float, default=0.995, help="discount factor (default: 0.995)"
+        "--gamma", type=float, default=0.99, help="discount factor (default: 0.99)"
     )
     parser.add_argument(
         "--polyak",

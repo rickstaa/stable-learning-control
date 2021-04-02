@@ -1215,8 +1215,7 @@ if __name__ == "__main__":
         "--env",
         type=str,
         # default="Oscillator-v1",
-        # default="CartPoleCost-v0",  # DEBUG:
-        default="CartPoleCost2-v0",  # DEBUG:
+        default="CartPoleCost-v0",  # DEBUG:
         help="the gym env (default: Oscillator-v1)",
     )
     parser.add_argument(
