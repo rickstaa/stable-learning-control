@@ -331,8 +331,6 @@ class SAC(nn.Module):
         self._c_optimizer.zero_grad()
 
         # Get target Q values (Bellman-backup)
-        # NOTE: Here we use max-clipping instead of min-clipping used in the SAC
-        # algorithm when we want to maximize/minimize the return.
         with torch.no_grad():
             a2, logp_a2 = self.ac.pi(
                 o_
@@ -345,7 +343,7 @@ class SAC(nn.Module):
                 q_pi_targ = torch.max(
                     q1_pi_targ,
                     q2_pi_targ,
-                )  # Use max clipping  to prevent overestimation bias.
+                )  # Use max clipping to prevent underestimation bias.
             else:
                 q_pi_targ = torch.min(
                     q1_pi_targ, q2_pi_targ
