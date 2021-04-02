@@ -391,7 +391,12 @@ class SAC(nn.Module):
             q_pi = torch.min(q1_pi, q2_pi)
 
         # Calculate entropy-regularized policy loss
-        a_loss = (self.alpha.detach() * logp_pi - q_pi).mean()  # See Haarnoja eq. 7
+        if self._opt_type.lower() == "minimize":
+            a_loss = (
+                self.alpha.detach() * logp_pi + q_pi
+            ).mean()  # Minimization version of Haarnoja eq. 7
+        else:
+            a_loss = (self.alpha.detach() * logp_pi - q_pi).mean()  # See Haarnoja eq. 7
 
         a_loss.backward()
         self._pi_optimizer.step()

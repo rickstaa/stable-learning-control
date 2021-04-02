@@ -387,9 +387,14 @@ class SAC(tf.keras.Model):
                 q_pi = tf.math.minimum(q1_pi, q2_pi)
 
             # Calculate entropy-regularized policy loss
-            a_loss = tf.reduce_mean(
-                tf.stop_gradient(self.alpha) * logp_pi - q_pi
-            )  # See Haarnoja eq. 7
+            if self._opt_type.lower() == "minimize":
+                a_loss = tf.reduce_mean(
+                    tf.stop_gradient(self.alpha) * logp_pi + q_pi
+                )  # Minimization version of Haarnoja eq. 7
+            else:
+                a_loss = tf.reduce_mean(
+                    tf.stop_gradient(self.alpha) * logp_pi - q_pi
+                )  # See Haarnoja eq. 7
 
         a_grads = a_tape.gradient(a_loss, self._pi_params)
         self._pi_optimizer.apply_gradients(zip(a_grads, self._pi_params))
