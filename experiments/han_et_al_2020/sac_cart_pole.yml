@@ -1,0 +1,18 @@
+alg_name: sac
+exp_name: han_sac_cart_pole
+env_name: "CartPoleCost-v0"
+opt_type: "minimize"
+seed: 0
+ac_kwargs:
+  hidden_sizes:
+    actor: [64, 64]
+    critic: [64, 64, 16]
+lr_a: "1e-4"
+lr_c: "3e-4"
+max_ep_len: 250
+epochs: 150
+gamma: 0.9
+alpha3: 0.2
+labda: 0.99
+batch_size: 256
+replay_size: 1e6
