@@ -1,6 +1,6 @@
 alg_name: lac
 exp_name: han_sac_cart_pole_cost
-env_name: "Oscillator-v1"
+env_name: "CartPoleCost-v0"
 opt_type: "minimize"
 seed: 0
 ac_kwargs:
