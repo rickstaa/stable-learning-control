@@ -1,4 +1,4 @@
-# NOTE: Version in which the lyapunov constrained has been removed but the lyapunov critic is kept.
+# NOTE: Version in which the lyapunov constrained has been removed but the lyapunov Critic is kept.
 """Lyapunov Actor-Critic algorithm (Version 2)
 
 This module contains a improved version of the pytorch implementation of the LAC algorithm of
@@ -360,13 +360,6 @@ class LAC(nn.Module):
         # Get current Lyapunov value
         l1 = self.ac.L(o, a)
 
-        # Get target lyapunov value
-        a2, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
-        lya_l_ = self.ac.L(o_, a2)
-
-        # Compute Lyapunov Actor error
-        l_delta = torch.mean(lya_l_ - l1.detach() + self._alpha3 * r)  # See Han eq. 11
-
         # Calculate Lyapunov *CRITIC* error
         # NOTE: The 0.5 multiplication factor was added to make the derivation
         # cleaner and can be safely removed without influencing the minimization. We
@@ -375,7 +368,6 @@ class LAC(nn.Module):
         #  as this is 2 times faster.This can be changed back to F.mse_loss if
         # Torchscript is used.
         l_error = 0.5 * ((l1 - l_backup) ** 2).mean()  # See Han eq. 7
-        # l_error = 0.5 * ((l1 - l_backup) ** 2 - self.labda * l_delta).mean()  # See Han eq. 7
 
         l_error.backward()
         self._c_optimizer.step()
@@ -395,12 +387,27 @@ class LAC(nn.Module):
         # Retrieve log probabilities of batch observations based on *current* policy
         pi, logp_pi = self.ac.pi(o)
 
+        if self._opt_type.lower() == "maximize":
+            raise NotImplementedError(
+                "The LAC algorithm does not yet support maximization "
+                "environments. Please open a feature/pull request on "
+                "https://github.com/rickstaa/bayesian-learning-control/issues "
+                "if you need this."
+            )
+
+        # Get target lyapunov value
+        a2, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
+        lya_l_ = self.ac.L(o_, a2)
+
+        # Compute Lyapunov Actor error
+        l_delta = torch.mean(lya_l_ - l1.detach() + self._alpha3 * r)  # See Han eq. 11
+
         # Retrieve current L value
         # NOTE: Actions come from *current* policy
         l_pi = self.ac.L(o, pi)
 
         # Calculate entropy-regularized policy loss
-        a_loss = (self.alpha.detach() * logp_pi - l_pi).mean()
+        a_loss = (self.alpha.detach() * logp_pi + l_pi).mean()
 
         a_loss.backward()
         self._pi_optimizer.step()

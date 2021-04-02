@@ -327,7 +327,7 @@ class SAC(nn.Module):
             data["done"],
         )
         ################################################
-        # Optimize (soft) Q-critic ###$$$$##############
+        # Optimize (soft) Q-critic #####################
         ################################################
         self._c_optimizer.zero_grad()
 
@@ -721,7 +721,7 @@ def validate_args(**kwargs):
         )
 
 
-def sac(  # noqa: C901
+def sac2(  # noqa: C901
     env_fn,
     actor_critic=None,
     ac_kwargs=dict(
@@ -1516,7 +1516,7 @@ if __name__ == "__main__":
     )
     torch.set_num_threads(torch.get_num_threads())
 
-    sac(
+    sac2(
         lambda: gym.make(args.env),
         actor_critic=SoftActorCritic,
         ac_kwargs=ac_kwargs,

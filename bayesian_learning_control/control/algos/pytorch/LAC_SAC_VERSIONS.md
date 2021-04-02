@@ -4,8 +4,9 @@ Below is a quick explanation of all the LAC version I tried:
 
 -   lac: Original from Han et al.
 -   lac2: Version in which the lyapunov constrained has been removed but the lyapunov critic is kept. It is similar to a
-    SAC with a lyapunov critic.
--   lac3: Now the lyapunov constrained is added to the critic.
+    SAC with a SINGLE lyapunov critic.
+-   lac3: Version without Lyapunov constraint but with double-q trick.
+-   lac4: Now let's add the constraint back to the lyapunov critic.
 
 # SAC VERSIONS
 

@@ -12,7 +12,9 @@ import os.path as osp
 # (Must be either 'tf1' or 'pytorch')
 DEFAULT_BACKEND = {
     "lac": "pytorch",
+    "lac2": "pytorch",
     "sac": "pytorch",
+    "sac2": "pytorch",
 }
 
 # Where experiment outputs are saved by default:
