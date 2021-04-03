@@ -629,7 +629,7 @@ class SAC(tf.keras.Model):
 
     @alpha.setter
     def alpha(self, set_val):
-        """Property used to make sure :attr:`alpha` and :attr:`log_alpha` are related."""
+        """Property used to ensure :attr:`alpha` and :attr:`log_alpha` are related."""
         self.log_alpha.assign(
             tf.convert_to_tensor(
                 np.log(1e-37 if set_val < 1e-37 else set_val),
