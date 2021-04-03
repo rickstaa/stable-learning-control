@@ -288,8 +288,8 @@ class LAC(nn.Module):
         if self._adaptive_temperature:
             self._log_alpha_optimizer = Adam([self.log_alpha], lr=self._lr_alpha)
         self._log_labda_optimizer = Adam([self.log_labda], lr=self._lr_lag)
+        self._c_optimizer = Adam(self.ac.L.parameters(), lr=self._lr_c)
         self._c_params = lambda: self.ac.L.parameters()
-        self._c_optimizer = Adam(self._c_params(), lr=self._lr_c)
 
     def forward(self, s, deterministic=False):
         """Wrapper around the :meth:`.get_action` method that enables users to also
