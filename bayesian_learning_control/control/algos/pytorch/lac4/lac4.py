@@ -358,6 +358,13 @@ class LAC(nn.Module):
         # Get current Lyapunov value
         l1 = self.ac.L(o, a)
 
+        # Get target lyapunov value
+        pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
+        lya_l_ = self.ac.L(o_, pi_)
+
+        # Compute Lyapunov Actor error
+        l_delta = torch.mean(lya_l_ - l1.detach() + self._alpha3 * r)  # See Han eq. 11
+
         # Calculate Lyapunov *CRITIC* error
         # NOTE: The 0.5 multiplication factor was added to make the derivation
         # cleaner and can be safely removed without influencing the minimization. We
@@ -365,7 +372,9 @@ class LAC(nn.Module):
         # NOTE: We currently use a manual implementation instead of using F.mse_loss
         # as this is 2 times faster. This can be changed back to F.mse_loss if
         # Torchscript is used.
-        l_error = 0.5 * ((l1 - l_backup) ** 2).mean()  # See Han eq. 7
+        l_error = (
+            0.5 * ((l1 - l_backup) ** 2 - self.labda.detach() * l_delta).mean()
+        )  # See Han eq. 7
 
         l_error.backward()
         self._c_optimizer.step()
@@ -392,13 +401,6 @@ class LAC(nn.Module):
                 "https://github.com/rickstaa/bayesian-learning-control/issues "
                 "if you need this."
             )
-
-        # Get target lyapunov value
-        pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
-        lya_l_ = self.ac.L(o_, pi_)
-
-        # Compute Lyapunov Actor error
-        l_delta = torch.mean(lya_l_ - l1.detach() + self._alpha3 * r)  # See Han eq. 11
 
         # Retrieve current L value
         # NOTE: Actions come from *current* policy
