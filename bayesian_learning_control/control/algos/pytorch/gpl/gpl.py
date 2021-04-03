@@ -357,7 +357,7 @@ class GPL(nn.Module):
                 )  # NOTE: Target actions come from *current* *target* policy
                 l_pi_targ = self.ac_targ.L(o_, a2_)
                 l_backup = (
-                    r + self._gamma * (1 - d) * l_pi_targ.detach()
+                    r + self._gamma * (1 - d) * l_pi_targ
                 )  # The Lyapunov candidate
 
             # Get current Lyapunov value

@@ -5,7 +5,9 @@ from bayesian_learning_control.control.algos.pytorch.lac.lac import lac as lac_p
 from bayesian_learning_control.control.algos.pytorch.lac2.lac2 import (
     lac2 as lac2_pytorch,
 )
-from bayesian_learning_control.control.algos.pytorch.sac.sac import sac as sac_pytorch
+from bayesian_learning_control.control.algos.pytorch.lac3.lac3 import (
+    lac3 as lac3_pytorch,
+)
 from bayesian_learning_control.control.algos.pytorch.sac.sac import sac as sac_pytorch
 from bayesian_learning_control.control.algos.pytorch.sac2.sac2 import (
     sac2 as sac2_pytorch,

@@ -7,6 +7,7 @@ Below is a quick explanation of all the LAC version I tried:
     SAC with a SINGLE lyapunov critic.
 -   lac3: Version without Lyapunov constraint but with double-q trick.
 -   lac4: Now let's add the constraint back to the lyapunov critic.
+-   lac5: Now we add the entropy term of sac to the L_target. This is more in line with what SAC does.
 
 # SAC VERSIONS
 

@@ -1,5 +1,5 @@
-alg_name: lac
-exp_name: lac_cart_pole_cost
+alg_name: lac3
+exp_name: lac3_cart_pole_cost
 env_name: "CartPoleCost-v0"
 opt_type: "minimize"
 seed: 0

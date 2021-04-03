@@ -51,7 +51,7 @@ SUBSTITUTIONS = {
 MPI_COMPATIBLE_ALGOS = []
 
 # Algo names (used in a few places)
-BASE_ALGO_NAMES = ["sac", "lac", "lac2", "sac2"]
+BASE_ALGO_NAMES = ["sac", "lac", "lac2", "lac3", "sac2"]
 
 
 def _parse_exp_cfg(cmd_line_args):  # noqa: C901

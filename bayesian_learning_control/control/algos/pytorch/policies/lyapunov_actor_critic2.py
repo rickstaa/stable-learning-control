@@ -129,7 +129,7 @@ class LyapunovActorCritic2(nn.Module):
         """  # noqa: E501
         pi_action, logp_pi = self.pi(obs)
         L1 = self.L1(obs, act)
-        L2 = self.L1(obs, act)
+        L2 = self.L2(obs, act)
         return pi_action, logp_pi, L1, L2
 
     def act(self, obs, deterministic=False):
