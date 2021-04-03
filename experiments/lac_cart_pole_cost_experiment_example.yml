@@ -1,10 +1,10 @@
 alg_name: lac
-exp_name: lac_oscillator_exp
-env_name: "Oscillator-v1"
+exp_name: lac_cart_pole_cost_exp
+env_name: "CartPoleCost-v0"
 ac_kwargs:
   hidden_sizes:
     actor: [64, 64]
-    critic: [64, 64]
+    critic: [64, 64, 16]
   activation: "nn.ReLU"
   output_activation: "nn.ReLU"
 opt_type: "minimize"
