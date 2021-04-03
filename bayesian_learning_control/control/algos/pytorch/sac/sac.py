@@ -90,7 +90,7 @@ class SAC(nn.Module):
         device (str): The device the networks are placed on (CPU or GPU).
     """
 
-    def __init__(  # noqa: C901 # TODO: Change agent architecture
+    def __init__(  # noqa: C901
         self,
         env,
         actor_critic=None,

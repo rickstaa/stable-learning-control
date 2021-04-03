@@ -138,7 +138,6 @@ def load_policy_and_env(fpath, itr="last"):
 
 
 def load_tf_policy(fpath, itr="last", env=None):
-    # TODO: Fix hyperparameter loading
     """Load a tensorflow policy saved with Bayesian Learning Control Logger.
 
     Args:
