@@ -352,9 +352,7 @@ class LAC(nn.Module):
                 o_
             )  # NOTE: Target actions come from *current* *target* policy
             l_pi_targ = self.ac_targ.L(o_, a2_)
-            l_backup = (
-                r + self._gamma * (1 - d) * l_pi_targ.detach()
-            )  # The Lyapunov candidate
+            l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate
 
         # Get current Lyapunov value
         l1 = self.ac.L(o, a)
