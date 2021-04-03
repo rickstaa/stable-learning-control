@@ -1,6 +1,7 @@
+# MOTE: Version where the entropy has also been added to the critic loss function.
 """Lyapunov Actor-Critic algorithm
 
-This module contains a Tensorflow 2.x implementation of the LAC algorithm of
+This module contains a pytorch implementation of the LAC algorithm of
 `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 
 .. note::
@@ -10,44 +11,48 @@ This module contains a Tensorflow 2.x implementation of the LAC algorithm of
 """  # noqa
 
 import argparse
+import glob
 import os
 import os.path as osp
 import random
 import sys
 import time
+from copy import deepcopy
 from pathlib import Path
 
 import gym
 import numpy as np
-from bayesian_learning_control.common.helpers import combine_shapes
-from bayesian_learning_control.control.algos.tf2.common import get_lr_scheduler
-from bayesian_learning_control.control.algos.tf2.common.helpers import (
+import torch
+import torch.nn as nn
+from bayesian_learning_control.control.algos.pytorch.common import get_lr_scheduler
+from bayesian_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
+from bayesian_learning_control.control.algos.pytorch.common.helpers import (
     count_vars,
-    set_device,
+    retrieve_device,
 )
-from bayesian_learning_control.control.algos.tf2.policies.lyapunov_actor_critic import (
-    LyapunovActorCritic,
-)
-from bayesian_learning_control.control.common.buffers import ReplayBuffer
+
+# fmt: off
+from bayesian_learning_control.control.algos.pytorch.policies.lyapunov_actor_critic import \
+    LyapunovActorCritic  # noqa: E501
+# fmt: on
 from bayesian_learning_control.control.common.helpers import heuristic_target_entropy
+from bayesian_learning_control.control.utils import safer_eval
 from bayesian_learning_control.control.utils.eval_utils import test_agent
 from bayesian_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
 )
-from bayesian_learning_control.control.utils.safer_eval import safer_eval
-from bayesian_learning_control.utils.import_utils import import_tf, lazy_importer
+from bayesian_learning_control.utils.import_utils import lazy_importer
 from bayesian_learning_control.utils.log_utils import (
     EpochLogger,
+    friendly_err,
     log_to_std_out,
     setup_logger_kwargs,
 )
-from bayesian_learning_control.utils.serialization_utils import save_to_json
-
-
-tf = import_tf()
-nn = import_tf(module_name="tensorflow.nn")
-Adam = import_tf(module_name="tensorflow.keras.optimizers", class_name="Adam")
+from bayesian_learning_control.utils.serialization_utils import (
+    save_to_json,
+)
+from torch.optim import Adam
 
 # Import ray tuner if installed
 tune = lazy_importer(module_name="ray.tune")
@@ -73,17 +78,15 @@ STD_OUT_LOG_VARS_DEFAULT = [
     "AverageEntropy",
 ]
 
-# tf.config.run_functions_eagerly(True)  # NOTE: Uncomment for debugging.
 
-
-class LAC(tf.keras.Model):
+class LAC(nn.Module):
     """The Lyapunov actor critic algorithm.
 
     Attributes:
-        ac (tf.Module): The (lyapunov) actor critic module.
-        ac_ (tf.Module): The (lyapunov) target actor critic module.
-        log_alpha (tf.Variable): The temperature lagrance multiplier.
-        log_labda (tf.Variable): The Lyapunov lagrance multiplier.
+        ac (torch.nn.Module): The (lyapunov) actor critic module.
+        ac_ (torch.nn.Module): The (lyapunov) target actor critic module.
+        log_alpha (torch.Tensor): The temperature lagrance multiplier.
+        log_labda (torch.Tensor): The Lyapunov lagrance multiplier.
         target_entropy (int): The target entropy.
         device (str): The device the networks are placed on (CPU or GPU).
     """
@@ -94,8 +97,8 @@ class LAC(tf.keras.Model):
         actor_critic=None,
         ac_kwargs=dict(
             hidden_sizes={"actor": [64] * 2, "critic": [128] * 2},
-            activation=nn.relu,
-            output_activation={"actor": nn.relu},
+            activation=nn.ReLU,
+            output_activation={"actor": nn.ReLU},
         ),
         opt_type="minimize",
         alpha=0.99,
@@ -107,8 +110,7 @@ class LAC(tf.keras.Model):
         adaptive_temperature=True,
         lr_a=1e-4,
         lr_c=3e-4,
-        device="gpu",
-        name="LAC",
+        device="cpu",
     ):
         """Lyapunov (soft) Actor-Critic (LAC)
 
@@ -117,8 +119,8 @@ class LAC(tf.keras.Model):
                 used to retrieve the activation and observation space dimensions. This
                 is used while creating the network sizes. The environment must satisfy
                 the OpenAI Gym API.
-            actor_critic (tf.Module, optional): The constructor method for a
-                Tensorflow Module with an ``act`` method, a ``pi`` module and several
+            actor_critic (torch.nn.Module, optional): The constructor method for a
+                Torch Module with an ``act`` method, a ``pi`` module and several
                 ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
                 accept batches of observations as inputs, and the ``Q*`` and ``L``
                 modules should accept a batch of observations and a batch of actions as
@@ -149,18 +151,18 @@ class LAC(tf.keras.Model):
                 ===========  ================  ======================================
 
                 Defaults to
-                :class:`~bayesian_learning_control.control.algos.tf2.policies.lyapunov_actor_critic.LyapunovActorCritic`
+                :class:`~bayesian_learning_control.control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic`
             ac_kwargs (dict, optional): Any kwargs appropriate for the ActorCritic
                 object you provided to LAC. Defaults to:
 
-                ====================  ===============================================
-                kwarg                 Value
-                ====================  ===============================================
-                hidden_sizes_actor    ``64 x 2``
-                hidden_sizes_critic   ``128 x 2``
-                activation            :class:`tf.nn.relu`
-                output_activation     :class:`tf.nn.relu`
-                ====================  ===============================================
+                =======================  ============================================
+                Kwarg                    Value
+                =======================  ============================================
+                ``hidden_sizes_actor``    ``64 x 2``
+                ``hidden_sizes_critic``   ``128 x 2``
+                ``activation``            :class:`torch.nn.ReLU`
+                ``output_activation``     :class:`torch.nn.ReLU`
+                =======================  ============================================
             opt_type (str, optional): The optimization type you want to use. Options
                 ``maximize`` and ``minimize``. Defaults to ``maximize``.
             alpha (float, optional): Entropy regularization coefficient (Equivalent to
@@ -197,12 +199,12 @@ class LAC(tf.keras.Model):
             device (str, optional): The device the networks are placed on (``cpu``
                 or ``gpu``). Defaults to ``cpu``.
         """  # noqa: E501
-        super().__init__(name=name)
+        super().__init__()
         self._setup_kwargs = {
             k: v for k, v in locals().items() if k not in ["self", "__class__", "env"]
         }
-        self._was_build = False
 
+        # Validate gym env
         # NOTE: The current implementation only works with continuous spaces.
         if not is_gym_env(env):
             raise ValueError("Env must be a valid Gym environment.")
@@ -233,17 +235,17 @@ class LAC(tf.keras.Model):
         # Store algorithm parameters
         self._act_dim = env.action_space.shape
         self._obs_dim = env.observation_space.shape
-        self._device = set_device(device)
+        self._device = retrieve_device(device)
         self._adaptive_temperature = adaptive_temperature
         self._opt_type = opt_type
         self._polyak = polyak
         self._gamma = gamma
         self._alpha3 = alpha3
-        self._lr_a = tf.Variable(lr_a, name="Lr_a")
+        self._lr_a = lr_a
         if self._adaptive_temperature:
-            self._lr_alpha = tf.Variable(lr_a, name="Lr_alpha")
-        self._lr_lag = tf.Variable(lr_a, name="Lr_lag")
-        self._lr_c = tf.Variable(lr_c, name="Lr_c")
+            self._lr_alpha = lr_a
+        self._lr_lag = lr_a
+        self._lr_c = lr_c
         if not isinstance(target_entropy, (float, int)):
             self._target_entropy = heuristic_target_entropy(env.action_space)
         else:
@@ -251,41 +253,46 @@ class LAC(tf.keras.Model):
 
         # Create variables for the Lagrance multipliers
         # NOTE: Clip at 1e-37 to prevent log_alpha/log_lambda from becoming -np.inf
-        self.log_alpha = tf.Variable(
-            tf.math.log(1e-37 if alpha < 1e-37 else alpha), name="log_alpha"
+        self.log_alpha = nn.Parameter(
+            torch.tensor(np.log(1e-37 if alpha < 1e-37 else alpha), requires_grad=True)
         )
-        self.log_labda = tf.Variable(
-            tf.math.log(1e-37 if labda < 1e-37 else labda), name="log_lambda"
+        self.log_labda = nn.Parameter(
+            torch.tensor(np.log(1e-37 if labda < 1e-37 else labda), requires_grad=True)
         )
 
         # Get default actor critic if no 'actor_critic' was supplied
         actor_critic = LyapunovActorCritic if actor_critic is None else actor_critic
 
         # Create actor-critic module and target networks
-        self.ac = actor_critic(env.observation_space, env.action_space, **ac_kwargs)
-        self.ac_targ = actor_critic(
-            env.observation_space,
-            env.action_space,
-            name="lyapunov_actor_critic_target",
-            **ac_kwargs,
+        # NOTE: Pytorch currently uses kaiming initialization for the baises in the
+        # future this will change to zero initialization
+        # (https://github.com/pytorch/pytorch/issues/18182). This however does not
+        # influence the results.
+        self.ac = actor_critic(env.observation_space, env.action_space, **ac_kwargs).to(
+            self._device
         )
+        self.ac_targ = deepcopy(self.ac).to(self._device)
 
-        self._init_targets()
+        # Freeze target networks with respect to optimizers (updates via polyak avg.)
+        for p in self.ac_targ.parameters():
+            p.requires_grad = False
 
         # Create optimizers
         # NOTE: We here optimize for log_alpha and log_labda instead of alpha and labda
         # because it is more numerically stable (see:
         # https://github.com/rail-berkeley/softlearning/issues/136)
-        self._pi_optimizer = Adam(learning_rate=self._lr_a)
-        self._pi_params = self.ac.pi.trainable_variables
+        # NOTE: The parameters() method returns a generator. This generator becomes
+        # empty after you looped through all values. As a result, below we use a
+        # lambda function to keep referencing the actual model parameters.
+        self._pi_optimizer = Adam(self.ac.pi.parameters(), lr=self._lr_a)
+        self._pi_params = lambda: self.ac.pi.parameters()
         if self._adaptive_temperature:
-            self._log_alpha_optimizer = Adam(learning_rate=self._lr_alpha)
-        self._log_labda_optimizer = Adam(learning_rate=self._lr_lag)
-        self._c_params = self.ac.L.trainable_variables
-        self._c_optimizer = Adam(learning_rate=self._lr_c)
+            self._log_alpha_optimizer = Adam([self.log_alpha], lr=self._lr_alpha)
+        self._log_labda_optimizer = Adam([self.log_labda], lr=self._lr_lag)
+        self._c_optimizer = Adam(self.ac.L.parameters(), lr=self._lr_c)
+        self._c_params = lambda: self.ac.L.parameters()
 
-    @tf.function
-    def call(self, s, deterministic=False):
+    def forward(self, s, deterministic=False):
         """Wrapper around the :meth:`.get_action` method that enables users to also
         receive actions directly by invoking ``LAC(observations)``.
 
@@ -299,7 +306,6 @@ class LAC(tf.keras.Model):
         """
         return self.get_action(s, deterministic=deterministic)
 
-    @tf.function
     def get_action(self, s, deterministic=False):
         """Returns the current action of the policy.
 
@@ -311,18 +317,11 @@ class LAC(tf.keras.Model):
         Returns:
             numpy.ndarray: The current action.
         """
-        # Make sure s is float32 tensorflow tensor
-        if not isinstance(s, tf.Tensor):
-            s = tf.convert_to_tensor(s, dtype=tf.float32)
-        elif s.dtype != tf.float32:
-            s = tf.cast(s, dtype=tf.float32)
+        return self.ac.act(
+            torch.as_tensor(s, dtype=torch.float32).to(self._device), deterministic
+        )
 
-        return tf.squeeze(
-            self.ac.act(s, deterministic)
-        )  # NOTE: Squeeze is critical to ensure a has right shape.
-
-    @tf.function
-    def update(self, data):
+    def update(self, data):  # noqa: C901
         """Update the actor critic network using stochastic gradient descent.
 
         Args:
@@ -339,6 +338,7 @@ class LAC(tf.keras.Model):
         ################################################
         # Optimize (Lyapunov/Q) critic #################
         ################################################
+        self._c_optimizer.zero_grad()
         if self._opt_type.lower() == "maximize":
             raise NotImplementedError(
                 "The LAC algorithm does not yet support maximization "
@@ -348,108 +348,124 @@ class LAC(tf.keras.Model):
             )
 
         # Get target Lyapunov value (Bellman-backup)
-        pi_targ_, _ = self.ac_targ.pi(
-            o_
-        )  # NOTE: Target actions come from *current* *target* policy
-        l_pi_targ = self.ac_targ.L([o_, pi_targ_])
-        l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate
+        with torch.no_grad():
+            pi_targ_, logp_targ_pi_ = self.ac_targ.pi(
+                o_
+            )  # NOTE: Target actions come from *current* *target* policy
+            l_pi_targ = self.ac_targ.L(o_, pi_targ_)
+            l_backup = r + self._gamma * (1 - d) * (
+                l_pi_targ - self.alpha * logp_targ_pi_
+            )  # The Lyapunov candidate
 
-        # Compute Lyapunov Critic error gradients
-        with tf.GradientTape() as l_tape:
+        # Get current Lyapunov value
+        l1 = self.ac.L(o, a)
 
-            # Get current Lyapunov value
-            l1 = self.ac.L([o, a])
+        # Calculate Lyapunov *CRITIC* error
+        # NOTE: The 0.5 multiplication factor was added to make the derivation
+        # cleaner and can be safely removed without influencing the minimization. We
+        # kept it here for consistency.
+        # NOTE: We currently use a manual implementation instead of using F.mse_loss
+        # as this is 2 times faster. This can be changed back to F.mse_loss if
+        # Torchscript is used.
+        l_error = 0.5 * ((l1 - l_backup) ** 2).mean()  # See Han eq. 7
 
-            # Calculate Lyapunov *CRITIC* error
-            # NOTE: The 0.5 multiplication factor was added to make the derivation
-            # cleaner and can be safely removed without influencing the
-            # minimization. We kept it here for consistency.
-            l_error = 0.5 * tf.reduce_mean((l1 - l_backup) ** 2)  # See Han eq. 7
+        l_error.backward()
+        self._c_optimizer.step()
 
-        c_grads = l_tape.gradient(l_error, self._c_params)
-        self._c_optimizer.apply_gradients(zip(c_grads, self._c_params))
-
-        l_info = dict(LVals=l1)
-        diagnostics.update({**l_info, "ErrorL": l_error})
+        l_info = dict(LVals=l1.cpu().detach().numpy())
+        diagnostics.update({**l_info, "ErrorL": l_error.cpu().detach().numpy()})
         ################################################
         # Optimize Gaussian actor ######################
         ################################################
-        # Compute actor loss gradients
-        with tf.GradientTape() as a_tape:
+        self._pi_optimizer.zero_grad()
 
-            # Retrieve log probabilities of batch observations based on *current* policy
-            _, logp_pi = self.ac.pi(o)
+        # Freeze Q-networks so you don't waste computational effort
+        # computing gradients for them during the policy learning step.
+        for p in self._c_params():
+            p.requires_grad = False
 
-            if self._opt_type.lower() == "maximize":
-                raise NotImplementedError(
-                    "The LAC algorithm does not yet support maximization "
-                    "environments. Please open a feature/pull request on "
-                    "https://github.com/rickstaa/bayesian-learning-control/issues "
-                    "if you need this."
-                )
+        # Retrieve log probabilities of batch observations based on *current* policy
+        _, logp_pi = self.ac.pi(o)
 
-            # Get target lyapunov value
-            pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
-            lya_l_ = self.ac.L([o_, pi_])
+        if self._opt_type.lower() == "maximize":
+            raise NotImplementedError(
+                "The LAC algorithm does not yet support maximization "
+                "environments. Please open a feature/pull request on "
+                "https://github.com/rickstaa/bayesian-learning-control/issues "
+                "if you need this."
+            )
 
-            # Compute Lyapunov Actor error
-            l_delta = tf.reduce_mean(
-                lya_l_ - tf.stop_gradient(l1) + self._alpha3 * r
-            )  # See Han eq. 11
+        # Get target lyapunov value
+        pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
+        lya_l_ = self.ac.L(o_, pi_)
 
-            # Calculate entropy-regularized policy loss
-            a_loss = tf.stop_gradient(self.labda) * l_delta + tf.stop_gradient(
-                self.alpha
-            ) * tf.reduce_mean(
-                logp_pi
-            )  # See Han eq. 12
+        # Compute Lyapunov Actor error
+        l_delta = torch.mean(lya_l_ - l1.detach() + self._alpha3 * r)  # See Han eq. 11
 
-        a_grads = a_tape.gradient(a_loss, self._pi_params)
-        self._pi_optimizer.apply_gradients(zip(a_grads, self._pi_params))
+        # Calculate entropy-regularized policy loss
+        a_loss = (
+            self.labda.detach() * l_delta + self.alpha.detach() * logp_pi.mean()
+        )  # See Han eq. 12
 
-        pi_info = dict(LogPi=logp_pi, Entropy=-tf.reduce_mean(logp_pi))
-        diagnostics.update({**pi_info, "LossPi": a_loss})
+        a_loss.backward()
+        self._pi_optimizer.step()
+
+        pi_info = dict(
+            LogPi=logp_pi.cpu().detach().numpy(),
+            Entropy=-torch.mean(logp_pi).cpu().detach().numpy(),
+        )
+        diagnostics.update({**pi_info, "LossPi": a_loss.cpu().detach().numpy()})
         ################################################
         # Optimize alpha (Entropy temperature) #########
         ################################################
+
+        # Freeze Pi-networks so you don't waste computational effort
+        # computing gradients for them during the policy learning step.
+        for p in self._pi_params():
+            p.requires_grad = False
+
         if self._adaptive_temperature:
+            self._log_alpha_optimizer.zero_grad()
 
-            # Compute alpha loss gradients
-            with tf.GradientTape() as alpha_tape:
+            # Calculate alpha loss
+            alpha_loss = -(
+                self.alpha * (logp_pi + self.target_entropy).detach()
+            ).mean()  # See Haarnoja eq. 17
 
-                # Calculate alpha loss
-                alpha_loss = -tf.reduce_mean(
-                    self.alpha * tf.stop_gradient(logp_pi + self.target_entropy)
-                )  # See Haarnoja eq. 17
+            alpha_loss.backward()
+            self._log_alpha_optimizer.step()
 
-            alpha_grads = alpha_tape.gradient(alpha_loss, [self.log_alpha])
-            self._log_alpha_optimizer.apply_gradients(
-                zip(alpha_grads, [self.log_alpha])
+            alpha_info = dict(Alpha=self.alpha.cpu().detach().numpy())
+            diagnostics.update(
+                {**alpha_info, "LossAlpha": alpha_loss.cpu().detach().numpy()}
             )
-
-            alpha_info = dict(Alpha=self.alpha)
-            diagnostics.update({**alpha_info, "LossAlpha": alpha_loss})
         ################################################
         # Optimize labda (Lyapunov temperature) ########
         ################################################
+        self._log_labda_optimizer.zero_grad()
 
-        # Compute labda loss gradients
-        with tf.GradientTape() as lambda_tape:
+        # Calculate labda loss
+        # NOTE: Log_labda was used in the lambda_loss function because using lambda
+        # caused the gradients to vanish. This is caused since we restrict lambda
+        # within a 0-1.0 range using the clamp function (see #38). Using log_lambda
+        # also is more numerically stable.
+        labda_loss = -(
+            self.log_labda * l_delta.detach()
+        ).mean()  # See formulas under Han eq. 14
 
-            # Calculate labda loss
-            # NOTE: Log_labda was used in the lambda_loss function because using
-            # lambda caused the gradients to vanish. This is caused since we
-            # restrict lambda within a 0-1.0 range using the clamp function
-            # (see #38). Using log_lambda also is more numerically stable.
-            labda_loss = -tf.reduce_mean(
-                self.log_labda * tf.stop_gradient(l_delta)
-            )  # See formulas under Han eq. 14
+        labda_loss.backward()
+        self._log_labda_optimizer.step()
 
-        lambda_grads = lambda_tape.gradient(labda_loss, [self.log_labda])
-        self._log_labda_optimizer.apply_gradients(zip(lambda_grads, [self.log_labda]))
+        labda_info = dict(Lambda=self.labda.cpu().detach().numpy())
+        diagnostics.update(
+            {**labda_info, "LossLambda": labda_loss.cpu().detach().numpy()}
+        )
 
-        labda_info = dict(Lambda=self.labda)
-        diagnostics.update({**labda_info, "LossLambda": labda_loss})
+        # Unfreeze Pi and Q networks so you can optimize it at next SGD step.
+        for p in self._c_params():
+            p.requires_grad = True
+        for p in self._pi_params():
+            p.requires_grad = True
         ################################################
         # Update target networks and return ############
         # diagnostics. #################################
@@ -457,30 +473,22 @@ class LAC(tf.keras.Model):
         self._update_targets()
         return diagnostics
 
-    def save(self, path, checkpoint_name="checkpoint"):
+    def save(self, path):
         """Can be used to save the current model state.
 
         Args:
             path (str): The path where you want to save the policy.
-            checkpoint_name (str): The name you want to use for the checkpoint.
 
         Raises:
             Exception: Raises an exception if something goes wrong during saving.
-
-        .. note::
-            This function saved the model weights using the
-            :meth:`tf.keras.Model.save_weights` method
-            (see https://www.tensorflow.org/api_docs/python/tf/keras/Model#save_weights)
-            . The model should therefore be restored using the
-            :meth:`tf.keras.Model.load_weights` method (see
-            https://www.tensorflow.org/api_docs/python/tf/keras/Model#load_weights). If
-            you want to deploy the full model use the :meth:`.export` method instead.
         """
+        model_state_dict = self.state_dict()
         path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        save_path = path.joinpath(f"policy/{checkpoint_name}")
+
+        save_path = path.joinpath("policy/model.pt")
+        save_path.parent.mkdir(parents=True, exist_ok=True)
         try:
-            self.save_weights(save_path)
+            torch.save(model_state_dict, save_path)
         except Exception as e:
             raise Exception("LAC model could not be saved.") from e
 
@@ -507,107 +515,174 @@ class LAC(tf.keras.Model):
         Raises:
             Exception: Raises an exception if something goes wrong during loading.
         """
-
-        latest = tf.train.latest_checkpoint(path)
-        if latest is None:
-            latest = tf.train.latest_checkpoint(osp.join(path, "tf2_save"))
-            if latest is None:
-                raise Exception(
-                    f"No models found in '{path}'. Please check your policy restore"
-                    "path and try again."
-                )
-
-        # Store initial values in order to ignore them when loading the weights
-        lr_a = self._lr_a.value()
-        lr_alpha = self._lr_alpha.value()
-        lr_lag = self._lr_lag.value()
-        lr_c = self._lr_c.value()
-        if not restore_lagrance_multipliers:
-            log_alpha_init = self.log_alpha.value()
-            log_labda_init = self.log_labda.value()
-
-        try:
-            self.load_weights(latest)
-        except Exception as e:
-            raise Exception(
-                f"Something went wrong when trying to load model '{latest}'."
-            ) from e
-
-        # Make sure learning rates (and lagrance multipliers) are not restored
-        self._lr_a.assign(lr_a)
-        self._lr_alpha.assign(lr_alpha)
-        self._lr_lag.assign(lr_lag)
-        self._lr_c.assign(lr_c)
-        if not restore_lagrance_multipliers:
-            self.log_alpha.assign(log_alpha_init)
-            self.log_labda.assign(log_labda_init)
-            log_to_std_out("Restoring lagrance multipliers.", type="info")
-        else:
-            log_to_std_out(
-                "Keeping lagrance multipliers at their initial value.", type="info"
+        if osp.basename(path) != ["model.pt", "model.pth"]:
+            load_path = glob.glob(
+                osp.join(path, "**", "model_state.pt*"), recursive=True
             )
+            if len(load_path) == 0:
+                model_path = glob.glob(
+                    osp.join(path, "**", "model.pt*"), recursive=True
+                )
+                if len(model_path) > 1:
+                    raise Exception(
+                        f"Only whole pickled models found in '{path}'. Using whole "
+                        "pickled models as a starting point is currently not supported "
+                        "as this method of loading is discouraged by the pytorch "
+                        "documentation. Please supply a path that contains a "
+                        "'model_state' dictionary and try again."
+                    )
+                else:
+                    raise Exception(
+                        f"No models found in '{path}'. Please check your policy restore"
+                        "path and try again."
+                    )
+            elif len(load_path) > 1:
+                raise Exception(
+                    f"Multiple models found in path '{path}'. Please check your policy "
+                    "restore path and try again."
+                )
+            load_path = load_path[0]
+
+        restored_model_state_dict = torch.load(load_path, map_location=self._device)
+        self.load_state_dict(
+            restored_model_state_dict,
+            restore_lagrance_multipliers,
+        )
+        self.ac.to(self._device)
+        self.ac_targ.to(self._device)
 
     def export(self, path):
-        """Can be used to export the model in the ``SavedModel`` format such that it can
-        be deployed to hardware.
+        """Can be used to export the model as a ``TorchScript`` such that it can be
+        deployed to hardware.
 
         Args:
             path (str): The path where you want to export the policy too.
+
+        Raises:
+            NotImplementedError: Raised until the feature is fixed on the upstream.
         """
-        if tf.config.functions_run_eagerly():
+        # IMPROVE: Replace with TorchScript and Onyx versions when
+        # https://github.com/pytorch/pytorch/issues/29843 and
+        # https://github.com/onnx/onnx/issues/3033 are solved (see
+        # https://pytorch.org/tutorials/advanced/cpp_export.html and
+        # https://pytorch.org/tutorials/advanced/super_resolution_with_caffe2.html)
+        raise NotImplementedError(
+            "The LAC Pytorch module could not be exported as a 'TorchScript' since the "
+            "'torch.distributions.normal' method is not yet 'TorchScript' compatible. "
+            "The feature will be implemented when this is added to the upstream "
+            "see https://github.com/pytorch/pytorch/issues/29843 to follow progress on "
+            "this."
+        )
+
+    def load_state_dict(self, state_dict, restore_lagrance_multipliers=True):
+        """Copies parameters and buffers from :attr:`state_dict` into
+        this module and its descendants.
+
+        Args:
+            state_dict (dict): a dict containing parameters and
+                persistent buffers.
+            restore_lagrance_multipliers (bool, optional): Whether you want to restore
+                the lagrance multipliers. By fault ``True``.
+        """
+        if (
+            "alg_name" in self.state_dict()
+            and "alg_name" in state_dict.keys()
+            and self.state_dict()["alg_name"] != state_dict["alg_name"]
+        ):
+            raise ValueError(
+                friendly_err(
+                    "The supplied 'state_dict' could not be loaded onto the {} ".format(
+                        self.state_dict()["alg_name"]
+                    )
+                    + "agent as it belongs to a {} agent. Please supply a {} ".format(
+                        state_dict["alg_name"], self.state_dict()["alg_name"]
+                    )
+                    + "compatible 'state_dict' and try again."
+                )
+            )
+        if self.state_dict().keys() != state_dict.keys():
+            raise ValueError(
+                friendly_err(
+                    "The 'state_dict' you tried to load does not seem to be right. It "
+                    "contains keys: \n\n{}\n\n while keys: \n\n{}\n\n keys ".format(
+                        list(state_dict.keys()), list(self.state_dict().keys())
+                    )
+                    + "are expected for the '{}' model.".format(
+                        self.state_dict()["alg_name"]
+                    )
+                )
+            )
+        if not restore_lagrance_multipliers:
             log_to_std_out(
-                "Exporting the tensorflow model is not supported in eager mode.",
-                type="error",
+                "Keeping lagrance multipliers at their initial value.", type="info"
             )
+            try:
+                del state_dict["log_alpha"], state_dict["log_labda"]
+            except KeyError:
+                pass
         else:
-            # NOTE: Currently we only export the actor as this is what is usefull when
-            # deploying the algorithm.
-            obs_dummy = tf.random.uniform(
-                combine_shapes(1, self._obs_dim), dtype=tf.float32
-            )
-            self.ac.pi.get_action(obs_dummy)  # Make sure the full graph was traced
-            self.ac.pi.save(osp.join(path, "tf2_save"))
+            log_to_std_out("Restoring lagrance multipliers.", type="info")
 
-    def build(self):
-        """Function that can be used to build the full model structure such that it can
-        be visualized using the `tf.keras.Model.summary()`.
+        try:
+            super().load_state_dict(state_dict, strict=False)
+        except (AttributeError, RuntimeError) as e:
+            raise type(e)(
+                "The 'state_dict' could not be loaded successfully.",
+            ) from e
 
-        .. note::
-            This is done by calling the build methods of the submodules.
+    def state_dict(self):
+        """Simple wrapper around the :meth:`torch.nn.Module.state_dict` method that saves
+        the current class name. This is used to enable easy loading of the model.
         """
-        obs_dummy = tf.random.uniform(
-            combine_shapes(1, self._obs_dim), dtype=tf.float32
-        )
-        act_dummy = tf.random.uniform(
-            combine_shapes(1, self._act_dim), dtype=tf.float32
-        )
-        self.ac([obs_dummy, act_dummy])
-        self.ac_targ([obs_dummy, act_dummy])
-        super().build(input_shape=combine_shapes(1, self._obs_dim))
-        self(obs_dummy)
-        self._was_build = True
+        state_dict = super().state_dict()
+        state_dict[
+            "alg_name"
+        ] = self.__class__.__name__  # Save algorithm name state dict
+        return state_dict
 
-    def summary(self):
-        """Small wrapper around the :meth:`tf.keras.Model.summary()` method used to
-        apply a custom format to the model summary.
+    def bound_lr(
+        self, lr_a_final=None, lr_c_final=None, lr_alpha_final=None, lr_labda_final=None
+    ):
+        """Function that can be used to make sure the learning rate doesn't go beyond
+        a lower bound.
+
+        Args:
+            lr_a_final (float, optional): The lower bound for the actor learning rate.
+                Defaults to None.
+            lr_c_final (float, optional): The lower bound for the critic learning rate.
+                Defaults to None.
+            lr_alpha_final (float, optional): The lower bound for the alpha Lagrance
+                multiplier learning rate. Defaults to None.
+            lr_labda_final (float, optional): The lower bound for the labda Lagrance
+                multiplier learning rate. Defaults to None.
         """
-        if not self._was_build:
-            self.build()
-        super().summary()
-        print("")
-        self.ac.summary()
-        print("")
-        self.ac.pi.summary()
-        print("")
-        self.ac.pi.net.summary()
-        print("")
-        self.ac.L.summary()
-        print("")
-        self.ac.L.L.summary()
-        print("")
+        if lr_a_final is not None:
+            if self._pi_optimizer.param_groups[0]["lr"] < lr_a_final:
+                self._pi_optimizer.param_groups[0]["lr"] = lr_a_final
+        if lr_c_final is not None:
+            if self._c_optimizer.param_groups[0]["lr"] < lr_c_final:
+                self._c_optimizer.param_groups[0]["lr"] = lr_c_final
+        if lr_alpha_final is not None:
+            if self._log_alpha_optimizer.param_groups[0]["lr"] < lr_a_final:
+                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_a_final
+        if lr_labda_final is not None:
+            if self._log_labda_optimizer.param_groups[0]["lr"] < lr_labda_final:
+                self._log_labda_optimizer.param_groups[0]["lr"] = lr_labda_final
 
-    def set_learning_rates(self, lr_a=None, lr_c=None, lr_alpha=None, lr_labda=None):
-        """Adjusts the learning rates of the optimizers.
+    def _update_targets(self):
+        """Updates the target networks based on a Exponential moving average
+        (Polyak averaging).
+        """
+        with torch.no_grad():
+            for p, p_targ in zip(self.ac.parameters(), self.ac_targ.parameters()):
+                # NOTE: We use an in-place operations "mul_", "add_" to update target
+                # params, as opposed to "mul" and "add", which would make
+                # new tensors.
+                p_targ.data.mul_(self._polyak)
+                p_targ.data.add_((1 - self._polyak) * p.data)
+
+    def _set_learning_rates(self, lr_a=None, lr_c=None, lr_alpha=None, lr_labda=None):
+        """Can be used to manually adjusts the learning rates of the optimizers.
 
         Args:
             lr_a (float, optional): The learning rate of the actor optimizer. Defaults
@@ -620,32 +695,14 @@ class LAC(tf.keras.Model):
                 multiplier optimizer. Defaults to None.
         """
         if lr_a:
-            self._pi_optimizer.lr.assign(lr_a)
+            self._pi_optimizer.param_groups[0]["lr"] = lr_a
         if lr_c:
-            self._c_optimizer.lr.assign(lr_c)
+            self._c_optimizer.param_groups[0]["lr"] = lr_c
         if self._adaptive_temperature:
             if lr_alpha:
-                self._log_alpha_optimizer.lr.assign(lr_alpha)
+                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_alpha
         if lr_labda:
-            self._log_labda_optimizer.lr.assign(lr_labda)
-
-    @tf.function
-    def _init_targets(self):
-        """Updates the target network weights to the main network weights."""
-        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
-            pi_targ.assign(pi_main)
-        for c_main, c_targ in zip(self.ac.L.variables, self.ac_targ.L.variables):
-            c_targ.assign(c_main)
-
-    @tf.function
-    def _update_targets(self):
-        """Updates the target networks based on a Exponential moving average
-        (Polyak averaging).
-        """
-        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
-            pi_targ.assign(self._polyak * pi_targ + (1 - self._polyak) * pi_main)
-        for c_main, c_targ in zip(self.ac.L.variables, self.ac_targ.L.variables):
-            c_targ.assign(self._polyak * c_targ + (1 - self._polyak) * c_main)
+            self._log_labda_optimizer.param_groups[0]["lr"] = lr_labda
 
     @property
     def alpha(self):
@@ -653,16 +710,14 @@ class LAC(tf.keras.Model):
         prevent it from becoming nan when :attr:`log_alpha` becomes ``-inf``. For
         :attr:`alpha` no upper bound is used.
         """
-        return tf.clip_by_value(tf.exp(self.log_alpha), *SCALE_ALPHA_MIN_MAX)
+        return torch.clamp(self.log_alpha.exp(), *SCALE_ALPHA_MIN_MAX)
 
     @alpha.setter
     def alpha(self, set_val):
         """Property used to ensure :attr:`alpha` and :attr:`log_alpha` are related."""
-        self.log_alpha.assign(
-            tf.convert_to_tensor(
-                np.log(1e-37 if set_val < 1e-37 else set_val),
-                dtype=self.log_alpha.dtype,
-            )
+        self.log_alpha.data = torch.as_tensor(
+            np.log(1e-37 if set_val < 1e-37 else set_val),
+            dtype=self.log_alpha.dtype,
         )
 
     @property
@@ -672,16 +727,14 @@ class LAC(tf.keras.Model):
         we clip it to be lower or equal than ``1.0`` in order to prevent lambda from
         exploding when the the hyperparameters are chosen badly.
         """
-        return tf.clip_by_value(tf.exp(self.log_labda), *SCALE_LAMBDA_MIN_MAX)
+        return torch.clamp(self.log_labda.exp(), *SCALE_LAMBDA_MIN_MAX)
 
     @labda.setter
     def labda(self, set_val):
         """Property used to make sure labda and log_labda are related."""
-        self.log_labda.assign(
-            tf.convert_to_tensor(
-                np.log(1e-37 if set_val < 1e-37 else set_val),
-                dtype=self.log_labda.dtype,
-            )
+        self.log_labda.data = torch.as_tensor(
+            np.log(1e-37 if set_val < 1e-37 else set_val),
+            dtype=self.log_labda.dtype,
         )
 
     @property
@@ -729,13 +782,13 @@ def validate_args(**kwargs):
         )
 
 
-def lac(  # noqa: C901
+def lac5(  # noqa: C901
     env_fn,
     actor_critic=None,
     ac_kwargs=dict(
         hidden_sizes={"actor": [64] * 2, "critic": [128] * 2},
-        activation=nn.relu,
-        output_activation=nn.relu,
+        activation=nn.ReLU,
+        output_activation=nn.ReLU,
     ),
     opt_type="minimize",
     max_ep_len=None,
@@ -773,22 +826,22 @@ def lac(  # noqa: C901
     Args:
         env_fn: A function which creates a copy of the environment.
             The environment must satisfy the OpenAI Gym API.
-        actor_critic (tf.Module, optional): The constructor method for a
-            Tensorflow Module with an ``act`` method, a ``pi`` module and several ``Q``
-            or ``L`` modules. The ``act`` method and ``pi`` module should accept batches
-            of observations as inputs, and the ``Q*`` and
-            ``L`` modules should accept a batch of observations and a batch of actions
-            as inputs. When called, these modules should return:
+        actor_critic (torch.nn.Module, optional): The constructor method for a
+            Torch Module with an ``act`` method, a ``pi`` module and several
+            ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
+            accept batches of observations as inputs, and the ``Q*`` and  ``L``
+            modules should accept a batch of observations and a batch of actions as
+            inputs. When called, these modules should return:
 
             ===========  ================  ======================================
             Call         Output Shape      Description
             ===========  ================  ======================================
-            ``act``      (batch, act_dim)  | Numpy array of actions for each
-                                           | observation.
-            ``Q*/L``     (batch,)          | Tensor containing one current estimate
-                                           | of ``Q*/L`` for the provided observations
-                                           | and actions. (Critical: make sure to
-                                           | flatten this!)
+            ``act``      (batch, act_dim)   | Numpy array of actions for each
+                                            | observation.
+            ``Q*/L``     (batch,)           | Tensor containing one current estimate
+                                            | of ``Q*/L`` for the provided
+                                            | observations and actions. (Critical:
+                                            | make sure to flatten this!)
             ===========  ================  ======================================
 
             Calling ``pi`` should return:
@@ -796,15 +849,16 @@ def lac(  # noqa: C901
             ===========  ================  ======================================
             Symbol       Shape             Description
             ===========  ================  ======================================
-            ``a``        (batch, act_dim)  | Tensor containing actions from policy
-                                           | given observations.
-            ``logp_pi``  (batch,)          | Tensor containing log probabilities of
-                                           | actions in ``a``. Importantly: gradients
-                                           | should be able to flow back into ``a``.
+            ``a``        (batch, act_dim)   | Tensor containing actions from policy
+                                            | given observations.
+            ``logp_pi``  (batch,)           | Tensor containing log probabilities of
+                                            | actions in ``a``. Importantly:
+                                            | gradients should be able to flow back
+                                            | into ``a``.
             ===========  ================  ======================================
 
             Defaults to
-            :class:`~bayesian_learning_control.control.algos.tf2.policies.lyapunov_actor_critic.LyapunovActorCritic`
+            :class:`~bayesian_learning_control.control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic`
         ac_kwargs (dict, optional): Any kwargs appropriate for the ActorCritic
             object you provided to LAC. Defaults to:
 
@@ -813,8 +867,8 @@ def lac(  # noqa: C901
             =======================  ============================================
             ``hidden_sizes_actor``    ``64 x 2``
             ``hidden_sizes_critic``   ``128 x 2``
-            ``activation``            :class:`tf.nn.ReLU`
-            ``output_activation``     :class:`tf.nn.ReLU`
+            ``activation``            :class:`torch.nn.ReLU`
+            ``output_activation``     :class:`torch.nn.ReLU`
             =======================  ============================================
         opt_type (str, optional): The optimization type you want to use. Options
             ``maximize`` and ``minimize``. Defaults to ``maximize``.
@@ -869,8 +923,8 @@ def lac(  # noqa: C901
             for maximum Entropy RL_learning.
         lr_a (float, optional): Learning rate used for the actor. Defaults to
             ``1e-4``.
-        lr_c (float, optional): Learning rate used for the (lyapunov) critic. Defaults
-            to ``1e-4``.
+        lr_c (float, optional): Learning rate used for the (lyapunov) critic.
+            Defaults to ``1e-4``.
         lr_a_final(float, optional): The final actor learning rate that is achieved
             at the end of the training. Defaults to ``1e-10``.
         lr_c_final(float, optional): The final critic learning rate that is achieved
@@ -891,8 +945,8 @@ def lac(  # noqa: C901
             the current policy and value function.
         start_policy (str): Path of a already trained policy to use as the starting
             point for the training. By default a new policy is created.
-        export (bool): Wether you want to export the model in the ``SavedModel`` format
-            such that it can be deployed to hardware. By default ``False``.
+        export (bool): Whether you want to export the model as a ``TorchScript`` such
+            that it can be deployed on hardware. By default ``False``.
     """  # noqa: E501
     total_steps = steps_per_epoch * epochs
 
@@ -906,7 +960,6 @@ def lac(  # noqa: C901
         )
         else STD_OUT_LOG_VARS_DEFAULT
     )  # NOTE: Done to ensure the std_out doesn't get cluttered.
-    logger_kwargs["backend"] = "tf"  # NOTE: Use tensorflow tensorboard backend
     tb_low_log_freq = (
         logger_kwargs.pop("tb_log_freq").lower() == "low"
         if "tb_log_freq" in logger_kwargs.keys()
@@ -952,13 +1005,10 @@ def lac(  # noqa: C901
 
     # Set random seed for reproducible results
     if seed is not None:
-        env.seed(seed)
-        test_env.seed(seed)
         os.environ["PYTHONHASHSEED"] = str(seed)
-        os.environ["TF_CUDNN_DETERMINISTIC"] = "1"  # new flag present in tf 2.0+
-        random.seed(seed)
+        torch.manual_seed(seed)
         np.random.seed(seed)
-        tf.random.set_seed(seed)
+        random.seed(seed)
         env.seed(seed)
         test_env.seed(seed)
 
@@ -979,12 +1029,6 @@ def lac(  # noqa: C901
         device,
     )
 
-    # Create learning rate schedulers
-    # NOTE: Alpha and labda currently use the same scheduler as the actor.
-    lr_decay_ref_var = total_steps if lr_decay_ref.lower() == "steps" else epochs
-    lr_a_scheduler = get_lr_scheduler(lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var)
-    lr_c_scheduler = get_lr_scheduler(lr_decay_type, lr_c, lr_c_final, lr_decay_ref_var)
-
     # Restore policy if supplied
     if start_policy is not None:
         logger.log(f"Restoring model from '{start_policy}'.", type="info")
@@ -993,8 +1037,10 @@ def lac(  # noqa: C901
             logger.log("Model successfully restored.", type="info")
         except Exception as e:
             logger.log(
-                "Shutting down training since {}.".format(
-                    e.args[0].lower().rstrip(".")
+                (
+                    "Shutting down training since {}.".format(
+                        e.args[0].lower().rstrip(".")
+                    )
                 ),
                 type="error",
             )
@@ -1005,15 +1051,40 @@ def lac(  # noqa: C901
         act_dim=act_dim,
         rew_dim=rew_dim,
         size=replay_size,
+        device=policy.device,
     )
 
     # Count variables and print network structure
     var_counts = tuple(count_vars(module) for module in [policy.ac.pi, policy.ac.L])
     logger.log("Number of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info")
     logger.log("Network structure:\n", type="info")
-    policy.summary()
+    logger.log(policy.ac, end="\n\n")
 
-    logger.setup_tf_saver(policy)
+    # Create learning rate schedulers
+    opt_schedulers = []
+    lr_decay_ref_var = total_steps if lr_decay_ref.lower() == "steps" else epochs
+    pi_opt_scheduler = get_lr_scheduler(
+        policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var
+    )
+    opt_schedulers.append(pi_opt_scheduler)
+    alpha_opt_scheduler = get_lr_scheduler(
+        policy._log_alpha_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var
+    )
+    opt_schedulers.append(alpha_opt_scheduler)
+    c_opt_scheduler = get_lr_scheduler(
+        policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, lr_decay_ref_var
+    )
+    opt_schedulers.append(c_opt_scheduler)
+    labda_opt_scheduler = get_lr_scheduler(
+        policy._log_labda_optimizer,
+        lr_decay_type,
+        lr_a,
+        lr_a_final,
+        lr_decay_ref_var,
+    )
+    opt_schedulers.append(labda_opt_scheduler)
+
+    logger.setup_pytorch_saver(policy)
 
     # Setup diagnostics tb_write dict and store initial learning rates
     diag_tb_log_list = [
@@ -1028,25 +1099,25 @@ def lac(  # noqa: C901
     if use_tensorboard:
         logger.log_to_tb(
             "Lr_a",
-            policy._pi_optimizer.lr.numpy(),
+            policy._pi_optimizer.param_groups[0]["lr"],
             tb_prefix="LearningRates",
             global_step=0,
         )
         logger.log_to_tb(
             "Lr_c",
-            policy._c_optimizer.lr.numpy(),
+            policy._c_optimizer.param_groups[0]["lr"],
             tb_prefix="LearningRates",
             global_step=0,
         )
         logger.log_to_tb(
             "Lr_alpha",
-            policy._log_alpha_optimizer.lr.numpy(),
+            policy._log_alpha_optimizer.param_groups[0]["lr"],
             tb_prefix="LearningRates",
             global_step=0,
         )
         logger.log_to_tb(
             "Lr_labda",
-            policy._log_labda_optimizer.lr.numpy(),
+            policy._log_labda_optimizer.param_groups[0]["lr"],
             tb_prefix="LearningRates",
             global_step=0,
         )
@@ -1089,20 +1160,19 @@ def lac(  # noqa: C901
 
             # Step based learning rate decay
             if lr_decay_ref.lower() == "step":
-                lr_a_now = max(
-                    lr_a_scheduler(t + 1), lr_a_final
-                )  # Make sure lr is bounded above final lr
-                lr_c_now = max(
-                    lr_c_scheduler(t + 1), lr_c_final
-                )  # Make sure lr is bounded above final lr
-                policy.set_learning_rates(
-                    lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
-                )
+                for scheduler in opt_schedulers:
+                    scheduler.step()
+                policy.bound_lr(
+                    lr_a_final, lr_c_final, lr_a_final, lr_a_final
+                )  # Make sure lr is bounded above the final lr
 
             for _ in range(steps_per_update):
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
-                logger.store(**update_diagnostics)  # Log diagnostics
+
+                # Log diagnostics
+                logger.store(**update_diagnostics)
+
             # SGD batch tb logging
             if use_tensorboard and not tb_low_log_freq:
                 logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
@@ -1127,15 +1197,11 @@ def lac(  # noqa: C901
 
             # Epoch based learning rate decay
             if lr_decay_ref.lower() != "step":
-                lr_a_now = max(
-                    lr_a_scheduler(epoch), lr_a_final
-                )  # Make sure lr is bounded above final
-                lr_c_now = max(
-                    lr_c_scheduler(epoch), lr_c_final
-                )  # Make sure lr is bounded above final
-                policy.set_learning_rates(
-                    lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
-                )
+                for scheduler in opt_schedulers:
+                    scheduler.step()
+                policy.bound_lr(
+                    lr_a_final, lr_c_final, lr_a_final, lr_a_final
+                )  # Make sure lr is bounded above the final lr
 
             # Log performance measure to ray tuning
             # NOTE: Only executed when the ray tuner invokes the script
@@ -1167,25 +1233,25 @@ def lac(  # noqa: C901
             )
             logger.log_tabular(
                 "Lr_a",
-                policy._pi_optimizer.lr.numpy(),
+                policy._pi_optimizer.param_groups[0]["lr"],
                 tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             logger.log_tabular(
                 "Lr_c",
-                policy._c_optimizer.lr.numpy(),
+                policy._c_optimizer.param_groups[0]["lr"],
                 tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             logger.log_tabular(
                 "Lr_alpha",
-                policy._log_alpha_optimizer.lr.numpy(),
+                policy._log_alpha_optimizer.param_groups[0]["lr"],
                 tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             logger.log_tabular(
                 "Lr_labda",
-                policy._log_labda_optimizer.lr.numpy(),
+                policy._log_labda_optimizer.param_groups[0]["lr"],
                 tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
@@ -1230,7 +1296,7 @@ def lac(  # noqa: C901
             logger.log_tabular("Time", time.time() - start_time)
             logger.dump_tabular(global_step=t)
 
-    # Export model to 'SavedModel'
+    # Export model to 'TorchScript'
     if export:
         policy.export(logger.output_dir)
 
@@ -1252,7 +1318,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--env",
         type=str,
-        default="Oscillator-v1",
+        # default="Oscillator-v1",
+        default="CartPoleCost-v0",  # DEBUG
         help="the gym env (default: Oscillator-v1)",
     )
     parser.add_argument(
@@ -1282,20 +1349,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "--act_a",
         type=str,
-        default="nn.relu",
-        help="the hidden layer activation function of the actor (default: nn.relu)",
+        default="nn.ReLU",
+        help="the hidden layer activation function of the actor (default: nn.ReLU)",
     )
     parser.add_argument(
         "--act_c",
         type=str,
-        default="nn.relu",
-        help="the hidden layer activation function of the critic (default: nn.relu)",
+        default="nn.ReLU",
+        help="the hidden layer activation function of the critic (default: nn.ReLU)",
     )
     parser.add_argument(
         "--act_out_a",
         type=str,
-        default="nn.relu",
-        help="the output activation function of the actor (default: nn.relu)",
+        default="nn.ReLU",
+        help="the output activation function of the actor (default: nn.ReLU)",
     )
     parser.add_argument(
         "--opt_type",
@@ -1441,8 +1508,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--device",
         type=str,
-        default="gpu",
-        help="The device the networks are placed on (default: gpu)",
+        default="cpu",
+        help="The device the networks are placed on (default: cpu)",
     )
     parser.add_argument(
         "--start_policy",
@@ -1458,8 +1525,8 @@ if __name__ == "__main__":
         type=str,
         default=False,
         help=(
-            "Wether you want to export the model in the 'SavedModel' format "
-            "such that it can be deployed to hardware (Default: False)"
+            "Whether you want to export the model as a 'TorchScript' such that "
+            "it can be deployed on hardware (default: False)"
         ),
     )
 
@@ -1468,7 +1535,7 @@ if __name__ == "__main__":
         "--exp_name",
         type=str,
         default="lac",
-        help="the name of the experiment (default: sac)",
+        help="the name of the experiment (default: lac)",
     )
     parser.add_argument(
         "--verbose",
@@ -1524,15 +1591,15 @@ if __name__ == "__main__":
 
     # Setup actor critic arguments
     output_activation = {}
-    output_activation["actor"] = safer_eval(args.act_out_a, backend="tf")
+    output_activation["actor"] = safer_eval(args.act_out_a, backend="torch")
     ac_kwargs = dict(
         hidden_sizes={
             "actor": [args.hid_a] * args.l_a,
             "critic": [args.hid_c] * args.l_c,
         },
         activation={
-            "actor": safer_eval(args.act_a, backend="tf"),
-            "critic": safer_eval(args.act_c, backend="tf"),
+            "actor": safer_eval(args.act_a, backend="torch"),
+            "critic": safer_eval(args.act_c, backend="torch"),
         },
         output_activation=output_activation,
     )
@@ -1554,8 +1621,9 @@ if __name__ == "__main__":
             f"../../../../../data/lac/{args.env.lower()}/runs/run_{int(time.time())}",
         )
     )
+    torch.set_num_threads(torch.get_num_threads())
 
-    lac(
+    lac5(
         lambda: gym.make(args.env),
         actor_critic=LyapunovActorCritic,
         ac_kwargs=ac_kwargs,

@@ -995,6 +995,7 @@ def lac(  # noqa: C901
                 type="warning",
             )
             env._max_episode_steps = max_ep_len
+            test_env._max_episode_steps = max_ep_len
 
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = LyapunovActorCritic if actor_critic is None else actor_critic
