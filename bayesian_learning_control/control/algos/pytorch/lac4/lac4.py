@@ -372,8 +372,11 @@ class LAC(nn.Module):
         # NOTE: We currently use a manual implementation instead of using F.mse_loss
         # as this is 2 times faster. This can be changed back to F.mse_loss if
         # Torchscript is used.
+        # l_error = (
+        #     0.5 * ((l1 - l_backup) ** 2 - self.labda.detach() * l_delta).mean()
+        # )  # See Han eq. 7
         l_error = (
-            0.5 * ((l1 - l_backup) ** 2 - self.labda.detach() * l_delta).mean()
+            0.5 * ((l1 - l_backup) ** 2 + self.labda.detach() * l_delta).mean()
         )  # See Han eq. 7
 
         l_error.backward()
