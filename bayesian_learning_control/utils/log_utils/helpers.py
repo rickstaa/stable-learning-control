@@ -10,18 +10,7 @@ from bayesian_learning_control.user_config import (
     FORCE_DATESTAMP,
 )
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import proc_id
-
-color2num = dict(
-    gray=30,
-    red=31,
-    green=32,
-    yellow=33,
-    blue=34,
-    magenta=35,
-    cyan=36,
-    white=37,
-    crimson=38,
-)
+from gym.utils import colorize as gym_colorize
 
 LOG_TYPES = {
     "info": {"color": "green", "bold": True, "highlight": False, "prefix": "INFO: "},
@@ -50,7 +39,9 @@ def friendly_err(err_msg):
 def colorize(string, color, bold=False, highlight=False):
     """Colorize a string.
 
-    This function was originally written by John Schulman.
+    .. seealso::
+        This function wraps the :meth:`gym.utils.colorize` function to make sure that it
+        also works with empty empty color strings.
 
     Args:
         string (str): The string you want to colorize.
@@ -62,15 +53,8 @@ def colorize(string, color, bold=False, highlight=False):
     Returns:
         str: Colorized string.
     """
-    if color:
-        attr = []
-        num = color2num[color]
-        if highlight:
-            num += 10
-        attr.append(str(num))
-        if bold:
-            attr.append("1")
-        return "\x1b[%sm%s\x1b[0m" % (";".join(attr), string)
+    if color:  # If not empty
+        return gym_colorize(string, color, bold, highlight)
     else:
         return string
 

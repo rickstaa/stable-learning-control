@@ -215,11 +215,11 @@ def run_disturbed_policy(  # noqa: C901
     except (ValueError, TypeError) as e:
         raise Exception(
             friendly_err(
-                "You did not give a value for --{}! Add one and try again.".format(
+                "You did not give a valid value for --{}! Please try again.".format(
                     e.args[1]
                 )
             )
-        )
+        ) from e
     disturbance_type = (
         env.disturbance_info["type"]
         if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys()

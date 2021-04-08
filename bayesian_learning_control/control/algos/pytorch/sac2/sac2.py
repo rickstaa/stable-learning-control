@@ -70,18 +70,17 @@ STD_OUT_LOG_VARS_DEFAULT = [
     "TotalEnvInteracts",
     "AverageEpRet",
     "AverageTestEpRet",
-    "AverageEpLen",
     "AverageTestEpLen",
     "AverageAlpha",
-    "AverageLambda",
     "AverageLossAlpha",
-    "AverageLossLambda",
+    "AverageQ1Vals",
+    "AverageQ2Vals",
     "AverageLossPi",
     "AverageEntropy",
 ]
 
 
-class SAC(nn.Module):
+class SAC2(nn.Module):
     """The Soft Actor Critic algorithm.
 
     Attributes:
@@ -286,7 +285,7 @@ class SAC(nn.Module):
 
     def forward(self, s, deterministic=False):
         """Wrapper around the :meth:`.get_action` method that enables users to also
-        receive actions directly by invoking ``SAC(observations)``.
+        receive actions directly by invoking ``SAC2(observations)``.
 
         Args:
             s (numpy.ndarray): The current state.
@@ -941,7 +940,7 @@ def sac2(  # noqa: C901
         env.seed(seed)
         test_env.seed(seed)
 
-    policy = SAC(
+    policy = SAC2(
         env,
         actor_critic,
         ac_kwargs,

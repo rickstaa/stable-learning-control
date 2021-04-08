@@ -68,18 +68,18 @@ STD_OUT_LOG_VARS_DEFAULT = [
     "TotalEnvInteracts",
     "AverageEpRet",
     "AverageTestEpRet",
-    "AverageEpLen",
     "AverageTestEpLen",
     "AverageAlpha",
     "AverageLambda",
     "AverageLossAlpha",
     "AverageLossLambda",
+    "AverageErrorL",
     "AverageLossPi",
     "AverageEntropy",
 ]
 
 
-class LAC(nn.Module):
+class LAC4(nn.Module):
     """The Lyapunov actor critic algorithm.
 
     Attributes:
@@ -294,7 +294,7 @@ class LAC(nn.Module):
 
     def forward(self, s, deterministic=False):
         """Wrapper around the :meth:`.get_action` method that enables users to also
-        receive actions directly by invoking ``LAC(observations)``.
+        receive actions directly by invoking ``LAC4(observations)``.
 
         Args:
             s (numpy.ndarray): The current state.
@@ -1008,7 +1008,7 @@ def lac4(  # noqa: C901
         env.seed(seed)
         test_env.seed(seed)
 
-    policy = LAC(
+    policy = LAC4(
         env,
         actor_critic,
         ac_kwargs,
