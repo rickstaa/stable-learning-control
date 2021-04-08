@@ -404,21 +404,19 @@ class SAC(nn.Module):
             Entropy=-torch.mean(logp_pi).cpu().detach().numpy(),
         )
         diagnostics.update({**pi_info, "LossPi": a_loss.cpu().detach().numpy()})
+
+        # Q networks so you can optimize it at next SGD step.
+        for p in self._c_params():
+            p.requires_grad = True
         ################################################
         # Optimize alpha (Entropy temperature) #########
         ################################################
-
-        # Freeze Pi-networks so you don't waste computational effort
-        # computing gradients for them during the policy learning step.
-        for p in self._pi_params():
-            p.requires_grad = False
-
         if self._adaptive_temperature:
             self._log_alpha_optimizer.zero_grad()
 
             # Calculate alpha loss
             alpha_loss = -(
-                self.alpha * (logp_pi + self.target_entropy).detach()
+                self.alpha * (logp_pi.detach() + self.target_entropy)
             ).mean()  # See Haarnoja eq. 17
 
             alpha_loss.backward()
@@ -429,11 +427,6 @@ class SAC(nn.Module):
                 {**alpha_info, "LossAlpha": alpha_loss.cpu().detach().numpy()}
             )
 
-        # Unfreeze Pi and Q networks so you can optimize it at next SGD step.
-        for p in self._c_params():
-            p.requires_grad = True
-        for p in self._pi_params():
-            p.requires_grad = True
         ################################################
         # Update target networks and return ############
         # diagnostics. #################################
