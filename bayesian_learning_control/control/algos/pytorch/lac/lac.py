@@ -67,12 +67,12 @@ STD_OUT_LOG_VARS_DEFAULT = [
     "TotalEnvInteracts",
     "AverageEpRet",
     "AverageTestEpRet",
-    "AverageEpLen",
     "AverageTestEpLen",
     "AverageAlpha",
     "AverageLambda",
     "AverageLossAlpha",
     "AverageLossLambda",
+    "AverageErrorL",
     "AverageLossPi",
     "AverageEntropy",
 ]
