@@ -16,6 +16,7 @@ DEFAULT_BACKEND = {
     "lac3": "pytorch",
     "lac4": "pytorch",
     "lac5": "pytorch",
+    "lac6": "pytorch",
     "sac": "pytorch",
     "sac2": "pytorch",
 }

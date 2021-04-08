@@ -1,4 +1,3 @@
-# NOTE: Now we added the double Q-track to the LAC algorithm
 """Lyapunov Actor-Critic algorithm
 
 This module contains a pytorch implementation of the LAC algorithm of
@@ -12,7 +11,6 @@ This module contains a pytorch implementation of the LAC algorithm of
 
 import argparse
 import glob
-import itertools
 import os
 import os.path as osp
 import random
@@ -33,8 +31,8 @@ from bayesian_learning_control.control.algos.pytorch.common.helpers import (
 )
 
 # fmt: off
-from bayesian_learning_control.control.algos.pytorch.policies.lyapunov_actor_critic2 import \
-    LyapunovActorCritic2  # noqa: E501
+from bayesian_learning_control.control.algos.pytorch.policies.lyapunov_actor_critic import \
+    LyapunovActorCritic  # noqa: E501
 # fmt: on
 from bayesian_learning_control.control.common.helpers import heuristic_target_entropy
 from bayesian_learning_control.control.utils import safer_eval
@@ -262,7 +260,7 @@ class LAC(nn.Module):
         )
 
         # Get default actor critic if no 'actor_critic' was supplied
-        actor_critic = LyapunovActorCritic2 if actor_critic is None else actor_critic
+        actor_critic = LyapunovActorCritic if actor_critic is None else actor_critic
 
         # Create actor-critic module and target networks
         # NOTE: Pytorch currently uses kaiming initialization for the baises in the
@@ -290,10 +288,8 @@ class LAC(nn.Module):
         if self._adaptive_temperature:
             self._log_alpha_optimizer = Adam([self.log_alpha], lr=self._lr_alpha)
         self._log_labda_optimizer = Adam([self.log_labda], lr=self._lr_lag)
-        self._c_params = lambda: itertools.chain(
-            *[gen() for gen in [self.ac.L1.parameters, self.ac.L2.parameters]]
-        )  # Chain parameters of the two L-critics
-        self._c_optimizer = Adam(self._c_params(), lr=self._lr_c)
+        self._c_optimizer = Adam(self.ac.L.parameters(), lr=self._lr_c)
+        self._c_params = lambda: self.ac.L.parameters()
 
     def forward(self, s, deterministic=False):
         """Wrapper around the :meth:`.get_action` method that enables users to also
@@ -350,49 +346,25 @@ class LAC(nn.Module):
                 "if you need this."
             )
 
-        # Get target Lyapunov values (Bellman-backup)
+        # Get target Lyapunov value (Bellman-backup)
         with torch.no_grad():
-            # pi_targ_, _ = self.ac_targ.pi(
-            #     o_
-            # )  # NOTE: Target actions come from *current* *target* policy
-            # l_pi_targ = self.ac_targ.L1(o_, pi_targ_)
-            # l_backup = (
-            #     r + self._gamma * (1 - d) * l_pi_targ
-            # )  # The Lyapunov candidate
-
-            # DEBUG: NEW CODE
-            pi_, _ = self.ac.pi(
+            pi_targ_, _ = self.ac_targ.pi(
                 o_
             )  # NOTE: Target actions come from *current* *target* policy
-            # l1_pi_targ = self.ac_targ.L1(o_, a2_)
-            # l2_pi_targ = self.ac_targ.L2(o_, a2_)
-            l1_pi_targ = self.ac_targ.L1(o_, pi_)
-            l2_pi_targ = self.ac_targ.L2(o_, pi_)
-            l_pi_targ = torch.max(
-                l1_pi_targ,
-                l2_pi_targ,
-            )  # Use max clipping to prevent underestimation bias.
+            l_pi_targ = self.ac_targ.L(o_, pi_targ_)
             l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate
 
         # Get current Lyapunov value
-        l1 = self.ac.L1(o, a)
-
-        # DEBUG: NEW CODE
-        l2 = self.ac.L2(o, a)
+        l1 = self.ac.L(o, a)
 
         # Calculate Lyapunov *CRITIC* error
         # NOTE: The 0.5 multiplication factor was added to make the derivation
         # cleaner and can be safely removed without influencing the minimization. We
         # kept it here for consistency.
         # NOTE: We currently use a manual implementation instead of using F.mse_loss
-        #  as this is 2 times faster.This can be changed back to F.mse_loss if
+        # as this is 2 times faster. This can be changed back to F.mse_loss if
         # Torchscript is used.
-        l_error1 = 0.5 * ((l1 - l_backup) ** 2).mean()  # See Han eq. 7
-        # l_error = l_error1
-
-        # DEBUG: NEW CODE
-        l_error2 = 0.5 * ((l2 - l_backup) ** 2).mean()
-        l_error = l_error1 + l_error2
+        l_error = 0.5 * ((l1 - l_backup) ** 2).mean()  # See Han eq. 7
 
         l_error.backward()
         self._c_optimizer.step()
@@ -400,9 +372,12 @@ class LAC(nn.Module):
         l_info = dict(LVals=l1.cpu().detach().numpy())
         diagnostics.update({**l_info, "ErrorL": l_error.cpu().detach().numpy()})
         ################################################
-        # Optimize Gaussian actor ######################
+        # Optimize Gaussian actor and lagrance #########
+        # multipliers ##################################
         ################################################
         self._pi_optimizer.zero_grad()
+        self._log_alpha_optimizer.zero_grad()
+        self._log_labda_optimizer.zero_grad()
 
         # Freeze Q-networks so you don't waste computational effort
         # computing gradients for them during the policy learning step.
@@ -420,59 +395,12 @@ class LAC(nn.Module):
                 "if you need this."
             )
 
-        # Get target lyapunov values
+        # Get target lyapunov value
         pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
-        # lya_l_ = self.ac.L1(o_, pi_)
-        # l = l1
-
-        # DEBUG: NEW CODE
-        lya_l1_ = self.ac.L1(o_, pi_)
-        lya_l2_ = self.ac.L2(o_, pi_)
-        lya_l_ = torch.max(lya_l1_, lya_l2_)
-        l = torch.max(l1, l2)
+        lya_l_ = self.ac.L(o_, pi_)
 
         # Compute Lyapunov Actor error
-        l_delta = torch.mean(lya_l_ - l.detach() + self._alpha3 * r)  # See Han eq. 11
-
-        # Calculate entropy-regularized policy loss
-        a_loss = (
-            self.labda.detach() * l_delta + self.alpha.detach() * logp_pi.mean()
-        )  # See Han eq. 12
-
-        a_loss.backward()
-        self._pi_optimizer.step()
-
-        pi_info = dict(
-            LogPi=logp_pi.cpu().detach().numpy(),
-            Entropy=-torch.mean(logp_pi).cpu().detach().numpy(),
-        )
-        diagnostics.update({**pi_info, "LossPi": a_loss.cpu().detach().numpy()})
-
-        # Q networks so you can optimize it at next SGD step.
-        for p in self._c_params():
-            p.requires_grad = True
-        ################################################
-        # Optimize alpha (Entropy temperature) #########
-        ################################################
-        if self._adaptive_temperature:
-            self._log_alpha_optimizer.zero_grad()
-
-            # Calculate alpha loss
-            alpha_loss = -(
-                self.alpha * (logp_pi.detach() + self.target_entropy)
-            ).mean()  # See Haarnoja eq. 17
-
-            alpha_loss.backward()
-            self._log_alpha_optimizer.step()
-
-            alpha_info = dict(Alpha=self.alpha.cpu().detach().numpy())
-            diagnostics.update(
-                {**alpha_info, "LossAlpha": alpha_loss.cpu().detach().numpy()}
-            )
-        ################################################
-        # Optimize labda (Lyapunov temperature) ########
-        ################################################
-        self._log_labda_optimizer.zero_grad()
+        l_delta = torch.mean(lya_l_ - l1.detach() + self._alpha3 * r)  # See Han eq. 11
 
         # Calculate labda loss
         # NOTE: Log_labda was used in the lambda_loss function because using lambda
@@ -483,13 +411,44 @@ class LAC(nn.Module):
             self.log_labda * l_delta.detach()
         ).mean()  # See formulas under Han eq. 14
 
+        # Calculate alpha loss
+        alpha_loss = -(
+            self.alpha * (logp_pi.detach() + self.target_entropy)
+        ).mean()  # See Haarnoja eq. 17
+
+        # Update lyapunov lagrance multiplier
         labda_loss.backward()
         self._log_labda_optimizer.step()
 
+        # Update entropy lagrance multiplier
+        alpha_loss.backward()
+        self._log_alpha_optimizer.step()
+
+        # Calculate entropy-regularized policy loss
+        a_loss = (
+            self.labda.detach() * l_delta + self.alpha.detach() * logp_pi.mean()
+        )  # See Han eq. 12
+
+        a_loss.backward()
+        self._pi_optimizer.step()
+
+        # Return diagnostics
+        pi_info = dict(
+            LogPi=logp_pi.cpu().detach().numpy(),
+            Entropy=-torch.mean(logp_pi).cpu().detach().numpy(),
+        )
+        diagnostics.update({**pi_info, "LossPi": a_loss.cpu().detach().numpy()})
+        alpha_info = dict(Alpha=self.alpha.cpu().detach().numpy())
+        diagnostics.update(
+            {**alpha_info, "LossAlpha": alpha_loss.cpu().detach().numpy()}
+        )
         labda_info = dict(Lambda=self.labda.cpu().detach().numpy())
         diagnostics.update(
             {**labda_info, "LossLambda": labda_loss.cpu().detach().numpy()}
         )
+        # Q networks so you can optimize it at next SGD step.
+        for p in self._c_params():
+            p.requires_grad = True
         ################################################
         # Update target networks and return ############
         # diagnostics. #################################
@@ -806,7 +765,7 @@ def validate_args(**kwargs):
         )
 
 
-def lac3(  # noqa: C901
+def lac6(  # noqa: C901
     env_fn,
     actor_critic=None,
     ac_kwargs=dict(
@@ -1022,9 +981,10 @@ def lac3(  # noqa: C901
                 type="warning",
             )
             env._max_episode_steps = max_ep_len
+            test_env._max_episode_steps = max_ep_len
 
     # Get default actor critic if no 'actor_critic' was supplied
-    actor_critic = LyapunovActorCritic2 if actor_critic is None else actor_critic
+    actor_critic = LyapunovActorCritic if actor_critic is None else actor_critic
 
     # Set random seed for reproducible results
     if seed is not None:
@@ -1078,13 +1038,8 @@ def lac3(  # noqa: C901
     )
 
     # Count variables and print network structure
-    var_counts = tuple(
-        count_vars(module) for module in [policy.ac.pi, policy.ac.L1, policy.ac.L2]
-    )
-    logger.log(
-        "Number of parameters: \t pi: %d, \t L1: %d, \t L2: %d\n" % var_counts,
-        type="info",
-    )
+    var_counts = tuple(count_vars(module) for module in [policy.ac.pi, policy.ac.L])
+    logger.log("Number of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info")
     logger.log("Network structure:\n", type="info")
     logger.log(policy.ac, end="\n\n")
 
@@ -1651,9 +1606,9 @@ if __name__ == "__main__":
     )
     torch.set_num_threads(torch.get_num_threads())
 
-    lac3(
+    lac6(
         lambda: gym.make(args.env),
-        actor_critic=LyapunovActorCritic2,
+        actor_critic=LyapunovActorCritic,
         ac_kwargs=ac_kwargs,
         opt_type=args.opt_type,
         max_ep_len=args.max_ep_len,
