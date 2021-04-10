@@ -354,7 +354,9 @@ Launching from Scripts
 
 Each algorithm is implemented as a python function, which can be imported directly from the ``bayesian_learning_control`` package, eg
 
->>> from bayesian_learning_control.control import sac_pytorch as sac
+.. code-block::
+
+    >>> from bayesian_learning_control.control import sac_pytorch as sac
 
 See the documentation page for each algorithm for a complete account of possible arguments. These methods can be used to set up specialized custom experiments, for example:
 
