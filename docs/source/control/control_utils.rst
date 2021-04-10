@@ -223,6 +223,14 @@ There are a few flags for options:
 
     *bool*. Whether you want to save the robustness evaluation data frame to disk. It can be useful for creating custom plots see :ref:`robust_custom_plots`.
 
+.. option:: --list_disturbance_types, default=False
+
+    *bool*. Lists the available disturbance types for the trained agent and stored environment.
+
+.. option:: --list_disturbance_variants, default=False
+
+    *bool*. Lists the available disturbance variants that are available for a given disturbance type.
+
 .. option:: -d_type, --disturbance_type
 
     *str*. The disturbance type you want to apply. This type should be implemented in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
