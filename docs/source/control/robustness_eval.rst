@@ -179,39 +179,84 @@ robustness evaluation tool expects the following methods and attributes to be pr
 +-----------------------+--------------------------------------------------------------------+
 
 Therefore, to use the robustness evaluation tool with your own environment, you have to add these methods. The BLC package contains the
-:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` wrapper class to ease this process. Your environment can inherit from this
+:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class to ease this process. Your environment can inherit from this
 class to add all the required methods and attributes to make it compatible with the robustness eval tool:
 
 .. code-block:: python
+    :linenos:
+    :emphasize-lines: 3, 6-18, 21, 23, 26-30, 34, 36
 
-    # Disturber config used to overwrite values in the default config
+    import gym
+    import numpy as np
+    from bayesian_learning_control.simzoo.simzoo.common.disturber import Disturber
+
+    # Disturber config used to overwrite the default config
     DISTURBER_CFG = {
         # Disturbance applied to environment variables
         "env_disturbance": {
-            "description": "Lacl mRNA decay rate disturbance",
+            "description": "Pole length disturbance",
             # The env variable which you want to disturb
-            "variable": "_c1",
+            "variable": "length",
             # The range of values you want to use for each disturbance iteration
-            "variable_range": np.linspace(1.0, 3.0, num=5, dtype=np.float32),
+            "variable_range": np.linspace(0.5, 2.0, num=5, dtype=np.float32),
             # Label used in robustness plots.
             "label": "r: %s",
         },
+        "test": {},
     }
 
-    # Make sure your environment inhertis from the disturber class
+
+    class CartPoleDisturber(Disturber):
+        def __init__(self):
+            super().__init__(disturber_cfg=DISTURBER_CFG)
+
+        def init_disturber(self, *args, **kwargs):
+            kwargs["disturber_cfg"] = (
+                {**DISTURBER_CFG, **kwargs["disturber_cfg"]}
+                if "disturber_cfg" in kwargs.keys()
+                else DISTURBER_CFG
+            )
+            return super().init_disturber(*args, **kwargs)
+
+
     class Oscillator(gym.Env, Disturber):
         def __init__(self, reference_type="periodic", seed=None):
-            super().__init__(disturber_cfg=DISTURBANCE_CFG)
+            super().__init__()
 
-The :obj:`disturber_cfg` input argument can be used to overwrite the default disturbance config that is specified in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
-class.
+
+In this example, observe that
+
+    * On line 3, we import the Simzoo :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
+    * On line 6-18, we setup the disturbance configuration object (i.e. ``DISTURBANCE_CFG``).
+    * On line 21, we create a different environment disturber which wraps the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
+    * On line 23, we call the initiation method of the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` super class.
+    * On line 26-30, we make sure the most up to date version of the disturbance config is used during the robustness evaluation (see the :ref:`see also box<see_also_pickled>` below for more information).
+    * On line 34, we inherit from the newly created environment disturber wrapper such that all the required methods and attributes for using the environment with the robustness evaluation tool are present.
+    * On line 36, we make sure the initiation method of the wrapper class gets called.
+
+For a good example of how this is done, one can look at the ``<ENV_NAME>_disturber.py`` files in any Simzoo environment folders.
+
+.. _see_also_pickled:
+
+.. seealso::
+
+    One might observe that we can also inherit from the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class directly. The downside of doing this is that the robustness evaluation
+    tool then uses the disturbance configuration used during training. This is because the gym environment and disturber wrapper loaded during the robustness evaluation tool are saved in a pickled format. If
+    one decides to use this method you should directly modify the ``DISTURBANCE_CFG`` inside the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class file.
+
+How to find available disturbances
+==================================
+
+When using the :ref:`CLI <runner>` you can use the ``--list_disturbance_types`` and ``--list_disturbance_variants`` flags to list the available disturbance types and variants for a given agent trained in a given
+environment. For more details, one should check the check the ``DISTURBANCE_CFG`` constant inside the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class file or the environment
+``<ENV_NAME>_disturber.py`` file.
 
 Change the shape of a disturbance
 =================================
 
-The disturbances' shapes are specified in a ``disturber_cfg`` variable that can be found in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class
-or any environment that inherits from this class. The robustness evaluation script first looks at the ``disturber_cfg`` inside the environment and then at the one in the
-:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class. As a result, values defined in the ``disturber_cfg`` of the environment take precedence over
+The disturbances shapes are specified in a ``DISTURBANCE_CFG`` variable that can be found in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class
+or any environment disturber (i.e. ``<ENV_NAME>_disturber.py`` file inside the environment folder). The robustness evaluation script first looks at the ``DISTURBANCE_CFG`` inside the environment wrapper and then at the one in the
+:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class. As a result, values defined in the ``DISTURBANCE_CFG`` of the environment disturber take precedence over
 values that are defined in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
 
 How to add new disturbances

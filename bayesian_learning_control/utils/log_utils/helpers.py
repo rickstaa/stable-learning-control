@@ -35,16 +35,20 @@ LOG_TYPES = {
 }
 
 
-def friendly_err(err_msg):
+def friendly_err(err_msg, prepend=True, append=True):
     """Add whitespace line to error message to make it more readable.
 
     Args:
         err_msg (str): Error message.
+        prepend (bool, optional): whether to prepend empty whitespace line before the
+            string. Defaults to ``True``.
+        append (bool, optional): Whether to append empty whitespace line after the
+            string. Defaults to ``True``.
 
     Returns:
         str: Error message with extra whitespace line.
     """
-    return "\n\n" + err_msg + "\n\n"
+    return ("\n\n" if prepend else "") + err_msg + ("\n\n" if append else "")
 
 
 def colorize(string, color, bold=False, highlight=False):
