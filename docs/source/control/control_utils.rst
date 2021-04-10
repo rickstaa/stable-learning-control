@@ -151,16 +151,18 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
 
 In this case, watching your agent perform is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
 
->>> import gym
->>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
->>> import your_env
->>> _, policy = load_policy_and_env('/path/to/output_directory')
->>> env = gym.make('<YOUR_ENV_NAME>')
->>> run_policy(env, policy)
-Logging data to /tmp/experiments/1536150702/progress.txt
-Episode 0    EpRet -163.830      EpLen 93
-Episode 1    EpRet -346.164      EpLen 99
-...
+.. code-block::
+
+    >>> import gym
+    >>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
+    >>> import your_env
+    >>> _, policy = load_policy_and_env('/path/to/output_directory')
+    >>> env = gym.make('<YOUR_ENV_NAME>')
+    >>> run_policy(env, policy)
+    Logging data to /tmp/experiments/1536150702/progress.txt
+    Episode 0    EpRet -163.830      EpLen 93
+    Episode 1    EpRet -346.164      EpLen 99
+    ...
 
 
 Using Trained Value Functions
@@ -269,23 +271,25 @@ If the environment wasn't saved successfully, you can expect ``eval_robustness.p
 
 In this case, evaluating the robustness is slightly more of a pain but not impossible, as long as you can recreate your environment easily. Try the following in IPython:
 
->>> import gym
->>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
->>> from bayesian_learning_control.control.utils.eval_robustness import run_disturbed_policy, plot_robustness_results
->>> import your_env
->>> _, policy = load_policy_and_env('/path/to/output_directory')
->>> env = gym.make('<YOUR_ENV_NAME>')
->>> run_results_df = run_disturbed_policy(env, policy, disturbance_type="<TYPE_YOU_WANT_TO_USE>")
->>> plot_robustness_results(run_results_df)
-INFO: Logging data to /tmp/experiments/1616515040/eval_statistics.csv
-INFO: No disturbance variant given default variant (impulse) used instead.
-INFO: Disturber with disturbance type 'step_disturbance' and variant 'impulse' initialized.
-INFO: Starting with the un-disturbed Step (M: 0.0).
-INFO: Starting robustness evaluation...
-Episode 0        EpRet 321.452   EpLen 800       Died False
-Episode 1        EpRet 337.055   EpLen 800       Died False
-Episode 2        EpRet 330.313   EpLen 800       Died False
-...
+.. code-block::
+
+    >>> import gym
+    >>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
+    >>> from bayesian_learning_control.control.utils.eval_robustness import run_disturbed_policy, plot_robustness_results
+    >>> import your_env
+    >>> _, policy = load_policy_and_env('/path/to/output_directory')
+    >>> env = gym.make('<YOUR_ENV_NAME>')
+    >>> run_results_df = run_disturbed_policy(env, policy, disturbance_type="<TYPE_YOU_WANT_TO_USE>")
+    >>> plot_robustness_results(run_results_df)
+    INFO: Logging data to /tmp/experiments/1616515040/eval_statistics.csv
+    INFO: No disturbance variant given default variant (impulse) used instead.
+    INFO: Disturber with disturbance type 'step_disturbance' and variant 'impulse' initialized.
+    INFO: Starting with the un-disturbed Step (M: 0.0).
+    INFO: Starting robustness evaluation...
+    Episode 0        EpRet 321.452   EpLen 800       Died False
+    Episode 1        EpRet 337.055   EpLen 800       Died False
+    Episode 2        EpRet 330.313   EpLen 800       Died False
+    ...
 
 ExperimentGrid utility
 ======================

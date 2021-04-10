@@ -30,18 +30,20 @@ Examples
 First, let's look at a simple example of how an :class:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger`
 keeps track of a diagnostic value:
 
->>> from bayesian_learning_control.control.utils.logx import EpochLogger
->>> epoch_logger = EpochLogger()
->>> for i in range(10):
-        epoch_logger.store(Test=i)
->>> epoch_logger.log_tabular('Test', with_min_and_max=True)
->>> epoch_logger.dump_tabular()
--------------------------------------
-|     AverageTest |             4.5 |
-|         StdTest |            2.87 |
-|         MaxTest |               9 |
-|         MinTest |               0 |
--------------------------------------
+.. code-block::
+
+    >>> from bayesian_learning_control.control.utils.logx import EpochLogger
+    >>> epoch_logger = EpochLogger()
+    >>> for i in range(10):
+            epoch_logger.store(Test=i)
+    >>> epoch_logger.log_tabular('Test', with_min_and_max=True)
+    >>> epoch_logger.dump_tabular()
+    -------------------------------------
+    |     AverageTest |             4.5 |
+    |         StdTest |            2.87 |
+    |         MaxTest |               9 |
+    |         MinTest |               0 |
+    -------------------------------------
 
 The :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.store` method is used to save all
 values of ``Test`` to the :class:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger`'s internal
