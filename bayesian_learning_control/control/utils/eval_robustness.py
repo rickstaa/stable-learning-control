@@ -11,6 +11,7 @@ for more information.
 """  # noqa: E501
 
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -120,6 +121,7 @@ def run_disturbed_policy(  # noqa: C901
     env,
     policy,
     disturbance_type,
+    disturbance_cfg=None,
     disturbance_variant=None,
     max_ep_len=None,
     num_episodes=10,
@@ -128,6 +130,7 @@ def run_disturbed_policy(  # noqa: C901
     save_result=False,
     output_dir=None,
 ):
+    # TODO: Update docstring
     """Evaluates the disturbed policy inside a given gym environment. This function
     loops to all the disturbances that are specified in the environment and outputs the
     results of all these episodes in a pandas dataframe.
@@ -208,7 +211,9 @@ def run_disturbed_policy(  # noqa: C901
         disturbance_type.lower() if disturbance_type else disturbance_type
     )
     disturbance_variant = (
-        disturbance_variant.lower() if disturbance_variant else disturbance_variant
+        (disturbance_variant.lower() if disturbance_variant else disturbance_variant)
+        if not isinstance(disturbance_variant, list)
+        else [item.lower() for item in disturbance_variant]
     )
     try:
         env.init_disturber(disturbance_type, disturbance_variant),
@@ -406,7 +411,7 @@ def run_disturbed_policy(  # noqa: C901
         logger.log_tabular("EpRet", with_min_and_max=True)
         logger.log_tabular("EpLen", average_only=True)
         logger.log_tabular("DeathRate")
-        print("")
+        log_to_std_out("")
         logger.dump_tabular()
 
         # Add extra disturbance information to the robustness eval dataframe
@@ -753,15 +758,16 @@ if __name__ == "__main__":
             "(default: False)"
         ),
     )
-
     parser.add_argument(
         "--disturbance_type",
         "-d_type",
+        type=str,
         help="The disturbance type you want to investigate",
     )
     parser.add_argument(
         "--disturbance_variant",
         "-d_variant",
+        nargs="+",
         default=None,
         help=(
             "The disturbance variant you want to investigate (only required for some "
@@ -789,10 +795,105 @@ if __name__ == "__main__":
         default=1.5,
         help="The font scale you want to use for the plot text.",
     )
+    parser.add_argument(
+        "--list_disturbance_types",
+        action="store_true",
+        help=(
+            "Lists the available disturbance types for the trained agent and stored "
+            "environment."
+        ),
+    )
+    parser.add_argument(
+        "--list_disturbance_variants",
+        action="store_true",
+        help=(
+            "Lists the available disturbance variants that are available for a given "
+            "disturbance type."
+        ),
+    )
     args = parser.parse_args()
 
-    # Load policy and perform robustness evaluation
+    # Load policy and environment
     env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
+
+    # List d_type or d_variant if requested
+    if args.list_disturbance_types or args.list_disturbance_variants:
+        if hasattr(env.unwrapped, "_disturber_cfg"):
+            if args.list_disturbance_types:
+                d_type_info_msg = (
+                    "The following disturbance types are implemented for the "
+                    f"'{policy.__class__.__name__}' in the '{env.unwrapped.spec.id}' "
+                    "environment:"
+                )
+                for item in {
+                    k
+                    for k in env.unwrapped._disturber_cfg.keys()
+                    if k not in ["default_type"]
+                }:
+                    d_type_info_msg += f"\t\n - {item}"
+                log_to_std_out(friendly_err(d_type_info_msg))
+            if args.list_disturbance_variants and args.disturbance_type:
+                try:
+                    d_variant_msg = (
+                        "The following disturbance types are implemented for "
+                        f"disturbance '{policy.__class__.__name__}' in the "
+                        f"'{env.unwrapped.spec.id}' environment when using disturbance "
+                        f"type '{args.disturbance_type}':"
+                    )
+                    for item in {
+                        k
+                        for k in env.unwrapped._disturber_cfg[
+                            args.disturbance_type
+                        ].keys()
+                        if k not in ["default_type"]
+                    }:
+                        d_variant_msg += f"\t\n - {item}"
+                    log_to_std_out(
+                        friendly_err(
+                            d_variant_msg, prepend=(not args.list_disturbance_types)
+                        ),
+                    )
+                except KeyError:
+                    error_msg = (
+                        f"Disturbance type {args.disturbance_type} does not exist for "
+                        f"'{policy.__class__.__name__}' in the "
+                        f"'{env.unwrapped.spec.id}' environment. Please specify a  "
+                        "valid disturbance type and try again. You can check all the "
+                        "valid disturbance types using the --list_disturbance_types "
+                        "flag."
+                    )
+                    log_to_std_out(
+                        friendly_err(
+                            error_msg, prepend=(not args.list_disturbance_types)
+                        ),
+                    )
+            elif args.list_disturbance_variants and not args.disturbance_type:
+                error_msg = (
+                    "Disturbance variants could not be retrieved as no disturbance "
+                    "type was given. Please specify a disturbance type and try again."
+                )
+                log_to_std_out(
+                    friendly_err(error_msg, prepend=(not args.list_disturbance_types))
+                )
+        else:
+            error_msg = (
+                "{} could not be listed as no disturber config ".format(
+                    "Disturbance types/variants"
+                    if (args.list_disturbance_types and args.list_disturbance_variants)
+                    else (
+                        "Disturbance types"
+                        if args.list_disturbance_types
+                        else "Disturbance variants"
+                    )
+                )
+                + "'disturber_cfg' attribute was found on the environment. Please "
+                "make sure your environment is compatible with the robustness eval "
+                "utility and try again."
+            )
+            log_to_std_out(friendly_err(error_msg))
+        sys.exit()
+
+    # Perform robustness evaluation
     run_results_df = run_disturbed_policy(
         env,
         policy,

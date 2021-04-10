@@ -2,7 +2,7 @@ alg_name: lac
 exp_name: lac_cart_pole_cost
 env_name: "CartPoleCost-v0"
 opt_type: "minimize"
-seed: 1250
+seed: 0
 ac_kwargs:
   hidden_sizes:
     actor: [64, 64]
