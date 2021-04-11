@@ -203,7 +203,21 @@ def run_disturbed_policy(  # noqa: C901
     logger = EpochLogger(
         verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
     )
-    max_ep_len = env._max_episode_steps if max_ep_len is None else max_ep_len
+
+    if max_ep_len is None:
+        max_ep_len = env._max_episode_steps
+    else:
+        if max_ep_len > env._max_episode_steps:
+            logger.log(
+                (
+                    f"You defined your 'max_ep_len' to be {max_ep_len} "
+                    "while the environment 'max_epsiode_steps' is "
+                    f"{env._max_episode_steps}. As a result the environment "
+                    f"'max_episode_steps' has been increased to {max_ep_len}"
+                ),
+                type="warning",
+            )
+            env._max_episode_steps = max_ep_len
 
     # Try to retrieve default type if type not given
     if disturbance_type is None:
@@ -719,7 +733,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str, help="The path where the policy is stored")
     parser.add_argument(
-        "--len", "-l", type=int, default=800, help="The episode length (default: 800)"
+        "--len",
+        "-l",
+        type=int,
+        default=None,
+        help="The episode length (defaults to environment max_episode_steps)",
     )
     parser.add_argument(
         "--episodes",
