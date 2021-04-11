@@ -1,0 +1,4 @@
+- Test old CartPole SAC and see the performance
+- Check with shorter length
+- Change hyperparameters.
+- Make sure that the env step is not set bigger than the max env step!

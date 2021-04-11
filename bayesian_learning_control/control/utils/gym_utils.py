@@ -79,7 +79,7 @@ def validate_gym_env(arg_dict):
     # Special handling for environment: make sure that env_name is a real,
     # registered gym environment.
     assert "env_name" in arg_dict, friendly_err(
-        "You did not give a value for --env_name! Add one and try again."
+        "You did not give a valid value for --env_name! Please try again."
     )
     for env_name in arg_dict["env_name"]:
         try:
