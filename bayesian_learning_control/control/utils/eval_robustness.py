@@ -205,15 +205,20 @@ def run_disturbed_policy(  # noqa: C901
     )
     max_ep_len = env._max_episode_steps if max_ep_len is None else max_ep_len
 
+    # Try to retrieve default type if type not given
+    if disturbance_type is None:
+        if hasattr(env.unwrapped, "_disturber_cfg"):
+            if "default_type" in env.unwrapped._disturber_cfg.keys():
+                disturbance_type = env.unwrapped._disturber_cfg["default_type"]
+                log_to_std_out(
+                    (
+                        "INFO: No disturbance type given default type "
+                        f"'{disturbance_type}' used instead."
+                    ),
+                    type="info",
+                )
+
     # Initialize the disturber
-    disturbance_type = (
-        disturbance_type.lower() if disturbance_type else disturbance_type
-    )
-    disturbance_variant = (
-        (disturbance_variant.lower() if disturbance_variant else disturbance_variant)
-        if not isinstance(disturbance_variant, list)
-        else [item.lower() for item in disturbance_variant]
-    )
     try:
         env.init_disturber(disturbance_type, disturbance_variant),
     except (ValueError, TypeError) as e:
@@ -224,16 +229,6 @@ def run_disturbed_policy(  # noqa: C901
                 )
             )
         ) from e
-    disturbance_type = (
-        env.disturbance_info["type"]
-        if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys()
-        else disturbance_type
-    )
-    disturbance_variant = (
-        env.disturbance_info["variant"]
-        if hasattr(env, "disturbance_info") and "variant" in env.disturbance_info.keys()
-        else disturbance_variant
-    )
 
     # Loop though all disturbances till disturber is done
     logger.log("Starting robustness evaluation...", type="info")
@@ -388,7 +383,10 @@ def run_disturbed_policy(  # noqa: C901
 
         # Print robustness evaluation diagnostics
         if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys():
-            logger.log_tabular("DisturbanceType", env.disturbance_info["type"])
+            logger.log_tabular(
+                "DisturbanceType",
+                env.disturbance_info["type"].replace("_disturbance", ""),
+            )
         if (
             hasattr(env, "disturbance_info")
             and "variant" in env.disturbance_info.keys()
