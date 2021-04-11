@@ -3,7 +3,6 @@
 
 from bayesian_learning_control.control.algos.pytorch.lac.lac import lac as lac_pytorch
 from bayesian_learning_control.control.algos.pytorch.sac.sac import sac as sac_pytorch
-)
 
 from bayesian_learning_control.utils.import_utils import import_tf
 from bayesian_learning_control.version import __version__
