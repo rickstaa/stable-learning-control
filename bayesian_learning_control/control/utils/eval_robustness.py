@@ -121,7 +121,6 @@ def run_disturbed_policy(  # noqa: C901
     env,
     policy,
     disturbance_type,
-    disturbance_cfg=None,
     disturbance_variant=None,
     max_ep_len=None,
     num_episodes=10,
@@ -767,7 +766,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--disturbance_variant",
         "-d_variant",
-        nargs="+",
+        type=str,
         default=None,
         help=(
             "The disturbance variant you want to investigate (only required for some "
