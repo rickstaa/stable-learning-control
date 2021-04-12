@@ -10,6 +10,7 @@ can inherit to add these methods. See the
 for more information.
 """  # noqa: E501
 
+import math
 import os
 import sys
 import time
@@ -609,7 +610,7 @@ def plot_robustness_results(  # noqa: C901
     # Loop though all disturbances and plot the observations and references in one plot
     num_plots = len(obs_ref_df.disturbance.unique())
     total_cols = 3
-    total_rows = num_plots // total_cols + 1
+    total_rows = math.ceil(num_plots / total_cols)
     fig, axes = plt.subplots(
         nrows=total_rows,
         ncols=total_cols,
