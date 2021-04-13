@@ -99,11 +99,17 @@ def load_policy_and_env(fpath, itr="last"):
         deterministic (bool, optional): Whether you want the action from the policy to
             be deterministic. Defaults to ``False``.
 
+    Raises:
+        FileNotFoundError: Thrown when the fpath does not exist.
+        Exception: Thrown when something else goes wrong while loading the policy or
+            environment.
+
     Returns:
         (tuple): tuple containing:
 
             - env (:obj:`gym.env`): The gym environment.
             - get_action (:obj:`func`): The policy get_action function.
+
     """
     if not os.path.isdir(fpath):
         raise FileNotFoundError(
@@ -125,8 +131,17 @@ def load_policy_and_env(fpath, itr="last"):
     try:
         state = joblib.load(Path(fpath).parent.joinpath("vars.pkl"))
         env = state["env"]
-    except Exception:
-        env = None
+    except Exception as e:
+        raise Exception(
+            friendly_err(
+                (
+                    "Environment not found!\n\n It looks like the environment wasn't "
+                    "saved, and we can't run the agent in it. :( \n\n Check out the "
+                    "documentation  page on the Test Policy utility for how to handle "
+                    "this situation."
+                )
+            )
+        ) from e
 
     # load the get_action function
     if backend == "tf":

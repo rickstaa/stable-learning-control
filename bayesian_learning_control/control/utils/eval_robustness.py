@@ -130,7 +130,6 @@ def run_disturbed_policy(  # noqa: C901
     save_result=False,
     output_dir=None,
 ):
-    # TODO: Update docstring
     """Evaluates the disturbed policy inside a given gym environment. This function
     loops to all the disturbances that are specified in the environment and outputs the
     results of all these episodes in a pandas dataframe.
@@ -138,18 +137,19 @@ def run_disturbed_policy(  # noqa: C901
     Args:
         env (:obj:`gym.env`): The gym environment.
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
-        max_ep_len (int, optional): The maximum episode length. Defaults to None.
         disturbance_type (str): The disturbance type you want to apply. Valid options
             are the onces that are implemented in the gym environment (e.g.
-            ``env_disturbance``, ``step_distubance``, ...).
+            ``env_disturbance``, ``input_disturbance``, ``output_disturbance``,
+            ``combined``...).
         disturbance_variant (str, optional): The variant of the disturbance (e.g.
             ``impulse``, ``periodic``, ...)
+        max_ep_len (int, optional): The maximum episode length. Defaults to None.
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
-        deterministic (bool, optional): Whether you want the action from the policy to
-            be deterministic. Defaults to ``True``.
         render (bool, optional): Whether you want to render the episode to the screen.
             Defaults to ``True``.
+        deterministic (bool, optional): Whether you want the action from the policy to
+            be deterministic. Defaults to ``True``.
         save_result (bool, optional): Whether you want to save the dataframe with the
             results to disk.
         output_dir (str, optional): A directory for saving the diagnostics to. If
@@ -212,7 +212,7 @@ def run_disturbed_policy(  # noqa: C901
             logger.log(
                 (
                     f"You defined your 'max_ep_len' to be {max_ep_len} "
-                    "while the environment 'max_epsiode_steps' is "
+                    "while the environment 'max_episide_steps' is "
                     f"{env._max_episode_steps}. As a result the environment "
                     f"'max_episode_steps' has been increased to {max_ep_len}"
                 ),
@@ -237,13 +237,16 @@ def run_disturbed_policy(  # noqa: C901
     try:
         env.init_disturber(disturbance_type, disturbance_variant),
     except (ValueError, TypeError) as e:
-        raise Exception(
-            friendly_err(
-                "You did not give a valid value for --{}! Please try again.".format(
-                    e.args[1]
+        if len(e.args) > 1:
+            raise Exception(
+                friendly_err(
+                    "You did not give a valid value for --{}! Please try again.".format(
+                        e.args[1]
+                    )
                 )
-            )
-        ) from e
+            ) from e
+        else:
+            raise e
 
     # Loop though all disturbances till disturber is done
     logger.log("Starting robustness evaluation...", type="info")
@@ -629,6 +632,10 @@ def plot_robustness_results(  # noqa: C901
             f" at step {time_instant}" if time_instant else "",
         )
     )
+    obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"] = (
+        obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"]
+        + " (original)"
+    )  # Append original to original value
     for ii, var in enumerate(obs_ref_df.disturbance.unique()):
         row = ii // total_cols
         pos = ii % total_cols
@@ -650,6 +657,14 @@ def plot_robustness_results(  # noqa: C901
     if rew_found:
         fig = plt.figure(tight_layout=True)
         figs["costs"].append(fig)
+        r_disturbances_df.loc[
+            r_disturbances_df["disturbance_index"] == 0, "disturbance"
+        ] = (
+            r_disturbances_df.loc[
+                r_disturbances_df["disturbance_index"] == 0, "disturbance"
+            ]
+            + " (original)"
+        )  # Append original to original value
         sns.lineplot(
             data=r_disturbances_df, x="step", y="reward", ci="sd", hue="disturbance"
         ).set_title(
@@ -672,6 +687,14 @@ def plot_robustness_results(  # noqa: C901
     # Plot states of interest
     if soi_found:
         n_soi = soi_disturbances_df["state_of_interest"].max() + 1
+        soi_disturbances_df.loc[
+            soi_disturbances_df["disturbance_index"] == 0, "disturbance"
+        ] = (
+            soi_disturbances_df.loc[
+                soi_disturbances_df["disturbance_index"] == 0, "disturbance"
+            ]
+            + " (original)"
+        )  # Append original to original value
         for index in range(0, n_soi):
             fig = plt.figure(tight_layout=True)
             figs["states_of_interest"].append(fig)
