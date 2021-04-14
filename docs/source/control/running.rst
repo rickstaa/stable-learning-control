@@ -26,7 +26,7 @@ eg:
     python -m bayesian_learning_control.run sac --env Walker2d-v2 --exp_name walker
 
 .. _`experiment outputs`: ../control/saving_and_loading.html
-.. _`robustness eval`: ../control/robustness_eval.html
+.. _`robustness eval`: ../control/eval_robustness.html
 .. _`plotting`: ../control/plotting.html
 
 .. admonition:: You Should Know

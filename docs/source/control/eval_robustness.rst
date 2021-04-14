@@ -14,7 +14,7 @@ while also applying several disturbances. You can run it with:
 
 .. seealso::
 
-    For more information on all the input arguments, see the :ref:`robustness evaluation utility <robustness_eval>` documentation or code :ref:`api`.
+    For more information on all the input arguments, see the :ref:`robustness evaluation utility <eval_robustness>` documentation or code :ref:`api`.
 
 .. important::
 
@@ -193,7 +193,7 @@ class to add all the required methods and attributes to make it compatible with 
     # Disturber config used to overwrite the default config
     DISTURBER_CFG = {
         # Disturbance applied to environment variables
-        "env_disturbance": {
+        "env": {
             "description": "Pole length disturbance",
             # The env variable which you want to disturb
             "variable": "length",
@@ -247,7 +247,7 @@ For a good example of how this is done, one can look at the ``<ENV_NAME>_disturb
 How to find available disturbances
 ==================================
 
-When using the :ref:`robustness eval CLI <robustness_eval>` you can use the ``--list_disturbance_types`` and ``--list_disturbance_variants`` flags to list the available disturbance types and variants for a given agent trained in a given
+When using the :ref:`robustness eval CLI <eval_robustness>` you can use the ``--list_disturbance_types`` and ``--list_disturbance_variants`` flags to list the available disturbance types and variants for a given agent trained in a given
 environment. For more details, one should check the check the ``DISTURBANCE_CFG`` constant inside the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class file or the environment
 ``<ENV_NAME>_disturber.py`` file.
 

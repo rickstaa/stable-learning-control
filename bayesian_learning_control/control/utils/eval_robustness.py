@@ -6,7 +6,7 @@ module to work work, these disturbances should be implemented as methods on the
 environment. The Simzoo package contains a
 :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class from which a Gym environment
 can inherit to add these methods. See the
-`Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/robustness_eval.html>`_
+`Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/eval_robustness.html>`_
 for more information.
 """  # noqa: E501
 
@@ -139,11 +139,9 @@ def run_disturbed_policy(  # noqa: C901
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
         disturbance_type (str): The disturbance type you want to apply. Valid options
             are the onces that are implemented in the gym environment (e.g.
-            ``env_disturbance``, ``input_disturbance``, ``output_disturbance``,
-            ``combined``...).
+            ``env``, ``input``, ``output``, combined ...).
         disturbance_variant (str, optional): The variant of the disturbance (e.g.
-            ``impulse``, ``periodic``, ...)
-        max_ep_len (int, optional): The maximum episode length. Defaults to None.
+            ``impulse``, ``periodic``, ``noise`` ...)
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
         render (bool, optional): Whether you want to render the episode to the screen.
@@ -303,7 +301,7 @@ def run_disturbed_policy(  # noqa: C901
                 a = policy.get_action(o)
 
             # Perform (disturbed) action in the environment and store result
-            if disturbance_type == "env_disturbance":
+            if disturbance_type == "env":
                 o, r, d, info = env.step(a)
             else:
                 o, r, d, info = env.disturbed_step(a)

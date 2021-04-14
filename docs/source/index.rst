@@ -67,7 +67,7 @@ Apart from these main modules, it also comes with several (shared) utilities:
    control/tuning
    control/saving_and_loading
    control/plotting
-   control/robustness_eval
+   control/eval_robustness
    control/bench
    control/control_utils
 
