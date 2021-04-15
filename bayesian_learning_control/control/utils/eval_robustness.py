@@ -9,6 +9,7 @@ can inherit to add these methods. See the
 `Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/eval_robustness.html>`_
 for more information.
 """  # noqa: E501
+# TODO: Add ability to set output folder
 
 import math
 import os
@@ -231,7 +232,7 @@ def run_disturbed_policy(  # noqa: C901
                     type="info",
                 )
 
-    # Initialize the disturber
+    # Initialize the disturber!
     try:
         env.init_disturber(disturbance_type, disturbance_variant),
     except (ValueError, TypeError) as e:
@@ -245,6 +246,16 @@ def run_disturbed_policy(  # noqa: C901
             ) from e
         else:
             raise e
+    disturbance_type = (
+        env.disturbance_info["type"]
+        if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys()
+        else disturbance_type
+    )  # Retrieve used disturbance type
+    disturbance_variant = (
+        env.disturbance_info["variant"]
+        if hasattr(env, "disturbance_info") and "variant" in env.disturbance_info.keys()
+        else disturbance_variant
+    )  # Retrieve used disturbance variant
 
     # Loop though all disturbances till disturber is done
     logger.log("Starting robustness evaluation...", type="info")
