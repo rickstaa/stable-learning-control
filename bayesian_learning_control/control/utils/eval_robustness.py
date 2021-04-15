@@ -140,9 +140,10 @@ def run_disturbed_policy(  # noqa: C901
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
         disturbance_type (str): The disturbance type you want to apply. Valid options
             are the onces that are implemented in the gym environment (e.g.
-            ``env``, ``input``, ``output``, combined ...).
+            ``env``, ``input``, ``output``, ``combined``, ...).
         disturbance_variant (str, optional): The variant of the disturbance (e.g.
-            ``impulse``, ``periodic``, ``noise`` ...)
+            ``impulse``, ``periodic``, ``noise``,...)
+        max_ep_len (int, optional): The maximum episode length. Defaults to None.
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
         render (bool, optional): Whether you want to render the episode to the screen.
@@ -154,6 +155,7 @@ def run_disturbed_policy(  # noqa: C901
         output_dir (str, optional): A directory for saving the diagnostics to. If
             ``None``, defaults to a temp directory of the form
             ``/tmp/experiments/somerandomnumber``.
+
     Returns:
         :obj:`pandas.DataFrame`:
             Dataframe that contains information about all the episodes and disturbances.
