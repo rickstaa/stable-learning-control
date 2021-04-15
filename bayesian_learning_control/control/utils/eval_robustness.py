@@ -142,7 +142,7 @@ def run_disturbed_policy(  # noqa: C901
             are the onces that are implemented in the gym environment (e.g.
             ``env``, ``input``, ``output``, ``combined`` ...).
         disturbance_variant (str, optional): The variant of the disturbance (e.g.
-            ``impulse``, ``periodic``, ``noise`` ...)
+            ``impulse``, ``periodic``, ``noise``, ...)
         max_ep_len (int, optional): The maximum episode length. Defaults to None.
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
