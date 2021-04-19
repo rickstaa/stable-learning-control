@@ -622,6 +622,7 @@ def plot_robustness_results(  # noqa: C901
     obs_ref_df = pd.concat([obs_df_tmp, ref_df_tmp], ignore_index=True)
 
     # Loop though all disturbances and plot the observations and references in one plot
+    # TODO: Add merged plot option
     num_plots = len(obs_ref_df.disturbance.unique())
     total_cols = 3
     total_rows = math.ceil(num_plots / total_cols)
@@ -631,6 +632,7 @@ def plot_robustness_results(  # noqa: C901
         figsize=(7 * total_cols, 7 * total_rows),
         tight_layout=True,
         sharex=True,
+        squeeze=False,
     )
     fig.suptitle(
         "{} under several {}{}.".format(
