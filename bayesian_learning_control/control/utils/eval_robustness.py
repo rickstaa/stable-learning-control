@@ -9,7 +9,6 @@ can inherit to add these methods. See the
 `Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/eval_robustness.html>`_
 for more information.
 """  # noqa: E501
-# TODO: Add ability to set output folder
 
 import math
 import os
@@ -537,8 +536,8 @@ def run_disturbed_policy(  # noqa: C901
 
 def plot_robustness_results(  # noqa: C901
     dataframe,
-    save_figs,
     output_dir,
+    save_figs=False,
     font_scale=1.5,
     observations=None,
     merged=False,
@@ -550,8 +549,9 @@ def plot_robustness_results(  # noqa: C901
     Args:
         dataframe (pandas.DataFrame): The data frame that contains the robustness
             information.
-        save_figs (bool): Whether you want to save the created plots to disk.
         output_dir (str): The directory where you want to save the output figures to.
+        save_figs (bool): Whether you want to save the created plots to disk.  Defaults
+            to ``False``.
         font_scale (int): The font scale you want to use for the plot text. Defaults to
             ``1.5``.
         observations (list): The observations you want to show in the observations plot.
@@ -778,6 +778,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str, help="The path where the policy is stored")
     parser.add_argument(
+        "--data_dir",
+        type=str,
+        help=(
+            "The path where you want to store to store the robustness eval results. By "
+            "default the ``DEFAULT_DATA_DIR`` from the ``user_config`` will be used."
+        ),
+    )
+    parser.add_argument(
         "--len",
         "-l",
         type=int,
@@ -962,6 +970,10 @@ if __name__ == "__main__":
             log_to_std_out(friendly_err(error_msg))
         sys.exit()
 
+    # Retrieve output_dir
+    if not args.data_dir:
+        args.data_dir = args.fpath
+
     # Perform robustness evaluation
     run_results_df = run_disturbed_policy(
         env,
@@ -973,13 +985,13 @@ if __name__ == "__main__":
         render=args.render,
         deterministic=args.deterministic,
         save_result=args.save_result,
-        output_dir=args.fpath,
+        output_dir=args.data_dir,
     )
     plot_robustness_results(
         run_results_df,
         observations=args.obs,
         merged=args.merged,
-        output_dir=args.fpath,
+        output_dir=args.data_dir,
         font_scale=args.font_scale,
         save_figs=args.save_figs,
         figs_fmt=args.figs_fmt,
