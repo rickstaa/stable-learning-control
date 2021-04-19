@@ -186,8 +186,11 @@ is successfully saved alongside the agent, the robustness can be evaluated using
 
     python -m bayesian_learning_control.run eval_robustness path/to/output_directory
 
-
 There are a few flags for options:
+
+.. option:: --data_dir
+
+    *str*. The folder to which you want to store the robustness eval results.
 
 .. option:: -l L, --len=L, default=0
 
@@ -245,6 +248,10 @@ There are a few flags for options:
 .. option:: --obs
 
     *list of ints*. The observations you want to show in the observations/reference plots. By default all observations will be shown.
+
+.. option:: --merged, default=False
+
+    *bool*. Specifies whether you want merge all observations into one plot. By default observations under each disturbance are show in a separate subplot.
 
 .. option:: --save_figs, default=True
 

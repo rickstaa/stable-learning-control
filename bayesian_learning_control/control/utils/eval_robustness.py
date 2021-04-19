@@ -9,7 +9,6 @@ can inherit to add these methods. See the
 `Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/eval_robustness.html>`_
 for more information.
 """  # noqa: E501
-# TODO: Add ability to set output folder
 
 import math
 import os
@@ -537,10 +536,11 @@ def run_disturbed_policy(  # noqa: C901
 
 def plot_robustness_results(  # noqa: C901
     dataframe,
-    save_figs,
     output_dir,
+    save_figs=False,
     font_scale=1.5,
     observations=None,
+    merged=False,
     figs_fmt="pdf",
 ):
     """Creates several usefull plots out of the dataframe that was collected in the
@@ -549,12 +549,16 @@ def plot_robustness_results(  # noqa: C901
     Args:
         dataframe (pandas.DataFrame): The data frame that contains the robustness
             information.
-        save_figs (bool): Whether you want to save the created plots to disk.
         output_dir (str): The directory where you want to save the output figures to.
+        save_figs (bool): Whether you want to save the created plots to disk.  Defaults
+            to ``False``.
         font_scale (int): The font scale you want to use for the plot text. Defaults to
             ``1.5``.
         observations (list): The observations you want to show in the observations plot.
             By default all observations are shown.
+        merged (bool):
+            Merge all observations into one plot. By default observations under each
+            disturbance are show in a separate subplot.
         figs_fmt (str, optional): In which format you want to save the plots. Defaults
             to ``pdf``.
     """
@@ -622,46 +626,52 @@ def plot_robustness_results(  # noqa: C901
     obs_ref_df = pd.concat([obs_df_tmp, ref_df_tmp], ignore_index=True)
 
     # Loop though all disturbances and plot the observations and references in one plot
-    num_plots = len(obs_ref_df.disturbance.unique())
-    total_cols = 3
-    total_rows = math.ceil(num_plots / total_cols)
-    fig, axes = plt.subplots(
-        nrows=total_rows,
-        ncols=total_cols,
-        figsize=(7 * total_cols, 7 * total_rows),
-        tight_layout=True,
-        sharex=True,
-    )
-    fig.suptitle(
-        "{} under several {}{}.".format(
-            "Observation and reference"
-            if all([obs_found, ref_found])
-            else ("Observation" if obs_found else "reference"),
-            "{} disturbances".format(obs_ref_df.disturbance_variant[0])
-            if "disturbance_variant" in obs_ref_df.keys()
-            else "disturbances",
-            f" at step {time_instant}" if time_instant else "",
-        )
+    fig_title = "{} under several {}{}.".format(
+        "Observation and reference"
+        if all([obs_found, ref_found])
+        else ("Observation" if obs_found else "reference"),
+        "{} disturbances".format(obs_ref_df.disturbance_variant[0])
+        if "disturbance_variant" in obs_ref_df.keys()
+        else "disturbances",
+        f" at step {time_instant}" if time_instant else "",
     )
     obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"] = (
         obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"]
         + " (original)"
     )  # Append original to original value
-    for ii, var in enumerate(obs_ref_df.disturbance.unique()):
-        row = ii // total_cols
-        pos = ii % total_cols
+    if not merged:
+        num_plots = len(obs_ref_df.disturbance.unique())
+        total_cols = 3
+        total_rows = math.ceil(num_plots / total_cols)
+        fig, axes = plt.subplots(
+            nrows=total_rows,
+            ncols=total_cols,
+            figsize=(7 * total_cols, 7 * total_rows),
+            tight_layout=True,
+            sharex=True,
+            squeeze=False,
+        )
+        fig.suptitle(fig_title)
+        for ii, var in enumerate(obs_ref_df.disturbance.unique()):
+            row = ii // total_cols
+            pos = ii % total_cols
+            sns.lineplot(
+                data=obs_ref_df.query(f"disturbance == '{var}'"),
+                x="step",
+                y="value",
+                ci="sd",
+                hue="signal",
+                style="type",
+                ax=axes[row][pos],
+                legend="auto" if ii == 0 else False,
+            ).set_title(var)
+        plt.figlegend(loc="center right")
+        axes[0][0].get_legend().remove()
+    else:
+        fig = plt.figure(tight_layout=True)
         sns.lineplot(
-            data=obs_ref_df.query(f"disturbance == '{var}'"),
-            x="step",
-            y="value",
-            ci="sd",
-            hue="signal",
-            style="type",
-            ax=axes[row][pos],
-            legend="auto" if ii == 0 else False,
-        ).set_title(var)
-    plt.figlegend(loc="center right")
-    axes[0][0].get_legend().remove()
+            data=obs_ref_df, x="step", y="value", ci="sd", hue="disturbance"
+        ).set_title(fig_title)
     figs["observations"].append(fig)
 
     # Plot mean cost
@@ -768,6 +778,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str, help="The path where the policy is stored")
     parser.add_argument(
+        "--data_dir",
+        type=str,
+        help=(
+            "The path where you want to store to store the robustness eval results. By "
+            "default the ``DEFAULT_DATA_DIR`` from the ``user_config`` will be used."
+        ),
+    )
+    parser.add_argument(
         "--len",
         "-l",
         type=int,
@@ -809,6 +827,22 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
+        "--list_disturbance_types",
+        action="store_true",
+        help=(
+            "Lists the available disturbance types for the trained agent and stored "
+            "environment."
+        ),
+    )
+    parser.add_argument(
+        "--list_disturbance_variants",
+        action="store_true",
+        help=(
+            "Lists the available disturbance variants that are available for a given "
+            "disturbance type."
+        ),
+    )
+    parser.add_argument(
         "--disturbance_type",
         "-d_type",
         type=str,
@@ -831,6 +865,15 @@ if __name__ == "__main__":
         help="The observations you want to show in the observations/references plot",
     )
     parser.add_argument(
+        "--merged",
+        default=None,
+        action="store_true",
+        help=(
+            "Merge all observations into one plot. By default observations under each "
+            "disturbance are show in a separate subplot."
+        ),
+    )
+    parser.add_argument(
         "--save_figs",
         action="store_true",
         help="Whether you want to save the plots (default: True)",
@@ -844,22 +887,6 @@ if __name__ == "__main__":
         "--font_scale",
         default=1.5,
         help="The font scale you want to use for the plot text.",
-    )
-    parser.add_argument(
-        "--list_disturbance_types",
-        action="store_true",
-        help=(
-            "Lists the available disturbance types for the trained agent and stored "
-            "environment."
-        ),
-    )
-    parser.add_argument(
-        "--list_disturbance_variants",
-        action="store_true",
-        help=(
-            "Lists the available disturbance variants that are available for a given "
-            "disturbance type."
-        ),
     )
     args = parser.parse_args()
 
@@ -943,6 +970,10 @@ if __name__ == "__main__":
             log_to_std_out(friendly_err(error_msg))
         sys.exit()
 
+    # Retrieve output_dir
+    if not args.data_dir:
+        args.data_dir = args.fpath
+
     # Perform robustness evaluation
     run_results_df = run_disturbed_policy(
         env,
@@ -954,12 +985,13 @@ if __name__ == "__main__":
         render=args.render,
         deterministic=args.deterministic,
         save_result=args.save_result,
-        output_dir=args.fpath,
+        output_dir=args.data_dir,
     )
     plot_robustness_results(
         run_results_df,
         observations=args.obs,
-        output_dir=args.fpath,
+        merged=args.merged,
+        output_dir=args.data_dir,
         font_scale=args.font_scale,
         save_figs=args.save_figs,
         figs_fmt=args.figs_fmt,
