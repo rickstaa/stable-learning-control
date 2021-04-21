@@ -29,16 +29,11 @@ def get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps):
         if decaying_lr_type.lower() == "exponential":
             exponential_decay_rate = np.float64(lr_final) / np.float64(lr_start)
             lr_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(
-                lr_start,
-                (steps - 1),
-                np.float64(exponential_decay_rate),
+                lr_start, (steps - 1), np.float64(exponential_decay_rate),
             )
         else:
             lr_scheduler = tf.keras.optimizers.schedules.PolynomialDecay(
-                lr_start,
-                (steps - 1),
-                lr_final,
-                power=1.0,
+                lr_start, (steps - 1), lr_final, power=1.0,
             )
 
         return lr_scheduler

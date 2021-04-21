@@ -188,6 +188,10 @@ is successfully saved alongside the agent, the robustness can be evaluated using
 
 There are a few flags for options:
 
+.. option:: --data_dir
+
+    *str*. The folder to which you want to store the robustness eval results.
+
 .. option:: -l L, --len=L, default=0
 
     *int*. Maximum length of evaluation episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has

@@ -342,8 +342,7 @@ class SAC(tf.keras.Model):
         q2_pi_targ = self.ac_targ.Q2([o_, pi_])
         if self._opt_type.lower() == "minimize":
             q_pi_targ = tf.math.maximum(
-                q1_pi_targ,
-                q2_pi_targ,
+                q1_pi_targ, q2_pi_targ,
             )  # Use max clipping  to prevent overestimation bias.
         else:
             q_pi_targ = tf.math.minimum(
@@ -945,10 +944,7 @@ def sac(  # noqa: C901
             sys.exit(0)
 
     replay_buffer = ReplayBuffer(
-        obs_dim=obs_dim,
-        act_dim=act_dim,
-        rew_dim=rew_dim,
-        size=replay_size,
+        obs_dim=obs_dim, act_dim=act_dim, rew_dim=rew_dim, size=replay_size,
     )
 
     # Count variables and print network structure
@@ -1055,9 +1051,7 @@ def sac(  # noqa: C901
                 policy, test_env, num_test_episodes, max_ep_len=max_ep_len
             )
             logger.store(
-                TestEpRet=eps_ret,
-                TestEpLen=eps_len,
-                extend=True,
+                TestEpRet=eps_ret, TestEpLen=eps_len, extend=True,
             )
 
             # Epoch based learning rate decay
@@ -1085,20 +1079,14 @@ def sac(  # noqa: C901
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("TotalEnvInteracts", t)
             logger.log_tabular(
-                "EpRet",
-                with_min_and_max=True,
-                tb_write=use_tensorboard,
+                "EpRet", with_min_and_max=True, tb_write=use_tensorboard,
             )
             logger.log_tabular(
-                "TestEpRet",
-                with_min_and_max=True,
-                tb_write=use_tensorboard,
+                "TestEpRet", with_min_and_max=True, tb_write=use_tensorboard,
             )
             logger.log_tabular("EpLen", average_only=True, tb_write=use_tensorboard)
             logger.log_tabular(
-                "TestEpLen",
-                average_only=True,
-                tb_write=use_tensorboard,
+                "TestEpLen", average_only=True, tb_write=use_tensorboard,
             )
             logger.log_tabular(
                 "Lr_a",
@@ -1156,8 +1144,7 @@ def sac(  # noqa: C901
 
     print("" if logger_kwargs["verbose"] else "\n")
     logger.log(
-        "Training finished after {}s".format(time.time() - start_time),
-        type="info",
+        "Training finished after {}s".format(time.time() - start_time), type="info",
     )
 
 

@@ -6,10 +6,9 @@ module to work work, these disturbances should be implemented as methods on the
 environment. The Simzoo package contains a
 :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class from which a Gym environment
 can inherit to add these methods. See the
-`Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/eval_robustness.html>`_
+`Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/robustness_eval.html>`_
 for more information.
 """  # noqa: E501
-# TODO: Add ability to set output folder
 
 import math
 import os
@@ -28,14 +27,8 @@ from bayesian_learning_control.utils.log_utils import (
 )
 
 REQUIRED_DISTURBER_OBJECTS = {
-    "methods": [
-        "init_disturber",
-        "disturbed_step",
-        "next_disturbance",
-    ],
-    "attributes": [
-        "disturber_done",
-    ],
+    "methods": ["init_disturber", "disturbed_step", "next_disturbance",],
+    "attributes": ["disturber_done",],
 }
 
 
@@ -113,10 +106,10 @@ def _disturber_implemented(env):
         )
         if v
     ]
-    return not all(missing_methods_mask + missing_attributes_mask), {
-        "methods": missing_methods,
-        "attributes": missing_attributes,
-    }
+    return (
+        not all(missing_methods_mask + missing_attributes_mask),
+        {"methods": missing_methods, "attributes": missing_attributes,},
+    )
 
 
 def run_disturbed_policy(  # noqa: C901
@@ -221,7 +214,7 @@ def run_disturbed_policy(  # noqa: C901
             )
             env._max_episode_steps = max_ep_len
 
-    # Try to retrieve default type if type not given
+    # Try to retrieve default type and variant if not supplied
     if disturbance_type is None:
         if hasattr(env.unwrapped, "_disturber_cfg"):
             if "default_type" in env.unwrapped._disturber_cfg.keys():
@@ -233,6 +226,23 @@ def run_disturbed_policy(  # noqa: C901
                     ),
                     type="info",
                 )
+    if disturbance_variant is None:
+        if hasattr(env.unwrapped, "_disturber_cfg"):
+            if disturbance_type in env.unwrapped._disturber_cfg.keys():
+                if (
+                    "default_variant"
+                    in env.unwrapped._disturber_cfg[disturbance_type].keys()
+                ):
+                    disturbance_variant = env.unwrapped._disturber_cfg[
+                        disturbance_type
+                    ]["default_variant"]
+                    log_to_std_out(
+                        (
+                            "INFO: No disturbance variant given default variant "
+                            f"'{disturbance_variant}' used instead."
+                        ),
+                        type="info",
+                    )
 
     # Initialize the disturber!
     try:
@@ -361,18 +371,13 @@ def run_disturbed_policy(  # noqa: C901
                 o_episode_df = pd.DataFrame(path["o"])
                 o_episode_df.insert(0, "step", range(0, ep_len))
                 o_episode_df = pd.melt(
-                    o_episode_df,
-                    id_vars="step",
-                    var_name="observation",
+                    o_episode_df, id_vars="step", var_name="observation",
                 )  # Flatten dataframe
                 o_episodes_dfs.append(o_episode_df)
 
                 # Store episode rewards
                 r_episode_df = pd.DataFrame(
-                    {
-                        "step": range(0, ep_len),
-                        "reward": path["r"],
-                    }
+                    {"step": range(0, ep_len), "reward": path["r"],}
                 )
                 r_episode_df.insert(len(r_episode_df.columns), "episode", n)
                 r_episodes_dfs.append(r_episode_df)
@@ -394,9 +399,7 @@ def run_disturbed_policy(  # noqa: C901
                     ref_episode_df = pd.DataFrame(path["reference"])
                     ref_episode_df.insert(0, "step", range(0, ep_len))
                     ref_episode_df = pd.melt(
-                        ref_episode_df,
-                        id_vars="step",
-                        var_name="reference",
+                        ref_episode_df, id_vars="step", var_name="reference",
                     )  # Flatten dataframe
                     ref_episodes_dfs.append(ref_episode_df)
 
@@ -422,18 +425,21 @@ def run_disturbed_policy(  # noqa: C901
         ):
             logger.log_tabular("DisturbanceVariant", env.disturbance_info["variant"])
         if hasattr(env, "disturbance_info") and (
-            "variable" in env.disturbance_info.keys()
-            and "value" in env.disturbance_info.keys()
+            "variables" in env.disturbance_info.keys()
+            and any(
+                [
+                    "value" in v.keys()
+                    for k, v in env.disturbance_info["variables"].items()
+                ]
+            )
         ):
-            if isinstance(env.disturbance_info["value"], dict):
-                for key, val in env.disturbance_info["value"].items():
-                    logger.log_tabular(
-                        "{}_{}".format(env.disturbance_info["variable"], key), val
-                    )
-            else:
-                logger.log_tabular(
-                    env.disturbance_info["variable"], env.disturbance_info["value"]
-                )
+            for var_name, var_value in env.disturbance_info["variables"].items():
+                val = var_value["value"]
+                if isinstance(val, dict):
+                    for key, val in val.items():
+                        logger.log_tabular("{}_{}".format(var_name, key), val)
+                else:
+                    logger.log_tabular(var_name, val)
         logger.log_tabular("EpRet", with_min_and_max=True)
         logger.log_tabular("EpLen", average_only=True)
         logger.log_tabular("DeathRate")
@@ -515,14 +521,10 @@ def run_disturbed_policy(  # noqa: C901
         ignore_index=True,
     )
     robustness_eval_df.insert(
-        len(robustness_eval_df.columns),
-        "disturbance_type",
-        disturbance_type,
+        len(robustness_eval_df.columns), "disturbance_type", disturbance_type,
     )
     robustness_eval_df.insert(
-        len(robustness_eval_df.columns),
-        "disturbance_variant",
-        disturbance_variant,
+        len(robustness_eval_df.columns), "disturbance_variant", disturbance_variant,
     )
 
     # Save robustness evaluation dataframe and return it to the user
@@ -537,8 +539,8 @@ def run_disturbed_policy(  # noqa: C901
 
 def plot_robustness_results(  # noqa: C901
     dataframe,
-    save_figs,
     output_dir,
+    save_figs=False,
     font_scale=1.5,
     observations=None,
     merged=False,
@@ -550,8 +552,9 @@ def plot_robustness_results(  # noqa: C901
     Args:
         dataframe (pandas.DataFrame): The data frame that contains the robustness
             information.
-        save_figs (bool): Whether you want to save the created plots to disk.
         output_dir (str): The directory where you want to save the output figures to.
+        save_figs (bool): Whether you want to save the created plots to disk.  Defaults
+            to ``False``.
         font_scale (int): The font scale you want to use for the plot text. Defaults to
             ``1.5``.
         observations (list): The observations you want to show in the observations plot.
@@ -778,6 +781,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str, help="The path where the policy is stored")
     parser.add_argument(
+        "--data_dir",
+        type=str,
+        help=(
+            "The path where you want to store to store the robustness eval results. By "
+            "default the ``DEFAULT_DATA_DIR`` from the ``user_config`` will be used."
+        ),
+    )
+    parser.add_argument(
         "--len",
         "-l",
         type=int,
@@ -962,6 +973,10 @@ if __name__ == "__main__":
             log_to_std_out(friendly_err(error_msg))
         sys.exit()
 
+    # Retrieve output_dir
+    if not args.data_dir:
+        args.data_dir = args.fpath
+
     # Perform robustness evaluation
     run_results_df = run_disturbed_policy(
         env,
@@ -973,13 +988,13 @@ if __name__ == "__main__":
         render=args.render,
         deterministic=args.deterministic,
         save_result=args.save_result,
-        output_dir=args.fpath,
+        output_dir=args.data_dir,
     )
     plot_robustness_results(
         run_results_df,
         observations=args.obs,
         merged=args.merged,
-        output_dir=args.fpath,
+        output_dir=args.data_dir,
         font_scale=args.font_scale,
         save_figs=args.save_figs,
         figs_fmt=args.figs_fmt,

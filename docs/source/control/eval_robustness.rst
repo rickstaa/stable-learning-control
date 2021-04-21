@@ -257,7 +257,66 @@ Change the shape of a disturbance
 The disturbances shapes are specified in a ``DISTURBANCE_CFG`` variable that can be found in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class
 or any environment disturber (i.e. ``<ENV_NAME>_disturber.py`` file inside the environment folder). The robustness evaluation script first looks at the ``DISTURBANCE_CFG`` inside the environment wrapper and then at the one in the
 :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class. As a result, values defined in the ``DISTURBANCE_CFG`` of the environment disturber take precedence over
-values that are defined in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
+values that are defined in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class. Below some several important characteristics of the ``DISTURBANCE_CFG`` that is found in the
+:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class are explained.
+
+Disturbance configuration structure
+-----------------------------------
+
+When editing the ``DISTURBANCE_CFG`` config in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class one has to remember the following:
+
+- The config of a disturbance requires *ONE* key with the ``range`` suffix. The :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` uses this suffix to determine which key holds the range the disturber should loop through.
+
+.. code-block:: python
+    :linenos:
+    :emphasize-lines: 5
+
+    # A random noise that is applied at every timestep
+    "noise": {
+        "description": "Random noise disturbance",
+        # The means and standards deviations of the random noise disturbance
+        "noise_range": {
+            "mean": np.linspace(80, 155, num=3, dtype=np.int16),
+            "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),
+        },
+        # Label used in robustness plots.
+        "label": "x̅: %s, σ: %s",
+    },
+
+- A ``combined`` disturbance should contain *ONE* key with the ``input`` prefix and *ONE* key with the ``output`` prefix. The :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` uses this prefix to distinguish between the input and output disturbance.
+
+.. code-block:: python
+    :linenos:
+    :emphasize-lines: 4, 12
+
+    # Input and output noise disturbance
+    "noise": {
+        "description": "Random input and output noise disturbance",
+        "input_noise": {
+            # The means and standards deviations of the random input noise
+            # disturbance
+            "noise_range": {
+                "mean": np.linspace(80, 155, num=3, dtype=np.int16),
+                "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),
+            },
+        },
+        "output_noise": {
+            # The means and standards deviations of the random output noise
+            # disturbance
+            "noise_range": {
+                "mean": np.linspace(80, 155, num=3, dtype=np.int16),
+                "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),
+            },
+        },
+        # Label used in robustness plots.
+        "label": "x̅: (%s, %s), σ: (%s, %s)",
+    },
+
+- The length of the disturbance range variables (i.e. ``<VARIABLE>_range``) should be equal between the input and output disturbance. Please note that the zero disturbance is added automatically by the disturber and is not
+  included when determining the length.
+- The length of the ``mean`` and ``std`` keys of the ``noise_range`` should also be equal.
+- The disturber currently only allows for one range key to be enabled. This means that in the ``periodic`` noise config, either the ``amplitude_range``, the ``frequency_range`` or ``phase_range`` can be un-commented.
+- The number of string substitution operators (i.e. ``%``) in the disturbance label should be equal to the number of variables found in the disturbance range variable (i.e. ``<VARIABLE>_range``).
 
 How to add new disturbances
 ==============================
