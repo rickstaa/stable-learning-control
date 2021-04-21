@@ -27,14 +27,8 @@ from bayesian_learning_control.utils.log_utils import (
 )
 
 REQUIRED_DISTURBER_OBJECTS = {
-    "methods": [
-        "init_disturber",
-        "disturbed_step",
-        "next_disturbance",
-    ],
-    "attributes": [
-        "disturber_done",
-    ],
+    "methods": ["init_disturber", "disturbed_step", "next_disturbance",],
+    "attributes": ["disturber_done",],
 }
 
 
@@ -112,10 +106,10 @@ def _disturber_implemented(env):
         )
         if v
     ]
-    return not all(missing_methods_mask + missing_attributes_mask), {
-        "methods": missing_methods,
-        "attributes": missing_attributes,
-    }
+    return (
+        not all(missing_methods_mask + missing_attributes_mask),
+        {"methods": missing_methods, "attributes": missing_attributes,},
+    )
 
 
 def run_disturbed_policy(  # noqa: C901
@@ -377,18 +371,13 @@ def run_disturbed_policy(  # noqa: C901
                 o_episode_df = pd.DataFrame(path["o"])
                 o_episode_df.insert(0, "step", range(0, ep_len))
                 o_episode_df = pd.melt(
-                    o_episode_df,
-                    id_vars="step",
-                    var_name="observation",
+                    o_episode_df, id_vars="step", var_name="observation",
                 )  # Flatten dataframe
                 o_episodes_dfs.append(o_episode_df)
 
                 # Store episode rewards
                 r_episode_df = pd.DataFrame(
-                    {
-                        "step": range(0, ep_len),
-                        "reward": path["r"],
-                    }
+                    {"step": range(0, ep_len), "reward": path["r"],}
                 )
                 r_episode_df.insert(len(r_episode_df.columns), "episode", n)
                 r_episodes_dfs.append(r_episode_df)
@@ -410,9 +399,7 @@ def run_disturbed_policy(  # noqa: C901
                     ref_episode_df = pd.DataFrame(path["reference"])
                     ref_episode_df.insert(0, "step", range(0, ep_len))
                     ref_episode_df = pd.melt(
-                        ref_episode_df,
-                        id_vars="step",
-                        var_name="reference",
+                        ref_episode_df, id_vars="step", var_name="reference",
                     )  # Flatten dataframe
                     ref_episodes_dfs.append(ref_episode_df)
 
@@ -534,14 +521,10 @@ def run_disturbed_policy(  # noqa: C901
         ignore_index=True,
     )
     robustness_eval_df.insert(
-        len(robustness_eval_df.columns),
-        "disturbance_type",
-        disturbance_type,
+        len(robustness_eval_df.columns), "disturbance_type", disturbance_type,
     )
     robustness_eval_df.insert(
-        len(robustness_eval_df.columns),
-        "disturbance_variant",
-        disturbance_variant,
+        len(robustness_eval_df.columns), "disturbance_variant", disturbance_variant,
     )
 
     # Save robustness evaluation dataframe and return it to the user

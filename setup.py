@@ -56,6 +56,5 @@ for ns in redundant_namespaces:
 submodules_available(stand_alone_ns_pkgs)
 
 setup(
-    packages=PACKAGES,
-    package_dir=PACKAGE_DIR,
+    packages=PACKAGES, package_dir=PACKAGE_DIR,
 )

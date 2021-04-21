@@ -84,8 +84,9 @@ def _retrieve_model_folder(fpath):
                 "check your model path (fpath) and try again."
             )
         else:
-            return data_folders[0], (
-                "torch" if "torch_save" in data_folders[0] else "tf"
+            return (
+                data_folders[0],
+                ("torch" if "torch_save" in data_folders[0] else "tf"),
             )
 
 
@@ -201,9 +202,7 @@ def load_pytorch_policy(fpath, itr="last", env=None):
 
     if itr != "last":
         fpath = _retrieve_iter_folder(fpath, itr)
-    model_file = Path(fpath).joinpath(
-        "model_state.pt",
-    )
+    model_file = Path(fpath).joinpath("model_state.pt",)
     print("\n")
     log_to_std_out("Loading model from '%s'.\n\n" % model_file, type="info")
 
