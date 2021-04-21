@@ -6,7 +6,7 @@ module to work work, these disturbances should be implemented as methods on the
 environment. The Simzoo package contains a
 :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class from which a Gym environment
 can inherit to add these methods. See the
-`Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/eval_robustness.html>`_
+`Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/robustness_eval.html>`_
 for more information.
 """  # noqa: E501
 
@@ -220,7 +220,7 @@ def run_disturbed_policy(  # noqa: C901
             )
             env._max_episode_steps = max_ep_len
 
-    # Try to retrieve default type if type not given
+    # Try to retrieve default type and variant if not supplied
     if disturbance_type is None:
         if hasattr(env.unwrapped, "_disturber_cfg"):
             if "default_type" in env.unwrapped._disturber_cfg.keys():
@@ -232,6 +232,23 @@ def run_disturbed_policy(  # noqa: C901
                     ),
                     type="info",
                 )
+    if disturbance_variant is None:
+        if hasattr(env.unwrapped, "_disturber_cfg"):
+            if disturbance_type in env.unwrapped._disturber_cfg.keys():
+                if (
+                    "default_variant"
+                    in env.unwrapped._disturber_cfg[disturbance_type].keys()
+                ):
+                    disturbance_variant = env.unwrapped._disturber_cfg[
+                        disturbance_type
+                    ]["default_variant"]
+                    log_to_std_out(
+                        (
+                            "INFO: No disturbance variant given default variant "
+                            f"'{disturbance_variant}' used instead."
+                        ),
+                        type="info",
+                    )
 
     # Initialize the disturber!
     try:
@@ -421,18 +438,21 @@ def run_disturbed_policy(  # noqa: C901
         ):
             logger.log_tabular("DisturbanceVariant", env.disturbance_info["variant"])
         if hasattr(env, "disturbance_info") and (
-            "variable" in env.disturbance_info.keys()
-            and "value" in env.disturbance_info.keys()
+            "variables" in env.disturbance_info.keys()
+            and any(
+                [
+                    "value" in v.keys()
+                    for k, v in env.disturbance_info["variables"].items()
+                ]
+            )
         ):
-            if isinstance(env.disturbance_info["value"], dict):
-                for key, val in env.disturbance_info["value"].items():
-                    logger.log_tabular(
-                        "{}_{}".format(env.disturbance_info["variable"], key), val
-                    )
-            else:
-                logger.log_tabular(
-                    env.disturbance_info["variable"], env.disturbance_info["value"]
-                )
+            for var_name, var_value in env.disturbance_info["variables"].items():
+                val = var_value["value"]
+                if isinstance(val, dict):
+                    for key, val in val.items():
+                        logger.log_tabular("{}_{}".format(var_name, key), val)
+                else:
+                    logger.log_tabular(var_name, val)
         logger.log_tabular("EpRet", with_min_and_max=True)
         logger.log_tabular("EpLen", average_only=True)
         logger.log_tabular("DeathRate")
