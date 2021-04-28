@@ -141,3 +141,30 @@ def clamp(data, min_bound, max_bound):
     )
 
     return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
+
+
+def np_to_torch(input_object, dtype=None, device=None):
+    """Converts all numpy arrays in a python object to Torch Tensors.
+
+    Args:
+        input_item (obj): The python object.
+        dtype (type, optional): The type you want to use for storing the data in the
+            tensor. Defaults to ``None`` (i.e. torch default will be used).
+        device (str, optional): The computational device on which the tensors should be
+            stored. Defaults to ``None`` (i.e. torch default device will be used).
+
+    Returns:
+        object: The output python object in which numpy arrays have been converted to
+            torch tensors.
+    """
+    if isinstance(input_object, dict):
+        return {k: np_to_torch(v) for k, v in input_object.items()}
+    elif isinstance(input_object, list):
+        return [np_to_torch(v) for v in input_object]
+    elif isinstance(input_object, np.ndarray):
+        try:
+            return torch.as_tensor(input_object, dtype=dtype).to(device=device)
+        except TypeError:
+            return input_object
+    else:
+        return input_object

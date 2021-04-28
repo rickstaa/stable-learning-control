@@ -54,4 +54,5 @@ if __name__ == "__main__":
                 o, ep_ret, ep_len = env.reset(), 0, 0
 
         # Retrieve data from buffer
-        buffer_data = buffer.get()
+        buffer_data = buffer.get(flat=False)
+        print("test")
