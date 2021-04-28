@@ -3,8 +3,12 @@ Tensorflow algorithms.
 """
 
 import numpy as np
-from bayesian_learning_control.common.helpers import atleast_2d, combine_shapes
-from bayesian_learning_control.utils.log_utils import friendly_err, log_to_std_out
+from bayesian_learning_control.common.helpers import (
+    atleast_2d,
+    combine_shapes,
+)
+from bayesian_learning_control.control.common.helpers import discount_cumsum
+from bayesian_learning_control.utils.log_utils import log_to_std_out
 
 
 class ReplayBuffer:
@@ -135,6 +139,8 @@ class TrajectoryBuffer:
         preempt=False,
         min_trajectory_size=3,
         incomplete=False,
+        gamma=0.99,
+        lam=0.95,
     ):
         """Constructs all the necessary attributes for the trajectory buffer object.
 
@@ -148,6 +154,9 @@ class TrajectoryBuffer:
                 in the buffer.
             incomplete (int): Whether the buffer can store incomplete trajectories
                 (i.e. trajectories which do not contain the final state).
+            gamma (float): The General Advantage Estimate (GAE) discount factor
+                (Always between 0 and 1).
+            lam (lam): The GAE bias-variance trade-off factor (always between 0 and 1).
         """
         if min_trajectory_size < 3:
             log_to_std_out(
@@ -157,6 +166,7 @@ class TrajectoryBuffer:
                 type="warning",
             )
 
+        # Main buffers
         self.obs_buf = atleast_2d(
             np.zeros(combine_shapes(size, obs_dim), dtype=np.float32).squeeze()
         )
@@ -171,15 +181,23 @@ class TrajectoryBuffer:
         ).squeeze()
         self.done_buf = np.zeros(int(size), dtype=np.float32)
 
+        # Optional buffers
+        self.adv_buf = np.zeros(size, dtype=np.float32)
+        self.ret_buf = np.zeros(size, dtype=np.float32)
+        self.val_buf = np.zeros(size, dtype=np.float32)
+        self.logp_buf = np.zeros(size, dtype=np.float32)
+
         # Store buffer attributes
         self.ptr, self.traj_ptr, self.n_traj, self.max_size = 0, 0, 0, size
         self.traj_ptrs = []
         self.traj_lengths = []
+        self.gamma, self.lam = gamma, lam
+        self._contains_vals, self._contains_logp = False, False
         self._preempt = preempt
         self._min_traj_size, self._min_traj_size_warn = min_trajectory_size, False
         self._incomplete, self._incomplete_warn = incomplete, False
 
-    def store(self, obs, act, rew, next_obs, done):
+    def store(self, obs, act, rew, next_obs, done, val=None, logp=None):
         """Append one timestep of agent-environment interaction to the buffer.
 
         Args:
@@ -188,9 +206,12 @@ class TrajectoryBuffer:
             rew (:obj:`numpy.float64`): Reward.
             next_obs (numpy.ndarray): Next state (observation)
             done (bool): Boolean specifying whether the terminal state was reached.
+            val (numpy.ndarray): The (action) values.
+            logp (numpy.ndarray): The log probabilities of the actions.
         """
         assert self.ptr < self.max_size  # buffer has to have room so you can store
 
+        # Fill primary buffer
         try:
             self.obs_buf[self.ptr] = obs
             self.obs_next_buf[self.ptr] = next_obs
@@ -221,18 +242,69 @@ class TrajectoryBuffer:
             self.done_buf[self.ptr] = done
         except ValueError as e:
             error_msg = (
-                f"{e.args[0].capitalize()} please make sure your 'done' ReplayBuffer"
-                "element is of dimension 1."
+                f"{e.args[0].capitalize()} please make sure your 'done' "
+                "TrajectoryBuffer element is of dimension 1."
             )
             raise ValueError(error_msg)
+
+        # Fill optional buffer
+        if val:
+            try:
+                self.val_buf[self.ptr] = val
+            except ValueError as e:
+                error_msg = (
+                    f"{e.args[0].capitalize()} please make sure your 'val' "
+                    "TrajectoryBuffer element is of dimension 1."
+                )
+                raise ValueError(error_msg)
+            self._contains_vals = True
+        if logp:
+            try:
+                self.logp_buf[self.ptr] = logp
+            except ValueError as e:
+                error_msg = (
+                    f"{e.args[0].capitalize()} please make sure your 'logp' "
+                    "TrajectoryBuffer element is of dimension 1."
+                )
+                raise ValueError(error_msg)
+            self._contains_logp = True
 
         # Increase buffer pointers
         self.ptr += 1
 
-    def finish_path(self):
-        """Call this at the end of a trajectory, or when one gets cut off
-        by an epoch ending.
+    def finish_path(self, last_val=0):
+        """Call this at the end of a trajectory or when one gets cut off by an epoch
+        ends. This function increments the buffer pointers and calculates the advantage
+        and rewards-to-go if it contains (action) values.
+
+        .. note::
+            When (action) values are stored in the buffer, this function looks back in
+            the buffer to where the trajectory started and uses rewards and value
+            estimates from the whole trajectory to compute advantage estimates with
+            GAE-Lambda and compute the rewards-to-go for each state to use as the
+            targets for the value function.
+
+            The "last_val" argument should be 0 if the trajectory ended because the
+            agent reached a terminal state (died), and otherwise should be V(s_T), the
+            value function estimated for the last state. This allows us to bootstrap
+            the reward-to-go calculation to account for timesteps beyond the arbitrary
+            episode horizon (or epoch cutoff).
         """
+
+        # Calculate the advantage and rewards-to-go if buffer contains vals
+        if self._contains_vals:
+
+            # Get the current trajectory
+            path_slice = slice(self.traj_ptr, self.ptr)
+            rews = np.append(self.rew_buf[path_slice], last_val)
+            vals = np.append(self.val_buf[path_slice], last_val)
+
+            # the next two lines implement GAE-Lambda advantage calculation
+            deltas = rews[:-1] + self.gamma * vals[1:] - vals[:-1]
+            self.adv_buf[path_slice] = discount_cumsum(deltas, self.gamma * self.lam)
+
+            # the next line computes rewards-to-go, to be targets for the value function
+            self.ret_buf[path_slice] = discount_cumsum(rews, self.gamma)[:-1]
 
         # Store trajectory length and update trajectory pointers
         self.traj_lengths.append(self.ptr - self.traj_ptr)
@@ -299,6 +371,11 @@ class TrajectoryBuffer:
                 rew=self.rew_buf[buff_slice],
                 traj_sizes=self.traj_lengths,
             )
+            if self._contains_vals:
+                data["adv"] = self.adv_buf[buff_slice]
+                data["ret"] = self.ret_buf[buff_slice]
+            if self._contains_logp:
+                data["lopg"] = self.logp_buf[buff_slice]
         else:
             data = dict(
                 obs=np.split(self.obs_buf[buff_slice], self.traj_ptrs[1:]),
@@ -307,6 +384,11 @@ class TrajectoryBuffer:
                 rew=np.split(self.rew_buf[buff_slice], self.traj_ptrs[1:]),
                 traj_sizes=self.traj_lengths,
             )
+            if self._contains_vals:
+                data["adv"] = np.split(self.adv_buf[buff_slice], self.traj_ptrs[1:])
+                data["ret"] = np.split(self.ret_buf[buff_slice], self.traj_ptrs[1:])
+            if self._contains_logp:
+                data["lopg"] = np.split(self.logp_buf[buff_slice], self.traj_ptrs[1:])
 
         # Reset buffer and traj indexes
         self.ptr, self.traj_ptr, self.traj_ptrs, self.n_traj = 0, 0, [], 0
