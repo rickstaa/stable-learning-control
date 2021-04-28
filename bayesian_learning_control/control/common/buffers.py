@@ -21,6 +21,7 @@ class ReplayBuffer:
         rew_buf (numpy.ndarray): Buffer containing the current reward.
         done_buf (numpy.ndarray): Buffer containing information whether the episode was
             terminated after the action was taken.
+        ptr (int): The current buffer index.
     """
 
     def __init__(self, obs_dim, act_dim, rew_dim, size):
@@ -47,7 +48,7 @@ class ReplayBuffer:
             combine_shapes(int(size), rew_dim), dtype=np.float32
         ).squeeze()
         self.done_buf = np.zeros(int(size), dtype=np.float32)
-        self.ptr, self.size, self.max_size = 0, 0, int(size)
+        self.ptr, self.size, self._max_size = 0, 0, int(size)
 
     def store(self, obs, act, rew, next_obs, done):
         """Add experience tuple to buffer.
@@ -94,8 +95,8 @@ class ReplayBuffer:
             raise ValueError(error_msg)
 
         # Increase pointers based on buffer size (first in first out)
-        self.ptr = (self.ptr + 1) % self.max_size
-        self.size = min(self.size + 1, self.max_size)
+        self.ptr = (self.ptr + 1) % self._max_size
+        self.size = min(self.size + 1, self._max_size)
 
     def sample_batch(self, batch_size=32):
         """Retrieve a batch of experiences from buffer.
@@ -128,6 +129,10 @@ class TrajectoryBuffer:
             terminated after the action was taken.
         traj_lengths (list): List with the lengths of each trajectory in the
             buffer.
+        ptr (int): The current buffer index.
+        traj_ptr (int): The start index of the current trajectory.
+        traj_ptrs (list): The start indexes of each trajectory.
+        n_traj (int): The number of trajectories currently stored in the buffer.
         """
 
     def __init__(
@@ -149,14 +154,17 @@ class TrajectoryBuffer:
             act_dim (tuple): The size of the action space.
             rew_dim (tuple): The size of the reward space.
             size (int): The replay buffer size.
-            preempt (bool): Whether the buffer can be retrieved before it is full.
-            min_trajectory_size (int): The minimum trajectory length that can be stored
-                in the buffer.
-            incomplete (int): Whether the buffer can store incomplete trajectories
-                (i.e. trajectories which do not contain the final state).
-            gamma (float): The General Advantage Estimate (GAE) discount factor
-                (Always between 0 and 1).
-            lam (lam): The GAE bias-variance trade-off factor (always between 0 and 1).
+            preempt (bool, optional): Whether the buffer can be retrieved before it is
+                full. Defaults to ``False``.
+            min_trajectory_size (int, optional): The minimum trajectory length that can
+                be stored in the buffer. Defaults to ``3``.
+            incomplete (int, optional): Whether the buffer can store incomplete
+                trajectories (i.e. trajectories which do not contain the final state).
+                Defaults to ``False``.
+            gamma (float, optional): The General Advantage Estimate (GAE) discount
+                factor (Always between 0 and 1). Defaults to ``0.99``.
+            lam (lam, optional): The GAE bias-variance trade-off factor (always between
+                0 and 1). Defaults to ``0.95``.
         """
         if min_trajectory_size < 3:
             log_to_std_out(
@@ -188,16 +196,16 @@ class TrajectoryBuffer:
         self.logp_buf = np.zeros(size, dtype=np.float32)
 
         # Store buffer attributes
-        self.ptr, self.traj_ptr, self.n_traj, self.max_size = 0, 0, 0, size
+        self.ptr, self.traj_ptr, self.n_traj, self._max_size = 0, 0, 0, size
         self.traj_ptrs = []
         self.traj_lengths = []
-        self.gamma, self.lam = gamma, lam
+        self._gamma, self._lam = gamma, lam
         self._contains_vals, self._contains_logp = False, False
         self._preempt = preempt
         self._min_traj_size, self._min_traj_size_warn = min_trajectory_size, False
         self._incomplete, self._incomplete_warn = incomplete, False
 
-    def store(self, obs, act, rew, next_obs, done, val=None, logp=None):
+    def store(self, obs, act, rew, next_obs, done, val=None, logp=None):  # noqa: C901
         """Append one timestep of agent-environment interaction to the buffer.
 
         Args:
@@ -206,10 +214,11 @@ class TrajectoryBuffer:
             rew (:obj:`numpy.float64`): Reward.
             next_obs (numpy.ndarray): Next state (observation)
             done (bool): Boolean specifying whether the terminal state was reached.
-            val (numpy.ndarray): The (action) values.
-            logp (numpy.ndarray): The log probabilities of the actions.
+            val (numpy.ndarray, optional): The (action) values. Defaults to ``None``.
+            logp (numpy.ndarray, optional): The log probabilities of the actions.
+                Defaults to ``None``.
         """
-        assert self.ptr < self.max_size  # buffer has to have room so you can store
+        assert self.ptr < self._max_size  # buffer has to have room so you can store
 
         # Fill primary buffer
         try:
@@ -300,11 +309,11 @@ class TrajectoryBuffer:
             vals = np.append(self.val_buf[path_slice], last_val)
 
             # the next two lines implement GAE-Lambda advantage calculation
-            deltas = rews[:-1] + self.gamma * vals[1:] - vals[:-1]
-            self.adv_buf[path_slice] = discount_cumsum(deltas, self.gamma * self.lam)
+            deltas = rews[:-1] + self._gamma * vals[1:] - vals[:-1]
+            self.adv_buf[path_slice] = discount_cumsum(deltas, self._gamma * self._lam)
 
             # the next line computes rewards-to-go, to be targets for the value function
-            self.ret_buf[path_slice] = discount_cumsum(rews, self.gamma)[:-1]
+            self.ret_buf[path_slice] = discount_cumsum(rews, self._gamma)[:-1]
 
         # Store trajectory length and update trajectory pointers
         self.traj_lengths.append(self.ptr - self.traj_ptr)
@@ -312,7 +321,7 @@ class TrajectoryBuffer:
         self.traj_ptr = self.ptr
         self.n_traj += 1
 
-    def get(self, flat=False):
+    def get(self, flat=False):  # noqa: C901
         """Retrieve the trajectory buffer.
 
         Call this at the end of an epoch to get all of the data from
@@ -332,7 +341,7 @@ class TrajectoryBuffer:
             dict: The trajectory buffer.
         """
         if not self._preempt:  # Check if buffer was full
-            assert self.ptr == self.max_size
+            assert self.ptr == self._max_size
 
         # Remove incomplete trajectories
         if not self._incomplete and self.traj_ptr != self.ptr:
@@ -396,7 +405,3 @@ class TrajectoryBuffer:
 
         # Return experience tuple
         return data
-
-
-def _split_trajectories():
-    print("test")

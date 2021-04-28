@@ -3,7 +3,11 @@
 
 import gym
 import numpy as np
-from bayesian_learning_control.control.common.buffers import TrajectoryBuffer
+
+# from bayesian_learning_control.control.common.buffers import TrajectoryBuffer
+from bayesian_learning_control.control.algos.pytorch.common.buffers import (
+    TrajectoryBuffer,
+)
 
 if __name__ == "__main__":
 
@@ -25,6 +29,7 @@ if __name__ == "__main__":
         rew_dim=rew_dim,
         size=buffer_size,
         preempt=True,
+        incomplete=True,
     )
 
     # Create test dummy data
@@ -37,6 +42,7 @@ if __name__ == "__main__":
             next_o, r, d, _ = env.step(a)
 
             # Store data in buffer
+
             buffer.store(o, a, r, next_o, d)
 
             # Update obs (critical!)
