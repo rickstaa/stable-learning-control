@@ -283,6 +283,49 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~bayesian_learning_co
         "label": "x̅: %s, σ: %s",
     },
 
+- The disturbance range can be supplied as a ``1D`` or ``2D`` NumPy array. When you provide the disturbance range as a ``1D`` array (see code example above), it will be applied to all actions/observations. By supplying the disturbance range as a ``2D`` array (see code example below),
+  you can individually control each action/observation disturbance.
+
+.. code-block:: python
+  :linenos:
+  :emphasize-lines: 11-18, 20-28
+
+    # Disturbance applied to the *OUTPUT* of the environment step function
+    "output": {
+        # The disturbance variant used when no variant is given
+        "default_variant": "impulse",
+        # A random noise that is applied at every timestep
+        "noise": {
+            "description": "Random noise disturbance",
+            # The means and standards deviations of the random noise disturbance
+            "noise_range": {
+                # "mean": np.linspace(80, 155, num=3, dtype=np.int16),  # All obs
+                "mean": np.vstack(
+                    (
+                        np.linspace(80, 155, num=3, dtype=np.int16),  # Obs 1
+                        np.linspace(80, 155, num=3, dtype=np.int16),  # Obs 2
+                        np.linspace(80, 155, num=3, dtype=np.int16),  # Obs 3
+                        np.linspace(80, 155, num=3, dtype=np.int16),  # Obs 4
+                    )
+                ).T,
+                # "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # All Obs
+                "std": np.vstack(
+                    (
+                        np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # Obs 1
+                        np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # Obs 2
+                        np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # Obs 3
+                        np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # Obs 4
+                    )
+                ).T,
+            },
+            # Label used in robustness plots.
+            "label": "x̅: %s, σ: %s",
+        },
+    },
+
+.. important::
+    When doing this, you have to make sure that the size of your ``2D`` array is equal to the number of actions (in the case of an input disturbance) or observations (in the case of an output disturbance).
+
 - A ``combined`` disturbance should contain *ONE* key with the ``input`` prefix and *ONE* key with the ``output`` prefix. The :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` uses this prefix to distinguish between the input and output disturbance.
 
 .. code-block:: python

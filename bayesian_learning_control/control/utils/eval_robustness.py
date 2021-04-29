@@ -17,6 +17,7 @@ import time
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
@@ -436,8 +437,14 @@ def run_disturbed_policy(  # noqa: C901
             for var_name, var_value in env.disturbance_info["variables"].items():
                 val = var_value["value"]
                 if isinstance(val, dict):
-                    for key, val in val.items():
-                        logger.log_tabular("{}_{}".format(var_name, key), val)
+                    for key, val in val.items():  # TODO:
+                        if isinstance(val, (list, np.ndarray)):
+                            for ii, item in enumerate(val):
+                                logger.log_tabular(
+                                    "{}_{}_{}".format(var_name, (ii + 1), key), item
+                                )
+                        else:
+                            logger.log_tabular("{}_{}".format(var_name, key), val)
                 else:
                     logger.log_tabular(var_name, val)
         logger.log_tabular("EpRet", with_min_and_max=True)
