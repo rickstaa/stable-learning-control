@@ -28,8 +28,8 @@ from bayesian_learning_control.utils.log_utils import (
 )
 
 REQUIRED_DISTURBER_OBJECTS = {
-    "methods": ["init_disturber", "disturbed_step", "next_disturbance",],
-    "attributes": ["disturber_done",],
+    "methods": ["init_disturber", "disturbed_step", "next_disturbance"],
+    "attributes": ["disturber_done"],
 }
 
 
@@ -109,7 +109,7 @@ def _disturber_implemented(env):
     ]
     return (
         not all(missing_methods_mask + missing_attributes_mask),
-        {"methods": missing_methods, "attributes": missing_attributes,},
+        {"methods": missing_methods, "attributes": missing_attributes},
     )
 
 
@@ -378,7 +378,7 @@ def run_disturbed_policy(  # noqa: C901
 
                 # Store episode rewards
                 r_episode_df = pd.DataFrame(
-                    {"step": range(0, ep_len), "reward": path["r"],}
+                    {"step": range(0, ep_len), "reward": path["r"]}
                 )
                 r_episode_df.insert(len(r_episode_df.columns), "episode", n)
                 r_episodes_dfs.append(r_episode_df)
@@ -782,7 +782,7 @@ def plot_robustness_results(  # noqa: C901
                 )
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # noqa: C901
     import argparse
 
     parser = argparse.ArgumentParser()

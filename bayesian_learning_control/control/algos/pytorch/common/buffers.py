@@ -7,7 +7,6 @@ from bayesian_learning_control.control.common.buffers import (
     TrajectoryBuffer,
 )
 from bayesian_learning_control.control.algos.pytorch.common.helpers import np_to_torch
-import numpy as np
 
 
 class ReplayBuffer(ReplayBuffer):

@@ -60,7 +60,7 @@ if __name__ == "__main__":
     log_path = osp.abspath(osp.join(dirname, "../../data/ray_results"))
 
     # Setup hyperparameter search starting point
-    current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha3": 0.2,}]
+    current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha3": 0.2}]
 
     # Setup the parameter space for you hyperparameter search
     # NOTE: This script uses the hyperopt search algorithm for efficient hyperparameter
