@@ -367,3 +367,9 @@ How to add new disturbances
 A custom disturbance can be added to the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class or any class that inherits from this
 class. You can then make your new disturbance available to be used with the robustness evaluation tool by making sure your gym environment inherits from this
 modified disturber. You can then choose this new disturbance using the ``-d_type`` and ``-d_variant`` flags.
+
+Manual robustness evaluation
+============================
+
+A script version of the eval robustness tool can be found in the ``examples`` folder (i.e. ``eval_robustness.py``). This script can be used when you want to perform some quick tests without implementing a disturber
+class for your given environment.

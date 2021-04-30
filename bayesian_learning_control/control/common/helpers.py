@@ -108,3 +108,45 @@ def discount_cumsum(x, discount):
          x2]
     """
     return scipy.signal.lfilter([1], [1, float(-discount)], x[::-1], axis=0)[::-1]
+
+
+def validate_observations(observations, obs_dataframe):
+    """Checks if the request observations exist in the ``obs_dataframe`` displays a
+    warning if they do not.
+
+    Args:
+        observations (list): The requested observations.
+        obs_dataframe (pandas.DataFrame): The dataframe with the observations that are
+            present.
+
+    Returns:
+        list: List with the observations that are present in the dataframe.
+    """
+    valid_vals = obs_dataframe.observation.unique()
+    if observations is None:
+        return list(valid_vals)
+    else:
+        invalid_vals = [obs for obs in map(int, observations) if obs not in valid_vals]
+        valid_observations = [
+            obs for obs in map(int, observations) if obs in valid_vals
+        ]
+        if len(observations) == len(invalid_vals):
+            log_to_std_out(
+                "{} not valid. All observations plotted instead.".format(
+                    f"Observations {invalid_vals} are"
+                    if len(invalid_vals) > 1
+                    else f"Observation {invalid_vals[0]} is"
+                ),
+                type="warning",
+            )
+            valid_observations = list(valid_vals)
+        elif invalid_vals:
+            log_to_std_out(
+                "{} not valid.".format(
+                    f"Observations {invalid_vals} could not plotted as they are"
+                    if len(invalid_vals) > 1
+                    else f"Observation {invalid_vals[0]} could not be plotted as it is"
+                ),
+                type="warning",
+            )
+        return valid_observations

@@ -26,53 +26,12 @@ from bayesian_learning_control.utils.log_utils import (
     friendly_err,
     log_to_std_out,
 )
+from bayesian_learning_control.control.common.helpers import validate_observations
 
 REQUIRED_DISTURBER_OBJECTS = {
     "methods": ["init_disturber", "disturbed_step", "next_disturbance"],
     "attributes": ["disturber_done"],
 }
-
-
-def _validate_observations(observations, obs_dataframe):
-    """Checks if the request observations exist in the ``obs_dataframe`` displays a
-    warning if they do not.
-
-    Args:
-        observations (list): The requested observations.
-        obs_dataframe (pandas.DataFrame): The dataframe with the observations that are
-            present.
-
-    Returns:
-        list: List with the observations that are present in the dataframe.
-    """
-    valid_vals = obs_dataframe.observation.unique()
-    if observations is None:
-        return list(valid_vals)
-    else:
-        invalid_vals = [obs for obs in map(int, observations) if obs not in valid_vals]
-        valid_observations = [
-            obs for obs in map(int, observations) if obs in valid_vals
-        ]
-        if len(observations) == len(invalid_vals):
-            log_to_std_out(
-                "{} not valid. All observations plotted instead.".format(
-                    f"Observations {invalid_vals} are"
-                    if len(invalid_vals) > 1
-                    else f"Observation {invalid_vals[0]} is"
-                ),
-                type="warning",
-            )
-            valid_observations = list(valid_vals)
-        elif invalid_vals:
-            log_to_std_out(
-                "{} not valid.".format(
-                    f"Observations {invalid_vals} could not plotted as they are"
-                    if len(invalid_vals) > 1
-                    else f"Observation {invalid_vals[0]} could not be plotted as it is"
-                ),
-                type="warning",
-            )
-        return valid_observations
 
 
 def _disturber_implemented(env):
@@ -288,9 +247,9 @@ def run_disturbed_policy(  # noqa: C901
     ) = ([], [], [], [])
     n_disturbance = 0
     soi_found, ref_found = True, True
+    supports_deterministic = True  # Only supported with gaussian algorithms
     while not env.disturber_done:
         o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
-        supports_deterministic = True  # Only supported with gaussian algorithms
         while n < num_episodes:
             # Render env if requested
             if render and not render_error:
@@ -437,7 +396,7 @@ def run_disturbed_policy(  # noqa: C901
             for var_name, var_value in env.disturbance_info["variables"].items():
                 val = var_value["value"]
                 if isinstance(val, dict):
-                    for key, val in val.items():  # TODO:
+                    for key, val in val.items():
                         if isinstance(val, (list, np.ndarray)):
                             for ii, item in enumerate(val):
                                 logger.log_tabular(
@@ -495,7 +454,7 @@ def run_disturbed_policy(  # noqa: C901
         )
         ref_disturbances_dfs.append(ref_disturbance_df)
 
-        # Reset storage buckeets and go to next disturbance
+        # Reset storage buckets and go to next disturbance
         o_episodes_dfs = []
         r_episodes_dfs = []
         soi_episodes_dfs = []
@@ -626,7 +585,7 @@ def plot_robustness_results(  # noqa: C901
         obs_df_tmp.insert(len(obs_df_tmp.columns), "type", "observation")
 
         # Retrieve the requested observations
-        observations = _validate_observations(observations, o_disturbances_df)
+        observations = validate_observations(observations, o_disturbances_df)
         observations = [obs - 1 for obs in observations]  # Humans count from 1
         obs_df_tmp = obs_df_tmp.query(f"observation in {observations}")
     if ref_found:
