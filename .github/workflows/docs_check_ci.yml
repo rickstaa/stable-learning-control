@@ -28,7 +28,7 @@ jobs:
         id: cache-python-env
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-docs
+          key: ${{ runner.os }}-${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('pyproject.toml') }}-docs
       - name: Update pip
         if: steps.cache-python-env.outputs.cache-hit != 'true'
         run: |
