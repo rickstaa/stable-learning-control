@@ -110,43 +110,10 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
 
         # Read configuration values
         if not cfg_error:
+            # Load exp config
             with open(exp_cfg_file_path) as stream:
                 try:
-                    log_to_std_out(
-                        f"Experiment hyperparameters loded from '{exp_cfg_file_path}'",
-                        type="info",
-                    )
                     exp_cfg_params = yaml.safe_load(stream)
-                    if not exp_cfg_params:
-                        log_to_std_out(
-                            "No hyperparameters were found in your experiment config. "
-                            "As a result the '--exp_cfg' flag has been ignored.",
-                            type="warning",
-                        )
-                    else:
-                        # Retrieve algorithm if not supplied by user
-                        if exp_cfg_idx == 1:
-                            if "alg_name" in exp_cfg_params.keys():
-                                cmd_line_args.insert(
-                                    1, exp_cfg_params.pop("alg_name", None)
-                                )
-                        else:
-                            exp_cfg_params.pop("alg_name")
-
-                        # Append cfg hyperparamters to input arguments
-                        exp_cfg_params = {
-                            (key if key.startswith("--") else "--" + key): val
-                            for key, val in exp_cfg_params.items()
-                        }
-                        exp_cfg_params = list(
-                            flatten(
-                                [
-                                    [str(key), str(val)]
-                                    for key, val in exp_cfg_params.items()
-                                ]
-                            )
-                        )
-                    cmd_line_args.extend(exp_cfg_params)
                 except yaml.YAMLError:
                     log_to_std_out(
                         "Something went wrong while trying to load the experiment  "
@@ -154,6 +121,37 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
                         "argument has been ignored.",
                         type="warning",
                     )
+
+            # Retrieve values from exp config
+            log_to_std_out(
+                f"Experiment hyperparameters loaded from '{exp_cfg_file_path}'",
+                type="info",
+            )
+            if not exp_cfg_params:
+                log_to_std_out(
+                    "No hyperparameters were found in your experiment config. "
+                    "As a result the '--exp_cfg' flag has been ignored.",
+                    type="warning",
+                )
+            else:
+                # Retrieve algorithm if not supplied by user
+                if exp_cfg_idx == 1:
+                    if "alg_name" in exp_cfg_params.keys():
+                        cmd_line_args.insert(1, exp_cfg_params.pop("alg_name", None))
+                else:
+                    exp_cfg_params.pop("alg_name")
+
+                # Append cfg hyperparamters to input arguments
+                exp_cfg_params = {
+                    (key if key.startswith("--") else "--" + key): val
+                    for key, val in exp_cfg_params.items()
+                }
+                exp_cfg_params = list(
+                    flatten(
+                        [[str(key), str(val)] for key, val in exp_cfg_params.items()]
+                    )
+                )
+            cmd_line_args.extend(exp_cfg_params)
 
     return cmd_line_args
 

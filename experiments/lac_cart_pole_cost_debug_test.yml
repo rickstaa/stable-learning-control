@@ -1,0 +1,38 @@
+alg_name: lac
+exp_name: lac_cart_pole_cost_debug_test
+env_name: "CartPoleCost-v0"
+ac_kwargs:
+  hidden_sizes:
+    actor: [64, 64]
+    critic: [64, 64, 16]
+  activation: "nn.ReLU"
+  output_activation: "nn.ReLU"
+opt_type: "minimize"
+max_ep_len: 250
+epochs: 150
+steps_per_epoch: 2048
+start_steps: 0
+update_every: 100
+update_after: 1000
+steps_per_update: 100
+num_test_episodes: 10
+alpha: 0.99
+alpha3: 0.2
+labda: 0.99
+gamma: 0.9
+polyak: 0.995
+target_entropy:
+adaptive_temperature: True
+lr_a: "1e-4"
+lr_c: "3e-4"
+lr_a_final: "1e-10"
+lr_c_final: "1e-10"
+lr_decay_type: "linear"
+lr_decay_ref: "epoch"
+batch_size: 256
+replay_size: "int(1e6)"
+seed: 0
+device: "cpu"
+save_freq: 1
+start_policy:
+export: False
