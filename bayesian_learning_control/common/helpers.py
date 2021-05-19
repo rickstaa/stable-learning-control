@@ -6,7 +6,6 @@ import string
 from collections.abc import Iterable
 
 import numpy as np
-import ruamel.yaml as yaml
 import torch
 
 

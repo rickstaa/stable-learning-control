@@ -29,8 +29,8 @@ def noise_disturbance(mean, std):
     """Returns a random noise specified mean and a standard deviation.
 
     Args:
-        mean (union[float, :obj:`np.ndarray`]): The mean value of the noise.
-        std (union[float, :obj:`np.ndarray`]): The standard deviation of the noise.
+        mean (union[float, :obj:`numpy.ndarray`]): The mean value of the noise.
+        std (union[float, :obj:`numpy.ndarray`]): The standard deviation of the noise.
 
     Returns:
         numpy.ndarray: The disturbance array.

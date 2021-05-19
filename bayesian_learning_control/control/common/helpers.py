@@ -11,6 +11,7 @@ from bayesian_learning_control.control.utils.gym_utils import (
     is_discrete_space,
 )
 from bayesian_learning_control.utils.import_utils import import_tf
+from bayesian_learning_control.utils.log_utils import log_to_std_out
 
 tf = import_tf(frail=False)
 tensorflow = tf
