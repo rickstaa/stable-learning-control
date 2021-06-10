@@ -11,7 +11,8 @@ from pathlib import Path
 import joblib
 import torch
 from bayesian_learning_control.utils.import_utils import import_tf
-from bayesian_learning_control.utils.log_utils import EpochLogger, log_to_std_out
+from bayesian_learning_control.utils.log_utils import (EpochLogger,
+                                                       log_to_std_out)
 from bayesian_learning_control.utils.log_utils.helpers import friendly_err
 from bayesian_learning_control.utils.serialization_utils import load_from_json
 
@@ -138,7 +139,7 @@ def load_policy_and_env(fpath, itr="last"):
                 (
                     "Environment not found!\n\n It looks like the environment wasn't "
                     "saved, and we can't run the agent in it. :( \n\n Check out the "
-                    "documentation  page on the Test Policy utility for how to handle "
+                    "documentation page on the Test Policy utility for how to handle "
                     "this situation."
                 )
             )

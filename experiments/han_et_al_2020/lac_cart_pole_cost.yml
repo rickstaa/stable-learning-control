@@ -9,7 +9,7 @@ ac_kwargs:
     critic: [64, 64, 16]
 lr_a: "1e-4"
 lr_c: "3e-4"
-epochs: 50
+epochs: 440
 gamma: 0.995
 alpha3: 0.2
 alpha: 0.99

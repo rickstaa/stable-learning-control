@@ -14,7 +14,7 @@ while also applying several disturbances. You can run it with:
 
 .. seealso::
 
-    For more information on all the input arguments, see the :ref:`robustness evaluation utility <eval_robustness>` documentation or code :ref:`api`.
+    For more information on all the input arguments, see the :ref:`robustness evaluation utility <robustness_eval>` documentation or code :ref:`api`.
 
 .. important::
 
