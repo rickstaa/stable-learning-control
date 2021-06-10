@@ -20,13 +20,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from bayesian_learning_control.control.common.helpers import validate_observations
 from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
 from bayesian_learning_control.utils.log_utils import (
     EpochLogger,
     friendly_err,
     log_to_std_out,
 )
-from bayesian_learning_control.control.common.helpers import validate_observations
 
 REQUIRED_DISTURBER_OBJECTS = {
     "methods": ["init_disturber", "disturbed_step", "next_disturbance"],
@@ -78,7 +78,7 @@ def run_disturbed_policy(  # noqa: C901
     disturbance_type,
     disturbance_variant=None,
     max_ep_len=None,
-    num_episodes=10,
+    num_episodes=100,
     render=True,
     deterministic=True,
     save_result=False,
