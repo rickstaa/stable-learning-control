@@ -20,13 +20,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from bayesian_learning_control.control.common.helpers import \
-    validate_observations
-from bayesian_learning_control.control.utils.test_policy import \
-    load_policy_and_env
-from bayesian_learning_control.utils.log_utils import (EpochLogger,
-                                                       friendly_err,
-                                                       log_to_std_out)
+from bayesian_learning_control.control.common.helpers import validate_observations
+from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
+from bayesian_learning_control.utils.log_utils import (
+    EpochLogger,
+    friendly_err,
+    log_to_std_out,
+)
 
 REQUIRED_DISTURBER_OBJECTS = {
     "methods": ["init_disturber", "disturbed_step", "next_disturbance"],
@@ -164,6 +164,16 @@ def run_disturbed_policy(  # noqa: C901
         verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
     )
 
+    # Increase action space
+    # NOTE: Needed to prevent the disturbance from being clipped by the action space.
+    env.unwrapped.action_space.high = np.array(
+        [np.finfo(np.float32).max for item in env.unwrapped.action_space.high]
+    )
+    env.unwrapped.action_space.low = np.array(
+        [np.finfo(np.float32).min for item in env.unwrapped.action_space.low]
+    )
+
+    # Increase max episode length if requested
     if max_ep_len is None:
         max_ep_len = env._max_episode_steps
     else:
