@@ -36,7 +36,7 @@ REQUIRED_DISTURBER_OBJECTS = {
 
 def _disturber_implemented(env):
     """Checks if the environment inherits from the
-    :class:`~bayesian_learning_control.simzoo.common.disturber.Disturber`
+    :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
     class or that the methods and attributes that are required for the robustness
     evaluation are present.
 
