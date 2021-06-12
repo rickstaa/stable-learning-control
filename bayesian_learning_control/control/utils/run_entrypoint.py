@@ -13,8 +13,9 @@ Source code
 """  # noqa
 
 import base64
-import pickle
 import zlib
+
+import pickle5 as pickle
 
 if __name__ == "__main__":
     import argparse

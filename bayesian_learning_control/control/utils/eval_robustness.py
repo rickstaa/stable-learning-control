@@ -774,8 +774,8 @@ if __name__ == "__main__":  # noqa: C901
         "--episodes",
         "-n",
         type=int,
-        default=10,
-        help="The number of episodes you want to run per disturbance (default: 10)",
+        default=100,
+        help="The number of episodes you want to run per disturbance (default: 100)",
     )
     parser.add_argument(
         "--render",

@@ -23,14 +23,9 @@ from bayesian_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from bayesian_learning_control.utils.import_utils import import_tf
 from bayesian_learning_control.utils.log_utils import log_to_std_out
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import (
-    mpi_statistics_scalar,
-    proc_id,
-)
+    mpi_statistics_scalar, proc_id)
 from bayesian_learning_control.utils.serialization_utils import (
-    convert_json,
-    load_from_json,
-    save_to_json,
-)
+    convert_json, load_from_json, save_to_json)
 from torch.utils.tensorboard import SummaryWriter
 
 
