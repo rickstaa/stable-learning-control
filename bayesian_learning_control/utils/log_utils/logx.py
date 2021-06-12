@@ -12,15 +12,15 @@ import glob
 import json
 import os
 import os.path as osp
-import pickle
 import time
 
 import joblib
 import numpy as np
+import pickle5 as pickle
 import torch
 from bayesian_learning_control.common.helpers import is_scalar
-from bayesian_learning_control.utils.import_utils import import_tf
 from bayesian_learning_control.user_config import DEFAULT_STD_OUT_TYPE
+from bayesian_learning_control.utils.import_utils import import_tf
 from bayesian_learning_control.utils.log_utils import log_to_std_out
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import (
     mpi_statistics_scalar,

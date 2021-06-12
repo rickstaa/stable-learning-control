@@ -245,6 +245,10 @@ There are a few flags for options:
     :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
     your gym environment inherits from. See :ref:`env_add`.
 
+.. option:: --disable_baseline, default=False
+
+    *bool*. Specifies whether you want to disable the baseline (i.e. zero disturbance) from being added to the disturbance array automatically.
+
 .. option:: --obs
 
     *list of ints*. The observations you want to show in the observations/reference plots. By default all observations will be shown.

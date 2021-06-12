@@ -20,13 +20,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from bayesian_learning_control.control.common.helpers import validate_observations
-from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
-from bayesian_learning_control.utils.log_utils import (
-    EpochLogger,
-    friendly_err,
-    log_to_std_out,
-)
+from bayesian_learning_control.control.common.helpers import \
+    validate_observations
+from bayesian_learning_control.control.utils.test_policy import \
+    load_policy_and_env
+from bayesian_learning_control.utils.log_utils import (EpochLogger,
+                                                       friendly_err,
+                                                       log_to_std_out)
 
 REQUIRED_DISTURBER_OBJECTS = {
     "methods": ["init_disturber", "disturbed_step", "next_disturbance"],
@@ -77,6 +77,7 @@ def run_disturbed_policy(  # noqa: C901
     policy,
     disturbance_type,
     disturbance_variant=None,
+    include_baseline=True,
     max_ep_len=None,
     num_episodes=100,
     render=True,
@@ -96,6 +97,8 @@ def run_disturbed_policy(  # noqa: C901
             ``env``, ``input``, ``output``, ``combined`` ...).
         disturbance_variant (str, optional): The variant of the disturbance (e.g.
             ``impulse``, ``periodic``, ``noise``, ...)
+        include_baseline (bool): Whether you want to automatically add the baseline
+            (i.e. zero disturbance) when it not present.
         max_ep_len (int, optional): The maximum episode length. Defaults to None.
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
@@ -146,10 +149,12 @@ def run_disturbed_policy(  # noqa: C901
             else (f"{missing_objects[missing_keys[0]]} " f"{missign_methods_str[0]}")
         )
         raise RuntimeError(
-            "The environment does not seem to be compatible with the robustness "
-            f"evaluation tool. The tool expects to find the {missing_warn_string} but "
-            "they are not implemented. Please check the Robustness Evaluation "
-            "documentation and try again."
+            friendly_err(
+                "The environment does not seem to be compatible with the robustness "
+                f"evaluation tool. The tool expects to find the {missing_warn_string} "
+                "but they are not implemented. Please check the Robustness Evaluation "
+                "documentation and try again."
+            )
         )
 
     output_dir = (
@@ -206,7 +211,11 @@ def run_disturbed_policy(  # noqa: C901
 
     # Initialize the disturber!
     try:
-        env.init_disturber(disturbance_type, disturbance_variant),
+        env.init_disturber(
+            disturbance_type=disturbance_type,
+            disturbance_variant=disturbance_variant,
+            include_baseline=include_baseline,
+        ),
     except (ValueError, TypeError) as e:
         if len(e.args) > 1:
             raise Exception(
@@ -828,6 +837,15 @@ if __name__ == "__main__":  # noqa: C901
         ),
     )
     parser.add_argument(
+        "--disable_baseline",
+        default=None,
+        action="store_true",
+        help=(
+            "Whether you want to disable the baseline (i.e. zero disturbance) from "
+            "being added to the disturbance array automatically."
+        ),
+    )
+    parser.add_argument(
         "--obs",
         default=None,
         nargs="+",
@@ -949,6 +967,7 @@ if __name__ == "__main__":  # noqa: C901
         policy,
         args.disturbance_type,
         disturbance_variant=args.disturbance_variant,
+        include_baseline=(not args.disable_baseline),
         max_ep_len=args.len,
         num_episodes=args.episodes,
         render=args.render,

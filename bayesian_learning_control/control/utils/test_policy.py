@@ -64,9 +64,11 @@ def _retrieve_model_folder(fpath):
     data_folders = glob.glob(fpath + r"/*_save")
     if ("tf2_save" in fpath and "torch_save" in fpath) or len(data_folders) > 1:
         raise IOError(
-            "Policy could not be loaded as the model as the specified model folder "
-            f"'{fpath}' seems to be corrupted. It contains both a 'torch_save' and "
-            "'tf2_save' folder. Please check your model path (fpath) and try again."
+            friendly_err(
+                "Policy could not be loaded as the model as the specified model folder "
+                f"'{fpath}' seems to be corrupted. It contains both a 'torch_save' and "
+                "'tf2_save' folder. Please check your model path (fpath) and try again."
+            )
         )
     elif "tf2_save" in fpath:
         model_path = os.sep.join(
@@ -81,8 +83,10 @@ def _retrieve_model_folder(fpath):
     else:  # Check
         if len(data_folders) == 0:
             raise FileNotFoundError(
-                f"No model was found inside the supplied model path '{fpath}'. Please "
-                "check your model path (fpath) and try again."
+                friendly_err(
+                    f"No model was found inside the supplied model path '{fpath}'. Please "
+                    "check your model path (fpath) and try again."
+                )
             )
         else:
             return (
@@ -115,8 +119,10 @@ def load_policy_and_env(fpath, itr="last"):
     """
     if not os.path.isdir(fpath):
         raise FileNotFoundError(
-            f"The model folder you specified '{fpath}' does not exist. Please specify "
-            "a valid model folder (fpath) and try again."
+            friendly_err(
+                f"The model folder you specified '{fpath}' does not exist. Please specify "
+                "a valid model folder (fpath) and try again."
+            )
         )
 
     # Retrieve model path and backend

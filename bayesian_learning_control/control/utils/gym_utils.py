@@ -8,8 +8,8 @@ import sys
 from textwrap import dedent
 
 import gym
-from gym import spaces
 from bayesian_learning_control.utils.log_utils import friendly_err
+from gym import spaces
 
 DISCRETE_SPACES = (
     spaces.Discrete,
@@ -73,7 +73,9 @@ def validate_gym_env(arg_dict):
         import bayesian_learning_control.env_config  # noqa: F401
     except Exception as e:
         raise Exception(
-            "Something went wrong when trying to import the 'env_config' file."
+            friendly_err(
+                "Something went wrong when trying to import the 'env_config' file."
+            )
         ) from e
 
     # Special handling for environment: make sure that env_name is a real,
@@ -132,7 +134,9 @@ def import_gym_env_pkg(module_name, frail=True, dry_run=False):
                 return True
         else:
             if frail:
-                raise ImportError("No module named '{}'.".format(module_name))
+                raise ImportError(
+                    friendly_err("No module named '{}'.".format(module_name))
+                )
             return False
     except (ImportError, KeyError, AttributeError) as e:
         if ImportError:

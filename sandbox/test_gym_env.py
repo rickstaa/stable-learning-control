@@ -1,16 +1,15 @@
 """Small script to see if a gym environment can be imported.
 """
 
-import gym
 import bayesian_learning_control.simzoo.simzoo  # noqa: F401
-import numpy as np
+import gym
 import matplotlib.pyplot as plt
+import numpy as np
 
 RANDOM_STEP = True
 # ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Ex3EKF-v1"
-ENV_NAME = "CartPole-v1"
-# ENV_NAME = "CartPoleCost-v0"
+ENV_NAME = "CartPoleCost-v0"
 
 if __name__ == "__main__":
 

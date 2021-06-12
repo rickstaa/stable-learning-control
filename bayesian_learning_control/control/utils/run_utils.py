@@ -22,8 +22,10 @@ import cloudpickle
 import numpy as np
 import psutil
 from bayesian_learning_control.common.helpers import all_bools, valid_str
-from bayesian_learning_control.user_config import DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
-from bayesian_learning_control.utils.log_utils import colorize, setup_logger_kwargs
+from bayesian_learning_control.user_config import (DEFAULT_SHORTHAND,
+                                                   WAIT_BEFORE_LAUNCH)
+from bayesian_learning_control.utils.log_utils import (colorize, friendly_err,
+                                                       setup_logger_kwargs)
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import mpi_fork
 from bayesian_learning_control.utils.serialization_utils import convert_json
 from tqdm import trange
@@ -115,7 +117,10 @@ def call_experiment(
                 import bayesian_learning_control.env_config  # noqa: F401
             except Exception as e:
                 raise Exception(
-                    "Something went wrong when trying to import the 'env_config' file."
+                    friendly_err(
+                        "Something went wrong when trying to import the 'env_config' "
+                        " file."
+                    )
                 ) from e
 
             env_name = kwargs.pop("env_name")
