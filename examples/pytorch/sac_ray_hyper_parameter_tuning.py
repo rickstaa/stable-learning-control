@@ -45,7 +45,8 @@ def train_sac(config):
 
     # Run algorithm training
     sac(
-        lambda: gym.make(env_name), **config,
+        lambda: gym.make(env_name),
+        **config,
     )
 
 
@@ -60,7 +61,7 @@ if __name__ == "__main__":
     log_path = osp.abspath(osp.join(dirname, "../../data/ray_results"))
 
     # Setup hyperparameter search starting point
-    current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha3": 0.2}]
+    current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha": 0.99}]
 
     # Setup the parameter space for you hyperparameter search
     # NOTE: This script uses the hyperopt search algorithm for efficient hyperparameter
@@ -72,7 +73,7 @@ if __name__ == "__main__":
         "opt_type": "minimize",
         "gamma": hp.uniform("gamma", 0.9, 0.999),
         "lr_a": hp.loguniform("lr_a", np.log(1e-6), np.log(1e-3)),
-        "alpha3": hp.uniform("alpha3", 0.0, 1.0),
+        "alpha": hp.uniform("alpha3", 0.9, 1.0),
     }
     hyperopt_search = HyperOptSearch(
         search_space,

@@ -22,7 +22,7 @@ import gym
 import numpy as np
 
 # Import the algorithm we want to tune
-from bayesian_learning_control.control.algos.tf2.sac.sac import sac
+from bayesian_learning_control.control.algos.tf2.lac.lac import lac
 from bayesian_learning_control.utils.import_utils import lazy_importer
 
 ray = lazy_importer(module_name="ray", frail=True)
@@ -32,7 +32,7 @@ from ray.tune.schedulers import ASHAScheduler  # noqa: E402
 from ray.tune.suggest.hyperopt import HyperOptSearch  # noqa: E402
 
 
-def train_sac(config):
+def train_lac(config):
     """Wrapper function that unpacks the config provided by the RAY tuner and converts
     them into the format the learning algorithm expects.
 
@@ -44,7 +44,7 @@ def train_sac(config):
     env_name = config.pop("env_name")
 
     # Run algorithm training
-    sac(
+    lac(
         lambda: gym.make(env_name),
         **config,
     )
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     log_path = osp.abspath(osp.join(dirname, "../../data/ray_results"))
 
     # Setup hyperparameter search starting point
-    current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha": 0.99}]
+    current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha3": 0.2}]
 
     # Setup the parameter space for you hyperparameter search
     # NOTE: This script uses the hyperopt search algorithm for efficient hyperparameter
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         "opt_type": "minimize",
         "gamma": hp.uniform("gamma", 0.9, 0.999),
         "lr_a": hp.loguniform("lr_a", np.log(1e-6), np.log(1e-3)),
-        "alpha": hp.uniform("alpha3", 0.9, 1.0),
+        "alpha3": hp.uniform("alpha3", 0.0, 1.0),
     }
     hyperopt_search = HyperOptSearch(
         search_space,
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     # clone trials, and alter hyperparameters of a running trial. For more information
     # see https://docs.ray.io/en/master/tune/api_docs/schedulers.html.
     analysis = tune.run(
-        train_sac,
+        train_lac,
         resources_per_trial={"cpu": 8, "gpu": 1},
         name="tune_sac_oscillator_1",
         num_samples=200,
