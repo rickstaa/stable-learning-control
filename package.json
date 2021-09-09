@@ -20,7 +20,7 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "release": "standard-version"
+    "release": "HUSKY=0 standard-version"
   },
   "commitlint": {
     "extends": [
