@@ -1,5 +1,16 @@
 # Changelog
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [1.1.2](https://github.com/rickstaa/bayesian-learning-control/compare/v1.1.0...v1.1.2) (2021-09-09)
+
+
+### Bug Fixes
+
+* **package.json:** this commit makes sure the release run script contains no bugs ([ef958ca](https://github.com/rickstaa/bayesian-learning-control/commit/ef958cac744bc47202c39f4addef25d9d142c1cd))
+
+# Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
