@@ -17,6 +17,15 @@ Projects that are open for contributions can be found on the [issue tab](https:
 4.  Push to the branch `git push origin feature/fooBar`
 5.  Create a new Pull Request
 
+## Commit instructions
+
+We use husky pre-commit hooks to ensure code quality. As a result you have to perform the following steps before you can commit any changes:
+
+1.  Install [node](https://nodejs.org/en/download/package-manager/).
+2.  Install [python](https://www.python.org/downloads/).
+3.  Run `npm install -D` and `pip install .[dev]` to install husky and the required linters.
+4.  Run `npm run prepare` to setup the pre-commit hooks.
+
 ## Pull Request Process
 
 1.  Ensure any install or build dependencies are removed before the end of the layer when doing a build.
@@ -27,11 +36,11 @@ Projects that are open for contributions can be found on the [issue tab](https:
 
 ### Versioning instructions
 
-We use the [standard-version](https://github.com/conventional-changelog/standard-version) package for versioning. This tool will automatically increase the version and create a changelog by parsing your commits using the [conventional Commits](https://conventionalcommits.org/).
+We use the [standard-version](https://github.com/conventional-changelog/standard-version) package for versioning. This tool will automatically increase the version and create a changelog by parsing your commits using the [conventional Commits](https://conventionalcommits.org/). This package can be invoked using the `npm run release` command.
 
 ### Linting instructions
 
-We use [husky](https://github.com/typicode/husky) pre-commit hooks to perform some linting and formatting actions. These actions will automatically run when you create a commit. For this, to work you need to ensure that the `npm install` command has been run before committing changes.
+We use [husky](https://github.com/typicode/husky) pre-commit hooks to perform some linting and formatting actions. These actions will automatically run when you create a commit. Apart from this also some linting actions are performed by github actions when you create a pull request.
 
 ## Code of Conduct
 
