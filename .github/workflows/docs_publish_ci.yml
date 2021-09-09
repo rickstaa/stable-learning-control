@@ -50,7 +50,7 @@ jobs:
           npm install standard-version
       - name: Make sure the version in all code files is correct
         run: |
-          npm run standard-version -- --skip.commit --skip.tag --skip.changelog --release-as ${{ steps.get_semver.outputs.current_version }}
+          npm run release -- --skip.commit --skip.tag --skip.changelog --release-as ${{ steps.get_semver.outputs.current_version }}
       - name: Build documentation
         working-directory: ./docs
         run: make html
