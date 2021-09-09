@@ -15,10 +15,6 @@
     {
       "filename": "package.json",
       "type": "json"
-    },
-    {
-      "filename": ".bumpversion.cfg",
-      "updater": ".standard-version/bumpversion.cfg.updater.js"
     }
   ]
 }

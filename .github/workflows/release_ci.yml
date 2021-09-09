@@ -35,23 +35,22 @@ jobs:
         uses: rickstaa/action-get-semver@v1
         with:
           verbose: "true"
-      # Use bumpversion to update version in code
-      # See. https://pypi.org/project/bump2version/
-      - name: Set up Python environment
-        uses: actions/setup-python@v2
+      # Use standard-version to update version in code
+      # See. https://github.com/conventional-changelog/standard-version
+      - uses: actions/setup-node@v2
         with:
-          python-version: 3.7
-      - name: Install bump2version
+          node-version: "12"
+      - name: Install standard-version
         run: |
-          pip install bump2version
+          npm install standard-version
       - name: Make sure the version in all code files is correct
         run: |
-          bumpversion --no-tag --no-commit --new-version ${{ steps.get_semver.outputs.current_version }} patch
+          npm run standard-version -- --skip.commit --skip.tag --skip.changelog --release-as ${{ steps.get_semver.outputs.current_version }}
       - name: Commit code version changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          file_pattern: bayesian_learning_control/version.py docs/source/conf.py setup.cfg .bumpversion.cfg package.json package-lock.json
+          file_pattern: bayesian_learning_control/version.py docs/source/conf.py setup.cfg package.json package-lock.json
           commit_message: "chore(release): updates code version to ${{ steps.get_semver.outputs.current_version }}"
   release-changelog:
     runs-on: ubuntu-latest
@@ -67,7 +66,7 @@ jobs:
         with:
           node-version: "12"
       - name: Install standard-version
-        run: npm install
+        run: npm install standard-version
       - name: Create CHANGELOG.md file using standard-version
         run: npm run changelog
       - name: Commit changelog changes

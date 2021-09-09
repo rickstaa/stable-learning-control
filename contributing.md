@@ -36,7 +36,7 @@ We use husky pre-commit hooks to ensure code quality. As a result you have to pe
 
 ### Versioning instructions
 
-We use the [standard-version](https://github.com/conventional-changelog/standard-version) package for versioning. This tool will automatically increase the version and create a changelog by parsing your commits using the [conventional Commits](https://conventionalcommits.org/). This package can be invoked using the `npm run release` command.
+We use the [standard-version](https://github.com/conventional-changelog/standard-version) package for versioning. This tool will automatically increase the version and create a changelog by parsing your commits using the [conventional Commits](https://conventionalcommits.org/). This package can be invoked using the `npm run release` command. After you cut a release, you can push the new git tag using the `git push --follow-tags origin main` command.
 
 ### Linting instructions
 
