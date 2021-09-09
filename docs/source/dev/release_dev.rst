@@ -32,6 +32,18 @@ Markdown guidelines:
 
 .. _`Github Actions`: https://github.com/rickstaa/bayesian-learning-control/actions
 
+
+Pre-commit hooks
+----------------
+
+The BLC package also contains several pre-commit hooks that can be used to enforce the aforementioned guidelines before a commit is made. To enable these hooks please:
+
+1.  Install `node <https://nodejs.org/en/download/package-manager>`_.
+2.  Install `python <https://www.python.org/downloads>`_.
+3.  Run ``npm install -D`` and ``pip install .[dev]`` to install husky and the required linters.
+4.  Run ``npm run prepare`` to setup the pre-commit hooks.
+
+
 General guidelines
 ==================
 

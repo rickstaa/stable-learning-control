@@ -19,7 +19,7 @@ Projects that are open for contributions can be found on the [issue tab](https:
 
 ## Commit instructions
 
-We use husky pre-commit hooks to ensure code quality. As a result you have to perform the following steps before you can commit any changes:
+We use husky pre-commit hooks to ensure code quality. To enable these hooks please:
 
 1.  Install [node](https://nodejs.org/en/download/package-manager/).
 2.  Install [python](https://www.python.org/downloads/).
