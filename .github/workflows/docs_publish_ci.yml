@@ -40,7 +40,7 @@ jobs:
         uses: rickstaa/action-get-semver@v1
         with:
           verbose: "true"
-      # Use standard-version to make sure version is correct
+      # NOTE: Use standard-version to make sure version is correct
       # See. https://github.com/conventional-changelog/standard-version
       - uses: actions/setup-node@v2
         with:
