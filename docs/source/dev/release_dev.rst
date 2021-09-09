@@ -66,12 +66,11 @@ Commit guidelines
 -----------------
 
 Make sure you add a good descriptive commit message while committing to this repository. A
-good guide can be found `here`_. To make searching to commits even easier, you're welcome to
-replace the ``scope`` attribute with `gitmojis`_.
-
+good guide can be found `here`_. Please check out the `commitizen`_ npm package as it is very helpful
+in helping you write good commit messages.
 
 .. _`here`: https://www.conventionalcommits.org/en/v1.0.0/
-.. _`gitmojis`: https://gitmoji.dev/
+.. _`commitizen`: https://github.com/commitizen/cz-cli
 
 Versioning guidelines
 ---------------------
