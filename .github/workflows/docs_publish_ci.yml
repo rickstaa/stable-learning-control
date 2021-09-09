@@ -72,4 +72,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
           force_orphan: true
-          commit_message: ":rocket: Deploys documentation ${{ steps.previous_tag.outputs.current_version }} - ${{ github.event.head_commit.id }}"
+          commit_message: "docs: deploys documentation ${{ steps.previous_tag.outputs.current_version }} - ${{ github.event.head_commit.id }}"
