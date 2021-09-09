@@ -11,8 +11,7 @@ from pathlib import Path
 import joblib
 import torch
 from bayesian_learning_control.utils.import_utils import import_tf
-from bayesian_learning_control.utils.log_utils import (EpochLogger,
-                                                       log_to_std_out)
+from bayesian_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 from bayesian_learning_control.utils.log_utils.helpers import friendly_err
 from bayesian_learning_control.utils.serialization_utils import load_from_json
 
@@ -84,8 +83,8 @@ def _retrieve_model_folder(fpath):
         if len(data_folders) == 0:
             raise FileNotFoundError(
                 friendly_err(
-                    f"No model was found inside the supplied model path '{fpath}'. Please "
-                    "check your model path (fpath) and try again."
+                    f"No model was found inside the supplied model path '{fpath}'. "
+                    "Please check your model path (fpath) and try again."
                 )
             )
         else:
@@ -120,8 +119,8 @@ def load_policy_and_env(fpath, itr="last"):
     if not os.path.isdir(fpath):
         raise FileNotFoundError(
             friendly_err(
-                f"The model folder you specified '{fpath}' does not exist. Please specify "
-                "a valid model folder (fpath) and try again."
+                f"The model folder you specified '{fpath}' does not exist. Please "
+                "specify a valid model folder (fpath) and try again."
             )
         )
 
@@ -209,7 +208,9 @@ def load_pytorch_policy(fpath, itr="last", env=None):
 
     if itr != "last":
         fpath = _retrieve_iter_folder(fpath, itr)
-    model_file = Path(fpath).joinpath("model_state.pt",)
+    model_file = Path(fpath).joinpath(
+        "model_state.pt",
+    )
     print("\n")
     log_to_std_out("Loading model from '%s'.\n\n" % model_file, type="info")
 

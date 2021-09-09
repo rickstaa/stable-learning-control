@@ -133,7 +133,7 @@ class TrajectoryBuffer:
         traj_ptr (int): The start index of the current trajectory.
         traj_ptrs (list): The start indexes of each trajectory.
         n_traj (int): The number of trajectories currently stored in the buffer.
-        """
+    """
 
     def __init__(
         self,

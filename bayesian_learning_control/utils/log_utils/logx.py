@@ -23,9 +23,14 @@ from bayesian_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from bayesian_learning_control.utils.import_utils import import_tf
 from bayesian_learning_control.utils.log_utils import log_to_std_out
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import (
-    mpi_statistics_scalar, proc_id)
+    mpi_statistics_scalar,
+    proc_id,
+)
 from bayesian_learning_control.utils.serialization_utils import (
-    convert_json, load_from_json, save_to_json)
+    convert_json,
+    load_from_json,
+    save_to_json,
+)
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -131,7 +136,14 @@ class Logger:
         )  # Used for keeping count of the current global step
 
     def log(
-        self, msg, color="", bold=False, highlight=False, type=None, *args, **kwargs,
+        self,
+        msg,
+        color="",
+        bold=False,
+        highlight=False,
+        type=None,
+        *args,
+        **kwargs,
     ):
         """Print a colorized message to ``stdout``.
 
@@ -179,7 +191,12 @@ class Logger:
         self._write_to_tb(var_name, val, global_step=global_step)
 
     def log_tabular(
-        self, key, val, tb_write=False, tb_prefix=None, tb_alias=None,
+        self,
+        key,
+        val,
+        tb_write=False,
+        tb_prefix=None,
+        tb_alias=None,
     ):
         """Log a value of some diagnostic.
 
@@ -605,7 +622,9 @@ class Logger:
                 if hasattr(self.tf_saver_elements, "_setup_kwargs"):
                     save_info["setup_kwargs"] = self.tf_saver_elements._setup_kwargs
                 self.save_to_json(
-                    save_info, output_filename="save_info.json", output_path=fpath,
+                    save_info,
+                    output_filename="save_info.json",
+                    output_path=fpath,
                 )
                 self._save_info_saved = True
 
@@ -674,7 +693,9 @@ class Logger:
                         "setup_kwargs"
                     ] = self.pytorch_saver_elements._setup_kwargs
                 self.save_to_json(
-                    save_info, output_filename="save_info.json", output_path=fpath,
+                    save_info,
+                    output_filename="save_info.json",
+                    output_path=fpath,
                 )
                 self._save_info_saved = True
 
@@ -1691,7 +1712,11 @@ class EpochLogger(Logger):
         """
         if val is not None:
             super().log_tabular(
-                key, val, tb_write=tb_write, tb_prefix=tb_prefix, tb_alias=tb_alias,
+                key,
+                val,
+                tb_write=tb_write,
+                tb_prefix=tb_prefix,
+                tb_alias=tb_alias,
             )
         else:
 

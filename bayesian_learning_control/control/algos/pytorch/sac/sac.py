@@ -338,7 +338,8 @@ class SAC(nn.Module):
             q2_pi_targ = self.ac_targ.Q2(o_, pi_)
             if self._opt_type.lower() == "minimize":
                 q_pi_targ = torch.max(
-                    q1_pi_targ, q2_pi_targ,
+                    q1_pi_targ,
+                    q2_pi_targ,
                 )  # Use max clipping to prevent underestimation bias.
             else:
                 q_pi_targ = torch.min(
@@ -502,7 +503,8 @@ class SAC(nn.Module):
 
         restored_model_state_dict = torch.load(load_path, map_location=self._device)
         self.load_state_dict(
-            restored_model_state_dict, restore_lagrance_multipliers,
+            restored_model_state_dict,
+            restore_lagrance_multipliers,
         )
         self.ac.to(self._device)
         self.ac_targ.to(self._device)
@@ -582,7 +584,9 @@ class SAC(nn.Module):
         try:
             super().load_state_dict(state_dict, strict=False)
         except (AttributeError, RuntimeError) as e:
-            raise type(e)("The 'state_dict' could not be loaded successfully.",) from e
+            raise type(e)(
+                "The 'state_dict' could not be loaded successfully.",
+            ) from e
 
     def state_dict(self):
         """Simple wrapper around the :meth:`torch.nn.Module.state_dict` method that saves
@@ -659,7 +663,8 @@ class SAC(nn.Module):
     def alpha(self, set_val):
         """Property used to ensure :attr:`alpha` and :attr:`log_alpha` are related."""
         self.log_alpha.data = torch.as_tensor(
-            np.log(1e-37 if set_val < 1e-37 else set_val), dtype=self.log_alpha.dtype,
+            np.log(1e-37 if set_val < 1e-37 else set_val),
+            dtype=self.log_alpha.dtype,
         )
 
     @property
@@ -1090,7 +1095,9 @@ def sac(  # noqa: C901
                 policy, test_env, num_test_episodes, max_ep_len=max_ep_len
             )
             logger.store(
-                TestEpRet=eps_ret, TestEpLen=eps_len, extend=True,
+                TestEpRet=eps_ret,
+                TestEpLen=eps_len,
+                extend=True,
             )
 
             # Epoch based learning rate decay
@@ -1114,14 +1121,20 @@ def sac(  # noqa: C901
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("TotalEnvInteracts", t)
             logger.log_tabular(
-                "EpRet", with_min_and_max=True, tb_write=use_tensorboard,
+                "EpRet",
+                with_min_and_max=True,
+                tb_write=use_tensorboard,
             )
             logger.log_tabular(
-                "TestEpRet", with_min_and_max=True, tb_write=use_tensorboard,
+                "TestEpRet",
+                with_min_and_max=True,
+                tb_write=use_tensorboard,
             )
             logger.log_tabular("EpLen", average_only=True, tb_write=use_tensorboard)
             logger.log_tabular(
-                "TestEpLen", average_only=True, tb_write=use_tensorboard,
+                "TestEpLen",
+                average_only=True,
+                tb_write=use_tensorboard,
             )
             logger.log_tabular(
                 "Lr_a",
@@ -1179,7 +1192,8 @@ def sac(  # noqa: C901
 
     print("" if logger_kwargs["verbose"] else "\n")
     logger.log(
-        "Training finished after {}s".format(time.time() - start_time), type="info",
+        "Training finished after {}s".format(time.time() - start_time),
+        type="info",
     )
 
 
