@@ -20,7 +20,7 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "changelog": "HUSKY=0 standrad-version --skip.bump --skip.commit --skip.tag",
+    "changelog": "HUSKY=0 standard-version --skip.bump --skip.commit --skip.tag",
     "release": "HUSKY=0 standard-version"
   },
   "commitlint": {
