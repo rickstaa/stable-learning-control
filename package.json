@@ -20,7 +20,7 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "release": "HUSKY=0 standard-version"
+    "release": "HUSKY=0 standard-version && git push --follow-tags origin main"
   },
   "commitlint": {
     "extends": [
