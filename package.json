@@ -21,7 +21,7 @@
   "scripts": {
     "prepare": "husky install",
     "changelog": "HUSKY=0 standrad-version --skip.bump --skip.commit --skip.tag",
-    "release": "HUSKY=0 standard-version && git push --follow-tags origin main"
+    "release": "HUSKY=0 standard-version"
   },
   "commitlint": {
     "extends": [
