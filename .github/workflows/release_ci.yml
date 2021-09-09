@@ -50,7 +50,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          file_pattern: bayesian_learning_control/version.py docs/source/conf.py setup.cfg package.json package-lock.json
+          file_pattern: bayesian_learning_control/version.py docs/source/conf.py setup.cfg package.json
           commit_message: "chore(release): updates code version to ${{ steps.get_semver.outputs.current_version }}"
   create-release-draft:
     # NOTE: Drafts a release for the new tag
