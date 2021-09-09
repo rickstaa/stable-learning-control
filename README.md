@@ -39,3 +39,7 @@ git submodule update --init --recursive
 ## Installation and Usage
 
 Please see the [docs](https://rickstaa.github.io/bayesian-learning-control/) for installation and usage instructions.
+
+## Contributing
+
+We use [husky](https://github.com/typicode/husky) pre-commit hooks and github actions to enforce high code quality. Please check the [contributing.md](contributing.md) before contributing to this repository.
