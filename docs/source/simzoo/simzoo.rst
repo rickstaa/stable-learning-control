@@ -86,9 +86,11 @@ Add new Environments
 
 Please follow the steps provided in the `Openai Gym documentation`_ when creating a new environment. After
 you created your environment, you can use the `simzoo/simzoo/__init__.py`_ file to register them to the
-BLC package.
+BLC package. Additionally, you can also add your environment into the ``__init__.py`` files in the subfolders to
+shorten the environment namespace (see `simzoo/simzoo/envs/biological/__init__.py`_ for an example).
 
 .. _`simzoo/simzoo/__init__.py`: https://github.com/rickstaa/simzoo/blob/main/simzoo/__init__.py
+.. _`simzoo/simzoo/envs/biological/__init__.py`: https://github.com/rickstaa/simzoo/blob/main/simzoo/envs/biological/__init__.py
 
 Simzoo/simzoo/__init__.py
 -------------------------
