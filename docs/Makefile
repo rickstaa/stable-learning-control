@@ -35,9 +35,8 @@ gh-pages:
 	cd .. && \
 	git add docs/build/html && \
 	git clean -ffxd && \
-	mv -fv docs/build/html/* ../ && \
-	cp -fv docs/build/html/.[!.]* ../ && \
-	cd .. && \
+	mv -fv docs/build/html/* ./ && \
+	mv -fv docs/build/html/.[!.]* ./ && \
 	rm -rf $(GH_PAGES_SOURCES) && \
 	git add -A && \
 	git commit -m "docs: Generated gh-pages for `git log main -1 --pretty=short --abbrev-commit`" && \
