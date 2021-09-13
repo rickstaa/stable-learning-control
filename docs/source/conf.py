@@ -23,14 +23,9 @@
 import os.path as osp
 import sys
 
-dirname = osp.dirname
-top_folder = dirname(dirname(dirname(__file__)))
-sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control"))
-sys.path.insert(0, osp.join(top_folder, "examples"))
-sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "control"))
-sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "hardware"))
-sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "modeling"))
-sys.path.insert(0, osp.join(top_folder, "bayesian_learning_control", "simzoo"))
+sys.path.insert(0, osp.abspath("../../bayesian_learning_control"))
+sys.path.insert(1, osp.abspath("../../examples"))
+sys.path.insert(2, osp.abspath("../../bayesian_learning_control/simzoo"))
 
 # -- General configuration ------------------------------------------------
 
@@ -62,21 +57,21 @@ needs_sphinx = "3.0"
 extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.imgmath",
-    "sphinx.ext.viewcode",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx.ext.extlinks",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
-    "recommonmark",
+    "sphinx.ext.viewcode",
+    "myst_parser",
 ]
 
 # Extension settings
 autosummary_generate = True
 autosummary_generate_overwrite = True
 autodoc_member_order = "bysource"
-autosummary_imported_members = True
+# autosummary_imported_members = True
 
 # imgmath settings
 imgmath_image_format = "svg"

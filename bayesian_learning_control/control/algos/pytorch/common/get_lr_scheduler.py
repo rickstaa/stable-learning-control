@@ -1,13 +1,4 @@
 """Contains functions used for creating Pytorch learning rate schedulers.
-
-.. rubric:: Functions
-
-.. autosummary::
-    :toctree:
-
-    calc_linear_decay_rate
-    get_exponential_decay_rate
-    get_lr_scheduler
 """
 
 from decimal import Decimal
