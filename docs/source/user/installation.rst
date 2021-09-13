@@ -55,6 +55,8 @@ To use Python from the environment, you just created, activate the environment w
 
     conda activate blc
 
+Alternatively, you can also use Python its `venv <https://docs.python.org/3/library/venv.html>` package to create a virtual environment.
+
 .. admonition:: You Should Know
 
     If you're new to python environments and package management, this stuff can quickly get confusing or overwhelming,
