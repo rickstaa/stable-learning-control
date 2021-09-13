@@ -6,7 +6,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = Bayesian Learning Control
 SOURCEDIR     = source
 BUILDDIR      = build
-GH_PAGES_SOURCES = docs bayesian_learning_control
+GH_PAGES_SOURCES = docs bayesian_learning_control examples
 
 # Put it first so that "make" without argument is like "make help".
 .PHONY: help Makefile
@@ -26,7 +26,7 @@ gh-pages:
 	cd .. && \
 	git submodule update --recursive && \
 	git checkout gh-pages && \
-	git rm -rf . && git clean -ffxd && \
+	git rm -rf . && git clean -fxd && \
 	git checkout main $(GH_PAGES_SOURCES) && \
 	git reset HEAD && \
 	cd docs && \
@@ -44,7 +44,8 @@ gh-pages:
 	git checkout main && \
 	git submodule update --recursive && \
 	npm install && \
-	npm run prepare
+	npm run prepare && \
+	git restore package-lock.json
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
