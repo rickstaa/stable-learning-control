@@ -26,7 +26,7 @@ gh-pages:
 	cd .. && \
 	git submodule update --recursive && \
 	git checkout gh-pages && \
-	git rm -rf . && git clean -fxd && \
+	git rm -rf . && git clean -ffxd && \
 	git checkout main $(GH_PAGES_SOURCES) && \
 	git reset HEAD && \
 	cd docs && \
@@ -35,14 +35,17 @@ gh-pages:
 	cd .. && \
 	git add docs/build/html && \
 	git clean -ffxd && \
-	mv -fv docs/build/html/* ./ && \
-	touch .nojekyll && \
+	mv -fv docs/build/html/* ../ && \
+	cp -fv docs/build/html/.[!.]* ../ && \
+	cd .. && \
 	rm -rf $(GH_PAGES_SOURCES) && \
 	git add -A && \
-	git commit -m ":pencil: Generated gh-pages for `git log main -1 --pretty=short --abbrev-commit`" && \
+	git commit -m "docs: Generated gh-pages for `git log main -1 --pretty=short --abbrev-commit`" && \
 	git push origin gh-pages && \
 	git checkout main && \
-	git submodule update --recursive
+	git submodule update --recursive && \
+	npm install && \
+	npm run prepare
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
