@@ -1,6 +1,6 @@
 {
   "name": "bayesian-learning-control",
-  "version": "1.1.23",
+  "version": "1.1.27",
   "repository": {
     "type": "git",
     "url": "git@github.com:rickstaa/bayesian-learning-control.git"
@@ -30,16 +30,16 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "13.1.0",
-    "@commitlint/config-conventional": "13.1.0",
+    "@commitlint/cli": "13.2.0",
+    "@commitlint/config-conventional": "13.2.0",
     "commitizen": "4.2.4",
     "cz-conventional-changelog": "3.3.0",
     "husky": "7.0.2",
-    "lint-staged": "11.1.2",
+    "lint-staged": "11.2.0",
     "remark-cli": "10.0.0",
-    "remark-lint": "9.0.1",
-    "remark-preset-lint-recommended": "6.0.1",
-    "sort-package-json": "1.51.0",
+    "remark-lint": "9.1.0",
+    "remark-preset-lint-recommended": "6.1.0",
+    "sort-package-json": "1.52.0",
     "standard-version": "^9.3.1"
   }
 }
