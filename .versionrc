@@ -13,6 +13,14 @@
       "updater": ".standard-version/cfg.updater.js"
     },
     {
+      "filename": "bayesian_learning_control/version.py",
+      "updater": ".standard-version/version.py.updater.js"
+    },
+    {
+      "filename": "setup.cfg",
+      "updater": ".standard-version/cfg.updater.js"
+    },
+    {
       "filename": "package.json",
       "type": "json"
     }
