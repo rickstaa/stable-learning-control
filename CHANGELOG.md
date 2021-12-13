@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.43](https://github.com/rickstaa/bayesian-learning-control/compare/v1.1.37...v1.1.43) (2021-12-13)
+
 ### [1.1.28](https://github.com/rickstaa/bayesian-learning-control/compare/v1.1.27...v1.1.28) (2021-10-07)
 
 ### [1.1.23](https://github.com/rickstaa/bayesian-learning-control/compare/v1.1.22...v1.1.23) (2021-09-18)
