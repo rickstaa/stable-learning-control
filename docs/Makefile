@@ -43,9 +43,9 @@ gh-pages:
 	git push origin gh-pages && \
 	git checkout main && \
 	git submodule update --recursive && \
-	npm install && \
-	npm run prepare && \
-	git restore package-lock.json
+	pnpm install && \
+	pnpm run prepare && \
+	git restore pnpm-lock.yaml
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
