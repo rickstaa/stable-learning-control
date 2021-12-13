@@ -55,7 +55,9 @@ To use Python from the environment, you just created, activate the environment w
 
     conda activate blc
 
-Alternatively, you can also use Python its `venv <https://docs.python.org/3/library/venv.html>` package to create a virtual environment.
+Alternatively, you can also use Python its `venv <https://docs.python.org/3/library/venv.html>`_ package to create a virtual environment. When
+using this option, make sure you set the `--system-site-packages` flag when creating the environment when you need access to the system python packages
+(e.g. when you use `openai_ros <http://wiki.ros.org/openai_ros>`_ environments).
 
 .. admonition:: You Should Know
 
