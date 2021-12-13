@@ -2,6 +2,9 @@
 control/logs
 data/
 logs/*
+*.pnpm-error.log
+*.pnpm-debug.log
+*.log
 
 # Docs
 _autosummary/
