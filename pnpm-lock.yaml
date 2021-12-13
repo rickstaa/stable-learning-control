@@ -7,8 +7,8 @@ specifiers:
   cz-conventional-changelog: 3.3.0
   husky: 7.0.4
   lint-staged: 11.2.5
-  pnpm: ^6.23.6
-  remark: ^14.0.2
+  pnpm: 6.23.6
+  remark: 14.0.2
   remark-cli: 10.0.0
   remark-lint: 9.1.0
   remark-preset-lint-recommended: 6.1.1
