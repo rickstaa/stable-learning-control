@@ -1,6 +1,6 @@
 {
   "name": "bayesian-learning-control",
-  "version": "1.1.37",
+  "version": "1.1.42",
   "repository": {
     "type": "git",
     "url": "git@github.com:rickstaa/bayesian-learning-control.git"
@@ -18,7 +18,7 @@
     ]
   },
   "lint-staged": {
-    "*.md": "./node_modules/.bin/remark -o .",
+    "!(CHANGELOG)*.md": "./node_modules/.bin/remark . -o --",
     "!(**/(tests)/**)*.py": [
       "flake8",
       "black"
