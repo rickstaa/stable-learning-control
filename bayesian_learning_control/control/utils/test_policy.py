@@ -334,7 +334,7 @@ if __name__ == "__main__":
         "--deterministic",
         "-d",
         action="store_true",
-        help="Wether you want to use a deterministic policy (default: True)",
+        help="Whether you want to use a deterministic policy (default: True)",
     )
     args = parser.parse_args()
     env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")

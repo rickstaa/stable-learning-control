@@ -1,8 +1,6 @@
-"""
-Soft Actor-Critic algorithm
-===========================
+"""Soft Actor-Critic algorithm
 
-This module contains the Pytorch implementation of the SAC algorithm of
+This module contains the Tensorflow 2.x implementation of the SAC algorithm of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 
 .. note::
@@ -150,14 +148,14 @@ class SAC(tf.keras.Model):
             ac_kwargs (dict, optional): Any kwargs appropriate for the ActorCritic
                 object you provided to SAC. Defaults to:
 
-                ====================  ===============================================
-                kwarg                 Value
-                ====================  ===============================================
-                hidden_sizes_actor    ``64 x 2``
-                hidden_sizes_critic   ``128 x 2``
-                activation            :class:`tf.nn.relu`
-                output_activation     :class:`tf.nn.relu`
-                ====================  ===============================================
+                =======================  ============================================
+                Kwarg                    Value
+                =======================  ============================================
+                ``hidden_sizes_actor``    ``64 x 2``
+                ``hidden_sizes_critic``   ``128 x 2``
+                ``activation``            :class:`tf.nn.relu`
+                ``output_activation``     :class:`tf.nn.relu`
+                =======================  ============================================
             opt_type (str, optional): The optimization type you want to use. Options
                 ``maximize`` and ``minimize``. Defaults to ``maximize``.
             alpha (float, optional): Entropy regularization coefficient (Equivalent to
@@ -196,6 +194,7 @@ class SAC(tf.keras.Model):
         }
         self._was_build = False
 
+        # Validate gym env
         # NOTE: The current implementation only works with continuous spaces.
         if not is_gym_env(env):
             raise ValueError("Env must be a valid Gym environment.")
@@ -405,7 +404,6 @@ class SAC(tf.keras.Model):
         # Optimize alpha (Entropy temperature) #########
         ################################################
         if self._adaptive_temperature:
-
             # Compute alpha loss gradients
             with tf.GradientTape() as alpha_tape:
 
@@ -479,7 +477,6 @@ class SAC(tf.keras.Model):
         Raises:
             Exception: Raises an exception if something goes wrong during loading.
         """
-
         latest = tf.train.latest_checkpoint(path)
         if latest is None:
             latest = tf.train.latest_checkpoint(osp.join(path, "tf2_save"))
@@ -718,7 +715,7 @@ def sac(  # noqa: C901
     start_policy=None,
     export=False,
 ):
-    """Trains the lac algorithm in a given environment.
+    """Trains the sac algorithm in a given environment.
 
     Args:
         env_fn: A function which creates a copy of the environment.
@@ -733,12 +730,12 @@ def sac(  # noqa: C901
             ===========  ================  ======================================
             Call         Output Shape      Description
             ===========  ================  ======================================
-            ``act``      (batch, act_dim)  | Numpy array of actions for each
-                                           | observation.
-            ``Q*/L``     (batch,)          | Tensor containing one current estimate
-                                           | of ``Q*/L`` for the provided observations
-                                           | and actions. (Critical: make sure to
-                                           | flatten this!)
+            ``act``      (batch, act_dim)   | Numpy array of actions for each
+                                            | observation.
+            ``Q*/L``     (batch,)           | Tensor containing one current estimate
+                                            | of ``Q*/L`` for the provided
+                                            | observations and actions. (Critical:
+                                            | make sure to flatten this!)
             ===========  ================  ======================================
 
             Calling ``pi`` should return:
@@ -746,11 +743,12 @@ def sac(  # noqa: C901
             ===========  ================  ======================================
             Symbol       Shape             Description
             ===========  ================  ======================================
-            ``a``        (batch, act_dim)  | Tensor containing actions from policy
-                                           | given observations.
-            ``logp_pi``  (batch,)          | Tensor containing log probabilities of
-                                           | actions in ``a``. Importantly: gradients
-                                           | should be able to flow back into ``a``.
+            ``a``        (batch, act_dim)   | Tensor containing actions from policy
+                                            | given observations.
+            ``logp_pi``  (batch,)           | Tensor containing log probabilities of
+                                            | actions in ``a``. Importantly:
+                                            | gradients should be able to flow back
+                                            | into ``a``.
             ===========  ================  ======================================
 
             Defaults to
@@ -837,7 +835,7 @@ def sac(  # noqa: C901
             the current policy and value function.
         start_policy (str): Path of a already trained policy to use as the starting
             point for the training. By default a new policy is created.
-        export (bool): Wether you want to export the model in the ``SavedModel`` format
+        export (bool): Whether you want to export the model in the ``SavedModel`` format
             such that it can be deployed to hardware. By default ``False``.
     """  # noqa: E501
     total_steps = steps_per_epoch * epochs
@@ -869,7 +867,13 @@ def sac(  # noqa: C901
     }  # Retrieve hyperparameters (Ignore logger object)
     logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger
 
-    env, test_env = env_fn(), env_fn()
+    env = env_fn()
+    env = gym.wrappers.FlattenObservation(
+        env
+    )  # NOTE: Done to make sure the alg works with dict observation spaces
+    if num_test_episodes != 0:
+        test_env = env_fn()
+        test_env = gym.wrappers.FlattenObservation(test_env)
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape[0]
     rew_dim = (
@@ -878,35 +882,35 @@ def sac(  # noqa: C901
 
     # Retrieve max episode length
     if max_ep_len is None:
-        max_ep_len = env._max_episode_steps
+        max_ep_len = env.env._max_episode_steps
     else:
-        if max_ep_len > env._max_episode_steps:
+        if max_ep_len > env.env._max_episode_steps:
             logger.log(
                 (
                     f"You defined your 'max_ep_len' to be {max_ep_len} "
-                    "while the environment 'max_epsiode_steps' is "
-                    f"{env._max_episode_steps}. As a result the environment "
+                    "while the environment 'max_epsisode_steps' is "
+                    f"{env.env._max_episode_steps}. As a result the environment "
                     f"'max_episode_steps' has been increased to {max_ep_len}"
                 ),
                 type="warning",
             )
-            env._max_episode_steps = max_ep_len
-            test_env._max_episode_steps = max_ep_len
+            env.env._max_episode_steps = max_ep_len
+            if num_test_episodes != 0:
+                test_env.env._max_episode_steps = max_ep_len
 
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = SoftActorCritic if actor_critic is None else actor_critic
 
     # Set random seed for reproducible results
     if seed is not None:
-        env.seed(seed)
-        test_env.seed(seed)
         os.environ["PYTHONHASHSEED"] = str(seed)
         os.environ["TF_CUDNN_DETERMINISTIC"] = "1"  # new flag present in tf 2.0+
         random.seed(seed)
         np.random.seed(seed)
         tf.random.set_seed(seed)
         env.seed(seed)
-        test_env.seed(seed)
+        if num_test_episodes != 0:
+            test_env.seed(seed)
 
     policy = SAC(
         env,
@@ -990,7 +994,6 @@ def sac(  # noqa: C901
     start_time = time.time()
     o, ep_ret, ep_len = env.reset(), 0, 0
     for t in range(total_steps):
-
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards,
         # use the learned policy.
@@ -1038,6 +1041,7 @@ def sac(  # noqa: C901
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
                 logger.store(**update_diagnostics)  # Log diagnostics
+
             # SGD batch tb logging
             if use_tensorboard and not tb_low_log_freq:
                 logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
@@ -1051,14 +1055,15 @@ def sac(  # noqa: C901
                 logger.save_state({"env": env}, itr=epoch)
 
             # Test the performance of the deterministic version of the agent
-            eps_ret, eps_len = test_agent(
-                policy, test_env, num_test_episodes, max_ep_len=max_ep_len
-            )
-            logger.store(
-                TestEpRet=eps_ret,
-                TestEpLen=eps_len,
-                extend=True,
-            )
+            if num_test_episodes != 0:
+                eps_ret, eps_len = test_agent(
+                    policy, test_env, num_test_episodes, max_ep_len=max_ep_len
+                )
+                logger.store(
+                    TestEpRet=eps_ret,
+                    TestEpLen=eps_len,
+                    extend=True,
+                )
 
             # Epoch based learning rate decay
             if lr_decay_ref.lower() != "step":
@@ -1089,17 +1094,18 @@ def sac(  # noqa: C901
                 with_min_and_max=True,
                 tb_write=use_tensorboard,
             )
-            logger.log_tabular(
-                "TestEpRet",
-                with_min_and_max=True,
-                tb_write=use_tensorboard,
-            )
-            logger.log_tabular("EpLen", average_only=True, tb_write=use_tensorboard)
-            logger.log_tabular(
-                "TestEpLen",
-                average_only=True,
-                tb_write=use_tensorboard,
-            )
+            if num_test_episodes != 0:
+                logger.log_tabular(
+                    "TestEpRet",
+                    with_min_and_max=True,
+                    tb_write=use_tensorboard,
+                )
+                logger.log_tabular("EpLen", average_only=True, tb_write=use_tensorboard)
+                logger.log_tabular(
+                    "TestEpLen",
+                    average_only=True,
+                    tb_write=use_tensorboard,
+                )
             logger.log_tabular(
                 "Lr_a",
                 policy._pi_optimizer.lr.numpy(),
@@ -1275,7 +1281,10 @@ if __name__ == "__main__":
         "--num_test_episodes",
         type=int,
         default=10,
-        help="the number of episodes for the performance analysis (default: 10)",
+        help=(
+            "the number of episodes for the performance analysis (default: 10). When "
+            "set to zero no test episodes will be performed"
+        ),
     )
     parser.add_argument(
         "--alpha",
@@ -1372,7 +1381,7 @@ if __name__ == "__main__":
         type=str,
         default=False,
         help=(
-            "Wether you want to export the model in the 'SavedModel' format "
+            "Whether you want to export the model in the 'SavedModel' format "
             "such that it can be deployed to hardware (Default: False)"
         ),
     )
@@ -1466,7 +1475,7 @@ if __name__ == "__main__":
     logger_kwargs["output_dir"] = osp.abspath(
         osp.join(
             osp.dirname(osp.realpath(__file__)),
-            f"../../../../../data/lac/{args.env.lower()}/runs/run_{int(time.time())}",
+            f"../../../../../data/sac/{args.env.lower()}/runs/run_{int(time.time())}",
         )
     )
 

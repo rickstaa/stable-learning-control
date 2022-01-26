@@ -36,6 +36,8 @@ For mac this command can be used:
 
     For Windows, the `Microsoft MPI <https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi>`_ package can be used. As we currently do not offer support for our package with Windows, we did not test the BLC package's compatibility.
 
+.. _install:
+
 Installing Python
 =================
 

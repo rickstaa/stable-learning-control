@@ -69,7 +69,7 @@ if __name__ == "__main__":  # noqa: C901
         "--deterministic",
         "-d",
         action="store_true",
-        help="Wether you want to use a deterministic policy (default: True)",
+        help="Whether you want to use a deterministic policy (default: True)",
     )
     parser.add_argument(
         "--render",

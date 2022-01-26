@@ -5,11 +5,13 @@ import bayesian_learning_control.simzoo.simzoo  # noqa: F401
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
+import openai_ros  # noqa: F401
 
 RANDOM_STEP = True
 # ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Ex3EKF-v1"
 ENV_NAME = "CartPoleCost-v0"
+ENV_NAME = "PandaReach-v0"
 
 if __name__ == "__main__":
 
@@ -17,12 +19,12 @@ if __name__ == "__main__":
 
     # Take T steps in the environment
     T = 1000
+    tau = 0.1
     path = []
     t1 = []
     s = env.reset()
     print(f"Taking {T} steps in the Cartpole environment.")
-    for i in range(int(T / env.tau)):
-        # for i in range(int(T / env.dt)):
+    for i in range(int(T / tau)):
         action = (
             env.action_space.sample()
             if RANDOM_STEP
@@ -34,7 +36,7 @@ if __name__ == "__main__":
         except NotImplementedError:
             pass
         path.append(s)
-        t1.append(i * env.tau)
+        t1.append(i * tau)
     print("Finished Cartpole environment simulation.")
 
     # Plot results

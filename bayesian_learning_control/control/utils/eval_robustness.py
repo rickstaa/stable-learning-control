@@ -43,7 +43,7 @@ def _disturber_implemented(env):
     Returns:
         (tuple): tuple containing:
 
-            - compatible (:obj:`bool`): Wether the environment is compatible with the
+            - compatible (:obj:`bool`): Whether the environment is compatible with the
                 robustness evaluation tool.
             - missing_attributes (:obj:`dict`): Dictionary that contains the 'methods'
                 and 'attributes' that are missing.
@@ -812,7 +812,7 @@ if __name__ == "__main__":  # noqa: C901
         "--deterministic",
         "-d",
         action="store_true",
-        help="Wether you want to use a deterministic policy (default: True)",
+        help="Whether you want to use a deterministic policy (default: True)",
     )
     parser.add_argument(
         "--save_result",

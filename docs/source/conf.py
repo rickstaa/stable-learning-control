@@ -22,6 +22,7 @@
 # -- Make sure blc is accessible without going through setup.py -----------
 import os.path as osp
 import sys
+from datetime import datetime
 
 sys.path.insert(0, osp.abspath("../../bayesian_learning_control"))
 sys.path.insert(1, osp.abspath("../../examples"))
@@ -100,7 +101,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "bayesian-learning-control"
-copyright = "2020, Rick Staa"
+copyright = f"{datetime.now().year}, Rick Staa"
 author = "Rick Staa"
 git_user_name = "rickstaa"
 
