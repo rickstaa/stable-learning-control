@@ -5,7 +5,7 @@ import bayesian_learning_control.simzoo.simzoo  # noqa: F401
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
-import openai_ros  # noqa: F401
+import ros_gazebo_gym  # noqa: F401
 
 RANDOM_STEP = True
 # ENV_NAME = "Oscillator-v1"

@@ -45,7 +45,7 @@ Robotics control problems.
 .. toctree::
     :maxdepth: 1
 
-    envs/robotics/openai_ros
+    envs/robotics/ros_gazebo_gym
 
 .. important::
 

@@ -1,12 +1,10 @@
-Openai_ros environments
-=======================
+ros_gazebo_gym environments
+===========================
 
-The BLC package also works with the Panda task environments of the `openai_ros`_
-package. This environment has not yet been merged into the main repository and can
-be found on `this fork`_. This task environment allows you to train the
-`Franka Emika Panda Robot`_ on several robot tasks. It was implemented using
-the Robot Operating System (ROS) and uses the Gazebo simulator to
-simulate the robot.
+The BLC package also works with the task environments contained in the `ros_gazebo_gym`_
+framework. This frameworks currently allows you to train the `Franka Emika Panda Robot`_
+on several robot tasks. It was implemented using the Robot Operating System (ROS) and
+uses the Gazebo simulator to simulate the robot.
 
 Task environments
 -----------------
@@ -35,7 +33,7 @@ and install the ros dependencies using the following command:
     rosdep install --from-path src --ignore-src -r -y --skip-keys libfranka
 
 After the ROS dependencies have been installed, you have to compile the libfranka library (see the `frankaemika documentation`_). If this is finished
-you can build the `openai_ros` package using the following command:
+you can build the `ros_gazebo_gym` package using the following command:
 
 .. code-block: bash
 
@@ -48,8 +46,8 @@ Virtual environment
 .. warning::
 
     When using ROS inside an anaconda environment, you might run into problems (see `this issue`_). As a result, the
-    python environment setup given on the :ref:`Installation page <install>` does not work for the `openai_ros`_
-    task environments. If you want to use the BLC algorithms with any of the `openai_ros`_  environments, you are
+    python environment setup given on the :ref:`Installation page <install>` does not work for the `ros_gazebo_gym`_
+    task environments. If you want to use the BLC algorithms with any of the `ros_gazebo_gym`_  environments, you are
     advised to use the BLC package inside a virtual env. This virtual env can be created using
     the following command:
 
@@ -72,8 +70,7 @@ that you first sourced the catkin workspace (i.e. ``. ./develop/setup.bash``) be
 
 .. _`this issue`: https://answers.ros.org/question/256886/conflict-anaconda-vs-ros-catking_pkg-not-found/
 .. _`ros documentation`: http://wiki.ros.org/noetic
-.. _`openai_ros`: https://theconstructcore.bitbucket.io/openai_ros/index.html
-.. _`this fork`: https://bitbucket.org/rickstaa/openai_ros/src/add_panda_environment
+.. _`ros_gazebo_gym`: https://rickstaa.dev/ros-gazebo-gym
 .. _`Franka Emika Panda Robot`: https://www.franka.de/
 .. _`gym documentation`: https://gym.openai.com/docs/
 .. _`frankaemika documentation`: https://frankaemika.github.io/docs/installation_linux.html
