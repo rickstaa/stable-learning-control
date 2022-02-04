@@ -11,7 +11,7 @@ from textwrap import dedent
 
 import ruamel.yaml as yaml
 
-from bayesian_learning_control.common.helpers import flatten
+from bayesian_learning_control.common.helpers import flatten, get_unique_list
 from bayesian_learning_control.control.utils.gym_utils import validate_gym_env
 from bayesian_learning_control.control.utils.run_utils import ExperimentGrid
 from bayesian_learning_control.control.utils.safer_eval import safer_eval
@@ -54,6 +54,22 @@ MPI_COMPATIBLE_ALGOS = []
 BASE_ALGO_NAMES = ["sac", "lac"]
 
 
+def _parse_hyperparameter_variants(exp_val):
+    """Function parses exp config values to make sure that comma/space separated
+    strings (i.e. ``5, 3, 2`` or ``5 3 2``)) are recognized as hyperparmeter variants.
+
+    Args:
+        exp_val (object): The variable to parse.
+
+    Returns:
+        union[:obj:`str`, :obj`list`]: A hyper parameter string or list.
+    """
+    if not isinstance(exp_val, str):
+        return str(exp_val)
+    else:
+        return get_unique_list(exp_val.replace(" ", ",").split(","))
+
+
 def _parse_exp_cfg(cmd_line_args):  # noqa: C901
     """This function parses the cmd line args to see if it contains the 'exp_cfg' flag.
     If this flag is present it uses the 'exp_cfg' file path (next cmd_line arg) to add
@@ -66,6 +82,10 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
     Returns:
         list: Modified cmd line argument list that also contains any hyperparameters
             that were specified in a experimental cfg file.
+
+    .. info::
+        This function assumes comma/space separated strings (i.e. ``5, 3, 2`` or
+        ``5 3 2``)) to be hyperparmeter variants.
     """
     if "--exp_cfg" in cmd_line_args:
         cfg_error = False
@@ -141,14 +161,18 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
                 else:
                     exp_cfg_params.pop("alg_name")
 
-                # Append cfg hyperparamters to input arguments
+                # Append cfg hyperparameters to input arguments
+                # NOTE: Here we assume comma or space separated strings to be variants.
                 exp_cfg_params = {
                     (key if key.startswith("--") else "--" + key): val
                     for key, val in exp_cfg_params.items()
                 }
                 exp_cfg_params = list(
                     flatten(
-                        [[str(key), str(val)] for key, val in exp_cfg_params.items()]
+                        [
+                            [str(key), _parse_hyperparameter_variants(val)]
+                            for key, val in exp_cfg_params.items()
+                        ]
                     )
                 )
             cmd_line_args.extend(exp_cfg_params)

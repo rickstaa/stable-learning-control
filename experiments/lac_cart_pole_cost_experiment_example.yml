@@ -23,7 +23,7 @@ gamma: 0.9
 polyak: 0.995
 target_entropy:
 adaptive_temperature: True
-lr_a: "1e-4"
+lr_a: "1e-4, 1e-3" # NOTE: Use comma/space separated string for hyperparameter variants
 lr_c: "3e-4"
 lr_a_final: "1e-10"
 lr_c_final: "1e-10"
@@ -31,7 +31,7 @@ lr_decay_type: "linear"
 lr_decay_ref: "epoch"
 batch_size: 256
 replay_size: "int(1e6)"
-seed: 0
+seed: 0 234 567 # NOTE: Use comma/space separated string for hyperparameter variants
 device: "cpu"
 save_freq: 1
 start_policy:

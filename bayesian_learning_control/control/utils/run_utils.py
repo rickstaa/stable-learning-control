@@ -70,7 +70,6 @@ def call_experiment(
         datestamp (bool): Whether a datestamp should be added to the experiment name.
         kwargs: All kwargs to pass to thunk.
     """
-
     # Determine number of CPU cores to run on
     num_cpu = psutil.cpu_count(logical=False) if num_cpu == "auto" else num_cpu
 
@@ -110,7 +109,6 @@ def call_experiment(
         """Setup environment used in the experiment."""
         # Make 'env_fn' from 'env_name'
         if "env_name" in kwargs:
-
             # Import gym environments
             import gym
 
@@ -509,7 +507,6 @@ class ExperimentGrid:
             datestamp (bool): Whether a datestamp should be added to the experiment
                 name.
         """
-
         # Print info about self.
         self.print()
 

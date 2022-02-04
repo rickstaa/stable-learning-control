@@ -1,5 +1,5 @@
 alg_name: lac
-exp_name: han_sac_oscillator
+exp_name: han_lac_oscillator
 env_name: "Oscillator-v1"
 opt_type: "minimize"
 seed: 0

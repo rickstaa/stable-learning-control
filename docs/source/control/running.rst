@@ -292,6 +292,24 @@ For example, we can use the following command to train a SAC algorithm using the
 
     python -m bayesian_learning_control.run --exp_cfg ./experiments/haarnoja_et_al_2019.yml
 
+
+.. important::
+
+    Please note that if you want to run multiple hyperparameter variants, for example, multiple seeds or learning rates, you have to use
+    comma/space-separated strings in your configuration file:
+
+    .. code-block:: yaml
+        :emphasize-lines: 3, 8
+
+        alg_name: lac
+        exp_name: my_experiment
+        seed: 0 12345 342699
+        ac_kwargs:
+        hidden_sizes:
+            actor: [64, 64]
+            critic: [256, 256, 16]
+        lr_a: "1e-4, 1e-3, 1e-2"
+
 .. _`YAML`: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
 .. _`Haarnoja et al., 2019`: https://arxiv.org/abs/1801.01290
 

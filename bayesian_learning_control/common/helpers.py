@@ -64,6 +64,22 @@ def flatten(items):
             yield x
 
 
+def get_unique_list(input_list, trim=True):
+    """Removes non-unique items from a list.
+
+    Args:
+        input_list (list): The input list.
+        trim (list, optional): Trim empty items. Defaults to ``True``.
+
+    Returns:
+        list: The new list containing only unique items.
+    """
+    if trim:
+        return list({item for item in input_list if item != ""})
+    else:
+        return list({item for item in input_list})
+
+
 def sum_tuples(*args):
     """Returns the elementwise sum of a several tuples/lists.
 

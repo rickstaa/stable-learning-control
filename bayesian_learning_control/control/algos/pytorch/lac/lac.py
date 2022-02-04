@@ -884,9 +884,9 @@ def lac(  # noqa: C901
             starting to do gradient descent updates. Ensures replay buffer
             is full enough for useful updates. Defaults to ``1000``.
         steps_per_update (int, optional): Number of gradient descent steps that are
-            performed for each gradient descent update. NOTE: This determins the
-            ratio of env steps to gradient steps. Defaults to ``100`` which is
-            equivalent to a env_step/grad_step ratio of 1.
+            performed for each gradient descent update. This determins the ratio of
+            env steps to gradient steps (i.e. :obj:`update_every`/
+            :obj:`steps_per_update`). Defaults to ``100``.
         num_test_episodes (int, optional): Number of episodes used to test the
             deterministic policy at the end of each epoch. This is used for logging
             the performance. Defaults to ``10``.
@@ -1394,7 +1394,10 @@ if __name__ == "__main__":
         "--update_every",
         type=int,
         default=100,
-        help="the number of steps for each SGD update (default: 100)",
+        help=(
+            "the number of env interactions that should elapse between SGD updates "
+            "(default: 100)"
+        ),
     )
     parser.add_argument(
         "--update_after",

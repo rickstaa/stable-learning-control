@@ -11,7 +11,7 @@ RANDOM_STEP = True
 # ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Ex3EKF-v1"
 ENV_NAME = "CartPoleCost-v0"
-ENV_NAME = "PandaReach-v0"
+ENV_NAME = "PandaReach-v1"
 
 if __name__ == "__main__":
 

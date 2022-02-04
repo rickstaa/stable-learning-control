@@ -10,10 +10,10 @@ Task environments
 
 The `ros_gazebo_gym`_ package currently contains the following task environments:
 
--   **PandaPickAndPlace-v0:** Lift a block into the air.
--   **PandaPush-v0:** Push a block to a goal position.
--   **PandaReach-v0:** Move fetch to a goal position.
--   **PandaSlide-v0:** Slide a puck to a goal position.
+-   **PandaPickAndPlace-v1:** Lift a block into the air.
+-   **PandaPush-v1:** Push a block to a goal position.
+-   **PandaReach-v1:** Move fetch to a goal position.
+-   **PandaSlide-v1:** Slide a puck to a goal position.
 
 These environments were based on the original `openai_gym robotics environments <https://gym.openai.com/envs/#robotics>`_.
 
