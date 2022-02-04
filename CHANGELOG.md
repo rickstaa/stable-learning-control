@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/rickstaa/bayesian-learning-control/compare/v1.1.55...v1.2.0) (2022-02-04)
+
+
+### Features
+
+* add hyperparameter variant support for exp config files ([6ea47f0](https://github.com/rickstaa/bayesian-learning-control/commit/6ea47f0c330e2ea57c98e50165c160ffa43ff53e))
+
 ### [1.1.55](https://github.com/rickstaa/bayesian-learning-control/compare/v1.1.54...v1.1.55) (2022-02-04)
 
 ### [1.1.54](https://github.com/rickstaa/bayesian-learning-control/compare/v1.1.53...v1.1.54) (2022-02-01)
