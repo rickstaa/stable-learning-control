@@ -100,6 +100,7 @@ Apart from these main modules, it also comes with several (shared) utilities:
    dev/api/api.rst
    dev/release_dev.rst
    dev/doc_dev.rst
+   dev/license.rst
 
 .. toctree::
    :maxdepth: 3

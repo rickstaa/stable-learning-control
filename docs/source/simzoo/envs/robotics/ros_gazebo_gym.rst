@@ -2,14 +2,13 @@ ros_gazebo_gym environments
 ===========================
 
 The BLC package also works with the task environments contained in the `ros_gazebo_gym`_
-framework. This frameworks currently allows you to train the `Franka Emika Panda Robot`_
-on several robot tasks. It was implemented using the Robot Operating System (ROS) and
-uses the Gazebo simulator to simulate the robot.
+framework. This framework provides a way to train RL algorithms on ROS-based robots simulated in Gazebo. Only the panda environment has been extensively
+tested with the BLC package.
 
 Task environments
 -----------------
 
-The `panda_openai_sim` package currently contains the following task environments:
+The `ros_gazebo_gym`_ package currently contains the following task environments:
 
 -   **PandaPickAndPlace-v0:** Lift a block into the air.
 -   **PandaPush-v0:** Push a block to a goal position.
@@ -20,6 +19,9 @@ These environments were based on the original `openai_gym robotics environments 
 
 Installation and Usage
 ----------------------
+
+The official `ros_gazebo_gym documentation`_ provides more information about the `ros_gazebo_gym`_ framework and its task environments. Below we added the
+installation and usage steps for using the BLC algorithms with the Panda task environment.
 
 Installation
 ~~~~~~~~~~~~
@@ -38,7 +40,6 @@ you can build the `ros_gazebo_gym` package using the following command:
 .. code-block: bash
 
     'catkin build -DCMAKE_BUILD_TYPE=Debug -DFranka_DIR:PATH=/home/<USER_NAME>/libfranka/build
-
 
 Virtual environment
 ~~~~~~~~~~~~~~~~~~~
@@ -61,16 +62,18 @@ Virtual environment
     (see this `blog post <https://medium.com/robostack/cross-platform-conda-packages-for-ros-fa1974fd1de3>`_ for more
     information.
 
-
 Usage
 ~~~~~
 
 The `open_ros` environments can be imported like any other environment (see the `gym documentation`_). You, however, have to make sure
-that you first sourced the catkin workspace (i.e. ``. ./develop/setup.bash``) before your import.
+that you first build and source the catkin workspace (i.e. ``. ./develop/setup.bash``) before your import. You can find usage examples
+for each task environment in the `ros_gazebo_gym_examples`_ repository.
 
 .. _`this issue`: https://answers.ros.org/question/256886/conflict-anaconda-vs-ros-catking_pkg-not-found/
 .. _`ros documentation`: http://wiki.ros.org/noetic
-.. _`ros_gazebo_gym`: https://rickstaa.dev/ros-gazebo-gym
+.. _`ros_gazebo_gym`: https://rickstaa.github.io/ros-gazebo-gym
 .. _`Franka Emika Panda Robot`: https://www.franka.de/
 .. _`gym documentation`: https://gym.openai.com/docs/
 .. _`frankaemika documentation`: https://frankaemika.github.io/docs/installation_linux.html
+.. _`ros_gazebo_gym documentation`: https://rickstaa.github.io/ros-gazebo-gym
+.. _`ros_gazebo_gym_examples`: https://github.com/rickstaa/ros-gazebo-gym-examples

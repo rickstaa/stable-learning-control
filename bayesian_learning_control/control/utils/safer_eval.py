@@ -8,10 +8,8 @@
     This module was based on
     `spinningup repository <https://github.com/openai/spinningup/blob/master/spinup/utils/serialization_utils.py>`_.
 
-..
-    NOTE: Below is needed due to a bug in the auto_summary_package (see
-    https://stackoverflow.com/questions/2701998/sphinx-autodoc-is-not-automatic-enough/62613202#62613202%3E
-"""  # noqa
+.. autofunction:: safer_eval
+"""  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa:E501
 
 import bayesian_learning_control as bayesian_learning_control  # noqa: F401
 import bayesian_learning_control as blc  # noqa: F401

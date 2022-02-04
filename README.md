@@ -5,6 +5,7 @@
 [![Linux CI](https://github.com/rickstaa/bayesian-learning-control/workflows/Linux%20CI/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions?query=workflow%3A%22Linux+CI%22)
 [![Mac CI](https://github.com/rickstaa/bayesian-learning-control/workflows/Mac%20CI/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions?query=workflow%3A%22Mac+CI%22)
 [![Docs CI](https://github.com/rickstaa/bayesian-learning-control/actions/workflows/docs_publish_ci.yml/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions/workflows/docs_publish_ci.yml)
+[![Contributions](https://img.shields.io/badge/contributions-welcome-orange.svg)](contributing.md)
 
 ## Package Overview
 

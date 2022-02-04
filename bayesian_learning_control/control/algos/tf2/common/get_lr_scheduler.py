@@ -1,4 +1,9 @@
-"""Module used for creating Tensorflow learning rate schedulers."""
+"""Module used for creating Tensorflow learning rate schedulers.
+
+.. rubric:: Function
+
+.. autofunction:: get_lr_scheduler
+"""  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa: E501
 
 import numpy as np
 from bayesian_learning_control.utils.import_utils import import_tf
@@ -22,7 +27,7 @@ def get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps):
             scheduler object.
 
     .. seealso::
-        See the `tensorflow <https://www.tensorflow.org/api_docs/python/tf/keras/optimizers/schedules>`
+        See the `tensorflow <https://www.tensorflow.org/api_docs/python/tf/keras/optimizers/schedules>`_
         documentation on how to implement other decay options.
     """  # noqa: E501
     if decaying_lr_type.lower() != "constant" and lr_start != lr_final:

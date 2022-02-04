@@ -1,5 +1,11 @@
 """Contains functions used for creating Pytorch learning rate schedulers.
-"""
+
+.. rubric:: Functions
+
+.. autofunction:: get_exponential_decay_rate
+.. autofunction:: calc_linear_decay_rate
+.. autofunction:: get_lr_scheduler
+"""  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa: E501
 
 from decimal import Decimal
 

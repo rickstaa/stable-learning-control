@@ -1,3 +1,19 @@
+/* override table width restrictions
+NOTE: Needed because of bug https://github.com/readthedocs/sphinx_rtd_theme/issues/117
+*/
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+  /* !important prevents the common CSS stylesheets from
+       overriding this as on RTD they are loaded after this stylesheet */
+  white-space: normal !important;
+}
+.wy-table-responsive {
+  margin-bottom: 24px;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* General theme color overwrites */
 :root {
   /* Colors */
   --color--white: #fff;

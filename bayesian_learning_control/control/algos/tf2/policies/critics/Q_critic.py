@@ -32,15 +32,14 @@ class QCritic(tf.keras.Model):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (:obj:`tf.keras.activations`: The activation function. Defaults
-                to :obj:`tf.nn.relu`.
+            activation (:obj:`tf.keras.activations`, optional): The activation function.
+                Defaults to :obj:`tf.nn.relu`.
             output_activation (:obj:`tf.keras.activations`, optional): The activation
                 function used for the output layers. Defaults to ``None`` which is
                 equivalent to using the Identity activation function.
-            name (str, optional): The Lyapunov critic name. Defaults to
-                ``q_critic``.
-            **kwargs: All kwargs to pass to the :mod:`tf.keras.Model`. Can be used
-                to add additional inputs or outputs.
+            name (str, optional): The Lyapunov critic name. Defaults to ``q_critic``.
+            **kwargs: All kwargs to pass to the :mod:`tf.keras.Model`. Can be used to
+                add additional inputs or outputs.
         """
         super().__init__(name=name, **kwargs)
         self.Q = mlp(
@@ -59,6 +58,7 @@ class QCritic(tf.keras.Model):
 
                 - obs (tf.Tensor): The tensor of observations.
                 - act (tf.Tensor): The tensor of actions.
+
         Returns:
             tf.Tensor:
                 The tensor containing the Q values of the input observations and

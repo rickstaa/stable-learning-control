@@ -1,8 +1,8 @@
 """Module that contains several tensorflow
-`bijectors <https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector>`.
+`bijectors <https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector>`_.
 For more information on Bijectors see
-https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector and
-https://stackoverflow.com/questions/56425301/what-is-bijectors-in-layman-terms-in-tensorflow-probability.
+`the tensorflow documentation <https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector>`_ and
+`this stackoverflow question <https://stackoverflow.com/questions/56425301/what-is-bijectors-in-layman-terms-in-tensorflow-probability>`_.
 """  # noqa: E501
 
 import numpy as np

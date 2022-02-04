@@ -2,7 +2,7 @@
 About the Author
 ================
 
-The BLC package is developed and maintained by the `Cognitive Robotics department`_
+The BLC framework is developed and maintained by the `Cognitive Robotics department`_
 of the `TU Delft`_. It was created out of a Master Thesis of `Rick Staa`_ under the supervision of
 `dr. Wei Pan`_.
 

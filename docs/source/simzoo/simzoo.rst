@@ -81,8 +81,12 @@ being printed to the console.
 
     The Environments that are currently in the Simzoo package don't have a render method.
 
-Add new Environments
-====================
+Add new Simzoo Environments
+===========================
+
+.. seealso::
+
+    Please checkout the `ros_gazebo_gym documentation`_ for adding new Gazebo robotics environments.
 
 Please follow the steps provided in the `Openai Gym documentation`_ when creating a new environment. After
 you created your environment, you can use the `simzoo/simzoo/__init__.py`_ file to register them to the
@@ -101,3 +105,4 @@ Simzoo/simzoo/__init__.py
 
 
 .. _`OpenAi gym documentation`: https://github.com/openai/gym/blob/master/docs/creating-environments.md
+.. _`ros_gazebo_gym documentation`: https://rickstaa.dev/ros-gazebo-gym/dev/add_nev_env.html

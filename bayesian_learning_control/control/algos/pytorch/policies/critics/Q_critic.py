@@ -31,8 +31,8 @@ class QCritic(nn.Module):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (:obj:`torch.nn.modules.activation`): The activation function.
-                Defaults to torch.nn.ReLU.
+            activation (:obj:`torch.nn.modules.activation`, optional): The activation
+                function. Defaults to :obj:`torch.nn.ReLU`.
             output_activation (:obj:`torch.nn.modules.activation`, optional): The
                 activation function used for the output layers. Defaults to
                 :mod:`torch.nn.Identity`.
@@ -53,6 +53,7 @@ class QCritic(nn.Module):
         Args:
             obs (torch.Tensor): The tensor of observations.
             act (torch.Tensor): The tensor of actions.
+
         Returns:
             torch.Tensor:
                 The tensor containing the Q values of the input observations and

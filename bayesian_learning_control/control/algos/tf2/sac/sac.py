@@ -7,7 +7,16 @@ This module contains the Tensorflow 2.x implementation of the SAC algorithm of
     Code Conventions:
         - We use a `_` suffix to distinguish the next state from the current state.
         - We use a `targ` suffix to distinguish actions/values coming from the target network.
-"""  # noqa
+
+.. rubric:: Class
+
+.. autoclass:: SAC
+   :members:
+
+.. rubric:: Function
+
+.. autofunction:: sac
+"""  # NOTE: Manual autofunction/class request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa:E501
 
 import argparse
 import os

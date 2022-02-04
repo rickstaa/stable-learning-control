@@ -16,7 +16,7 @@ def atleast_2d(array, axis=1):
     Args:
         array (numpy.ndarray): [description]
         axis (int, optional): Position in the expanded axes where the new axis (or axes)
-            is placed if the dimension is smaller than 2. Defaults to 1.
+            is placed if the dimension is smaller than 2. Defaults to ``1``.
 
     Returns:
         numpy.ndarray: The 2D numpy array.

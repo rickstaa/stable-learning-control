@@ -30,8 +30,8 @@ class LCritic(nn.Module):
             obs_dim (int): Dimension of the observation space.
             act_dim (int): Dimension of the action space.
             hidden_sizes (list): Sizes of the hidden layers.
-            activation (:obj:`torch.nn.modules.activation`): The activation function.
-                Defaults to :obj:`torch.nn.ReLU`.
+            activation (:obj:`torch.nn.modules.activation`, optional): The activation
+                function. Defaults to :obj:`torch.nn.ReLU`.
         """
         super().__init__()
         self.__device_warning_logged = False
@@ -45,6 +45,7 @@ class LCritic(nn.Module):
         Args:
             obs (torch.Tensor): The tensor of observations.
             act (torch.Tensor): The tensor of actions.
+
         Returns:
             torch.Tensor:
                 The tensor containing the lyapunov values of the input observations and

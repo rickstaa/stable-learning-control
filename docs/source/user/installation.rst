@@ -59,7 +59,7 @@ To use Python from the environment, you just created, activate the environment w
 
 Alternatively, you can also use Python its `venv <https://docs.python.org/3/library/venv.html>`_ package to create a virtual environment. When
 using this option, make sure you set the `--system-site-packages` flag when creating the environment when you need access to the system python packages
-(e.g. when you use `ros_gazebo_gym <https://rickstaa.dev/ros-gazebo-gym>`_ environments).
+(e.g. when you use `ros_gazebo_gym <https://rickstaa.github.io/ros-gazebo-gym>`_ environments).
 
 .. admonition:: You Should Know
 
