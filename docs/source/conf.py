@@ -235,7 +235,7 @@ intersphinx_mapping = {
         "https://github.com/mr-ubik/tensorflow-intersphinx/raw/master/tf2_py_objects.inv",
     ),
     "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
-    "numpy": ("http://docs.scipy.org/doc/numpy", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
 }
 
 extlinks = {
