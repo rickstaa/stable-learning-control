@@ -20,7 +20,6 @@ the following RL agents:
 
    algorithms/sac
    algorithms/lac
-   algorithms/gpl
 
 Imitation Learning Agents
 =========================

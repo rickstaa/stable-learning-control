@@ -235,10 +235,7 @@ The PyTorch version of the LAC algorithm is implemented by subclassing the :clas
 result the model weights are saved using the 'model_state' dictionary (
 :attr:`~bayesian_learning_control.control.algos.pytorch.lac.LAC.state_dict`). This saved weights can be found in
 the "torch_save/model_state.pt "file. For an example of how to load a model using this file, see
-:ref:`saving_and_loading` or the `PyTorch documentation`_.
-
-.. _`PyTorch documentation`: https://pytorch.org/tutorials/beginner/saving_loading_models.html
-
+:ref:`saving_and_loading` or the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html>`.
 
 Documentation: Tensorflow Version
 ---------------------------------

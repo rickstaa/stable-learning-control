@@ -27,8 +27,8 @@ def get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps):
             scheduler object.
 
     .. seealso::
-        See the `tensorflow <https://www.tensorflow.org/api_docs/python/tf/keras/optimizers/schedules>`_
-        documentation on how to implement other decay options.
+        See the :tf:`tensorflow <keras/optimizers/schedules>` documentation on how to
+        implement other decay options.
     """  # noqa: E501
     if decaying_lr_type.lower() != "constant" and lr_start != lr_final:
         if decaying_lr_type.lower() == "exponential":

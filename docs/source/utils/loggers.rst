@@ -53,10 +53,8 @@ The internal state is wiped clean after the call to :meth:`~bayesian_learning_co
 (to prevent leakage into the statistics at the next epoch). Finally, :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular`
 is called to write the diagnostics to file, Tensorboard and/or stdout.
 
-Next, let's use the `Pytorch Classifier`_ tutorial to look at a full training procedure with the logger embedded, to highlight configuration and model
+Next, let's use the :torch:`Pytorch Classifier <tutorials/beginner/blitz/cifar10_tutorial.html>` tutorial to look at a full training procedure with the logger embedded, to highlight configuration and model
 saving as well as diagnostic logging:
-
-.. _`Pytorch Classifier`: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 
 .. code-block:: python
    :linenos:
@@ -252,13 +250,11 @@ Logging and Tensorflow
 The preceding example was given in Pytorch. For Tensorflow, everything is the same except for L42-43:
 instead of :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver`, you would
 use :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.setup_tf_saver` and you would pass it
-`a Tensorflow Module`_ (the algorithm you are training) as an argument.
+:tf:`a Tensorflow Module <nn>` (the algorithm you are training) as an argument.
 
 The behavior of :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.save_state` is the same as in the
 PyTorch case: each time it is called,
 it'll save the latest version of the Tensorflow module.
-
-.. _`a Tensorflow module`: https://www.tensorflow.org/api_docs/python/tf/nn
 
 Logging and MPI
 ---------------

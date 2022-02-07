@@ -67,8 +67,8 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
         :obj:`torch.optim.lr_scheduler`: A learning rate scheduler object.
 
     .. seealso::
-        See the `pytorch <https://pytorch.org/docs/stable/optim.html>`_ documentation on
-        how to implement other decay options.
+        See the :torch:`pytorch <docs/stable/optim.html>` documentation on how to
+        implement other decay options.
     """  # noqa: E501
     if decaying_lr_type.lower() != "constant" and lr_start != lr_final:
         if decaying_lr_type.lower() == "exponential":

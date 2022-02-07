@@ -169,7 +169,7 @@ Load Pytorch Policy
 ~~~~~~~~~~~~~~~~~~~
 
 Pytorch Policies can be loaded using the :obj:`torch.load` method. For more information on how to load PyTorch models see
-the `PyTorch documentation`_.
+the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html>`.
 
 .. code-block:: python
     :linenos:
@@ -216,9 +216,7 @@ In this example, observe that
 Additionally, each algorithm also contains a :obj:`~bayesian_learning_control.control.algos.pytorch.lac.LAC.restore` method which serves as a
 wrapper around the :obj:`torch.load` and  :obj:`torch.nn.Module.load_state_dict` methods.
 
-.. _`Pytorch Documentation`: https://pytorch.org/tutorials/beginner/saving_loading_models.html
-
-Load Tensorflow Policy
+    Load Tensorflow Policy
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -273,7 +271,7 @@ As stated above, the Tensorflow version of the algorithm also saves the full mod
 with `TFLite`_, `TensorFlow.js`_, `TensorFlow Serving`_, or `TensorFlow Hub`_. For more information, see :ref:`the hardware deployment documentation <hardware>`.
 
 .. important::
-    TensorFlow also PyTorch multiple ways to deploy trained models to hardware (see the `PyTorch serving documentation`_). However, at the time of writing,
+    TensorFlow also PyTorch multiple ways to deploy trained models to hardware (see the :torch:`PyTorch serving documentation <blog/model-serving-in-pyorch/>`). However, at the time of writing,
     these methods currently do not support the agents used in the BLC package. For more information, see
     `this issue <https://github.com/pytorch/pytorch/issues/29843>`_.
 
@@ -283,4 +281,3 @@ with `TFLite`_, `TensorFlow.js`_, `TensorFlow Serving`_, or `TensorFlow Hub`_. F
 .. _`TensorFlow Serving`: https://www.tensorflow.org/tfx/tutorials/serving/rest_simple
 .. _`TensorFlow Hub`: https://www.tensorflow.org/hub
 .. _`SavedModel format`: https://www.tensorflow.org/guide/saved_model
-.. _`PyTorch serving documentation`: https://pytorch.org/blog/model-serving-in-pyorch/
