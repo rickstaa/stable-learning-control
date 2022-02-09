@@ -1158,7 +1158,6 @@ def lac(  # noqa: C901
 
         # Update handling
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
-
             # Step based learning rate decay
             if lr_decay_ref.lower() == "step":
                 for scheduler in opt_schedulers:
@@ -1171,6 +1170,7 @@ def lac(  # noqa: C901
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
                 logger.store(**update_diagnostics)  # Log diagnostics
+
             # SGD batch tb logging
             if use_tensorboard and not tb_low_log_freq:
                 logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
