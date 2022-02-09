@@ -4,11 +4,11 @@ Release documentation
 
 .. contents:: Table of Contents
 
-The BLC framework contains two `Github actions`_ that automatically check and
+The BLC framework contains two :blc:`Github actions <actions>` that automatically check and
 deploy new documentation:
 
-    * The `docs_check_ci`_ action checks your changes to see if the documentation still builds.
-    * The `docs_publish_ci`_ action deploys your documentation if a new version of the BLC framework is released.
+    * The :blc:`docs_check_ci <blob/main/.github/workflows/docs_check_ci.yml>` action checks your changes to see if the documentation still builds.
+    * The :blc:`docs_publish_ci <blob/main/.github/workflows/docs_publish_ci.yml>` action deploys your documentation if a new version of the BLC framework is released.
 
 Automatic build instructions
 ============================
@@ -17,14 +17,10 @@ To successfully deploy your new documentation, you have to follow the following 
 
 #. Create a new branch for the changes you want to make to the documentation (e.g. ``docs_change`` branch).
 #. Make your changes to this branch.
-#. Commit your changes. This will trigger the `docs_check_ci`_ action to run.
+#. Commit your changes. This will trigger the :blc:`docs_check_ci <blob/main/.github/workflows/docs_check_ci.yml>` action to run.
 #. Create a pull request into the main branch if this action ran without errors.
 #. Add a version bump label (``bump:patch``, ``bump:minor`` or ``bump:major``) to the pull request.
-#. Merge the pull request into the main branch. The documentation will now be deployed using the `docs_publish_ci`_ action.
-
-.. _`Github actions`: https://github.com/features/actions
-.. _`docs_check_ci`: https://github.com/rickstaa/bayesian-learning-control/blob/main/.github/workflows/docs_check_ci.yml
-.. _`docs_publish_ci`: https://github.com/rickstaa/bayesian-learning-control/blob/main/.github/workflows/docs_publish_ci.yml
+#. Merge the pull request into the main branch. The documentation will now be deployed using the :blc:`docs_publish_ci <blob/main/.github/workflows/docs_publish_ci.yml>` action.
 
 .. tip::
 
@@ -59,7 +55,7 @@ Build the documentation
 Build HTML documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-To build the `HTML`_ documentation, go into the `docs/`_ directory and run the
+To build the `HTML`_ documentation, go into the :blc:`docs/ <tree/main/docs>` directory and run the
 ``make html`` command. This command will generate the html documentation
 inside the ``docs/build/html`` directory.
 
@@ -72,7 +68,7 @@ inside the ``docs/build/html`` directory.
 Build LATEX documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To build the `LATEX`_ documentation, go into the `docs/`_ directory and run the
+To build the `LATEX`_ documentation, go into the :blc:`docs/ <tree/main/docs>` directory and run the
 ``make latex`` command. This command will generate the html documentation
 inside the ``docs/build/latex`` directory.
 
@@ -82,13 +78,10 @@ Deploying
 ---------
 
 To deploy documentation to the Github Pages site for the repository,
-push the documentation to the `main`_ branch and run the
-``make gh-pages`` command inside the `docs/`_ directory.
+push the documentation to the :blc:`main <tree/main>` branch and run the
+``make gh-pages`` command inside the :blc:`docs/ <tree/main/docs>` directory.
 
 .. warning::
 
     Please make sure you are on the `main`_ branch while building the documentation. Otherwise,
     errors will greet you.
-
-.. _`docs/`: https://github.com/rickstaa/bayesian-learning-control/tree/main/docs
-.. _`main`: https://github.com/rickstaa/bayesian-learning-control/tree/main

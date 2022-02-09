@@ -93,11 +93,9 @@ this environment. The BLC has two versions you can install:
 
     We choose PyTorch as the default backend as it, in our opinion, is easier to work with than Tensorflow. However, at the time of writing, it
     is slightly slower than the Tensorflow backend. This is caused because the agents used in the BLC package use components that are
-    not yet supported by `TorchScript`_ (responsible for creating a fast compiled version of PyTorch script). As PyTorch has shown to be faster
+    not yet supported by :torch:`TorchScript <docs/stable/jit.html>` (responsible for creating a fast compiled version of PyTorch script). As PyTorch has shown to be faster
     in most implementations, this will likely change in the future. You can track the status of this speed problem
     `here <https://github.com/pytorch/pytorch/issues/29843>`_.
-
-.. _`TorchScript`: https://pytorch.org/docs/stable/jit.html
 
 Install the Pytorch version
 ---------------------------

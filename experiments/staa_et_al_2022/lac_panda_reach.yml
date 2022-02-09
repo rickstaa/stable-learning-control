@@ -1,8 +1,9 @@
+# ALG parameters
 alg_name: lac
 exp_name: staa_lac_panda_reach
 env_name: "ros_gazebo_gym:PandaReach-v1"
 opt_type: "minimize"
-seed: 0 12345 342699
+seed: 25 32345 33453459
 ac_kwargs:
   hidden_sizes:
     actor: [64, 64]
@@ -24,5 +25,10 @@ batch_size: 256
 replay_size: 1e6
 save_freq: 100
 save_checkpoints: True
+
+# Env parameters
 env_kwargs:
   visualize: False
+
+# Other parameters
+datestamp: True

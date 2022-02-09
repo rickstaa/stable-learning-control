@@ -1,11 +1,11 @@
 # Bayesian Learning Control
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rickstaa/bayesian-learning-control)](https://github.com/rickstaa/bayesian-learning-control/releases)
-[![Python 3](https://img.shields.io/badge/Python-3.8%20%7C%203.7%20%7C%203.6-green)](https://www.python.org/)
+[![Python 3](https://img.shields.io/badge/Python-3.8%20%7C%203.7%20%7C%203.6-brightgreen)](https://www.python.org/)
 [![Linux CI](https://github.com/rickstaa/bayesian-learning-control/workflows/Linux%20CI/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions?query=workflow%3A%22Linux+CI%22)
 [![Mac CI](https://github.com/rickstaa/bayesian-learning-control/workflows/Mac%20CI/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions?query=workflow%3A%22Mac+CI%22)
 [![Docs CI](https://github.com/rickstaa/bayesian-learning-control/actions/workflows/docs_publish_ci.yml/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions/workflows/docs_publish_ci.yml)
-[![Contributions](https://img.shields.io/badge/contributions-welcome-orange.svg)](contributing.md)
+[![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](contributing.md)
 
 ## Package Overview
 

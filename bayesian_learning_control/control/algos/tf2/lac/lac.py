@@ -477,11 +477,10 @@ class LAC(tf.keras.Model):
 
         .. note::
             This function saved the model weights using the
-            :meth:`tf.keras.Model.save_weights` method
-            (see https://www.tensorflow.org/api_docs/python/tf/keras/Model#save_weights)
-            . The model should therefore be restored using the
-            :meth:`tf.keras.Model.load_weights` method (see
-            https://www.tensorflow.org/api_docs/python/tf/keras/Model#load_weights). If
+            :meth:`tf.keras.Model.save_weights` method (see
+            :tf:`keras/Model#save_weights`). The model should therefore be restored
+            using the :meth:`tf.keras.Model.load_weights` method (see
+            :tf:`keras/Model#load_weights`). If
             you want to deploy the full model use the :meth:`.export` method instead.
         """
         path = Path(path)
