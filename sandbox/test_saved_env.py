@@ -11,7 +11,7 @@ from bayesian_learning_control.control.utils.test_policy import (
 )
 import gym
 
-AGENT_FOLDER = "/home/ricks/Development/bayesian-learning-control/data/staa_lac_panda_reach/staa_lac_panda_reach_s12345/torch_save"  # noqa: E501
+AGENT_FOLDER = "/home/ricks/Development/bayesian-learning-control/data/2022-02-09_staa_lac_panda_reach/2022-02-09_23-21-17-staa_lac_panda_reach_s33453459/torch_save"  # noqa: E501
 
 if __name__ == "__main__":
     # STEP 1a: Try to load the policy and environment
