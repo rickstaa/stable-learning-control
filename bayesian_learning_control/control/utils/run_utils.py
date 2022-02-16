@@ -532,7 +532,7 @@ class ExperimentGrid:
             Launch delayed to give you a few seconds to review your experiments.
 
             To customise or disable this behaviour, change WAIT_BEFORE_LAUNCH in
-            ``bayesian_learning_control/user_config.py``.
+            `bayesian_learning_control/user_config.py`.
 
             """
                     ),
