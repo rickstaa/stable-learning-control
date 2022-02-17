@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/rickstaa/bayesian-learning-control/compare/v1.2.8...v1.3.0) (2022-02-17)
+
+
+### Features
+
+* add small policy test script ([c701d69](https://github.com/rickstaa/bayesian-learning-control/commit/c701d69c507d735380cbb619037fca4f9a43e8c2))
+
+
+### Bug Fixes
+
+* fix several env/policy load bugs ([dddd4d8](https://github.com/rickstaa/bayesian-learning-control/commit/dddd4d8343301e322c82285b777a259bb6221cb0))
+
 ### [1.2.8](https://github.com/rickstaa/bayesian-learning-control/compare/v1.2.7...v1.2.8) (2022-02-16)
 
 ### [1.2.6](https://github.com/rickstaa/bayesian-learning-control/compare/v1.2.5...v1.2.6) (2022-02-16)
