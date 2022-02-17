@@ -126,10 +126,16 @@ def run_disturbed_policy(  # noqa: C901
     """  # noqa: E501
     # Validate environment, environment disturber
     assert env is not None, friendly_err(
-        "Environment not found!\n\n It looks like the environment wasn't saved, "
-        + "and we can't run the agent in it. :( \n\n Check out the documentation "
-        + "page on the robustness evaluation utility for how to handle this situation."
+        "Environment not found!\n\n It looks like the environment wasn't saved, and we "
+        "can't run the agent in it. :( \n\n Check out the documentation page on the "
+        "page on the robustness evaluation utility for how to handle this situation."
     )
+    assert env is not None, friendly_err(
+        "Policy not found!\n\n It looks like the policy could not be loaded. :( \n\n "
+        "Check out the documentation page on the robustness evaluation utility for how "
+        "to handle this situation."
+    )
+
     disturber_implemented, missing_objects = _disturber_implemented(env)
     if not disturber_implemented:
         missing_keys = [key for key, item in missing_objects.items() if len(item) >= 1]

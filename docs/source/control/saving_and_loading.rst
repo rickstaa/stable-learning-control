@@ -158,7 +158,11 @@ is successfully saved alongside the agent, it's a cinch to watch the trained age
 
 .. seealso::
 
-    For more information on how to use this utility see the :ref:`test_policy <test_policy>` documentation or the code :ref:`api`.
+    For more information on how to use this utility see the :ref:`test_policy` documentation or the code :ref:`api`.
+
+.. warning::
+    It could be that automatic loading of the policy/environment is not possible, and you receive a ``environment could not be loaded`` error.
+    Please see the :ref:`test_policy_env_not_found` on how to fix these errors.
 
 .. _manual_policy_testing:
 
@@ -216,7 +220,7 @@ In this example, observe that
 Additionally, each algorithm also contains a :obj:`~bayesian_learning_control.control.algos.pytorch.lac.LAC.restore` method which serves as a
 wrapper around the :obj:`torch.load` and  :obj:`torch.nn.Module.load_state_dict` methods.
 
-    Load Tensorflow Policy
+Load Tensorflow Policy
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python

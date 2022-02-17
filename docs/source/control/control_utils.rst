@@ -129,6 +129,7 @@ There are a few flags for options:
     by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
     for any other algorithms.
 
+.. _test_policy_env_not_found:
 
 Environment Not Found Error
 ---------------------------
@@ -154,16 +155,19 @@ In this case, watching your agent perform is slightly more of a pain but not imp
 .. code-block::
 
     >>> import gym
-    >>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env, run_policy
+    >>> from bayesian_learning_control.control.utils.test_policy import load_pytorch_policy, run_policy
     >>> import your_env
-    >>> _, policy = load_policy_and_env('/path/to/output_directory')
     >>> env = gym.make('<YOUR_ENV_NAME>')
+    >>> policy = load_pytorch_policy("/path/to/output_directory", env=env)
     >>> run_policy(env, policy)
     Logging data to /tmp/experiments/1536150702/progress.txt
     Episode 0    EpRet -163.830      EpLen 93
     Episode 1    EpRet -346.164      EpLen 99
     ...
 
+If you want to load a tensorflow agent please replace the :meth:`~bayesian_learning_control.control.utils.test_policy.load_pytorch_policy` with
+:meth:`~bayesian_learning_control.control.utils.test_policy.load_tf_policy`. A example script for manually loading policies can be found in the
+``examples`` folder (i.e. :blc:`manual_env_policy_inference.py <blob/main/examples/manual_env_policy_inference.py>`).
 
 Using Trained Value Functions
 -----------------------------
@@ -293,11 +297,11 @@ In this case, evaluating the robustness is slightly more of a pain but not impos
 .. code-block::
 
     >>> import gym
-    >>> from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
+    >>> from bayesian_learning_control.control.utils.test_policy import load_pytorch_policy, run_policy
     >>> from bayesian_learning_control.control.utils.eval_robustness import run_disturbed_policy, plot_robustness_results
     >>> import your_env
-    >>> _, policy = load_policy_and_env('/path/to/output_directory')
     >>> env = gym.make('<YOUR_ENV_NAME>')
+    >>> policy = load_pytorch_policy("/path/to/output_directory", env=env)
     >>> run_results_df = run_disturbed_policy(env, policy, disturbance_type="<TYPE_YOU_WANT_TO_USE>")
     >>> plot_robustness_results(run_results_df)
     INFO: Logging data to /tmp/experiments/1616515040/eval_statistics.csv
@@ -309,6 +313,9 @@ In this case, evaluating the robustness is slightly more of a pain but not impos
     Episode 1        EpRet 337.055   EpLen 800       Died False
     Episode 2        EpRet 330.313   EpLen 800       Died False
     ...
+
+If you want to load a tensorflow agent please replace the :meth:`~bayesian_learning_control.control.utils.test_policy.load_pytorch_policy` with
+:meth:`~bayesian_learning_control.control.utils.test_policy.load_tf_policy`.
 
 ExperimentGrid utility
 ======================

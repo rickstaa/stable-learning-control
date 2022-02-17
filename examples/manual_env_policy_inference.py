@@ -3,7 +3,7 @@ the CLI fails.
 """
 
 import gym
-import ros_gazebo_gym  # noqa: F401
+import ros_gazebo_gym  # Imports the in this example used environment  # noqa: F401
 from bayesian_learning_control.control.utils.test_policy import (
     load_policy_and_env,
     load_pytorch_policy,
@@ -12,15 +12,15 @@ from bayesian_learning_control.control.utils.test_policy import (
 )
 
 AGENT_TYPE = "torch"  # The type of agent that was trained. Options: 'tf2' and 'torch'.
-AGENT_FOLDER = "/home/ricks/Development/work/bayesian-learning-control/data/2022-02-17_staa_lac_panda_reach/2022-02-17_09-35-31-staa_lac_panda_reach_s25"  # noqa: E501
+AGENT_FOLDER = "/home/ricks/Development/work/bayesian-learning-control/data/2022-02-17_staa_lac_panda_reach/2022-02-17_13-21-04-staa_lac_panda_reach_s25"  # noqa: E501
 
 if __name__ == "__main__":
     # NOTE: STEP 1a: Try to load the policy and environment
     try:
         env, policy = load_policy_and_env(AGENT_FOLDER)
     except Exception:
-        # NOTE: STEP: 1b: If step 1 fails recreate the environment and load the
-        #  Pytorch/TF2 agent separately.
+        # NOTE: STEP: 1b: If step 1 fails recreate the environment and load the Pytorch/
+        # TF2 agent separately.
 
         # Create the environment
         # NOTE: Here the 'FlattenObservation' wrapper is used to make sure the alg works
@@ -33,10 +33,10 @@ if __name__ == "__main__":
             policy = load_tf_policy(AGENT_FOLDER, itr="last", env=env)  # Load TF2 agent
         else:
             policy = load_pytorch_policy(
-                AGENT_FOLDER, itr="last", env=env
+                AGENT_FOLDER, env=env, itr="last"
             )  # Load Pytorch agent
 
-    # Step 2: Try to run the policy on the environment
+    # NOTE: Step 2: Try to run the policy on the environment.
     try:
         run_policy(env, policy)
     except Exception:

@@ -217,10 +217,18 @@ class SAC(tf.keras.Model):
                 "need this."
             )
 
-        log_to_std_out(
-            "You are using the {} environment.".format(env.unwrapped.spec.id),
-            type="info",
-        )
+        if hasattr(env.unwrapped.spec, "id"):
+            log_to_std_out(
+                "You are using the '{}' environment.".format(env.unwrapped.spec.id),
+                type="info",
+            )
+        else:
+            log_to_std_out(
+                "You are using the '{}' environment.".format(
+                    type(env.unwrapped).__name__
+                ),
+                type="info",
+            )
         log_to_std_out("You are using the SAC algorithm.", type="info")
         log_to_std_out(
             "This agent is {}.".format(

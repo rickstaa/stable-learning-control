@@ -6,6 +6,7 @@ import math
 import os
 import time
 from pathlib import Path
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -118,7 +119,19 @@ if __name__ == "__main__":  # noqa: C901
     args = parser.parse_args()
 
     # Load policy and environment
-    env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
+    try:
+        env, policy = load_policy_and_env(
+            args.fpath, args.itr if args.itr >= 0 else "last"
+        )
+    except Exception:
+        log_to_std_out(
+            (
+                "Environment and policy could not be loaded. Please check the 'fpath' "
+                "and try again."
+            ),
+            type="error",
+        )
+        sys.exit(0)
 
     # Remove action clipping if present
     if hasattr(env.unwrapped, "_clipped_action"):

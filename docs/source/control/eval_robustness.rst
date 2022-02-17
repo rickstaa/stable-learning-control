@@ -371,5 +371,5 @@ modified disturber. You can then choose this new disturbance using the ``-d_type
 Manual robustness evaluation
 ============================
 
-A script version of the eval robustness tool can be found in the ``examples`` folder (i.e. ``eval_robustness.py``). This script can be used when you want to perform some quick tests without implementing a disturber
+A script version of the eval robustness tool can be found in the ``examples`` folder (i.e. :blc:`eval_robustness.py <blob/main/examples/eval_robustness.py>`). This script can be used when you want to perform some quick tests without implementing a disturber
 class for your given environment.

@@ -133,7 +133,6 @@ def load_policy_and_env(fpath, itr="last"):
 
             - env (:obj:`gym.env`): The gym environment.
             - get_action (:obj:`func`): The policy get_action function.
-
     """
     if not os.path.isdir(fpath):
         raise FileNotFoundError(
@@ -172,29 +171,30 @@ def load_policy_and_env(fpath, itr="last"):
     # load the get_action function
     try:
         if backend == "tf":
-            policy = load_tf_policy(fpath, itr, env)
+            policy = load_tf_policy(fpath, env=env, itr=itr)
         else:
-            policy = load_pytorch_policy(fpath, itr, env)
+            policy = load_pytorch_policy(fpath, env=env, itr=itr)
     except Exception as e:
         raise PolicyLoadError(
             friendly_err(
                 (
-                    "Policy not found!\n\n It looks like the policy wasn't "
+                    "Policy could not be loaded!\n\n It looks like the policy wasn't "
                     "successfully saved. :( \n\n Check out the documentation page on "
                     "the Test Policy utility for how to handle this situation."
                 )
             )
         ) from e
+
     return env, policy
 
 
-def load_tf_policy(fpath, itr="last", env=None):
+def load_tf_policy(fpath, env, itr="last"):
     """Load a tensorflow policy saved with Bayesian Learning Control Logger.
 
     Args:
         fpath (str): The path where the model is found.
-        itr (str, optional): The current policy iteration. Defaults to "last".
         env (:obj:`gym.env`): The gym environment in which you want to test the policy.
+        itr (str, optional): The current policy iteration. Defaults to "last".
 
     Returns:
         tf.keras.Model: The policy.
@@ -219,17 +219,16 @@ def load_tf_policy(fpath, itr="last", env=None):
     latest = tf.train.latest_checkpoint(model_path)  # Restore latest checkpoint
     model.load_weights(latest)
 
-    # return model.get_action
     return model
 
 
-def load_pytorch_policy(fpath, itr="last", env=None):
+def load_pytorch_policy(fpath, env, itr="last"):
     """Load a pytorch policy saved with Bayesian Learning Control Logger.
 
     Args:
         fpath (str): The path where the model is found.
-        itr (str, optional): The current policy iteration. Defaults to "last".
         env (:obj:`gym.env`): The gym environment in which you want to test the policy.
+        itr (str, optional): The current policy iteration. Defaults to "last".
 
     Returns:
         torch.nn.Module: The policy.
@@ -255,6 +254,7 @@ def load_pytorch_policy(fpath, itr="last", env=None):
         ac_kwargs = {}
     model = getattr(torch_algos, save_info["alg_name"])(env=env, **ac_kwargs)
     model.load_state_dict(model_data)  # Retore model parameters
+
     return model
 
 
@@ -275,9 +275,14 @@ def run_policy(
             Defaults to ``True``.
     """
     assert env is not None, friendly_err(
-        "Environment not found!\n\n It looks like the environment wasn't saved, "
-        + "and we can't run the agent in it. :( \n\n Check out the documentation "
-        + "page on the Test Policy utility for how to handle this situation."
+        "Environment not found!\n\n It looks like the environment wasn't saved, and we "
+        "can't run the agent in it. :( \n\n Check out the documentation page on the "
+        "Test Policy utility for how to handle this situation."
+    )
+    assert env is not None, friendly_err(
+        "Policy not found!\n\n It looks like the policy could not be loaded. :( \n\n "
+        "Check out the documentation page on the Test Policy utility for how to "
+        "handle this situation."
     )
 
     logger = EpochLogger(verbose_fmt="table")

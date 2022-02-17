@@ -83,5 +83,5 @@ push the documentation to the :blc:`main <tree/main>` branch and run the
 
 .. warning::
 
-    Please make sure you are on the `main`_ branch while building the documentation. Otherwise,
+    Please make sure you are on the :blc:`main <tree/main>` branch while building the documentation. Otherwise,
     errors will greet you.
