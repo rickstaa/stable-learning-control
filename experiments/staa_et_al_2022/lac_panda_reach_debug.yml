@@ -14,16 +14,16 @@ gamma: 0.995
 alpha3: 0.2
 alpha: 0.99
 labda: 0.99
-epochs: 300
-max_ep_len: 100
-steps_per_epoch: 200000
+epochs: 2
+max_ep_len: 250
+steps_per_epoch: 1000
 update_every: 1000
-update_after: 200000
+update_after: 1000
 steps_per_update: 1000
 num_test_episodes: 2
 batch_size: 256
 replay_size: 1e6
-save_freq: 100
+save_freq: 1
 save_checkpoints: True
 
 # Env parameters

@@ -3,7 +3,6 @@
 ## Main
 
 *   \[ ] Fix environment test problems.
-*   \[ ] Fix save\_info.json not found in load\_pytorch\_policy when in parent folder.
 
 ## Docs
 

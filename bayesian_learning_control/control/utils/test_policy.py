@@ -7,9 +7,14 @@ import os
 import os.path as osp
 import time
 from pathlib import Path
+import re
 
 import joblib
 import torch
+from bayesian_learning_control.control.common.exceptions import (
+    EnvLoadError,
+    PolicyLoadError,
+)
 from bayesian_learning_control.utils.import_utils import import_tf
 from bayesian_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 from bayesian_learning_control.utils.log_utils.helpers import friendly_err
@@ -60,38 +65,50 @@ def _retrieve_model_folder(fpath):
             - backend (:obj:`str`): The inferred backend. Options are ``tf`` and
                 ``torch``.
     """
-    data_folders = glob.glob(fpath + r"/*_save")
-    if ("tf2_save" in fpath and "torch_save" in fpath) or len(data_folders) > 1:
+    data_folders = (
+        glob.glob(fpath + r"/*_save")
+        if not bool(re.search(r"/*_save", fpath))
+        else glob.glob(fpath)
+    )
+    if any(["tf2_save" in item for item in data_folders]) and any(
+        ["torch_save" in item for item in data_folders]
+    ):
         raise IOError(
             friendly_err(
-                "Policy could not be loaded as the model as the specified model folder "
+                f"Policy could not be loaded since the specified model folder "
                 f"'{fpath}' seems to be corrupted. It contains both a 'torch_save' and "
                 "'tf2_save' folder. Please check your model path (fpath) and try again."
             )
         )
-    elif "tf2_save" in fpath:
-        model_path = os.sep.join(
-            fpath.split(os.sep)[: fpath.split(os.sep).index("tf2_save") + 1]
-        )
-        return model_path, "tf"
-    elif "torch_save" in fpath:
-        model_path = os.sep.join(
-            fpath.split(os.sep)[: fpath.split(os.sep).index("torch_save") + 1]
-        )
-        return model_path, "torch"
-    else:  # Check
-        if len(data_folders) == 0:
-            raise FileNotFoundError(
-                friendly_err(
-                    f"No model was found inside the supplied model path '{fpath}'. "
-                    "Please check your model path (fpath) and try again."
+    elif (
+        len([item for item in data_folders if "tf2_save" in item]) > 1
+        or len([item for item in data_folders if "torch_save" in item]) > 1
+    ):
+        raise IOError(
+            friendly_err(
+                "Policy could not be loaded since the specified model folder '{}' "
+                "seems to be corrupted. It contains multiple '{}' folders. Please "
+                "check your model path (fpath) and try again.".format(
+                    fpath,
+                    "tf2_save"
+                    if any(["tf2_save" in item for item in data_folders])
+                    else "torch_save",
                 )
             )
-        else:
-            return (
-                data_folders[0],
-                ("torch" if "torch_save" in data_folders[0] else "tf"),
+        )
+    elif any(["tf2_save" in item for item in data_folders]):
+        model_path = [item for item in data_folders if "tf2_save" in item][0]
+        return model_path, "tf"
+    elif any(["torch_save" in item for item in data_folders]):
+        model_path = [item for item in data_folders if "torch_save" in item][0]
+        return model_path, "torch"
+    else:
+        raise FileNotFoundError(
+            friendly_err(
+                f"No model was found inside the supplied model path '{fpath}'. "
+                "Please check your model path (fpath) and try again."
             )
+        )
 
 
 def load_policy_and_env(fpath, itr="last"):
@@ -106,8 +123,10 @@ def load_policy_and_env(fpath, itr="last"):
 
     Raises:
         FileNotFoundError: Thrown when the fpath does not exist.
-        Exception: Thrown when something else goes wrong while loading the policy or
+        EnvLoadError: Thrown when something went wrong trying to load the saved
             environment.
+        PolicyLoadError: Thrown when something went wrong trying to load the saved
+            policy.
 
     Returns:
         (tuple): tuple containing:
@@ -139,7 +158,7 @@ def load_policy_and_env(fpath, itr="last"):
         state = joblib.load(Path(fpath).parent.joinpath("vars.pkl"))
         env = state["env"]
     except Exception as e:
-        raise Exception(
+        raise EnvLoadError(
             friendly_err(
                 (
                     "Environment not found!\n\n It looks like the environment wasn't "
@@ -151,11 +170,21 @@ def load_policy_and_env(fpath, itr="last"):
         ) from e
 
     # load the get_action function
-    if backend == "tf":
-        policy = load_tf_policy(fpath, itr, env)
-    else:
-        policy = load_pytorch_policy(fpath, itr, env)
-
+    try:
+        if backend == "tf":
+            policy = load_tf_policy(fpath, itr, env)
+        else:
+            policy = load_pytorch_policy(fpath, itr, env)
+    except Exception as e:
+        raise PolicyLoadError(
+            friendly_err(
+                (
+                    "Policy not found!\n\n It looks like the policy wasn't "
+                    "successfully saved. :( \n\n Check out the documentation page on "
+                    "the Test Policy utility for how to handle this situation."
+                )
+            )
+        ) from e
     return env, policy
 
 
@@ -206,6 +235,7 @@ def load_pytorch_policy(fpath, itr="last", env=None):
         torch.nn.Module: The policy.
     """
 
+    fpath, _ = _retrieve_model_folder(fpath)
     if itr != "last":
         fpath = _retrieve_iter_folder(fpath, itr)
     model_file = Path(fpath).joinpath(
