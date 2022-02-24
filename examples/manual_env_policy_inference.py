@@ -12,7 +12,7 @@ from bayesian_learning_control.control.utils.test_policy import (
 )
 
 AGENT_TYPE = "torch"  # The type of agent that was trained. Options: 'tf2' and 'torch'.
-AGENT_FOLDER = "/home/ricks/Development/work/bayesian-learning-control/data/2022-02-17_staa_lac_panda_reach/2022-02-17_13-21-04-staa_lac_panda_reach_s25"  # noqa: E501
+AGENT_FOLDER = "/home/ricks/Development/bayesian-learning-control/data/2022-02-24_staa_lac_panda_reach/2022-02-24_09-12-19-staa_lac_panda_reach_s25"  # noqa: E501
 
 if __name__ == "__main__":
     # NOTE: STEP 1a: Try to load the policy and environment
