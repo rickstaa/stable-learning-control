@@ -21,7 +21,7 @@ jobs:
         python-version: [3.6, 3.7, 3.8] # Supported python versions
     steps:
       - name: Checkout mlc repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
           token: ${{ secrets.GA_SUB }}
