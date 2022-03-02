@@ -20,7 +20,7 @@ jobs:
       - name: Install system dependencies
         run: sudo apt update; sudo apt install libopenmpi-dev
       - name: Set up Python environment
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.7
       - name: Cache python environment
