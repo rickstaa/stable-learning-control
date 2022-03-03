@@ -58,7 +58,7 @@ jobs:
         working-directory: ./docs
         run: make html
       - name: Upload build documentation
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: html-docs
           path: docs/build/html/
