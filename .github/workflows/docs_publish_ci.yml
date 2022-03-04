@@ -73,7 +73,7 @@ jobs:
         id: previous_tag
         uses: rickstaa/action-get-semver@v1
       - name: Download the build documentation
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: html-docs
           path: docs/build/html
