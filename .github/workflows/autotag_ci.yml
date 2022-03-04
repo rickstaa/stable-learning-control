@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GA_SUB }} # NOTE: Ensures that this action triggers a new workflow
+          token: ${{ secrets.GA_PAT }} # NOTE: Ensures that this action triggers a new workflow
       # Bump version on merging Pull Requests with specific labels.
       # (bump:major,bump:minor,bump:patch)
       - id: bumpr
