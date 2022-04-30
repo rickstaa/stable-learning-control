@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   '@commitlint/cli': 16.2.1
@@ -7,7 +7,7 @@ specifiers:
   cz-conventional-changelog: 3.3.0
   husky: 7.0.4
   lint-staged: 12.4.0
-  pnpm: 6.32.0
+  pnpm: 7.0.0
   remark: 14.0.2
   remark-cli: 10.0.0
   remark-lint: 9.1.0
@@ -22,7 +22,7 @@ devDependencies:
   cz-conventional-changelog: 3.3.0
   husky: 7.0.4
   lint-staged: 12.4.0
-  pnpm: 6.32.0
+  pnpm: 7.0.0
   remark: 14.0.2
   remark-cli: 10.0.0
   remark-lint: 9.1.0
@@ -138,7 +138,7 @@ packages:
       '@types/node': 16.11.12
       chalk: 4.1.2
       cosmiconfig: 7.0.1
-      cosmiconfig-typescript-loader: 1.0.2_74e588db5264178750052e53ffe97b8f
+      cosmiconfig-typescript-loader: 1.0.2_otsyrw2smqlyouaffzj772l3r4
       lodash: 4.17.21
       resolve-from: 5.0.0
       typescript: 4.5.3
@@ -873,7 +873,7 @@ packages:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: true
 
-  /cosmiconfig-typescript-loader/1.0.2_74e588db5264178750052e53ffe97b8f:
+  /cosmiconfig-typescript-loader/1.0.2_otsyrw2smqlyouaffzj772l3r4:
     resolution: {integrity: sha512-27ZehvijYqAKVzta5xtZBS3PAliC8CmnWkGXN0vgxAZz7yqxpMjf3aG7flxF5rEiu8FAD7nZZXtOI+xUGn+bVg==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
@@ -882,7 +882,7 @@ packages:
     dependencies:
       '@types/node': 16.11.12
       cosmiconfig: 7.0.1
-      ts-node: 10.4.0_74e588db5264178750052e53ffe97b8f
+      ts-node: 10.4.0_otsyrw2smqlyouaffzj772l3r4
       typescript: 4.5.3
     transitivePeerDependencies:
       - '@swc/core'
@@ -2411,9 +2411,9 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /pnpm/6.32.0:
-    resolution: {integrity: sha512-04KwsfhUfc6+at4gQVD848R7/bj2lvweh1ZcE0BDlDvBNlvxpYz+ZbRRkS+lInG5vz95cOybnyNO55dxvsARWA==}
-    engines: {node: '>=12.17'}
+  /pnpm/7.0.0:
+    resolution: {integrity: sha512-5njVSmE/Sz6coyikS6gjwoKWaxxsJ6BY6jL1aqwvnEpNUfFednbHqid3aZ42JszOFaSOz3Qipcfp4ei22G/JEg==}
+    engines: {node: '>=14.19'}
     hasBin: true
     dev: true
 
@@ -3175,7 +3175,7 @@ packages:
     resolution: {integrity: sha512-FnHq5sTMxC0sk957wHDzRnemFnNBvt/gSY99HzK8F7UP5WAbvP70yX5bd7CjEQkN+TjdxwI7g7lJ6podqrG2/w==}
     dev: true
 
-  /ts-node/10.4.0_74e588db5264178750052e53ffe97b8f:
+  /ts-node/10.4.0_otsyrw2smqlyouaffzj772l3r4:
     resolution: {integrity: sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==}
     hasBin: true
     peerDependencies:
