@@ -18,7 +18,7 @@ jobs:
       - name: Install blc system dependencies
         run: sudo apt-get update; sudo apt-get install libopenmpi-dev
       - name: Set up Python environment
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.7
       - name: Cache python environment
