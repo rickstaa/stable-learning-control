@@ -7,7 +7,7 @@ specifiers:
   cz-conventional-changelog: 3.3.0
   husky: 8.0.1
   lint-staged: 13.1.0
-  pnpm: 7.23.0
+  pnpm: 7.25.0
   remark: 14.0.2
   remark-cli: 11.0.0
   remark-lint: 9.1.0
@@ -22,7 +22,7 @@ devDependencies:
   cz-conventional-changelog: 3.3.0
   husky: 8.0.1
   lint-staged: 13.1.0
-  pnpm: 7.23.0
+  pnpm: 7.25.0
   remark: 14.0.2
   remark-cli: 11.0.0
   remark-lint: 9.1.0
@@ -2577,8 +2577,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /pnpm/7.23.0:
-    resolution: {integrity: sha512-0dJQXA+1+mo//tBvSpjb6dmLxx/UmLoeEOk/0FmOZ73GRZRNhMdarnwEenhKHNpiVXGCcvfWXJnvUMB7lp+tRQ==}
+  /pnpm/7.25.0:
+    resolution: {integrity: sha512-FGFQUON8kJ6ma39elJ8lyD8wPIfgp3opGJD9sX0TgIJk4zSr556qCgC8AN+3BFHe4yuRkEauf4JVLW2RKyyEcA==}
     engines: {node: '>=14.6'}
     hasBin: true
     dev: true
