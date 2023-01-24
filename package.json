@@ -37,7 +37,7 @@
     "cz-conventional-changelog": "3.3.0",
     "husky": "8.0.1",
     "lint-staged": "13.1.0",
-    "pnpm": "7.25.0",
+    "pnpm": "7.26.0",
     "remark": "14.0.2",
     "remark-cli": "11.0.0",
     "remark-lint": "9.1.0",
