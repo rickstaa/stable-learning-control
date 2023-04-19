@@ -20,8 +20,8 @@ devDependencies:
     specifier: 13.2.0
     version: 13.2.0
   pnpm:
-    specifier: 8.2.0
-    version: 8.2.0
+    specifier: 8.3.1
+    version: 8.3.1
   remark:
     specifier: 14.0.2
     version: 14.0.2
@@ -2588,8 +2588,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /pnpm@8.2.0:
-    resolution: {integrity: sha512-f2/abl6GycxLgVZQtWA2zBJKMXcv2L86HGRwJ4qnS02gVzLgtFegC25qWKFtUunCY74GUwxq2A7yGAJEyOuCYg==}
+  /pnpm@8.3.1:
+    resolution: {integrity: sha512-0mT2ZAv08J3nz8xUdWhRW88GE89IWgPo/xZhb6acQXK2+aCikl7kT7Bg31ZcnJqOrwYXSed68xjLd/ZoSnBR8w==}
     engines: {node: '>=16.14'}
     hasBin: true
     dev: true
