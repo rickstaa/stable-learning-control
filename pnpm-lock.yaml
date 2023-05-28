@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 devDependencies:
   '@commitlint/cli':
@@ -20,8 +24,8 @@ devDependencies:
     specifier: 13.2.0
     version: 13.2.0
   pnpm:
-    specifier: 8.5.0
-    version: 8.5.0
+    specifier: 8.6.0
+    version: 8.6.0
   remark:
     specifier: 14.0.2
     version: 14.0.2
@@ -2588,8 +2592,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /pnpm@8.5.0:
-    resolution: {integrity: sha512-eGki4/2GIMFivfbKHIDo1mP1vFvMi39Mh9TxcBHZcFWj09zGzCYD04e05j/60sUkJ1yyzSAszkchBxp9PSL7Ew==}
+  /pnpm@8.6.0:
+    resolution: {integrity: sha512-uMaWGXlvG+m5NIJaR4JEEenChbg+1AP4zVpqs4PEcZg4uH+lXMTd/X/lirKZA+TC0w0d+++y3btINcwyKsuwAA==}
     engines: {node: '>=16.14'}
     hasBin: true
     dev: true
