@@ -5,7 +5,7 @@
 [![Linux CI](https://github.com/rickstaa/bayesian-learning-control/workflows/Linux%20CI/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions?query=workflow%3A%22Linux+CI%22)
 [![Mac CI](https://github.com/rickstaa/bayesian-learning-control/workflows/Mac%20CI/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions?query=workflow%3A%22Mac+CI%22)
 [![Docs CI](https://github.com/rickstaa/bayesian-learning-control/actions/workflows/docs_publish_ci.yml/badge.svg)](https://github.com/rickstaa/bayesian-learning-control/actions/workflows/docs_publish_ci.yml)
-[![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](contributing.md)
+[![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 ## Package Overview
 
@@ -43,4 +43,4 @@ Please see the [docs](https://rickstaa.github.io/bayesian-learning-control/) for
 
 ## Contributing
 
-We use [husky](https://github.com/typicode/husky) pre-commit hooks and github actions to enforce high code quality. Please check the [contributing.md](contributing.md) before contributing to this repository.
+We use [husky](https://github.com/typicode/husky) pre-commit hooks and github actions to enforce high code quality. Please check the [contributing guidelines](CONTRIBUTING.md) before contributing to this repository.
