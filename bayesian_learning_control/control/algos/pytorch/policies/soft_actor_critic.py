@@ -107,7 +107,7 @@ class SoftActorCritic(nn.Module):
                 - Q2(:obj:`torch.Tensor`): Q-values of the second critic.
 
         .. note::
-            Usefull for when you want to print out the full network graph using
+            Useful for when you want to print out the full network graph using
             tensorboard.
         """  # noqa: E501
         pi_action, logp_pi = self.pi(obs)

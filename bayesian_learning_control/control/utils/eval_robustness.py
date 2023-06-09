@@ -545,7 +545,7 @@ def plot_robustness_results(  # noqa: C901
     merged=False,
     figs_fmt="pdf",
 ):
-    """Creates several usefull plots out of the dataframe that was collected in the
+    """Creates several Useful plots out of the dataframe that was collected in the
     :meth:`run_disturbed_policy` method.
 
     Args:

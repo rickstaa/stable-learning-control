@@ -373,7 +373,6 @@ class LAC(tf.keras.Model):
 
         # Compute Lyapunov Critic error gradients
         with tf.GradientTape() as l_tape:
-
             # Get current Lyapunov value
             l1 = self.ac.L([o, a])
 
@@ -393,7 +392,6 @@ class LAC(tf.keras.Model):
         ################################################
         # Compute actor loss gradients
         with tf.GradientTape() as a_tape:
-
             # Retrieve log probabilities of batch observations based on *current* policy
             _, logp_pi = self.ac.pi(o)
 
@@ -432,7 +430,6 @@ class LAC(tf.keras.Model):
         if self._adaptive_temperature:
             # Compute alpha loss gradients
             with tf.GradientTape() as alpha_tape:
-
                 # Calculate alpha loss
                 alpha_loss = -tf.reduce_mean(
                     self.alpha * tf.stop_gradient(logp_pi + self.target_entropy)
@@ -451,7 +448,6 @@ class LAC(tf.keras.Model):
 
         # Compute labda loss gradients
         with tf.GradientTape() as lambda_tape:
-
             # Calculate labda loss
             # NOTE: Log_labda was used in the lambda_loss function because using
             # lambda caused the gradients to vanish. This is caused since we
@@ -574,7 +570,7 @@ class LAC(tf.keras.Model):
                 type="error",
             )
         else:
-            # NOTE: Currently we only export the actor as this is what is usefull when
+            # NOTE: Currently we only export the actor as this is what is Useful when
             # deploying the algorithm.
             obs_dummy = tf.random.uniform(
                 combine_shapes(1, self._obs_dim), dtype=tf.float32
@@ -1106,7 +1102,6 @@ def lac(  # noqa: C901
 
         # Update handling
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
-
             # Step based learning rate decay
             if lr_decay_ref.lower() == "step":
                 lr_a_now = max(
@@ -1264,7 +1259,6 @@ def lac(  # noqa: C901
 
 
 if __name__ == "__main__":
-
     # Import gym environments
     import bayesian_learning_control.simzoo.simzoo.envs  # noqa: F401
 

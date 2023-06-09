@@ -117,7 +117,7 @@ class LyapunovActorCritic(nn.Module):
                 - L (:obj:`torch.Tensor`): Critic L values.
 
         .. note::
-            Usefull for when you want to print out the full network graph using
+            Useful for when you want to print out the full network graph using
             tensorboard.
         """  # noqa: E501
         pi_action, logp_pi = self.pi(obs)

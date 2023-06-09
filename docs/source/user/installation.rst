@@ -45,11 +45,11 @@ We recommend installing Python through Anaconda. Anaconda is a library that incl
 Python, as well as an environment manager called Conda that makes package management simple.
 
 Follow `the installation instructions`_ for Anaconda here. Download and install Anaconda3 (at time of writing, `Anaconda3-5.3.1`_).
-Then create a Conda Python 3.7 env for organizing packages used in the BLC package:
+Then create a Conda Python env for organizing packages used in the BLC package:
 
 .. code-block:: bash
 
-    conda create -n blc python=3.7
+    conda create -n blc python=3.10
 
 To use Python from the environment, you just created, activate the environment with:
 
@@ -58,7 +58,7 @@ To use Python from the environment, you just created, activate the environment w
     conda activate blc
 
 Alternatively, you can also use Python its `venv <https://docs.python.org/3/library/venv.html>`_ package to create a virtual environment. When
-using this option, make sure you set the `--system-site-packages` flag when creating the environment when you need access to the system python packages
+using this option, make sure you set the ``--system-site-packages`` flag when creating the environment when you need access to the system python packages
 (e.g. when you use `ros_gazebo_gym <https://rickstaa.github.io/ros-gazebo-gym>`_ environments).
 
 .. admonition:: You Should Know
