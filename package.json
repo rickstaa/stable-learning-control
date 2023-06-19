@@ -1,6 +1,6 @@
 {
   "name": "bayesian-learning-control",
-  "version": "1.3.14",
+  "version": "1.3.73",
   "description": "A framework for learning stable reinforcement learning policies.",
   "keywords": [
     "reinforcement-learning",
@@ -23,9 +23,7 @@
   "license": "MIT",
   "author": "Rick Staa",
   "scripts": {
-    "changelog": "HUSKY=0 standard-version --skip.bump --skip.commit --skip.tag",
     "prepare": "husky install",
-    "release": "HUSKY=0 standard-version",
     "sort": "sort-package-json"
   },
   "commitlint": {
@@ -52,6 +50,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.3",
     "lint-staged": "13.2.2",
+    "release-please": "github:rickstaa/release-please#add_pytoml_version_warning_ignore_ts",
     "remark": "14.0.3",
     "remark-cli": "11.0.0",
     "remark-lint": "9.1.2",

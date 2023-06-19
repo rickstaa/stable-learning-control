@@ -8,6 +8,9 @@ from bayesian_learning_control.control.algos.pytorch.common.buffers import (
     TrajectoryBuffer,
 )
 
+# import numpy as np # Check why this does not get excluded?
+
+
 if __name__ == "__main__":
     # Create dummy environment
     env = gym.make("CartPoleCost-v0")
