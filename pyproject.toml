@@ -1,14 +1,89 @@
 [build-system]
-# These are the assumed default build requirements from pip:
-# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
+
+# Project configuration.
+[project]
+name = "bayesian_learning_control"
+dynamic = ["version", "readme"]
+authors = [
+    {name = "Rick Staa", email = "rick.staa@outlook.com"}
+]
+license = {file = "LICENSE"}
+description = "A package that contains several gymnasium environments with cost functions compatible with (stable) RL agents (i.e. positive definite)."
+keywords = [
+    "reinforcement-learning",
+    "simulation",
+    "stability",
+    "control",
+    "openai-gym",
+    "gymnasium",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering"
+]
+dependencies = [
+    "gym",
+    "numpy",
+    "scipy",
+    "torch>=1.5",
+    "joblib",
+    "tensorboard",
+    "mpi4py",
+    "psutil",
+    "tqdm",
+    "cloudpickle",
+    "seaborn",
+    "ipython",
+    "matplotlib",
+    "pandas",
+    "ruamel.yaml",
+    "iteration_utilities",
+    "ray[default]"
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.3.2",
+    "pytest-cov>=4.1.0",
+    "pytest-html>=3.2.0",
+    "flake8>=6.0.0",
+    "black>=23.3.0",
+]
+docs = [
+    "docutils",
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-rtd-theme",
+    "myst_parser",
+    "pygments>=2.11.2",
+]
+tuning = [
+    "ray[tune]",
+    "hyperopt",
+]
+tf = [
+    "tensorflow>=2",
+    "tensorflow-probability"
+]
+
+[project.urls]
+repository = "https://github.com/rickstaa/bayesian-learning-control"
+source = "https://github.com/rickstaa/bayesian-learning-control"
+documentation = "https://rickstaa.dev/bayesian-learning-control"
+
+# Python tools configuration.
+[tool.setuptools]
+packages = ["bayesian_learning_control"]
+
+[tool.setuptools.dynamic]
+readme = {file = "README.md", content_type = "text/markdown"}
+
+[tool.setuptools_scm]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-testpaths = ["bayesian_learning_control"]
-norecursedirs = ["simzoo"]
-
-[tool.coverage.run]
-source = ["bayesian_learning_control"]
-omit = ["*/simzoo/*"]
+testpaths = ["tests"]

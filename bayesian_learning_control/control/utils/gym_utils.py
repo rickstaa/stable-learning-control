@@ -8,8 +8,9 @@ import sys
 from textwrap import dedent
 
 import gym
-from bayesian_learning_control.utils.log_utils import friendly_err
 from gym import spaces
+
+from bayesian_learning_control.utils.log_utils import friendly_err
 
 DISCRETE_SPACES = (
     spaces.Discrete,
@@ -68,13 +69,14 @@ def validate_gym_env(arg_dict):
     # Import gym environments
     import gym
 
-    # import bayesian_learning_control.simzoo.simzoo  # noqa: F401
+    # Import environment configuration file. This file can be used to inject
+    # custom gym environments into the blc package.
     try:
         import bayesian_learning_control.env_config  # noqa: F401
     except Exception as e:
         raise Exception(
             friendly_err(
-                "Something went wrong when trying to import the 'env_config' file."
+                "Something went wrong when trying to import the 'env_config' " " file."
             )
         ) from e
 

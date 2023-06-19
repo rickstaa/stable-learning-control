@@ -51,7 +51,6 @@ def train_lac(config):
 
 
 if __name__ == "__main__":
-
     # Pass system arguments to ray
     if len(sys.argv) > 1:
         ray.init(redis_address=sys.argv[1])

@@ -1,3 +1,0 @@
-[submodule "bayesian_learning_control/simzoo"]
-	path = bayesian_learning_control/simzoo
-	url = ../simzoo.git

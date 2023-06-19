@@ -28,6 +28,7 @@ from pathlib import Path
 
 import gym
 import numpy as np
+
 from bayesian_learning_control.common.helpers import combine_shapes
 from bayesian_learning_control.control.algos.tf2.common import get_lr_scheduler
 from bayesian_learning_control.control.algos.tf2.common.helpers import (
@@ -1259,8 +1260,8 @@ def lac(  # noqa: C901
 
 
 if __name__ == "__main__":
-    # Import gym environments
-    import bayesian_learning_control.simzoo.simzoo.envs  # noqa: F401
+    # NOTE: You can import your custom gym environment here.
+    # import stable_gym  # noqa: F401
 
     parser = argparse.ArgumentParser(
         description="Trains a LAC agent in a given environment."

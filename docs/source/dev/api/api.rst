@@ -21,7 +21,6 @@ BLC modules
    bayesian_learning_control.control
    bayesian_learning_control.hardware
    bayesian_learning_control.modeling
-   bayesian_learning_control.simzoo
    bayesian_learning_control.utils
    bayesian_learning_control.common
    bayesian_learning_control.run

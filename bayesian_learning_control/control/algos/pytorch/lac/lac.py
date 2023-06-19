@@ -32,13 +32,14 @@ import gym
 import numpy as np
 import torch
 import torch.nn as nn
+from torch.optim import Adam
+
 from bayesian_learning_control.control.algos.pytorch.common import get_lr_scheduler
 from bayesian_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
 from bayesian_learning_control.control.algos.pytorch.common.helpers import (
     count_vars,
     retrieve_device,
 )
-
 # fmt: off
 from bayesian_learning_control.control.algos.pytorch.policies.lyapunov_actor_critic import \
     LyapunovActorCritic  # noqa: E501
@@ -58,7 +59,6 @@ from bayesian_learning_control.utils.log_utils import (
     setup_logger_kwargs,
 )
 from bayesian_learning_control.utils.serialization_utils import save_to_json
-from torch.optim import Adam
 
 # Import ray tuner if installed
 tune = lazy_importer(module_name="ray.tune")
@@ -635,8 +635,8 @@ class LAC(nn.Module):
             ) from e
 
     def state_dict(self):
-        """Simple wrapper around the :meth:`torch.nn.Module.state_dict` method that saves
-        the current class name. This is used to enable easy loading of the model.
+        """Simple wrapper around the :meth:`torch.nn.Module.state_dict` method that
+        saves the current class name. This is used to enable easy loading of the model.
         """
         state_dict = super().state_dict()
         state_dict[
@@ -1316,9 +1316,8 @@ def lac(  # noqa: C901
 
 
 if __name__ == "__main__":
-
-    # Import gym environments
-    import bayesian_learning_control.simzoo.simzoo.envs  # noqa: F401
+    # NOTE: You can import your custom gym environment here.
+    # import stable_gym  # noqa: F401
 
     parser = argparse.ArgumentParser(
         description="Trains a LAC agent in a given environment."

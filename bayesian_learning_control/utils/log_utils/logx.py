@@ -12,12 +12,14 @@ import glob
 import json
 import os
 import os.path as osp
+import pickle
 import time
 
 import joblib
 import numpy as np
-import pickle5 as pickle
 import torch
+from torch.utils.tensorboard import SummaryWriter
+
 from bayesian_learning_control.common.helpers import is_scalar
 from bayesian_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from bayesian_learning_control.utils.import_utils import import_tf
@@ -31,7 +33,6 @@ from bayesian_learning_control.utils.serialization_utils import (
     load_from_json,
     save_to_json,
 )
-from torch.utils.tensorboard import SummaryWriter
 
 
 class Logger:
@@ -88,7 +89,6 @@ class Logger:
             exp_name (str): Experiment name.
         """
         if proc_id() == 0:
-
             # Parse output_fname to see if csv was requested
             extension = osp.splitext(output_fname)[1]
             self._output_csv = True if extension.lower() == ".csv" else False
@@ -524,7 +524,6 @@ class Logger:
                 to None
         """
         if proc_id() == 0:
-
             # Save training state (environment, ...)
             try:
                 joblib.dump(state_dict, osp.join(self.output_dir, "vars.pkl"))
@@ -586,7 +585,6 @@ class Logger:
                 to None
         """
         if proc_id() == 0:
-
             save_fail_warning = (
                 "The object you tried to save doesn't have a 'save_weights' we "
                 "can use to retrieve the model weights. Please make sure you supplied "
@@ -655,7 +653,6 @@ class Logger:
                 to None
         """
         if proc_id() == 0:
-
             save_fail_warning = (
                 "The object you tried to save doesn't have a 'state_dict' we can"
                 "use to retrieve the model weights. Please make sure you supplied the "
@@ -1586,7 +1583,6 @@ class EpochLogger(Logger):
                 counter if global step is not supplied.
         """
         for k, v in kwargs.items():
-
             # Store variable values in epoch_dict and increase global step count
             if not (k in self.epoch_dict.keys()):
                 self.epoch_dict[k] = []
@@ -1719,7 +1715,6 @@ class EpochLogger(Logger):
                 tb_alias=tb_alias,
             )
         else:
-
             v = self.epoch_dict[key]
             vals = (
                 np.concatenate(v)

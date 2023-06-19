@@ -27,9 +27,6 @@ package_dir = Path(__file__).joinpath("../../..").resolve()
 sys.path.insert(0, str(package_dir))
 sys.path.insert(1, str(package_dir.joinpath("./bayesian_learning_control").resolve()))
 sys.path.insert(2, str(package_dir.joinpath("./examples").resolve()))
-sys.path.insert(
-    3, str(package_dir.joinpath("./bayesian_learning_control/simzoo").resolve())
-)
 
 # -- General configuration ------------------------------------------------
 
@@ -236,6 +233,7 @@ intersphinx_mapping = {
     ),
     "pandas": ("http://pandas.pydata.org/pandas-docs/stable/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
+    "stable_gym": ("https://rickstaa.dev/stable-gym/", None),
 }
 
 extlinks = {
@@ -244,6 +242,7 @@ extlinks = {
     "torch": ("https://pytorch.org/%s", None),
     "tf": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
     "tb": ("https://www.tensorflow.org/tensorboard/%s", None),
+    "stable-gym": ("https://github.com/rickstaa/stable-gym/%s", None),
 }
 
 

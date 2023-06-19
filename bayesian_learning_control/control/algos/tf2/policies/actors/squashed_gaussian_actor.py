@@ -139,7 +139,6 @@ class SquashedGaussianActor(tf.keras.Model):
 
         # Compute logprob from Gaussian, and then apply correction for Tanh squashing.
         if with_logprob:
-
             # Transform base_distribution to the policy distribution
             reparm_trick_bijector = tfp.bijectors.Chain(
                 (self._squash_bijector, affine_bijector)
