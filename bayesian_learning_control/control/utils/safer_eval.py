@@ -13,7 +13,6 @@
 
 import bayesian_learning_control as bayesian_learning_control  # noqa: F401
 import bayesian_learning_control as blc  # noqa: F401
-import bayesian_learning_control.simzoo.simzoo  # noqa: F401
 
 # Import modules to which you want users to have access
 import torch  # noqa: F401

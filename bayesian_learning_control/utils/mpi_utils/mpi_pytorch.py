@@ -42,13 +42,11 @@ def mpi_avg_grads(module):
     # Sync torch module parameters
     if hasattr(module, "parameters"):
         for p in module.parameters():
-
             # Sync network grads
             p_grad_numpy = p.grad.numpy()
             avg_p_grad = mpi_avg(p.grad)
             p_grad_numpy[:] = avg_p_grad[:]
     elif isinstance(module, torch.Tensor):
-
         # Sync network grads
         p_grad_numpy = module.grad.numpy()
         avg_p_grad = mpi_avg(module.grad)
@@ -76,19 +74,16 @@ def sync_params(module):
 
     # Sync torch module parameters
     if hasattr(module, "parameters"):
-
         # Sync network parameters
         for p in module.parameters():
             p_numpy = p.data.numpy()
             broadcast(p_numpy)
     elif isinstance(module, torch.Tensor):
-
         # Sync pytorch parameter
         p_numpy = module.data.numpy()
         broadcast(p_numpy)
         return
     elif isinstance(module, np.ndarray):
-
         # Sync numpy parameters
         broadcast(module)
     else:

@@ -26,7 +26,6 @@ from bayesian_learning_control.control.utils.run_utils import ExperimentGrid
 ENV_NAME = "Oscillator-v1"  # The environment on which you want to train the agent.
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", type=int, default=5)
     parser.add_argument("--num_runs", type=int, default=1)

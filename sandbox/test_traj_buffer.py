@@ -2,7 +2,6 @@
 """
 
 import gym
-import numpy as np
 
 # from bayesian_learning_control.control.common.buffers import TrajectoryBuffer
 from bayesian_learning_control.control.algos.pytorch.common.buffers import (
@@ -10,7 +9,6 @@ from bayesian_learning_control.control.algos.pytorch.common.buffers import (
 )
 
 if __name__ == "__main__":
-
     # Create dummy environment
     env = gym.make("CartPoleCost-v0")
 
@@ -36,7 +34,6 @@ if __name__ == "__main__":
     o, ep_ret, ep_len = env.reset(), 0, 0
     for epoch in range(epochs):
         for t in range(local_steps_per_epoch):
-
             # Retrieve data from the environment
             a = env.action_space.sample()
             next_o, r, d, _ = env.step(a)

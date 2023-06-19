@@ -21,6 +21,8 @@ from textwrap import dedent
 import cloudpickle
 import numpy as np
 import psutil
+from tqdm import trange
+
 from bayesian_learning_control.common.helpers import all_bools, valid_str
 from bayesian_learning_control.user_config import DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
 from bayesian_learning_control.utils.log_utils import (
@@ -30,7 +32,6 @@ from bayesian_learning_control.utils.log_utils import (
 )
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import mpi_fork
 from bayesian_learning_control.utils.serialization_utils import convert_json
-from tqdm import trange
 
 DIV_LINE_WIDTH = 80
 
@@ -112,7 +113,8 @@ def call_experiment(
             # Import gym environments
             import gym
 
-            # import bayesian_learning_control.simzoo.simzoo  # noqa: F401
+            # Import environment configuration file. This file can be used to inject
+            # custom gym environments into the blc package.
             try:
                 import bayesian_learning_control.env_config  # noqa: F401
             except Exception as e:
@@ -362,14 +364,12 @@ class ExperimentGrid:
         # Build the rest of the name by looping through all parameters,
         # and deciding which ones need to go in there.
         for k, v, sh, inn in zip(self.keys, self.vals, self.shs, self.in_names):
-
             # Include a parameter in a name if either 1) it can take multiple
             # values, or 2) the user specified that it must appear in the name.
             # Except, however, when the parameter is 'seed'. Seed is handled
             # differently so that runs of the same experiment, with different
             # seeds, will be grouped by experiment name.
             if (len(v) > 1 or inn) and not (k == "seed"):
-
                 # Use the shorthand if available, otherwise the full name.
                 param_name = sh if sh is not None else k
                 param_name = valid_str(param_name)

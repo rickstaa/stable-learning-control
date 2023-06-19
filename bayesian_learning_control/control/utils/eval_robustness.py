@@ -1,15 +1,14 @@
-"""A set of functions that can be used to evaluate the stability and robustness of an
-algorithm. This is done by evaluating an algorithm's performance under two types of
-disturbances: A disturbance that is applied during the environment step and a
-perturbation added to the environmental parameters. For the functions in this
-module to work work, these disturbances should be implemented as methods on the
-environment. The Simzoo package contains a
-:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class from which a Gym environment
-can inherit to add these methods. See the
-`Robustness Evaluation Documentation <https://rickstaa.github.io/bayesian-learning-control/control/robustness_eval.html>`_
+"""Contains a set of functions that can be used to evaluate the stability and robustness
+of an algorithm. This is done by evaluating an algorithm's performance under two
+disturbances: A disturbance applied during the environment step and a perturbation
+added to the environmental parameters. For the functions in this module to work work,
+these disturbances should be implemented as methods on the environment. The
+:stable-gym:`Stable Gym <>` package contains a 	:class:`~stable_gym.common.disturber.Disturber`
+class from which a Gym environment can inherit to add these methods. See the `Robustness
+Evaluation Documentation
+<https://rickstaa.github.io/bayesian-learning control/control/robustness_eval.html>`_
 for more information.
 """  # noqa: E501
-
 import math
 import os
 import sys
@@ -20,6 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+
 from bayesian_learning_control.control.common.helpers import validate_observations
 from bayesian_learning_control.control.utils.test_policy import load_policy_and_env
 from bayesian_learning_control.utils.log_utils import (
@@ -36,7 +36,7 @@ REQUIRED_DISTURBER_OBJECTS = {
 
 def _disturber_implemented(env):
     """Checks if the environment inherits from the
-    :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
+    :class:`~stable_gym.common.disturber.Disturber`
     class or that the methods and attributes that are required for the robustness
     evaluation are present.
 

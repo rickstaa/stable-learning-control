@@ -22,7 +22,7 @@ def strip_underscores(text, position="all"):
 
 test = "__test"
 print(test)
-print(remove_leading_underscores(test))
+print(strip_underscores(test))
 test2 = test.strip("__")
 print(test2)
 print("script ended")

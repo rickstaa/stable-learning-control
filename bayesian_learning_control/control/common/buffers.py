@@ -302,7 +302,6 @@ class TrajectoryBuffer:
 
         # Calculate the advantage and rewards-to-go if buffer contains vals
         if self._contains_vals:
-
             # Get the current trajectory
             path_slice = slice(self.traj_ptr, self.ptr)
             rews = np.append(self.rew_buf[path_slice], last_val)

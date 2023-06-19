@@ -1,20 +1,19 @@
 """Small script to see if a gym environment can be imported.
 """
 
-import bayesian_learning_control.simzoo.simzoo  # noqa: F401
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
 import ros_gazebo_gym  # noqa: F401
+import stable_gym  # NOTE: Found at https://github.com/rickstaa/stable-gym # noqa: F401
 
 RANDOM_STEP = True
 # ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Ex3EKF-v1"
 ENV_NAME = "CartPoleCost-v0"
-ENV_NAME = "PandaReach-v1"
+# ENV_NAME = "PandaReach-v1"
 
 if __name__ == "__main__":
-
     env = gym.make(ENV_NAME)
 
     # Take T steps in the environment

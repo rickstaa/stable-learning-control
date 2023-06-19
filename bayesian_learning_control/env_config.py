@@ -7,8 +7,7 @@ Example:
     `this issue on the Openai github <https://github.com/openai/gym/blob/master/docs/creating-environments.md>`_
     for more information on how to create custom environments. Environments that are
     added to this file can be called directly without using the module prefix (eg.
-    ``Oscillator-v1`` instead of
-    ``bayesian_learning_control.simzoo.simzoo:Oscillator-v1``).
+    ``Oscillator-v1`` instead of ``stable-gym:Oscillator-v1``).
 
     .. code-block:: python
 
