@@ -846,7 +846,7 @@ def lac(  # noqa: C901
             starting to do gradient descent updates. Ensures replay buffer
             is full enough for useful updates. Defaults to ``1000``.
         steps_per_update (int, optional): Number of gradient descent steps that are
-            performed for each gradient descent update. This determins the ratio of
+            performed for each gradient descent update. This determines the ratio of
             env steps to gradient steps (i.e. :obj:`update_every`/
             :obj:`steps_per_update`). Defaults to ``100``.
         num_test_episodes (int, optional): Number of episodes used to test the
@@ -1513,7 +1513,7 @@ if __name__ == "__main__":
         "--verbose_vars",
         nargs="+",
         default=STD_OUT_LOG_VARS_DEFAULT,
-        help=("a space seperated list of the values you want to show on the std out."),
+        help=("a space separated list of the values you want to show on the std out."),
     )
     parser.add_argument(
         "--save_freq",

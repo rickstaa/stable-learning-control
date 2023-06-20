@@ -24,7 +24,9 @@
   "author": "Rick Staa",
   "scripts": {
     "prepare": "husky install",
-    "sort": "sort-package-json"
+    "sort": "sort-package-json",
+    "test": "pytest --cov=bayesian_learning_control --cov-report=term-missing",
+    "test:update:snapshot": "pytest --snapshot-update"
   },
   "commitlint": {
     "extends": [

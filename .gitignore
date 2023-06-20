@@ -1,38 +1,31 @@
-# Logs and data
-control/logs
-data/
-logs/*
-*.pnpm-error.log
-*.pnpm-debug.log
-*.log
-
-# Docs
-_autosummary/
-
-# Cache
-__pycache__/
-*.pyc
-
-# Tests
+# tests
 pytest/
 *.pytest_cache/
 .coverage
 pytest-coverage.txt
 
-# Dist
-build/
-dist/
-.eggs/
+# cache
+__pycache__/
+*.pytest_cache/
 *.egg-info/
+.eggs/
+*.pyc
+*.egg-info
+build/
 
-# node related
+# node
 node_modules/
 
-# IDE files to ignore
-.vscode
-*.code-workspace
-
-# Other
-runs/
+# misc
+logs/*
+*.pnpm-error.log
+*.pnpm-debug.log
+*.log
 MUJOCO_LOG.TXT
 client_id
+runs/
+data/
+
+# IDE
+.vscode/
+*.code-workspace

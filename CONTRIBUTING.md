@@ -1,85 +1,96 @@
-# Contributing
+# Contribution guidelines
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change.
+<!--alex ignore easy-->
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+We love your input! 🚀 We want to make contributing to this project as easy and transparent as possible, whether it's:
 
-## Find projects to work on
+*   [Reporting a bug](https://github.com/rickstaa/bayesian-learning-control/issues).
+*   [Discussing the current state of the code](https://github.com/rickstaa/bayesian-learning-control/discussions).
+*   [Submitting a fix](https://github.com/rickstaa/bayesian-learning-control/pulls).
+*   [Proposing new features](https://github.com/rickstaa/bayesian-learning-control/issues).
+*   Becoming a maintainer.
 
-Projects that are open for contributions can be found on the [issue tab](https://github.com/rickstaa/bayesian-learning-control/) and will be labelled with the `help wanted` tag. Projects with the `beginner` label are ideal for beginning programmers. If you find a project that spikes your interest, leave a comment. We will then assign you to this project. After you did one project, you will be added as a contributor after which you can attach yourself to projects to work on. You can also submit a feature you would like to work on yourself by by opening [an issue](https://github.com/rickstaa/bayesian-learning-control/issues/new).
+## We Develop with Github
 
-## Forking process
+<!--alex ignore host-hostess-->
 
-1.  Fork the main [repository](https://github.com/rickstaa/bayesian-learning-control/)
-2.  Create your feature branch `git checkout -b feature/fooBar`
-3.  Commit your changes `git commit -am 'Add some fooBar'`
-4.  Push to the branch `git push origin feature/fooBar`
-5.  Create a new Pull Request
+We use Github to host code, track issues and feature requests, and accept pull requests.
 
-## Commit instructions
+### We Use [Github Flow](https://guides.github.com/introduction/flow/index.html), So All Code Changes Happen Through Pull Requests
 
-We use husky pre-commit hooks to ensure code quality. To enable these hooks please:
+Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://docs.github.com/en/get-started/quickstart/github-flow)). We actively welcome your pull requests:
 
-1.  Install [node](https://nodejs.org/en/download/package-manager/).
-2.  Install [python](https://www.python.org/downloads/).
-3.  Run `npm install -D` and `pip install .[dev]` to install husky and the required linters.
-4.  Run `npm run prepare` to setup the pre-commit hooks.
+1.  Fork the repo and create your branch from `main`.
+2.  Add tests if you've added code that should be tested.
+3.  If you've changed APIs, update the documentation.
+4.  If you changed the documentation, please ensure it builds (see [Documentation guidelines](#documentation-guidelines)).
+5.  Ensure the test suite passes (i.e. `npm run test`). If snapshots fail, please check if this is intended and update the snapshots if necessary using the `npm run test:update:snapshot` command.
+6.  Make sure your code lints.
+7.  Commit your changes.
+8.  Create a pull request to pull the changes of your development branch onto the `main` branch.
+9.  Ensure that all the [pull request checks](https://github.com/rickstaa/bayesian-learning-control/actions) were successful.
 
-## Pull Request Process
+### Report bugs using Github's [issues](https://github.com/rickstaa/bayesian-learning-control/issues)
 
-1.  Ensure any install or build dependencies are removed before the end of the layer when doing a build.
-2.  Update the README.md with details of changes to the interface, this includes new environment variables, exposed ports, useful file locations and container parameters.
-3.  Increase the version numbers in any examples files and the README.md to the new version that this Pull Request would represent. The versioning scheme we use is [SemVer](http://semver.org/). To prevent errors you are recommended to use the [standard-version](https://github.com/conventional-changelog/standard-version) tool.
-4.  Update the `CHANGELOG.md`. This is also done using the [standard-version](https://github.com/conventional-changelog/standard-version) tool.
-5.  You may merge the Pull Request in once you have the sign-off of two other developers, or if you do not have permission to do that, you may request the second reviewer to merge it for you.
+<!--alex ignore easy-->
 
-### Versioning instructions
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/rickstaa/bayesian-learning-control/issues/new/choose); it's that easy!
 
-We use the [standard-version](https://github.com/conventional-changelog/standard-version) package for versioning. This tool will automatically increase the version and create a changelog by parsing your commits using the [conventional Commits](https://conventionalcommits.org/). This package can be invoked using the `npm run release` command. After you cut a release, you can push the new git tag using the `git push --follow-tags origin main` command.
+#### Write bug reports with detail, background, and sample code
 
-### Linting instructions
+[This is an example](http://stackoverflow.com/q/12488905/180626) of a bug report, and I think it's a good model. Here's [another example from Craig Hockenberry](http://www.openradar.me/11905408), an app developer greatly respected in the community.
 
-We use [husky](https://github.com/typicode/husky) pre-commit hooks to perform some linting and formatting actions. These actions will automatically run when you create a commit. Apart from this also some linting actions are performed by github actions when you create a pull request.
+**Great Bug Reports** tend to have:
 
-## Code of Conduct
+*   A quick summary and/or background.
+*   Steps to reproduce:
+    *   Be specific!
+    *   Give sample code if you can. [A StackOverflow question](http://stackoverflow.com/q/12488905/180626) includes sample code that *anyone* with a base R setup can run to reproduce the error.
+*   What you expected would happen
+*   What happens?
+*   Notes (possibly including why you think this might be happening or stuff you tried that didn't work).
 
-### Our Pledge
+People *love* thorough bug reports. I'm not even kidding.
 
-In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
+## Write descriptive commit messages
 
-### Our Standards
+Ensure you add an excellent descriptive commit message to this repository. A good guide can be found [here](https://www.conventionalcommits.org/en/v1.0.0/). When writing commit messages, please follow the [conventional commits specifications](https://www.conventionalcommits.org/en/v1.0.0/). Additionally, you are recommended to check out the [commitizen](https://github.com/commitizen/cz-cli) npm package, as it is beneficial in helping you write good commit messages.
 
-Examples of behaviour that contributes to creating a positive environment include:
+## Use a Consistent coding Style
 
-*   Using welcoming and inclusive language
-*   Being respectful of differing viewpoints and experiences
-*   Gracefully accepting constructive criticism
-*   Focusing on what is best for the community
-*   Showing empathy towards other community members
+We use several language guidelines to increase code quality, readability, and usability.
 
-Examples of unacceptable behaviour by participants include:
+### Python guidelines
 
-*   The use of sexualized language or imagery and unwelcome sexual attention or advances
-*   Trolling, insulting/derogatory comments, and personal or political attacks
-*   Public or private harassment
-*   Publishing others' private information, such as a physical or electronic address, without explicit permission
-*   Other conduct which could reasonably be considered inappropriate in a professional setting
+<!--alex ignore black-->
 
-### Our Responsibilities
+*   **Linting:** Please ensure your Python code doesn't contain any errors by checking it with the [flake8 python linter](https://flake8.pycqa.org/en/latest/).
+*   **Formatting:** Please format all your scripts using the [black python formatter](https://github.com/psf/black).
 
-Project maintainers are responsible for clarifying the standards of acceptable behaviour and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behaviour.
+### Markdown guidelines
 
-Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, or to ban temporarily or permanently any contributor for other behaviours that they deem inappropriate, threatening, offensive, or harmful.
+*   **Linting and formatting:** Please ensure your markdown code contains no errors and is formatted according to the [remark-lint](https://github.com/remarkjs/remark-lint) style guidelines.
 
-### Scope
+## GitHub actions
 
-This Code of Conduct applies both within project spaces and in public spaces when an individual is representing the project or its community. Examples of representing a project or community include using an official project e-mail address posting via an official social media account, or acting as an appointed representative at an online or offline event. Representation of a project may be further defined and clarified by project maintainers.
+The [Bayesian Learning Control](https://github.com/rickstaa/bayesian-learning-control) package contains several [GitHub actions](https://github.com/rickstaa/bayesian-learning-control/actions), which check code changes against the language guidelines above. As a result, when the above guidelines are not met, you will receive an **error/warning** when you create a pull request. Some of these actions will make pull requests which you can use to fix some of these violations. For other **errors/warnings**, you are expected to handle them yourself before merging them into the main branch. If you think a coding guideline needs to be corrected or your code structure doesn't allow you to respect the guideline, please state so in the pull request.
 
-### Attribution
+## Pre-commit hooks
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4, available at [http://contributor-covenant.org/version/1/4][version]
+The [Bayesian Learning Control](https://github.com/rickstaa/bayesian-learning-control) package also contains several pre-commit hooks that enforce the guidelines above before committing. To enable these hooks, please:
 
-[homepage]: http://contributor-covenant.org
+1.  Install [node](https://nodejs.org/en/download/package-manager).
+2.  Install [python](https://www.python.org/downloads).
+3.  Run `npm install .` and `pip install .[dev]` to install husky and the required linters.
 
-[version]: http://contributor-covenant.org/version/1/4/
+## Release guidelines
+
+Releases are handled automatically by the [release-please-action](https://github.com/google-github-actions/release-please-action). This action uses the [release-please](https://github.com/googleapis/release-please) tool to create release pull requests based on the commits automatically. When writing commit messages, you must follow the [Commit guidelines](#write-descriptive-commit-messages) since this expects you to adhere to the [conventional commits specifications](https://www.conventionalcommits.org/en/v1.0.0/). For more information on how this tool works, see [the release-please documentation](https://github.com/googleapis/release-please).
+
+## Documentation guidelines
+
+See the [documentation guidelines](https://rickstaa.dev/bayesian-learning-control/dev/doc_dev.html) for more information on contributing to the documentation.
+
+## Any contributions you make will be under the MIT Software License
+
+In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.

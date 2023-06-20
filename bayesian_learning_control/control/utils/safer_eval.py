@@ -1,7 +1,7 @@
 """Module used to make the eval calls inside the run.py script more save.
 
 .. important::
-    The :meth:`safer_eval` method can only evaluate expresions that use modules which are
+    The :meth:`safer_eval` method can only evaluate expression that use modules which are
     imported in this file.
 
 .. note::
@@ -11,11 +11,11 @@
 .. autofunction:: safer_eval
 """  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa:E501
 
-import bayesian_learning_control as bayesian_learning_control  # noqa: F401
-import bayesian_learning_control as blc  # noqa: F401
-
 # Import modules to which you want users to have access
 import torch  # noqa: F401
+
+import bayesian_learning_control as bayesian_learning_control  # noqa: F401
+import bayesian_learning_control as blc  # noqa: F401
 from bayesian_learning_control.utils.import_utils import import_tf
 
 tf = import_tf(frail=False)

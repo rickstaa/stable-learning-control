@@ -1,0 +1,20 @@
+# Github action that uses the 'release-please' tool to update the version, changelog
+# and create new releases.
+name: Bayesian Learning Control release
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rickstaa/release-please-action@optional_pyproject_toml
+        with:
+          token: ${{ secrets.PLEASE_RELEASE_PAT }}
+          command: manifest

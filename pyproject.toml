@@ -36,24 +36,34 @@ dependencies = [
     "tqdm",
     "cloudpickle",
     "seaborn",
-    "ipython",
     "matplotlib",
     "pandas",
     "ruamel.yaml",
-    "iteration_utilities",
     "ray[default]"
 ]
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
+# NOTE: The recursive dependencies used here are supported in pip 21.2 and above.
+tf = [
+    "tensorflow>=2",
+    "tensorflow_probability"
+]
+tuning = [
+    "ray[tune]",
+    "hyperopt",
+]
 dev = [
+    "bayesian_learning_control[tf,tuning]",
     "pytest>=7.3.2",
     "pytest-cov>=4.1.0",
     "pytest-html>=3.2.0",
+    "syrupy>=4.0.2",
     "flake8>=6.0.0",
     "black>=23.3.0",
 ]
 docs = [
+    "bayesian_learning_control[tf,tuning]",
     "docutils",
     "sphinx",
     "sphinx-autobuild",
@@ -61,13 +71,8 @@ docs = [
     "myst_parser",
     "pygments>=2.11.2",
 ]
-tuning = [
-    "ray[tune]",
-    "hyperopt",
-]
-tf = [
-    "tensorflow>=2",
-    "tensorflow-probability"
+all = [
+    "bayesian_learning_control[tf, tuning, dev, docs]",
 ]
 
 [project.urls]
@@ -87,3 +92,4 @@ readme = {file = "README.md", content_type = "text/markdown"}
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["tests"]
+norecursedirs = ["sandbox"]
