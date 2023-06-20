@@ -50,6 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: sudo apt update; sudo apt install libopenmpi-dev
       - name: Set up Python environment
         uses: actions/setup-python@v4
         with:
@@ -77,6 +79,8 @@ jobs:
     steps:
       - name: Checkout bayesian-learning-control repository
         uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: sudo apt update; sudo apt install libopenmpi-dev
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
