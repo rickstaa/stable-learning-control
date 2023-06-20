@@ -62,7 +62,7 @@ def get_activation_function(activation_fn_name, backend="torch"):
             ``None``, meaning no backend is assumed.
 
     Raises:
-        ValueError: Thrown if the activation function does not exist withing the
+        ValueError: Thrown if the activation function does not exist within the
             backend.
 
     Returns:

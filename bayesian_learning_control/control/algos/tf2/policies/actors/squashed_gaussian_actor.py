@@ -6,9 +6,10 @@ policy of `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 
 import tensorflow as tf
 import tensorflow_probability as tfp
+from tensorflow import nn
+
 from bayesian_learning_control.control.algos.tf2.common.bijectors import SquashBijector
 from bayesian_learning_control.control.algos.tf2.common.helpers import clamp, mlp
-from tensorflow import nn
 
 
 class SquashedGaussianActor(tf.keras.Model):
@@ -125,7 +126,7 @@ class SquashedGaussianActor(tf.keras.Model):
 
         # Pre-squash distribution and sample
         if deterministic:
-            pi_action = mu  # Determinstic action used at test time.
+            pi_action = mu  # determinestic action used at test time.
         else:
             # Sample from the normal distribution and calculate the action
             batch_size = tf.shape(input=obs)[0]
