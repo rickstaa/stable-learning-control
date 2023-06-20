@@ -105,7 +105,7 @@ def log_to_std_out(
         print(
             colorize((str(prefix) + str(msg)), color, bold=bold, highlight=highlight),
             *args,
-            **kwargs
+            **kwargs,
         )
 
 
