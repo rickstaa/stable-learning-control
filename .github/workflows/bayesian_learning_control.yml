@@ -1,0 +1,76 @@
+# Runs tests after a pull request is merged.
+name: Bayesian Learning Control
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - v*.*.*
+jobs:
+  markdown-lint: # Lints the markdown code
+    name: runner / remark-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check markdown code quality using remark-lint
+        uses: reviewdog/action-remark-lint@v5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
+  black: # Check python code format
+    name: runner / black
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: reviewdog/action-black@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
+  flake8: # Lints python code
+    name: runner / flake8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+      - name: Install the bayesian_learning_control package with its dependencies
+        run: |
+          pip install -e .[dev]
+      - name: flake8 Lint
+        uses: reviewdog/action-flake8@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          level: warning
+  python-tests:
+    name: python-tests (Testing)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Run all matrix jobs
+      matrix:
+        python-version: [3.8, 3.9, "3.10"] # Supported python versions
+    steps:
+      - name: Checkout bayesian-learning-control repository
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+      - name: Install the python package with its dependencies
+        run: |
+          pip install -e .[dev]
+      - name: Test with Pytest
+        run: |
+          set -o pipefail
+          pytest --cache-clear --html=pytest/${{ matrix.python-version }}/html/results.html --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml --cov --cov-report=html:pytest/${{ matrix.python-version }}/cov/pytest-coverage.txt --cov-report=term-missing | tee pytest-coverage.txt
+          set +o pipefail
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3

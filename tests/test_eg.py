@@ -4,7 +4,8 @@
 from bayesian_learning_control.control.utils.run_utils import ExperimentGrid
 
 
-def test_eg():
+# Check if the ExperimentGrid class is still working as expected.
+def test_eg(snapshot):
     eg = ExperimentGrid()
     eg.add("test:a", [1, 2, 3], "ta", True)
     eg.add("test:b", [1, 2, 3])
@@ -12,4 +13,6 @@ def test_eg():
     eg.add("why", [True, False])
     eg.add("huh", 5)
     eg.add("no", 6, in_name=True)
-    return eg.variants()
+
+    # Ensure that the variant is equal to the snapshot.
+    assert eg.variants() == snapshot

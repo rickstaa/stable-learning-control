@@ -1,0 +1,365 @@
+# serializer version: 1
+# name: test_eg
+  list([
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 1,
+        'b': 1,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 1,
+        'b': 1,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 1,
+        'b': 1,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 1,
+        'b': 1,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 1,
+        'b': 2,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 1,
+        'b': 2,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 1,
+        'b': 2,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 1,
+        'b': 2,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 1,
+        'b': 3,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 1,
+        'b': 3,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 1,
+        'b': 3,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 1,
+        'b': 3,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 2,
+        'b': 1,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 2,
+        'b': 1,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 2,
+        'b': 1,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 2,
+        'b': 1,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 2,
+        'b': 2,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 2,
+        'b': 2,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 2,
+        'b': 2,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 2,
+        'b': 2,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 2,
+        'b': 3,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 2,
+        'b': 3,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 2,
+        'b': 3,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 2,
+        'b': 3,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 3,
+        'b': 1,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 3,
+        'b': 1,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 3,
+        'b': 1,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 3,
+        'b': 1,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 3,
+        'b': 2,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 3,
+        'b': 2,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 3,
+        'b': 2,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 3,
+        'b': 2,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 3,
+        'b': 3,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 4,
+      'test': dict({
+        'a': 3,
+        'b': 3,
+      }),
+      'why': False,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 3,
+        'b': 3,
+      }),
+      'why': True,
+    }),
+    dict({
+      'huh': 5,
+      'no': 6,
+      'some': 5,
+      'test': dict({
+        'a': 3,
+        'b': 3,
+      }),
+      'why': False,
+    }),
+  ])
+# ---
