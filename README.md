@@ -8,10 +8,7 @@
 
 ## Package Overview
 
-Welcome to the Bayesian Learning Control (BLC) framework! The Bayesian Learning Control framework enables
-you to automatically create, train and deploy various safe (stable and robust) Reinforcement Learning (RL) and
-Imitation learning (IL) control algorithms directly from real-world data. This framework
-is made up of four main modules:
+Welcome to the Bayesian Learning Control (BLC) framework! The Bayesian Learning Control framework enables you to automatically create, train and deploy various safe (stable and robust) Reinforcement Learning (RL) and Imitation learning (IL) control algorithms directly from real-world data. This framework is made up of four main modules:
 
 *   [Modeling](./bayesian_learning_control/modeling): Module that uses state of the art System Identification and State Estimation techniques to create an Openai gym environment out of real data.
 *   [Control](./bayesian_learning_control/control): Module used to train several [Bayesian Learning Control](https://rickstaa.github.io/bayesian-learning-control/control/control.html) RL/IL agents on the built gym environments.
@@ -21,15 +18,13 @@ This framework follows a code structure similar to the [Spinningup](https://spin
 
 ## Clone the repository
 
-Since the repository contains several git submodules to use all the features, it needs
-to be cloned using the `--recurse-submodules` argument:
+Since the repository contains several git submodules to use all the features, it needs to be cloned using the `--recurse-submodules` argument:
 
 ```bash
 git clone --recurse-submodules https://github.com/rickstaa/bayesian-learning-control.git
 ```
 
-If you already cloned the repository and forgot the `--recurse-submodule` argument you
-can pull the submodules using the following git command:
+If you already cloned the repository and forgot the `--recurse-submodule` argument you can pull the submodules using the following git command:
 
 ```bash
 git submodule update --init --recursive
