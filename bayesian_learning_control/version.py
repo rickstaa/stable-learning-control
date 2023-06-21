@@ -1,6 +1,3 @@
-"""The package version."""
-# coding: utf-8
-version = "1.3.73"
-__version__ = version
-# format:
-# ('blc_major', 'blc_minor', 'blc_patch')
+# Stores the package version number so that it can be accessed from other modules.
+__version__ = "1.3.73"
+__version_tuple__ = __version__.split(".")
