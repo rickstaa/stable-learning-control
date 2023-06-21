@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/rickstaa/bayesian-learning-control/compare/bayesian-learning-control-v1.3.73...bayesian-learning-control-v2.0.0) (2023-06-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* The `simzoo` package is no longer included and has to be installed separately through the [stable-gym](https://github.com/rickstaa/stable-gym) repository.
+
+### Features
+
+* add hyperparameter variant support for exp config files ([6ea47f0](https://github.com/rickstaa/bayesian-learning-control/commit/6ea47f0c330e2ea57c98e50165c160ffa43ff53e))
+* add small policy test script ([c701d69](https://github.com/rickstaa/bayesian-learning-control/commit/c701d69c507d735380cbb619037fca4f9a43e8c2))
+* add support for dictionary type observation spaces ([e3bf761](https://github.com/rickstaa/bayesian-learning-control/commit/e3bf76194875576ce6b623a97987696eb7105c0c))
+
+
+### Bug Fixes
+
+* fix several env/policy load bugs ([dddd4d8](https://github.com/rickstaa/bayesian-learning-control/commit/dddd4d8343301e322c82285b777a259bb6221cb0))
+* fix several policy loading problems ([51a664e](https://github.com/rickstaa/bayesian-learning-control/commit/51a664e3d18a3b1c315d943f328be66ed5ab683a))
+* fixes npm release action ([e47ef0f](https://github.com/rickstaa/bayesian-learning-control/commit/e47ef0fc3936496f5dfed0515b776812244dfcd6))
+* **package.json:** this commit makes sure the release run script contains no bugs ([ef958ca](https://github.com/rickstaa/bayesian-learning-control/commit/ef958cac744bc47202c39f4addef25d9d142c1cd))
+* remove 'simzoo' submodule ([#246](https://github.com/rickstaa/bayesian-learning-control/issues/246)) ([0122aae](https://github.com/rickstaa/bayesian-learning-control/commit/0122aaeb79d6c62da48591199e3a4026043c628b))
+
 ### [1.3.14](https://github.com/rickstaa/bayesian-learning-control/compare/v1.3.73...v1.3.14) (2023-06-05)
 
 ### [1.3.3](https://github.com/rickstaa/bayesian-learning-control/compare/v1.3.2...v1.3.3) (2022-02-24)
