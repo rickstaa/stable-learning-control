@@ -1,6 +1,6 @@
 {
   "name": "bayesian-learning-control",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "A framework for learning stable reinforcement learning policies.",
   "keywords": [
     "reinforcement-learning",
