@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/rickstaa/bayesian-learning-control/compare/v2.0.0...v3.0.0) (2023-06-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* The `simzoo` package is no longer included and has to be installed separately through the [stable-gym](https://github.com/rickstaa/stable-gym) repository.
+
+### Features
+
+* add hyperparameter variant support for exp config files ([6ea47f0](https://github.com/rickstaa/bayesian-learning-control/commit/6ea47f0c330e2ea57c98e50165c160ffa43ff53e))
+* add small policy test script ([c701d69](https://github.com/rickstaa/bayesian-learning-control/commit/c701d69c507d735380cbb619037fca4f9a43e8c2))
+* add support for dictionary type observation spaces ([e3bf761](https://github.com/rickstaa/bayesian-learning-control/commit/e3bf76194875576ce6b623a97987696eb7105c0c))
+
+
+### Bug Fixes
+
+* fix several env/policy load bugs ([dddd4d8](https://github.com/rickstaa/bayesian-learning-control/commit/dddd4d8343301e322c82285b777a259bb6221cb0))
+* fix several policy loading problems ([51a664e](https://github.com/rickstaa/bayesian-learning-control/commit/51a664e3d18a3b1c315d943f328be66ed5ab683a))
+* fixes npm release action ([e47ef0f](https://github.com/rickstaa/bayesian-learning-control/commit/e47ef0fc3936496f5dfed0515b776812244dfcd6))
+* **package.json:** this commit makes sure the release run script contains no bugs ([ef958ca](https://github.com/rickstaa/bayesian-learning-control/commit/ef958cac744bc47202c39f4addef25d9d142c1cd))
+* remove 'simzoo' submodule ([#246](https://github.com/rickstaa/bayesian-learning-control/issues/246)) ([0122aae](https://github.com/rickstaa/bayesian-learning-control/commit/0122aaeb79d6c62da48591199e3a4026043c628b))
+
+
+### Documentation
+
+* **contributing:** updates contributing guide ([ce126c4](https://github.com/rickstaa/bayesian-learning-control/commit/ce126c4969b0bd8903451576338b63d146917219))
+* **contributing:** updates the contributing documentation ([bac8787](https://github.com/rickstaa/bayesian-learning-control/commit/bac8787b5edd34fcf5d1f418ee9811db49340db5))
+* fix broken external links ([51317c0](https://github.com/rickstaa/bayesian-learning-control/commit/51317c0acda779d12ed2096cbda6f65e83e22874))
+* fix contribution links ([#245](https://github.com/rickstaa/bayesian-learning-control/issues/245)) ([cccc5a7](https://github.com/rickstaa/bayesian-learning-control/commit/cccc5a7d4bc6239d90b60c1b66e0b53e89e49987))
+* fix typos ([30df6cb](https://github.com/rickstaa/bayesian-learning-control/commit/30df6cb7fca0269f9cc336d69d56193bfb40c541))
+* **readme.md:** adds contributing warning to readme ([d848a14](https://github.com/rickstaa/bayesian-learning-control/commit/d848a14db999a829452484b33e3579af8c4e4544))
+* **sphinx:** fixes documentation errors ([38f2da0](https://github.com/rickstaa/bayesian-learning-control/commit/38f2da0a041026c374db5f50be1eac12fad32a20))
+* **sphinx:** updates documentation installation instructions ([ddadeb6](https://github.com/rickstaa/bayesian-learning-control/commit/ddadeb626f9e69c532370553d9e3f0b444a3f832))
+* update docs make file ([6eeb56e](https://github.com/rickstaa/bayesian-learning-control/commit/6eeb56e52ff7cb7086b46f6af91a035bebe9c959))
+* update documentation ([7ceee46](https://github.com/rickstaa/bayesian-learning-control/commit/7ceee46453e201ff3dc106ca5f879a8a90cc8ad7))
+* update documentation and docstrings ([5548505](https://github.com/rickstaa/bayesian-learning-control/commit/55485055df074f12918d59add178a353d1ca895f))
+* update numpy intersphinx link ([581333d](https://github.com/rickstaa/bayesian-learning-control/commit/581333d40d8df3836b0f51277b141194273c5c47))
+* updates code guidelines documentation ([4f96a46](https://github.com/rickstaa/bayesian-learning-control/commit/4f96a460a5a85972de1b38538a526945eda1dd5f))
+* updates docs ci readme badge ([074b369](https://github.com/rickstaa/bayesian-learning-control/commit/074b3697f10256997a6a6bb1a62a41212c8ba239))
+
 ## [2.0.0](https://github.com/rickstaa/bayesian-learning-control/compare/bayesian-learning-control-v1.3.73...bayesian-learning-control-v2.0.0) (2023-06-21)
 
 
