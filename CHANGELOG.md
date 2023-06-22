@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/rickstaa/stable-learning-control/compare/v3.0.0...v4.0.0) (2023-06-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* **package:** The package should now be used as `stable_learning_control` instead of `bayesian_learning_control`.
+* This package now depends on Gymnasium instead of Gym. Furthermore, it also requires Gymnasium>=26 (see https://gymnasium.farama.org/content/migration-guide/) for more information.
+
+### Features
+
+* **package:** renames the package to `stable-learning-control` ([#257](https://github.com/rickstaa/stable-learning-control/issues/257)) ([1133d0a](https://github.com/rickstaa/stable-learning-control/commit/1133d0a2c9294a85cda592ed46627a4aba7157bc))
+* replace OpenAi gym with Gymnasium ([#255](https://github.com/rickstaa/stable-learning-control/issues/255)) ([9873a03](https://github.com/rickstaa/stable-learning-control/commit/9873a0311511c6e9e08ea0957bb008e8a7e6f109))
+
 ## [3.0.0](https://github.com/rickstaa/stable-learning-control/compare/v2.0.0...v3.0.0) (2023-06-21)
 
 
