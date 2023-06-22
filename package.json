@@ -1,6 +1,6 @@
 {
-  "name": "bayesian-learning-control",
-  "version": "3.0.0",
+  "name": "stable-learning-control",
+  "version": "4.0.0",
   "description": "A framework for learning stable reinforcement learning policies.",
   "keywords": [
     "reinforcement-learning",
@@ -12,20 +12,20 @@
     "gymnasium-environments",
     "control"
   ],
-  "homepage": "https://github.com/rickstaa/bayesian-learning-control#bayesian-learning-control",
+  "homepage": "https://github.com/rickstaa/stable-learning-control#stable-learning-control",
   "bugs": {
-    "url": "https://github.com/rickstaa/bayesian-learning-control/issues"
+    "url": "https://github.com/rickstaa/stable-learning-control/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:rickstaa/bayesian-learning-control.git"
+    "url": "git@github.com:rickstaa/stable-learning-control.git"
   },
   "license": "MIT",
   "author": "Rick Staa",
   "scripts": {
     "prepare": "husky install",
     "sort": "sort-package-json",
-    "test": "pytest --cov=bayesian_learning_control --cov-report=term-missing",
+    "test": "pytest --cov=stable_learning_control --cov-report=term-missing",
     "test:update:snapshot": "pytest --snapshot-update"
   },
   "commitlint": {

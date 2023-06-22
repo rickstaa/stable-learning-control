@@ -4,7 +4,7 @@ Installation
 
 .. contents:: Table of Contents
 
-BLC requires `Python3`_ and `gymnasium`_ to work. It is
+SLC requires `Python3`_ and `gymnasium`_ to work. It is
 currently only supported on Linux and OSX.
 
 .. warning::
@@ -17,7 +17,7 @@ currently only supported on Linux and OSX.
 Install system dependencies
 ===========================
 
-The BLC package uses `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ to distribute training over multiple CPU's. In order for this to work
+The SLC package uses `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_ to distribute training over multiple CPU's. In order for this to work
 a Message Passing Library should be present on your system. For mac and Linux systems, the `Open MPI <https://www.open-mpi.org/>`_ library can be used.
 On Linux, this library can be
 installed using the following command:
@@ -34,7 +34,7 @@ For mac this command can be used:
 
 .. attention::
 
-    For Windows, the `Microsoft MPI <https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi>`_ package can be used. As we currently do not offer support for our package with Windows, we did not test the BLC package's compatibility.
+    For Windows, the `Microsoft MPI <https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi>`_ package can be used. As we currently do not offer support for our package with Windows, we did not test the SLC package's compatibility.
 
 .. _install:
 
@@ -45,17 +45,17 @@ We recommend installing Python through Anaconda. Anaconda is a library that incl
 Python, as well as an environment manager called Conda that makes package management simple.
 
 Follow `the installation instructions`_ for Anaconda here. Download and install Anaconda3 (at time of writing, `Anaconda3-5.3.1`_).
-Then create a Conda Python env for organizing packages used in the BLC package:
+Then create a Conda Python env for organizing packages used in the SLC package:
 
 .. code-block:: bash
 
-    conda create -n blc python=3.10
+    conda create -n slc python=3.10
 
 To use Python from the environment, you just created, activate the environment with:
 
 .. code-block:: bash
 
-    conda activate blc
+    conda activate slc
 
 Alternatively, you can also use Python its `venv <https://docs.python.org/3/library/venv.html>`_ package to create a virtual environment. When
 using this option, make sure you set the ``--system-site-packages`` flag when creating the environment when you need access to the system python packages
@@ -80,11 +80,11 @@ using this option, make sure you set the ``--system-site-packages`` flag when cr
 .. _`documentation page from Conda`: https://conda.io/docs/user-guide/tasks/manage-environments.html
 .. _`this Github issue for Tensorflow`: https://github.com/tensorflow/tensorflow/issues/20444
 
-Installing the BLC package
+Installing the SLC package
 ==========================
 
-After you successfully setup your python environment, you can install the BLC package and its dependencies in
-this environment. The BLC has two versions you can install:
+After you successfully setup your python environment, you can install the SLC package and its dependencies in
+this environment. The SLC has two versions you can install:
 
     - A version which uses `Pytorch`_ as the backend of the RL/IL algorithms.
     - A version which uses `Tensorflow 2.0`_ as the RL/IL algorithms.
@@ -92,7 +92,7 @@ this environment. The BLC has two versions you can install:
 .. attention::
 
     We choose PyTorch as the default backend as it, in our opinion, is easier to work with than Tensorflow. However, at the time of writing, it
-    is slightly slower than the Tensorflow backend. This is caused because the agents used in the BLC package use components that are
+    is slightly slower than the Tensorflow backend. This is caused because the agents used in the SLC package use components that are
     not yet supported by :torch:`TorchScript <docs/stable/jit.html>` (responsible for creating a fast compiled version of PyTorch script). As PyTorch has shown to be faster
     in most implementations, this will likely change in the future. You can track the status of this speed problem
     `here <https://github.com/pytorch/pytorch/issues/29843>`_.
@@ -124,15 +124,15 @@ Installing MuJoCo (Optional)
 ============================
 
 
-The BLC package comes bundled with several gym environments. Out of the box it includes the following environments:
+The SLC package comes bundled with several gym environments. Out of the box it includes the following environments:
 
 * The Openai gym `Algorithmic`_ environments.
 * The Openai gym `ToyText`_.
 * The Openai gym `Classic Control`_ environments.
-* The :ref:`BLC Simzoo <simzoo_module>` environments.
+* The :ref:`SLC Simzoo <simzoo_module>` environments.
 
-Out of the box, the BLC package does not include the Openai gym `MuJoCo`_ and `Robotics`_ environments, often used in RL benchmarks. If you want to
-use the BLC package with these environments first go to the `mujoco-py`_ github page. Follow the README installation instructions, which describe how to install the `MuJoCo physics engine`_ and the `mujoco-py` package (which allows the use of MuJoCo from Python).
+Out of the box, the SLC package does not include the Openai gym `MuJoCo`_ and `Robotics`_ environments, often used in RL benchmarks. If you want to
+use the SLC package with these environments first go to the `mujoco-py`_ github page. Follow the README installation instructions, which describe how to install the `MuJoCo physics engine`_ and the `mujoco-py` package (which allows the use of MuJoCo from Python).
 
 .. admonition:: You Should Know
 
@@ -149,7 +149,7 @@ And then check that things are working by running SAC in the Walker2d-v2 environ
 
 .. parsed-literal::
 
-    python -m bayesian_learning_control.run sac --hid "[32, 32]" --env Walker2d-v2 --exp_name mujocotest
+    python -m stable_learning_control.run sac --hid "[32, 32]" --env Walker2d-v2 --exp_name mujocotest
 
 .. _`MuJoCo`: https://gym.openai.com/envs/#mujoco
 .. _`Robotics`: https://gym.openai.com/envs/#robotics

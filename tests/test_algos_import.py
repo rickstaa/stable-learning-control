@@ -5,10 +5,10 @@ successfully imported.
 import pytest
 
 ALGOS = [
-    "bayesian_learning_control.control.algos.pytorch.lac.lac",
-    "bayesian_learning_control.control.algos.pytorch.sac.sac",
-    "bayesian_learning_control.control.algos.tf2.sac.sac",
-    "bayesian_learning_control.control.algos.tf2.sac.sac",
+    "stable_learning_control.control.algos.pytorch.lac.lac",
+    "stable_learning_control.control.algos.pytorch.sac.sac",
+    "stable_learning_control.control.algos.tf2.sac.sac",
+    "stable_learning_control.control.algos.tf2.sac.sac",
 ]
 
 

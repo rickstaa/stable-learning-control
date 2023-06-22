@@ -8,7 +8,7 @@ Saving and Loading Experiment Outputs
 
 In this section, we'll cover
 
-- what outputs come from BLC algorithm implementations,
+- what outputs come from SLC algorithm implementations,
 - what formats they're stored in and how they're organised,
 - where they are stored and how you can change that,
 - and how to load and run trained policies.
@@ -80,7 +80,7 @@ The ``torch_save`` directory contains:
 |                   | | the trained agent's state on an initiated instance of the   |
 |                   | | respective Algorithm Class.                                 |
 +-------------------+---------------------------------------------------------------+
-|``save_info.json`` | | A file used by the BLC package to ease model                |
+|``save_info.json`` | | A file used by the SLC package to ease model                |
 |                   | | loading. This file is not meant for the user.               |
 +-------------------+---------------------------------------------------------------+
 
@@ -109,7 +109,7 @@ The ``tf2_save`` directory contains:
 |                           | | are used by the :obj:`tf.train.Checkpoint` method to        |
 |                           | | restore the model.                                          |
 +---------------------------+---------------------------------------------------------------+
-|``save_info.json``         | | A file used by the BLC package to ease model                |
+|``save_info.json``         | | A file used by the SLC package to ease model                |
 |                           | | loading  this file is not meant for the user.               |
 +---------------------------+---------------------------------------------------------------+
 |``saved_model.json``       | | The full TensorFlow program saved in the `SavedModel`       |
@@ -125,22 +125,22 @@ The ``tf2_save`` directory contains:
 Save Directory Location
 =======================
 
-Experiment results will, by default, be saved in the same directory as the BLC package,
+Experiment results will, by default, be saved in the same directory as the SLC package,
 in a folder called ``data``:
 
 .. parsed-literal::
 
-    bayesian_learning_control/
+    stable_learning_control/
         **data/**
             ...
         docs/
             ...
-        bayesian_learning_control/
+        stable_learning_control/
             ...
         LICENSE
         setup.py
 
-You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` in ``bayesian_learning_control/user_config.py``.
+You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` in ``stable_learning_control/user_config.py``.
 
 Loading and Running Trained Policies
 ====================================
@@ -148,13 +148,13 @@ Loading and Running Trained Policies
 Test Policy utility
 -------------------
 
-BLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
+SLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
 is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
 
 
 .. parsed-literal::
 
-    python -m bayesian_learning_control.run test_policy path/to/output_directory
+    python -m stable_learning_control.run test_policy path/to/output_directory
 
 .. seealso::
 
@@ -182,9 +182,9 @@ the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html
     import torch
     import os.path as osp
 
-    from bayesian_learning_control.utils.log_utils.logx import EpochLogger
+    from stable_learning_control.utils.log_utils.logx import EpochLogger
 
-    from bayesian_learning_control.control.algos.pytorch import LAC
+    from stable_learning_control.control.algos.pytorch import LAC
 
     MODEL_LOAD_FOLDER = "./data/lac/oscillator-v1/runs/run_1614680001"
     MODEL_PATH = osp.join(MODEL_LOAD_FOLDER, "torch_save/model_state.pt")
@@ -212,12 +212,12 @@ the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html
 In this example, observe that
 
 * On line 6, we import the algorithm we want to load.
-* On line 12-14, we use the :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
-* on line 15, we use the :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
+* On line 12-14, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
+* on line 15, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
 
-Additionally, each algorithm also contains a :obj:`~bayesian_learning_control.control.algos.pytorch.lac.LAC.restore` method which serves as a
+Additionally, each algorithm also contains a :obj:`~stable_learning_control.control.algos.pytorch.lac.LAC.restore` method which serves as a
 wrapper around the :obj:`torch.load` and  :obj:`torch.nn.Module.load_state_dict` methods.
 
 Load Tensorflow Policy
@@ -230,9 +230,9 @@ Load Tensorflow Policy
     import tensorflow as tf
     import os.path as osp
 
-    from bayesian_learning_control.utils.log_utils.logx import EpochLogger
+    from stable_learning_control.utils.log_utils.logx import EpochLogger
 
-    from bayesian_learning_control.control.algos.tf2 import LAC
+    from stable_learning_control.control.algos.tf2 import LAC
 
     MODEL_LOAD_FOLDER = "./data/lac/oscillator-v1/runs/run_1614673367"
     MODEL_PATH = osp.join(MODEL_LOAD_FOLDER, "tf2_save")
@@ -260,12 +260,12 @@ Load Tensorflow Policy
 In this example, observe that
 
 * On line 6, we import the algorithm we want to load.
-* On line 12-14, we use the :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
-* on line 15, we use the :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
+* On line 12-14, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the right hyperparameters.
+* on line 15, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment that was used during the experiment. This saves us time in setting up the environment.
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
 
-Additionally, each algorithm also contains a :obj:`~bayesian_learning_control.control.algos.tf2.lac.LAC.restore` method which serves as a
+Additionally, each algorithm also contains a :obj:`~stable_learning_control.control.algos.tf2.lac.LAC.restore` method which serves as a
 wrapper around the :obj:`tf.train.latest_checkpoint` and  :obj:`tf.keras.Model.load_weights` methods.
 
 Deploy the saved result onto hardware
@@ -276,7 +276,7 @@ with `TFLite`_, `TensorFlow.js`_, `TensorFlow Serving`_, or `TensorFlow Hub`_. F
 
 .. important::
     TensorFlow also PyTorch multiple ways to deploy trained models to hardware (see the :torch:`PyTorch serving documentation <blog/model-serving-in-pyorch/>`). However, at the time of writing,
-    these methods currently do not support the agents used in the BLC package. For more information, see
+    these methods currently do not support the agents used in the SLC package. For more information, see
     `this issue <https://github.com/pytorch/pytorch/issues/29843>`_.
 
 

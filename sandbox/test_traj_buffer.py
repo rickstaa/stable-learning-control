@@ -3,8 +3,8 @@
 
 import gymnasium as gym
 
-# from bayesian_learning_control.control.common.buffers import TrajectoryBuffer
-from bayesian_learning_control.control.algos.pytorch.common.buffers import (
+# from stable_learning_control.control.common.buffers import TrajectoryBuffer
+from stable_learning_control.control.algos.pytorch.common.buffers import (
     TrajectoryBuffer,
 )
 

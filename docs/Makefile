@@ -1,12 +1,12 @@
-# Makefile for Bayesian Learning Control Sphinx documentation
+# Makefile for Stable Learning Control Sphinx documentation
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = Bayesian Learning Control
+SPHINXPROJ    = Stable Learning Control
 SOURCEDIR     = source
 BUILDDIR      = build
-GH_PAGES_SOURCES = docs bayesian_learning_control examples
+GH_PAGES_SOURCES = docs stable_learning_control examples
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)

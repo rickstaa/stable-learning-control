@@ -9,11 +9,11 @@ Utilities
 Plot utility
 ============
 
-BLC ships with a simple plotting utility that can be used to plot diagnostics from experiments. Run it with:
+SLC ships with a simple plotting utility that can be used to plot diagnostics from experiments. Run it with:
 
 .. parsed-literal::
 
-    python -m bayesian_learning_control.run plot [path/to/output_directory ...] [--legend [LEGEND ...]]
+    python -m stable_learning_control.run plot [path/to/output_directory ...] [--legend [LEGEND ...]]
         [--xaxis XAXIS] [--value [VALUE ...]] [--count] [--smooth S]
         [--select [SEL ...]] [--exclude [EXC ...]]
 
@@ -42,7 +42,7 @@ BLC ships with a simple plotting utility that can be used to plot diagnostics fr
 
         .. parsed-literal::
 
-            python bayesian_learning_control/control/utils/plot.py data/bench_algo
+            python stable_learning_control/control/utils/plot.py data/bench_algo
 
         relying on the autocomplete to find both ``data/bench_algo1`` and ``data/bench_algo2``.
 
@@ -87,12 +87,12 @@ Test policy utility
 Environment Found
 -----------------
 
-BLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
+SLC ships with an evaluation utility that can be used to check a trained policy's performance. For cases where the environment
 is successfully saved alongside the agent, it's a cinch to watch the trained agent act in the environment using:
 
 .. parsed-literal::
 
-    python -m bayesian_learning_control.run test_policy path/to/output_directory
+    python -m stable_learning_control.run test_policy path/to/output_directory
 
 
 There are a few flags for options:
@@ -124,7 +124,7 @@ There are a few flags for options:
 
 .. option:: -d, --deterministic, default=True
 
-    *bool*. Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The BLC implementation trains a stochastic
+    *bool*. Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The SLC implementation trains a stochastic
     policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
     by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
     for any other algorithms.
@@ -139,9 +139,9 @@ If the environment wasn't saved successfully, you can expect ``test_policy.py`` 
 .. parsed-literal::
 
     Traceback (most recent call last):
-      File "bayesian_learning_control/control/utils/test_policy.py", line 153, in <module>
+      File "stable_learning_control/control/utils/test_policy.py", line 153, in <module>
         run_policy(env, get_action, args.len, args.episodes, not(args.norender))
-      File "bayesian_learning_control/control/utils/test_policy.py", line 114, in run_policy
+      File "stable_learning_control/control/utils/test_policy.py", line 114, in run_policy
         "and we can't run the agent in it. :( \n\n Check out the documentation " +
     AssertionError: Environment not found!
 
@@ -155,7 +155,7 @@ In this case, watching your agent perform is slightly more of a pain but not imp
 .. code-block::
 
     >>> import gym
-    >>> from bayesian_learning_control.control.utils.test_policy import load_pytorch_policy, run_policy
+    >>> from stable_learning_control.control.utils.test_policy import load_pytorch_policy, run_policy
     >>> import your_env
     >>> env = gym.make('<YOUR_ENV_NAME>')
     >>> policy = load_pytorch_policy("/path/to/output_directory", env=env)
@@ -165,9 +165,9 @@ In this case, watching your agent perform is slightly more of a pain but not imp
     Episode 1    EpRet -346.164      EpLen 99
     ...
 
-If you want to load a tensorflow agent please replace the :meth:`~bayesian_learning_control.control.utils.test_policy.load_pytorch_policy` with
-:meth:`~bayesian_learning_control.control.utils.test_policy.load_tf_policy`. A example script for manually loading policies can be found in the
-``examples`` folder (i.e. :blc:`manual_env_policy_inference.py <blob/main/examples/manual_env_policy_inference.py>`).
+If you want to load a tensorflow agent please replace the :meth:`~stable_learning_control.control.utils.test_policy.load_pytorch_policy` with
+:meth:`~stable_learning_control.control.utils.test_policy.load_tf_policy`. A example script for manually loading policies can be found in the
+``examples`` folder (i.e. :slc:`manual_env_policy_inference.py <blob/main/examples/manual_env_policy_inference.py>`).
 
 Using Trained Value Functions
 -----------------------------
@@ -183,12 +183,12 @@ Robustness eval utility
 Environment Found
 -----------------
 
-BLC ships with an evaluation utility that can be used to check the robustness of the trained policy. For cases where the environment
+SLC ships with an evaluation utility that can be used to check the robustness of the trained policy. For cases where the environment
 is successfully saved alongside the agent, the robustness can be evaluated using the following command:
 
 .. parsed-literal::
 
-    python -m bayesian_learning_control.run eval_robustness path/to/output_directory
+    python -m stable_learning_control.run eval_robustness path/to/output_directory
 
 There are a few flags for options:
 
@@ -221,7 +221,7 @@ There are a few flags for options:
 
 .. option:: -d, --deterministic, default=True
 
-    *bool*. Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The BLC implementation trains a stochastic
+    *bool*. Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The SLC implementation trains a stochastic
     policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
     by SAC, but you should set the deterministic flag to watch the deterministic mean policy (the correct evaluation policy for SAC). This flag is not used
     for any other algorithms.
@@ -240,13 +240,13 @@ There are a few flags for options:
 
 .. option:: -d_type, --disturbance_type
 
-    *str*. The disturbance type you want to apply. This type should be implemented in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
+    *str*. The disturbance type you want to apply. This type should be implemented in the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber`
     your gym environment inherits from. See :ref:`env_add`.
 
 .. option:: -d_variant, --disturbance_variant
 
     *str*. The disturbance variant you want to apply. This argument is only required for some disturbance types. The variant should be implemented in the
-    :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber`
+    :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber`
     your gym environment inherits from. See :ref:`env_add`.
 
 .. option:: --disable_baseline, default=False
@@ -281,9 +281,9 @@ If the environment wasn't saved successfully, you can expect ``eval_robustness.p
 .. parsed-literal::
 
     Traceback (most recent call last):
-      File "bayesian_learning_control/control/utils/eval_robustness.py", line 153, in <module>
+      File "stable_learning_control/control/utils/eval_robustness.py", line 153, in <module>
         run_results_df = run_disturbed_policy(env, policy, args.len, args.episodes, args.render))
-      File "bayesian_learning_control/control/utils/eval_robustness.py", line 114, in run_policy
+      File "stable_learning_control/control/utils/eval_robustness.py", line 114, in run_policy
         "and we can't run the agent in it. :( \n\n Check out the readthedocs " +
     AssertionError: Environment not found!
 
@@ -297,8 +297,8 @@ In this case, evaluating the robustness is slightly more of a pain but not impos
 .. code-block::
 
     >>> import gym
-    >>> from bayesian_learning_control.control.utils.test_policy import load_pytorch_policy, run_policy
-    >>> from bayesian_learning_control.control.utils.eval_robustness import run_disturbed_policy, plot_robustness_results
+    >>> from stable_learning_control.control.utils.test_policy import load_pytorch_policy, run_policy
+    >>> from stable_learning_control.control.utils.eval_robustness import run_disturbed_policy, plot_robustness_results
     >>> import your_env
     >>> env = gym.make('<YOUR_ENV_NAME>')
     >>> policy = load_pytorch_policy("/path/to/output_directory", env=env)
@@ -314,21 +314,21 @@ In this case, evaluating the robustness is slightly more of a pain but not impos
     Episode 2        EpRet 330.313   EpLen 800       Died False
     ...
 
-If you want to load a tensorflow agent please replace the :meth:`~bayesian_learning_control.control.utils.test_policy.load_pytorch_policy` with
-:meth:`~bayesian_learning_control.control.utils.test_policy.load_tf_policy`.
+If you want to load a tensorflow agent please replace the :meth:`~stable_learning_control.control.utils.test_policy.load_pytorch_policy` with
+:meth:`~stable_learning_control.control.utils.test_policy.load_tf_policy`.
 
 ExperimentGrid utility
 ======================
 
-BLC ships with a tool called ExperimentGrid for making hyperparameter ablations easier. This is based on (but simpler than) `the rllab tool`_ called VariantGenerator.
+SLC ships with a tool called ExperimentGrid for making hyperparameter ablations easier. This is based on (but simpler than) `the rllab tool`_ called VariantGenerator.
 
 .. _`the rllab tool`: https://github.com/rll/rllab/blob/master/rllab/misc/instrument.py#L173
 
-.. autoclass:: bayesian_learning_control.control.utils.run_utils.ExperimentGrid
+.. autoclass:: stable_learning_control.control.utils.run_utils.ExperimentGrid
     :members:
 
 
 Calling Experiments utility
 ===========================
 
-.. autofunction:: bayesian_learning_control.control.utils.run_utils.call_experiment
+.. autofunction:: stable_learning_control.control.utils.run_utils.call_experiment

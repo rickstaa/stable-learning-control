@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 # Project configuration.
 [project]
-name = "bayesian_learning_control"
+name = "stable_learning_control"
 dynamic = ["version", "readme"]
 authors = [
     {name = "Rick Staa", email = "rick.staa@outlook.com"}
@@ -16,6 +16,7 @@ keywords = [
     "reinforcement-learning",
     "simulation",
     "stability",
+    "robustness",
     "control",
     "openai-gym",
     "gymnasium",
@@ -55,7 +56,7 @@ tuning = [
     "hyperopt",
 ]
 dev = [
-    "bayesian_learning_control[tf,tuning]",
+    "stable_learning_control[tf,tuning]",
     "pytest>=7.3.2",
     "pytest-cov>=4.1.0",
     "pytest-html>=3.2.0",
@@ -64,7 +65,7 @@ dev = [
     "black>=23.3.0",
 ]
 docs = [
-    "bayesian_learning_control[tf,tuning]",
+    "stable_learning_control[tf,tuning]",
     "docutils",
     "sphinx",
     "sphinx-autobuild",
@@ -73,17 +74,17 @@ docs = [
     "pygments>=2.11.2",
 ]
 all = [
-    "bayesian_learning_control[tf, tuning, dev, docs]",
+    "stable_learning_control[tf, tuning, dev, docs]",
 ]
 
 [project.urls]
-repository = "https://github.com/rickstaa/bayesian-learning-control"
-source = "https://github.com/rickstaa/bayesian-learning-control"
-documentation = "https://rickstaa.dev/bayesian-learning-control"
+repository = "https://github.com/rickstaa/stable-learning-control"
+source = "https://github.com/rickstaa/stable-learning-control"
+documentation = "https://rickstaa.dev/stable-learning-control"
 
 # Python tools configuration.
 [tool.setuptools]
-packages = ["bayesian_learning_control"]
+packages = ["stable_learning_control"]
 
 [tool.setuptools.dynamic]
 readme = {file = "README.md", content_type = "text/markdown"}

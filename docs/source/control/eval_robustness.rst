@@ -3,12 +3,12 @@
 Evaluating Robustness
 =====================
 
-BLC ships with a handy utility for evaluating the policy's robustness. This is done by evaluating the policy performance for several episodes inside a given environment
+SLC ships with a handy utility for evaluating the policy's robustness. This is done by evaluating the policy performance for several episodes inside a given environment
 while also applying several disturbances. You can run it with:
 
 .. parsed-literal::
 
-    python -m bayesian_learning_control.run eval_robustness [path/to/output_directory ...] [--legend [LEGEND ...]]
+    python -m stable_learning_control.run eval_robustness [path/to/output_directory ...] [--legend [LEGEND ...]]
         [--xaxis XAXIS] [--value [VALUE ...]] [--count] [--smooth S]
         [--select [SEL ...]] [--exclude [EXC ...]]
 
@@ -178,8 +178,8 @@ robustness evaluation tool expects the following methods and attributes to be pr
 |                       | | class for an example.                                            |
 +-----------------------+--------------------------------------------------------------------+
 
-Therefore, to use the robustness evaluation tool with your own environment, you have to add these methods. The BLC package contains the
-:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class to ease this process. Your environment can inherit from this
+Therefore, to use the robustness evaluation tool with your own environment, you have to add these methods. The SLC package contains the
+:class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class to ease this process. Your environment can inherit from this
 class to add all the required methods and attributes to make it compatible with the robustness eval tool:
 
 .. code-block:: python
@@ -188,7 +188,7 @@ class to add all the required methods and attributes to make it compatible with 
 
     import gym
     import numpy as np
-    from bayesian_learning_control.simzoo.simzoo.common.disturber import Disturber
+    from stable_learning_control.simzoo.simzoo.common.disturber import Disturber
 
     # Disturber config used to overwrite the default config
     DISTURBER_CFG = {
@@ -226,10 +226,10 @@ class to add all the required methods and attributes to make it compatible with 
 
 In this example, observe that
 
-    * On line 3, we import the Simzoo :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
+    * On line 3, we import the Simzoo :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
     * On line 6-18, we setup the disturbance configuration object (i.e. ``DISTURBANCE_CFG``).
-    * On line 21, we create a different environment disturber which wraps the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
-    * On line 23, we call the initiation method of the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` super class.
+    * On line 21, we create a different environment disturber which wraps the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class.
+    * On line 23, we call the initiation method of the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` super class.
     * On line 26-30, we make sure the most up to date version of the disturbance config is used during the robustness evaluation (see the :ref:`see also box<see_also_pickled>` below for more information).
     * On line 34, we inherit from the newly created environment disturber wrapper such that all the required methods and attributes for using the environment with the robustness evaluation tool are present.
     * On line 36, we make sure the initiation method of the wrapper class gets called.
@@ -240,32 +240,32 @@ For a good example of how this is done, one can look at the ``<ENV_NAME>_disturb
 
 .. seealso::
 
-    One might observe that we can also inherit from the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class directly. The downside of doing this is that the robustness evaluation
+    One might observe that we can also inherit from the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class directly. The downside of doing this is that the robustness evaluation
     tool then uses the disturbance configuration used during training. This is because the gym environment and disturber wrapper loaded during the robustness evaluation tool are saved in a pickled format. If
-    one decides to use this method you should directly modify the ``DISTURBANCE_CFG`` inside the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class file.
+    one decides to use this method you should directly modify the ``DISTURBANCE_CFG`` inside the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class file.
 
 How to find available disturbances
 ==================================
 
 When using the :ref:`robustness eval CLI <robustness_eval>` you can use the ``--list_disturbance_types`` and ``--list_disturbance_variants`` flags to list the available disturbance types and variants for a given agent trained in a given
-environment. For more details, one should check the check the ``DISTURBANCE_CFG`` constant inside the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class file or the environment
+environment. For more details, one should check the check the ``DISTURBANCE_CFG`` constant inside the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class file or the environment
 ``<ENV_NAME>_disturber.py`` file.
 
 Change the shape of a disturbance
 =================================
 
-The disturbances shapes are specified in a ``DISTURBANCE_CFG`` variable that can be found in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class
+The disturbances shapes are specified in a ``DISTURBANCE_CFG`` variable that can be found in the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class
 or any environment disturber (i.e. ``<ENV_NAME>_disturber.py`` file inside the environment folder). The robustness evaluation script first looks at the ``DISTURBANCE_CFG`` inside the environment wrapper and then at the one in the
-:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class. As a result, values defined in the ``DISTURBANCE_CFG`` of the environment disturber take precedence over
-values that are defined in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class. Below some several important characteristics of the ``DISTURBANCE_CFG`` that is found in the
-:class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class are explained.
+:class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class. As a result, values defined in the ``DISTURBANCE_CFG`` of the environment disturber take precedence over
+values that are defined in the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class. Below some several important characteristics of the ``DISTURBANCE_CFG`` that is found in the
+:class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class are explained.
 
 Disturbance configuration structure
 -----------------------------------
 
-When editing the ``DISTURBANCE_CFG`` config in the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class one has to remember the following:
+When editing the ``DISTURBANCE_CFG`` config in the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class one has to remember the following:
 
-- The config of a disturbance requires *ONE* key with the ``range`` suffix. The :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` uses this suffix to determine which key holds the range the disturber should loop through.
+- The config of a disturbance requires *ONE* key with the ``range`` suffix. The :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` uses this suffix to determine which key holds the range the disturber should loop through.
 
 .. code-block:: python
     :linenos:
@@ -326,7 +326,7 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~bayesian_learning_co
 .. important::
     When doing this, you have to make sure that the size of your ``2D`` array is equal to the number of actions (in the case of an input disturbance) or observations (in the case of an output disturbance).
 
-- A ``combined`` disturbance should contain *ONE* key with the ``input`` prefix and *ONE* key with the ``output`` prefix. The :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` uses this prefix to distinguish between the input and output disturbance.
+- A ``combined`` disturbance should contain *ONE* key with the ``input`` prefix and *ONE* key with the ``output`` prefix. The :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` uses this prefix to distinguish between the input and output disturbance.
 
 .. code-block:: python
     :linenos:
@@ -364,12 +364,12 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~bayesian_learning_co
 How to add new disturbances
 ==============================
 
-A custom disturbance can be added to the :class:`~bayesian_learning_control.simzoo.simzoo.common.disturber.Disturber` class or any class that inherits from this
+A custom disturbance can be added to the :class:`~stable_learning_control.simzoo.simzoo.common.disturber.Disturber` class or any class that inherits from this
 class. You can then make your new disturbance available to be used with the robustness evaluation tool by making sure your gym environment inherits from this
 modified disturber. You can then choose this new disturbance using the ``-d_type`` and ``-d_variant`` flags.
 
 Manual robustness evaluation
 ============================
 
-A script version of the eval robustness tool can be found in the ``examples`` folder (i.e. :blc:`eval_robustness.py <blob/main/examples/eval_robustness.py>`). This script can be used when you want to perform some quick tests without implementing a disturber
+A script version of the eval robustness tool can be found in the ``examples`` folder (i.e. :slc:`eval_robustness.py <blob/main/examples/eval_robustness.py>`). This script can be used when you want to perform some quick tests without implementing a disturber
 class for your given environment.

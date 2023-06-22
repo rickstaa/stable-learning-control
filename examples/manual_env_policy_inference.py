@@ -4,8 +4,7 @@ the CLI fails.
 
 import gymnasium as gym
 import ros_gazebo_gym  # Imports the in this example used environment  # noqa: F401
-
-from bayesian_learning_control.control.utils.test_policy import (
+from stable_learning_control.control.utils.test_policy import (
     load_policy_and_env,
     load_pytorch_policy,
     load_tf_policy,
@@ -13,7 +12,7 @@ from bayesian_learning_control.control.utils.test_policy import (
 )
 
 AGENT_TYPE = "torch"  # The type of agent that was trained. Options: 'tf2' and 'torch'.
-AGENT_FOLDER = "/home/ricks/Development/bayesian-learning-control/data/2022-02-24_staa_lac_panda_reach/2022-02-24_09-12-19-staa_lac_panda_reach_s25"  # noqa: E501
+AGENT_FOLDER = "/home/ricks/Development/stable-learning-control/data/2022-02-24_staa_lac_panda_reach/2022-02-24_09-12-19-staa_lac_panda_reach_s25"  # noqa: E501
 
 if __name__ == "__main__":
     # NOTE: STEP 1a: Try to load the policy and environment
@@ -44,5 +43,5 @@ if __name__ == "__main__":
         raise Exception(
             "Something went wrong while trying to run the inference. Please check the "
             "'AGENT_FOLDER' and try again. If the problem persists please open a issue "
-            "on https://github.com/rickstaa/bayesian-learning-control/issues."
+            "on https://github.com/rickstaa/stable-learning-control/issues."
         )

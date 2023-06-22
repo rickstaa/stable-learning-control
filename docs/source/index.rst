@@ -1,31 +1,31 @@
-.. Bayesian Learning Control master file, created by
+.. Stable Learning Control master file, created by
    sphinx-quickstart on Wed Aug 15 04:21:07 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Bayesian Learning Control!
+Welcome to Stable Learning Control
 =====================================
 
 .. image:: ./images/safe_panda.jpg
 
 .. warning::
 
-   The Bayesian Learning Control framework is still in its development state. We can, therefore, not guarantee
+   The Stable Learning Control framework is still in its development state. We can, therefore, not guarantee
    that it is bug-free. Please open :issue:`an issue<>` if you experience problems or something is unclear.
 
-Welcome to the :blc:`Bayesian Learning Control <>` (BLC) framework! The BLC framework enables
+Welcome to the :slc:`Stable Learning Control <>` (SLC) framework! The SLC framework enables
 you to automatically create, train and deploy various safe (stable and robust) Reinforcement Learning (RL) and
 Imitation learning (IL) control algorithms directly from real-world data. This framework
 is made up of four main modules:
 
 * `Modeling`_: Module that uses state of the art System Identification and State Estimation techniques to create an `Openai gym`_ environment out of real data.
-* `Simzoo`_: Module that contains several already created BLC `Openai gym`_ environments.
-* `Control`_: Module used to train several BLC RL/IL agents on the built gym environments.
+* `Simzoo`_: Module that contains several already created SLC `Openai gym`_ environments.
+* `Control`_: Module used to train several SLC RL/IL agents on the built gym environments.
 * `Hardware`_: Module that can be used to deploy the trained RL/IL agents onto the hardware of your choice.
 
 Apart from these main modules, it also comes with several (shared) utilities:
 
-* :ref:`CLI <runner>`: A command-line interface (CLI) that can be used to run all the modules inside the BLC framework.
+* :ref:`CLI <runner>`: A command-line interface (CLI) that can be used to run all the modules inside the SLC framework.
 * :ref:`Loggers <loggers>`: Several loggers that can be used to log data to the stdout, a file or Tensorboard.
 * :ref:`MPI Tools <mpi>`: Tools for running your scripts across data-parallel MPI processes
 
