@@ -5,12 +5,13 @@ it was trained on.
 import glob
 import os
 import os.path as osp
+import re
 import time
 from pathlib import Path
-import re
 
 import joblib
 import torch
+
 from bayesian_learning_control.control.common.exceptions import (
     EnvLoadError,
     PolicyLoadError,
@@ -131,7 +132,7 @@ def load_policy_and_env(fpath, itr="last"):
     Returns:
         (tuple): tuple containing:
 
-            - env (:obj:`gym.env`): The gym environment.
+            - env (:obj:`gym.env`): The gymnasium environment.
             - get_action (:obj:`func`): The policy get_action function.
     """
     if not os.path.isdir(fpath):
@@ -193,7 +194,8 @@ def load_tf_policy(fpath, env, itr="last"):
 
     Args:
         fpath (str): The path where the model is found.
-        env (:obj:`gym.env`): The gym environment in which you want to test the policy.
+        env (:obj:`gym.env`): The gymnasium environment in which you want to test the
+            policy.
         itr (str, optional): The current policy iteration. Defaults to "last".
 
     Returns:
@@ -227,7 +229,8 @@ def load_pytorch_policy(fpath, env, itr="last"):
 
     Args:
         fpath (str): The path where the model is found.
-        env (:obj:`gym.env`): The gym environment in which you want to test the policy.
+        env (:obj:`gym.env`): The gymnasium environment in which you want to test the
+            policy.
         itr (str, optional): The current policy iteration. Defaults to "last".
 
     Returns:
@@ -261,10 +264,10 @@ def load_pytorch_policy(fpath, env, itr="last"):
 def run_policy(
     env, policy, max_ep_len=None, num_episodes=100, render=True, deterministic=True
 ):
-    """Evaluates a policy inside a given gym environment.
+    """Evaluates a policy inside a given gymnasium environment.
 
     Args:
-        env (:obj:`gym.env`): The gym environment.
+        env (:obj:`gym.env`): The gymnasium environment.
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
         max_ep_len (int, optional): The maximum episode length. Defaults to None.
         num_episodes (int, optional): Number of episodes you want to perform in the

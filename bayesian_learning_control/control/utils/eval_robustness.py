@@ -4,7 +4,7 @@ disturbances: A disturbance applied during the environment step and a perturbati
 added to the environmental parameters. For the functions in this module to work work,
 these disturbances should be implemented as methods on the environment. The
 :stable-gym:`Stable Gym <>` package contains a 	:class:`~stable_gym.common.disturber.Disturber`
-class from which a Gym environment can inherit to add these methods. See the `Robustness
+class from which a gymnasium environment can inherit to add these methods. See the `Robustness
 Evaluation Documentation
 <https://rickstaa.github.io/bayesian-learning control/control/robustness_eval.html>`_
 for more information.
@@ -85,15 +85,15 @@ def run_disturbed_policy(  # noqa: C901
     save_result=False,
     output_dir=None,
 ):
-    """Evaluates the disturbed policy inside a given gym environment. This function
+    """Evaluates the disturbed policy inside a given gymnasium environment. This function
     loops to all the disturbances that are specified in the environment and outputs the
     results of all these episodes in a pandas dataframe.
 
     Args:
-        env (:obj:`gym.env`): The gym environment.
+        env (:obj:`gym.env`): The gymnasium environment.
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
         disturbance_type (str): The disturbance type you want to apply. Valid options
-            are the onces that are implemented in the gym environment (e.g.
+            are the onces that are implemented in the gymnasium environment (e.g.
             ``env``, ``input``, ``output``, ``combined`` ...).
         disturbance_variant (str, optional): The variant of the disturbance (e.g.
             ``impulse``, ``periodic``, ``noise``, ...)

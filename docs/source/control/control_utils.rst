@@ -101,7 +101,7 @@ There are a few flags for options:
 .. option:: -l L, --len=L, default=0
 
     *int*. Maximum length of test episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has
-    reached a terminal state in the environment. (Note: setting L=0 will not prevent Gym envs wrapped by TimeLimit wrappers from ending when they reach
+    reached a terminal state in the environment. (Note: setting L=0 will not prevent gymnasium envs wrapped by TimeLimit wrappers from ending when they reach
     their pre-set maximum episode length.)
 
 .. option:: -n N, --episodes=N, default=100
@@ -199,7 +199,7 @@ There are a few flags for options:
 .. option:: -l L, --len=L, default=0
 
     *int*. Maximum length of evaluation episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has
-    reached a terminal state in the environment. (Note: setting L=0 will not prevent Gym envs wrapped by TimeLimit wrappers from ending when they reach
+    reached a terminal state in the environment. (Note: setting L=0 will not prevent gymnasium envs wrapped by TimeLimit wrappers from ending when they reach
     their pre-set maximum episode length.)
 
 .. option:: -n N, --episodes=N, default=10

@@ -51,7 +51,7 @@ simultaneously). The output directory contains the following:
 .. admonition:: You Should Know
 
     Sometimes environment-saving fails because the environment can't be pickled, and ``vars.pkl`` is empty. This is known
-    to be a problem for Gym Box2D environments in older versions of Gym, which can't be saved in this manner.
+    to be a problem for gymnasium Box2D environments in older versions of gymnasium, which can't be saved in this manner.
 
 .. admonition:: You Should Know
 

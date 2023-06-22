@@ -9,11 +9,11 @@ Reinforcement Learning Algorithms
 
 The Reinforcement learning algorithms are all implemented with `MLP`_ (non-recurrent) actor-critics,
 making them suitable for fully-observed, non-image-based RL environments, e.g.,
-the `Gym Mujoco`_ environments. The BLC currently contains
+the `gymnasium Mujoco`_ environments. The BLC currently contains
 the following RL agents:
 
 .. _`MLP`: https://en.wikipedia.org/wiki/Multilayer_perceptron
-.. _`Gym Mujoco`: https://gym.openai.com/envs/#mujoco
+.. _`gymnasium Mujoco`: https://gymnasium.farama.org/environments/mujoco/
 
 .. toctree::
    :maxdepth: 1

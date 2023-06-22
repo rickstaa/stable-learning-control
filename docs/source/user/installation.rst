@@ -4,7 +4,7 @@ Installation
 
 .. contents:: Table of Contents
 
-BLC requires `Python3`_ and `OpenAI Gym`_ to work. It is
+BLC requires `Python3`_ and `gymnasium`_ to work. It is
 currently only supported on Linux and OSX.
 
 .. warning::
@@ -12,7 +12,7 @@ currently only supported on Linux and OSX.
     Although it could work on Windows, it has not been thoroughly tested.
 
 .. _`Python3`: https://www.python.org/
-.. _`OpenAi gym`: https://gym.openai.com/
+.. _`gymnasium`: https://gymnasium.farama.org/
 
 Install system dependencies
 ===========================
@@ -139,7 +139,7 @@ use the BLC package with these environments first go to the `mujoco-py`_ github 
     To use the MuJoCo simulator, you will need to get a `MuJoCo license`_. Free 30-day licenses are available to
     anyone and free 1-year licenses are available to full-time students.
 
-Once you have installed MuJoCo, install the corresponding Gym environments with
+Once you have installed MuJoCo, install the corresponding gymnasium environments with
 
 .. parsed-literal::
 

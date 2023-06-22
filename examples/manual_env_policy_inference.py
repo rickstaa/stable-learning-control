@@ -2,8 +2,9 @@
 the CLI fails.
 """
 
-import gym
+import gymnasium as gym
 import ros_gazebo_gym  # Imports the in this example used environment  # noqa: F401
+
 from bayesian_learning_control.control.utils.test_policy import (
     load_policy_and_env,
     load_pytorch_policy,
