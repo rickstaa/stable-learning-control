@@ -109,7 +109,7 @@ and :math:`\mathcal{D}` the set of collected transition pairs.
 
 .. note::
     As explained in `Han et al., 2020`_ the sum of cost over a finite time horizon can also be used as the approximation target. This version
-    is, however, not yet implemented in the BLC framework.
+    is, however, not yet implemented in the SLC framework.
 
 .. _`infinite-horizon discounted return value function`: https://spinningup.openai.com/en/latest/spinningup/rl_intro.html#value-functions
 .. _`Belman equation`: https://spinningup.openai.com/en/latest/spinningup/rl_intro.html#bellman-equations
@@ -177,7 +177,7 @@ Quick Fact
 * It is guaranteed to be stable in mean cost.
 * The version of LAC implemented here can only be used for environments with continuous action spaces.
 * An alternate version of LAC, which slightly changes the policy update rule, can be implemented to handle discrete action spaces.
-* The BLC implementation of LAC does not support parallelisation.
+* The SLC implementation of LAC does not support parallelisation.
 
 Further Reading
 ---------------
@@ -219,28 +219,28 @@ Documentation
 
 .. admonition:: You Should Know
 
-    In what follows, we give documentation for the PyTorch and Tensorflow implementations of LAC in BLC.
+    In what follows, we give documentation for the PyTorch and Tensorflow implementations of LAC in SLC.
     They have nearly identical function calls and docstrings, except for details relating to model construction.
     However, we include both full docstrings for completeness.
 
 Documentation: PyTorch Version
 ------------------------------
 
-.. autofunction:: bayesian_learning_control.control.algos.pytorch.lac.lac
+.. autofunction:: stable_learning_control.control.algos.pytorch.lac.lac
 
 Saved Model Contents: PyTorch Version
 -------------------------------------
 
 The PyTorch version of the LAC algorithm is implemented by subclassing the :class:`torch.nn.Module` class. As a
 result the model weights are saved using the 'model_state' dictionary (
-:attr:`~bayesian_learning_control.control.algos.pytorch.lac.LAC.state_dict`). This saved weights can be found in
+:attr:`~stable_learning_control.control.algos.pytorch.lac.LAC.state_dict`). This saved weights can be found in
 the "torch_save/model_state.pt "file. For an example of how to load a model using this file, see
 :ref:`saving_and_loading` or the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html>`.
 
 Documentation: Tensorflow Version
 ---------------------------------
 
-.. autofunction:: bayesian_learning_control.control.algos.tf2.lac.lac
+.. autofunction:: stable_learning_control.control.algos.tf2.lac.lac
 
 
 Saved Model Contents: Tensorflow Version

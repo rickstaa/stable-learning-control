@@ -40,7 +40,7 @@ states. It contains two types of tasks:
 -   A reference tracking task. In this task, the agent tries to make a state track a given reference.
 -   A stabilization task. In this task, the agent attempts to stabilize a given state (e.g. keep the pole angle and or cart position zero)
 
-The exact definition of these tasks can be found in the environment :meth:`~bayesian_learning_control.simzoo.simzoo.envs.classic_control.cart_pole_cost.CartPoleCost.cost`
+The exact definition of these tasks can be found in the environment :meth:`~stable_learning_control.simzoo.simzoo.envs.classic_control.cart_pole_cost.CartPoleCost.cost`
 method.
 
 .. todo::

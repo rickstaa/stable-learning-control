@@ -4,10 +4,10 @@
 
 We love your input! 🚀 We want to make contributing to this project as easy and transparent as possible, whether it's:
 
-*   [Reporting a bug](https://github.com/rickstaa/bayesian-learning-control/issues).
-*   [Discussing the current state of the code](https://github.com/rickstaa/bayesian-learning-control/discussions).
-*   [Submitting a fix](https://github.com/rickstaa/bayesian-learning-control/pulls).
-*   [Proposing new features](https://github.com/rickstaa/bayesian-learning-control/issues).
+*   [Reporting a bug](https://github.com/rickstaa/stable-learning-control/issues).
+*   [Discussing the current state of the code](https://github.com/rickstaa/stable-learning-control/discussions).
+*   [Submitting a fix](https://github.com/rickstaa/stable-learning-control/pulls).
+*   [Proposing new features](https://github.com/rickstaa/stable-learning-control/issues).
 *   Becoming a maintainer.
 
 ## We Develop with Github
@@ -28,13 +28,13 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 6.  Make sure your code lints.
 7.  Commit your changes.
 8.  Create a pull request to pull the changes of your development branch onto the `main` branch.
-9.  Ensure that all the [pull request checks](https://github.com/rickstaa/bayesian-learning-control/actions) were successful.
+9.  Ensure that all the [pull request checks](https://github.com/rickstaa/stable-learning-control/actions) were successful.
 
-### Report bugs using Github's [issues](https://github.com/rickstaa/bayesian-learning-control/issues)
+### Report bugs using Github's [issues](https://github.com/rickstaa/stable-learning-control/issues)
 
 <!--alex ignore easy-->
 
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/rickstaa/bayesian-learning-control/issues/new/choose); it's that easy!
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/rickstaa/stable-learning-control/issues/new/choose); it's that easy!
 
 #### Write bug reports with detail, background, and sample code
 
@@ -73,11 +73,11 @@ We use several language guidelines to increase code quality, readability, and us
 
 ## GitHub actions
 
-The [Bayesian Learning Control](https://github.com/rickstaa/bayesian-learning-control) package contains several [GitHub actions](https://github.com/rickstaa/bayesian-learning-control/actions), which check code changes against the language guidelines above. As a result, when the above guidelines are not met, you will receive an **error/warning** when you create a pull request. Some of these actions will make pull requests which you can use to fix some of these violations. For other **errors/warnings**, you are expected to handle them yourself before merging them into the main branch. If you think a coding guideline needs to be corrected or your code structure doesn't allow you to respect the guideline, please state so in the pull request.
+The [Stable Learning Control](https://github.com/rickstaa/stable-learning-control) package contains several [GitHub actions](https://github.com/rickstaa/stable-learning-control/actions), which check code changes against the language guidelines above. As a result, when the above guidelines are not met, you will receive an **error/warning** when you create a pull request. Some of these actions will make pull requests which you can use to fix some of these violations. For other **errors/warnings**, you are expected to handle them yourself before merging them into the main branch. If you think a coding guideline needs to be corrected or your code structure doesn't allow you to respect the guideline, please state so in the pull request.
 
 ## Pre-commit hooks
 
-The [Bayesian Learning Control](https://github.com/rickstaa/bayesian-learning-control) package also contains several pre-commit hooks that enforce the guidelines above before committing. To enable these hooks, please:
+The [Stable Learning Control](https://github.com/rickstaa/stable-learning-control) package also contains several pre-commit hooks that enforce the guidelines above before committing. To enable these hooks, please:
 
 1.  Install [node](https://nodejs.org/en/download/package-manager).
 2.  Install [python](https://www.python.org/downloads).
@@ -89,7 +89,7 @@ Releases are handled automatically by the [release-please-action](https://github
 
 ## Documentation guidelines
 
-See the [documentation guidelines](https://rickstaa.dev/bayesian-learning-control/dev/doc_dev.html) for more information on contributing to the documentation.
+See the [documentation guidelines](https://rickstaa.dev/stable-learning-control/dev/doc_dev.html) for more information on contributing to the documentation.
 
 ## Any contributions you make will be under the MIT Software License
 

@@ -2,7 +2,7 @@
 
 This utility can helps you to find the right hyperparameters for you agent and environment using a
 grid search. This is equivalent to running the
-``python -m bayesian_learning_control.run`` command line command with multiple
+``python -m stable_learning_control.run`` command line command with multiple
 parameters.
 
 You can modify this script to your liking to run a grid search for your algorithm
@@ -17,10 +17,10 @@ Taken almost without modification from the Spinning Up example script in the
 import argparse
 
 import tensorflow as tf
+from stable_learning_control.control.utils.run_utils import ExperimentGrid
 
 # Import the RL agent you want to perform the grid search for
-from bayesian_learning_control.control.algos.tf2.sac.sac import sac
-from bayesian_learning_control.control.utils.run_utils import ExperimentGrid
+from stable_learning_control.control.algos.tf2.sac.sac import sac
 
 # Script parametesr
 ENV_NAME = "Oscillator-v1"  # The environment on which you want to train the agent.

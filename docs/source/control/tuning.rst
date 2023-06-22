@@ -11,7 +11,7 @@ An easy way to find good hyperparameters is to run the same algorithm with many 
 this, called `ExperimentGrid`_.
 
 
-Consider the example in ``bayesian_learning_control/examples/pytorch/sac_exp_grid_search.py``:
+Consider the example in ``stable_learning_control/examples/pytorch/sac_exp_grid_search.py``:
 
 .. literalinclude:: /../../examples/pytorch/sac_exp_grid_search.py
    :language: python
@@ -19,7 +19,7 @@ Consider the example in ``bayesian_learning_control/examples/pytorch/sac_exp_gri
    :lines: 17-
    :emphasize-lines: 21-27, 30
 
-(An equivalent Tensorflow example is available in ``bayesian_learning_control/examples/tf2/sac_exp_grid_search.py``.)
+(An equivalent Tensorflow example is available in ``stable_learning_control/examples/tf2/sac_exp_grid_search.py``.)
 
 After making the ExperimentGrid object, parameters are added to it with
 
@@ -40,7 +40,7 @@ function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs`` spec
 See `the documentation page`_ for details.
 
 Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the basic behaviour of ``ExperimentGrid`` is the same as running things from the command line.
-(In fact, ``bayesian_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
+(In fact, ``stable_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
 
 .. _`ExperimentGrid`: ./control_utils.html#experimentgrid-utility
 .. _`the documentation page`: ./control_utils.html#experimentgrid-utility
@@ -49,16 +49,16 @@ Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs
 Using the Ray tuning package
 -----------------------------
 
-The BLC package can also be used with more advanced tuning algorithms. An example of how to use BLC with
-the Ray Tuning package can be found in ``bayesian_learning_control/examples/torch/sac_ray_hyper_parameter_tuning.py`` and
-``bayesian_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``. The requirements for this example can be installed using
+The SLC package can also be used with more advanced tuning algorithms. An example of how to use SLC with
+the Ray Tuning package can be found in ``stable_learning_control/examples/torch/sac_ray_hyper_parameter_tuning.py`` and
+``stable_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``. The requirements for this example can be installed using
 the following command:
 
 .. code-block:: bash
 
     pip install .[tuning]
 
-Consider the example in ``bayesian_learning_control/examples/pytorch/sac_ray_hyper_parameter_tuning.py``:
+Consider the example in ``stable_learning_control/examples/pytorch/sac_ray_hyper_parameter_tuning.py``:
 
 .. literalinclude:: /../../examples/pytorch/sac_ray_hyper_parameter_tuning.py
    :language: python
@@ -66,9 +66,9 @@ Consider the example in ``bayesian_learning_control/examples/pytorch/sac_ray_hyp
    :lines: 18-
    :emphasize-lines: 18-33, 60-66, 67-72, 78-93
 
-(An equivalent Tensorflow example is available in ``bayesian_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``.)
+(An equivalent Tensorflow example is available in ``stable_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``.)
 
-In this example, on line ``23-38`` we first create a small wrapper function that makes sure that the Ray Tuner serves the hyperparameters in the BLC algorithm's
+In this example, on line ``23-38`` we first create a small wrapper function that makes sure that the Ray Tuner serves the hyperparameters in the SLC algorithm's
 format. Following in line ``52-58`` we set the starting point for several hyperparameters used in the hyperparameter search. Next, on
 line ``65-77``, we define the hyperparameter search space. Lastly, we start the hyperparameter search using the :meth:`tune.run` method online ``83-97``.
 

@@ -3,7 +3,7 @@
 # NOTE: This documentation is build upon the documentation provided by the spinningup
 # project https://spinningup.openai.com/en/latest/.
 #
-# Bayesian Learning Control documentation build configuration file, created by
+# Stable Learning Control documentation build configuration file, created by
 # sphinx-quickstart on Wed Aug 15 04:21:07 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -22,10 +22,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# -- Make sure blc is accessible without going through setup.py -----------
+# -- Make sure SLC is accessible without going through setup.py -----------
 package_dir = Path(__file__).joinpath("../../..").resolve()
 sys.path.insert(0, str(package_dir))
-sys.path.insert(1, str(package_dir.joinpath("./bayesian_learning_control").resolve()))
+sys.path.insert(1, str(package_dir.joinpath("./stable_learning_control").resolve()))
 sys.path.insert(2, str(package_dir.joinpath("./examples").resolve()))
 
 # -- General configuration ------------------------------------------------
@@ -87,7 +87,7 @@ source_suffix = {".rst": "restructuredtext", ".txt": "markdown", ".md": "markdow
 master_doc = "index"
 
 # General information about the project.
-project = "bayesian-learning-control"
+project = "stable-learning-control"
 copyright = f"{datetime.now().year}, Rick Staa"
 author = "Rick Staa"
 git_user_name = "rickstaa"
@@ -147,7 +147,7 @@ html_context = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "BayesianLearningControldoc"
+htmlhelp_basename = "StableLearningControldoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 latex_packages = r"""
@@ -184,8 +184,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "BayesianLearningControl.tex",
-        "Bayesian Learning Control Documentation",
+        "Stablelearningcontrol.tex",
+        "Stable Learning Control Documentation",
         "Rick Staa",
         "manual",
     ),
@@ -198,8 +198,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "bayesian_learning_control",
-        "Bayesian Learning Control documentation",
+        "stable_learning_control",
+        "Stable Learning Control documentation",
         [author],
         1,
     ),
@@ -213,10 +213,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "BayesianLearningControl",
-        "Bayesian Learning Control Documentation",
+        "Stablelearningcontrol",
+        "Stable Learning Control Documentation",
         author,
-        "BayesianLearningControl",
+        "Stablelearningcontrol",
         "Framework that enables you to automatically create, train and deploy RL control algorithms from data.",
         "Miscellaneous",
     ),
@@ -237,8 +237,8 @@ intersphinx_mapping = {
 }
 
 extlinks = {
-    "blc": ("https://github.com/rickstaa/bayesian-learning-control/%s", None),
-    "issue": ("https://github.com/rickstaa/bayesian-learning-control/issues/%s", None),
+    "slc": ("https://github.com/rickstaa/stable-learning-control/%s", None),
+    "issue": ("https://github.com/rickstaa/stable-learning-control/issues/%s", None),
     "torch": ("https://pytorch.org/%s", None),
     "tf": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
     "tb": ("https://www.tensorflow.org/tensorboard/%s", None),

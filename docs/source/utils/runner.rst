@@ -3,14 +3,14 @@
 Command Line Interface
 ======================
 
-This CLI can be used to invoke the utilities of each of the four BLC modules directly. You
+This CLI can be used to invoke the utilities of each of the four SLC modules directly. You
 can use the following command to check which utilities are available quickly:
 
 .. code-block:: bash
 
-    python -m bayesian_learning_control.run --help
+    python -m stable_learning_control.run --help
 
-The BLC package currently contains the following utilities:
+The SLC package currently contains the following utilities:
 
 +---------+--------------------+------------------------------------------------------------------------------------------------------------------------------+
 | Module  | Utility            | description                                                                                                                  |
@@ -28,4 +28,4 @@ The BLC package currently contains the following utilities:
 
 See the corresponding module documentation for more information on a given utility.
 
-.. autofunction:: bayesian_learning_control.run.run
+.. autofunction:: stable_learning_control.run.run

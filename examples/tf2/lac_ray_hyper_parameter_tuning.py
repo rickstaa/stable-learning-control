@@ -1,7 +1,7 @@
 """Example script that shows you how you can use the Ray hyperparameter Tuner on a
 Pytorch algorithm.
 
-Can be used to tune the hyper parameters of any of the Bayesian Learning Control RL
+Can be used to tune the hyper parameters of any of the Stable Learning Control RL
 or IL agents using the
 `Ray tuning package <https://docs.ray.io/en/latest/tune/index.htm>`_.
 
@@ -22,8 +22,8 @@ import gymnasium as gym
 import numpy as np
 
 # Import the algorithm we want to tune
-from bayesian_learning_control.control.algos.tf2.lac.lac import lac
-from bayesian_learning_control.utils.import_utils import lazy_importer
+from stable_learning_control.control.algos.tf2.lac.lac import lac
+from stable_learning_control.utils.import_utils import lazy_importer
 
 ray = lazy_importer(module_name="ray", frail=True)
 from hyperopt import hp  # noqa: E402
