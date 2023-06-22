@@ -11,7 +11,7 @@ authors = [
     {name = "Rick Staa", email = "rick.staa@outlook.com"}
 ]
 license = {file = "LICENSE"}
-description = "A package that contains several gymnasium environments with cost functions compatible with (stable) RL agents (i.e. positive definite)."
+description = "A framework for training theoretically stable (and robust) Reinforcement Learning control algorithms."
 keywords = [
     "reinforcement-learning",
     "simulation",
