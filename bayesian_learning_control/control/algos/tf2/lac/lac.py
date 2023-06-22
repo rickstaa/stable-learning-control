@@ -26,7 +26,7 @@ import sys
 import time
 from pathlib import Path
 
-import gym
+import gymnasium as gym
 import numpy as np
 
 from bayesian_learning_control.common.helpers import combine_shapes
@@ -122,10 +122,10 @@ class LAC(tf.keras.Model):
         """Lyapunov (soft) Actor-Critic (LAC)
 
         Args:
-            env (:obj:`gym.env`): The gym environment the LAC is training in. This is
+            env (:obj:`gym.env`): The gymnasium environment the LAC is training in. This is
                 used to retrieve the activation and observation space dimensions. This
                 is used while creating the network sizes. The environment must satisfy
-                the OpenAI Gym API.
+                the gymnasium API.
             actor_critic (tf.Module, optional): The constructor method for a
                 Tensorflow Module with an ``act`` method, a ``pi`` module and several
                 ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
@@ -212,10 +212,10 @@ class LAC(tf.keras.Model):
         }
         self._was_build = False
 
-        # Validate gym env
+        # Validate gymnasium env
         # NOTE: The current implementation only works with continuous spaces.
         if not is_gym_env(env):
-            raise ValueError("Env must be a valid Gym environment.")
+            raise ValueError("Env must be a valid gymnasium environment.")
         if is_discrete_space(env.action_space) or is_discrete_space(
             env.observation_space
         ):
@@ -783,7 +783,7 @@ def lac(  # noqa: C901
 
     Args:
         env_fn: A function which creates a copy of the environment.
-            The environment must satisfy the OpenAI Gym API.
+            The environment must satisfy the gymnasium API.
         actor_critic (tf.Module, optional): The constructor method for a
             Tensorflow Module with an ``act`` method, a ``pi`` module and several ``Q``
             or ``L`` modules. The ``act`` method and ``pi`` module should accept batches
@@ -910,6 +910,32 @@ def lac(  # noqa: C901
 
     validate_args(**locals())
 
+    env = env_fn()
+
+    # Validate gymnasium env
+    # NOTE: The current implementation only works with continuous spaces.
+    if not is_gym_env(env):
+        raise ValueError("Env must be a valid gymnasium environment.")
+    if is_discrete_space(env.action_space) or is_discrete_space(env.observation_space):
+        raise NotImplementedError(
+            "The LAC algorithm does not yet support discrete observation/action "
+            "spaces. Please open a feature/pull request on "
+            "https://github.com/rickstaa/bayesian-learning-control/issues if you "
+            "need this."
+        )
+
+    env = gym.wrappers.FlattenObservation(
+        env
+    )  # NOTE: Done to make sure the alg works with dict observation spaces
+    if num_test_episodes != 0:
+        test_env = env_fn()
+        test_env = gym.wrappers.FlattenObservation(test_env)
+    obs_dim = env.observation_space.shape
+    act_dim = env.action_space.shape[0]
+    rew_dim = (
+        env.reward_range.shape[0] if isinstance(env.reward_range, gym.spaces.Box) else 1
+    )
+
     logger_kwargs["verbose_vars"] = (
         logger_kwargs["verbose_vars"]
         if (
@@ -934,19 +960,6 @@ def lac(  # noqa: C901
         k: v for k, v in locals().items() if k not in ["logger"]
     }  # Retrieve hyperparameters (Ignore logger object)
     logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger
-
-    env = env_fn()
-    env = gym.wrappers.FlattenObservation(
-        env
-    )  # NOTE: Done to make sure the alg works with dict observation spaces
-    if num_test_episodes != 0:
-        test_env = env_fn()
-        test_env = gym.wrappers.FlattenObservation(test_env)
-    obs_dim = env.observation_space.shape
-    act_dim = env.action_space.shape[0]
-    rew_dim = (
-        env.reward_range.shape[0] if isinstance(env.reward_range, gym.spaces.Box) else 1
-    )
 
     # Retrieve max episode length
     if max_ep_len is None:
@@ -976,9 +989,6 @@ def lac(  # noqa: C901
         random.seed(seed)
         np.random.seed(seed)
         tf.random.set_seed(seed)
-        env.seed(seed)
-        if num_test_episodes != 0:
-            test_env.seed(seed)
 
     policy = LAC(
         env,
@@ -1071,7 +1081,8 @@ def lac(  # noqa: C901
 
     # Main loop: collect experience in env and update/log each epoch
     start_time = time.time()
-    o, ep_ret, ep_len = env.reset(), 0, 0
+    o, _ = env.reset()
+    ep_ret, ep_len = 0, 0
     for t in range(total_steps):
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards,
@@ -1082,14 +1093,9 @@ def lac(  # noqa: C901
             a = env.action_space.sample()
 
         # Take step in the env
-        o_, r, d, _ = env.step(a)
+        o_, r, d, truncated, _ = env.step(a)
         ep_ret += r
         ep_len += 1
-
-        # Ignore the "done" signal if it comes from hitting the time
-        # horizon (that is, when it's an artificial terminal signal
-        # that isn't based on the agent's state)
-        d = False if ep_len == max_ep_len else d
 
         replay_buffer.store(o, a, r, o_, d)
 
@@ -1097,9 +1103,10 @@ def lac(  # noqa: C901
         o = o_
 
         # End of trajectory handling
-        if d or (ep_len == max_ep_len):
+        if d or truncated:
             logger.store(EpRet=ep_ret, EpLen=ep_len)
-            o, ep_ret, ep_len = env.reset(), 0, 0
+            o, _ = env.reset()
+            ep_ret, ep_len = 0, 0
 
         # Update handling
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
@@ -1260,18 +1267,15 @@ def lac(  # noqa: C901
 
 
 if __name__ == "__main__":
-    # NOTE: You can import your custom gym environment here.
-    # import stable_gym  # noqa: F401
-
     parser = argparse.ArgumentParser(
         description="Trains a LAC agent in a given environment."
     )
     parser.add_argument(
         "--env",
         type=str,
-        default="Oscillator-v1",
-        help="the gym env (default: Oscillator-v1)",
-    )
+        default="stable_gym:Oscillator-v1",
+        help="the gymnasium env (default: stable_gym:Oscillator-v1)",
+    )  # NOTE: Ensure the environment is installed in the current python environment.
     parser.add_argument(
         "--hid_a",
         type=int,

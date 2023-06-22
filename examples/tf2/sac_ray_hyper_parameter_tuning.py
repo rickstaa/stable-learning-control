@@ -18,7 +18,7 @@ For more information on how to use this package see the `Ray tuning documentatio
 import os.path as osp
 import sys
 
-import gym
+import gymnasium as gym
 import numpy as np
 
 # Import the algorithm we want to tune

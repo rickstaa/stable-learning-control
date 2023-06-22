@@ -1,13 +1,13 @@
-"""File used for adding extra Gym environments.
+"""File used for adding extra gymnasium environments.
 
 Example:
-    This module allows you to add your own custom gym environments to the
+    This module allows you to add your own custom gymnasium environments to the
     BLC package. These environments should inherit from
     the :class:`gym.env` class. See
-    `this issue on the Openai github <https://github.com/openai/gym/blob/master/docs/creating-environments.md>`_
+    `this issue on the Openai github <https://www.gymlibrary.dev/content/environment_creation/>`_
     for more information on how to create custom environments. Environments that are
     added to this file can be called directly without using the module prefix (eg.
-    ``Oscillator-v1`` instead of ``stable-gym:Oscillator-v1``).
+    ``Oscillator-v1`` instead of ``stable_gym:Oscillator-v1``).
 
     .. code-block:: python
 

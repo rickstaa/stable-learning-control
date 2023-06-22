@@ -10,8 +10,8 @@
 
 Welcome to the Bayesian Learning Control (BLC) framework! The Bayesian Learning Control framework enables you to automatically create, train and deploy various safe (stable and robust) Reinforcement Learning (RL) and Imitation learning (IL) control algorithms directly from real-world data. This framework is made up of four main modules:
 
-*   [Modeling](./bayesian_learning_control/modeling): Module that uses state of the art System Identification and State Estimation techniques to create an Openai gym environment out of real data.
-*   [Control](./bayesian_learning_control/control): Module used to train several [Bayesian Learning Control](https://rickstaa.github.io/bayesian-learning-control/control/control.html) RL/IL agents on the built gym environments.
+*   [Modeling](./bayesian_learning_control/modeling): Module that uses state of the art System Identification and State Estimation techniques to create an [gymnasium environment](https://gymnasium.farama.org/) out of real data.
+*   [Control](./bayesian_learning_control/control): Module used to train several [Bayesian Learning Control](https://rickstaa.github.io/bayesian-learning-control/control/control.html) RL/IL agents on the built [gymnasium](https://gymnasium.farama.org/) environments.
 *   [Hardware](./bayesian_learning_control/hardware): Module that can be used to deploy the trained RL/IL agents onto the hardware of your choice.
 
 This framework follows a code structure similar to the [Spinningup](https://spinningup.openai.com/en/latest/) educational package. By doing this, we hope to make it easier for new researchers to get started with our Algorithms. If you are new to RL, you are therefore highly encouraged first to check out the SpinningUp documentation and play with before diving into our codebase. Our implementation sometimes deviates from the [Spinningup](https://spinningup.openai.com/en/latest/) version to increase code maintainability, extensibility and readability.

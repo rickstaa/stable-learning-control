@@ -10,7 +10,7 @@ from bayesian_learning_control.user_config import (
     FORCE_DATESTAMP,
 )
 from bayesian_learning_control.utils.mpi_utils.mpi_tools import proc_id
-from gym.utils import colorize as gym_colorize
+from gymnasium.utils import colorize as gym_colorize
 
 LOG_TYPES = {
     "info": {"color": "green", "bold": True, "highlight": False, "prefix": "INFO: "},

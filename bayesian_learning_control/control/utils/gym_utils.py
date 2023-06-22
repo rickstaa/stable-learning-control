@@ -1,16 +1,17 @@
 """Contains utilities that can be used with the
-`openai gym package <https://github.com/openai/gym>`_.
-
+`gymnasium package <https://gymnasium.farama.org/>`_.
 """
 
 import importlib
 import sys
-from textwrap import dedent
 
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 
 from bayesian_learning_control.utils.log_utils import friendly_err
+
+# from textwrap import dedent
+
 
 DISCRETE_SPACES = (
     spaces.Discrete,
@@ -21,13 +22,13 @@ CONTINUOUS_SPACES = (spaces.Box,)
 
 
 def is_gym_env(env):
-    """Checks whether object is a gym environment.
+    """Checks whether object is a gymnasium environment.
 
     Args:
         env (object): A python object.
 
     Returns:
-        bool: Boolean specifying whether object is gym environment.
+        bool: Boolean specifying whether object is gymnasium environment.
     """
     return isinstance(env, gym.core.Env)
 
@@ -36,7 +37,7 @@ def is_continuous_space(space):
     """Checks whether a given space is continuous.
 
     Args:
-        space (:obj:`gym.spaces`): The gym space object.
+        space (:obj:`gym.spaces`): The gymnasium space object.
 
     Returns:
         bool: Boolean specifying whether the space is discrete.
@@ -48,7 +49,7 @@ def is_discrete_space(space):
     """Checks whether a given space is discrete.
 
     Args:
-        space (:obj:`gym.spaces`): The gym space object.
+        space (:obj:`gym.spaces`): The gymnasium space object.
 
     Returns:
         bool: Boolean specifying whether the space is discrete.
@@ -57,20 +58,20 @@ def is_discrete_space(space):
 
 
 def validate_gym_env(arg_dict):
-    """Make sure that env_name is a real, registered gym environment.
+    """Make sure that env_name is a real, registered gymnasium environment.
 
     Args:
         cmd (dict): The cmd dictionary.
 
     Raises:
-        AssertError: Raised when a environment is supplied that is not a valid gym
+        AssertError: Raised when a environment is supplied that is not a valid gymnasium
             environment.
     """
-    # Import gym environments
-    import gym
+    # Import gymnasium environments
+    # import gymnasium as gym
 
     # Import environment configuration file. This file can be used to inject
-    # custom gym environments into the blc package.
+    # custom gymnasium environments into the blc package.
     try:
         import bayesian_learning_control.env_config  # noqa: F401
     except Exception as e:
@@ -81,31 +82,31 @@ def validate_gym_env(arg_dict):
         ) from e
 
     # Special handling for environment: make sure that env_name is a real,
-    # registered gym environment.
+    # registered gymnasium environment.
     assert "env_name" in arg_dict, friendly_err(
         "You did not give a valid value for --env_name! Please try again."
     )
-    for env_name in arg_dict["env_name"]:
-        try:
-            gym.envs.registry.spec(env_name)
-        except gym.error.Error as e:
-            err_msg = dedent(
-                """
-                %s is not registered with Gym. (%s)
+    # TODO: Remove this when having checked why this was here in the first page as gym
+    # handles this?
+    # for env_name in arg_dict["env_name"]:
+    #     if env_name not in gym.envs.registry:
+    #         err_msg = dedent(
+    #             """
+    #             %s is not registered with gymnasium.
 
-                Recommendations:
-                    * Check for a typo (did you include the version tag?)
+    #             Recommendations:
+    #                 * Check for a typo (did you include the version tag?)
 
-                    * View the complete list of valid Gym environments at
-                        https://gym.openai.com/envs/
-                """
-                % (env_name, str(e))
-            )
-            assert False, err_msg
+    #                 * View the complete list of valid gymnasium environments at
+    #                     https://gymnasium.farama.org/api/env/
+    #             """
+    #             % (env_name)
+    #         )
+    #         assert False, err_msg
 
 
 def import_gym_env_pkg(module_name, frail=True, dry_run=False):
-    """Tries to import the custom gym environment package.
+    """Tries to import the custom gymnasium environment package.
 
     Args:
         module_name (str): The python module you want to import.

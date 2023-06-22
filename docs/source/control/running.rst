@@ -43,7 +43,7 @@ eg:
             --hid[h] [32,32] [64,32] --act torch.nn.Tanh --seed 0 10 20 --dt
             --data_dir path/to/data
 
-    runs SAC in the ``Ant-v2`` Gym environment, with various settings controlled by the flags.
+    runs SAC in the ``Ant-v2`` gymnasium environment, with various settings controlled by the flags.
 
     By default, the PyTorch version will run. Substitute ``sac`` with ``sac_tf2`` for the Tensorflow version.
 
@@ -154,9 +154,9 @@ Environment Flags
 
 .. option:: --env, --env_name
 
-    :obj:`str`. The name of an environment in the OpenAI Gym. All BLC algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn``
-    must be a callable function that builds a copy of the RL environment. Since the most common use case is Gym environments, though, all of which are built through ``gym.make(env_name)``,
-    we allow you to just specify ``env_name`` (or ``env`` for short) at the command line, which gets converted to a lambda-function that builds the correct gym environment.
+    :obj:`str`. The name of an environment in gymnasium. All BLC algorithms are implemented as functions that accept ``env_fn`` as an argument, where ``env_fn``
+    must be a callable function that builds a copy of the RL environment. Since the most common use case is gymnasium environments, though, all of which are built through ``gym.make(env_name)``,
+    we allow you to just specify ``env_name`` (or ``env`` for short) at the command line, which gets converted to a lambda-function that builds the correct gymnasium environment.
 
 .. option:: --env_kwargs
 

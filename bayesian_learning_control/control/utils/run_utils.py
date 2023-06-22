@@ -48,7 +48,7 @@ def call_experiment(
     There's also a SpinningUp-specific convenience added into executing the
     thunk: if ``env_name`` is one of the **kwargs** passed to call_experiment, it's
     assumed that the thunk accepts an argument called ``env_fn``, and that
-    the ``env_fn`` should make a gym environment with the given ``env_name``.
+    the ``env_fn`` should make a gymnasium environment with the given ``env_name``.
 
     The way the experiment is actually executed is slightly complicated: the
     function is serialised to a string, and then ``run_entrypoint.py`` is
@@ -110,11 +110,11 @@ def call_experiment(
         """Setup environment used in the experiment."""
         # Make 'env_fn' from 'env_name'
         if "env_name" in kwargs:
-            # Import gym environments
-            import gym
+            # Import gymnasium environments
+            import gymnasium as gym
 
             # Import environment configuration file. This file can be used to inject
-            # custom gym environments into the blc package.
+            # custom gymnasium environments into the blc package.
             try:
                 import bayesian_learning_control.env_config  # noqa: F401
             except Exception as e:

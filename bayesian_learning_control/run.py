@@ -330,7 +330,7 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
         exp_name = "cmd_" + cmd
 
     # Special handling for environment: make sure that env_name is a real,
-    # registered gym environment.
+    # registered gymnasium environment.
     validate_gym_env(arg_dict)
 
     # Final pass: check for the special args that go to the 'run' command

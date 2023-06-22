@@ -45,8 +45,8 @@ class SoftActorCritic(nn.Module):
         object.
 
         Args:
-            observation_space (:obj:`gym.space.box.Box`): A gym observation space.
-            action_space (:obj:`gym.space.box.Box`): A gym action space.
+            observation_space (:obj:`gym.space.box.Box`): A gymnasium observation space.
+            action_space (:obj:`gym.space.box.Box`): A gymnasium action space.
             hidden_sizes (Union[dict, tuple, list], optional): Sizes of the hidden
                 layers for the actor. Defaults to ``(256, 256)``.
             activation (Union[:obj:`dict`, :obj:`torch.nn.modules.activation`], optional):

@@ -19,7 +19,7 @@ Environments
 Biological environments
 -----------------------
 
-Gym environments that are based on Biological systems.
+Gymnasium environments that are based on Biological systems.
 
 .. toctree::
     :maxdepth: 1

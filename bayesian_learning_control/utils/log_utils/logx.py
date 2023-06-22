@@ -442,7 +442,7 @@ class Logger:
            config_path (str): Folder that contains the pickled environment.
 
         Returns:
-            (:obj:`gym.env`): The gym environment.
+            (:obj:`gym.env`): The gymnasium environment.
         """
         if proc_id() == 0:
             if not osp.basename(env_path).endswith(".pkl"):

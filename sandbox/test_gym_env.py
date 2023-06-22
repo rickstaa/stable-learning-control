@@ -1,16 +1,17 @@
-"""Small script to see if a gym environment can be imported.
+"""Small script to see if a gymnasium environment can be imported.
 """
 
-import gym
+import gymnasium as gym
 import matplotlib.pyplot as plt
 import numpy as np
-import ros_gazebo_gym  # noqa: F401
+
+# import ros_gazebo_gym  # noqa: F401
 import stable_gym  # NOTE: Found at https://github.com/rickstaa/stable-gym # noqa: F401
 
 RANDOM_STEP = True
-# ENV_NAME = "Oscillator-v1"
+ENV_NAME = "Oscillator-v1"
 # ENV_NAME = "Ex3EKF-v1"
-ENV_NAME = "CartPoleCost-v0"
+# ENV_NAME = "CartPoleCost-v0"
 # ENV_NAME = "PandaReach-v1"
 
 if __name__ == "__main__":
