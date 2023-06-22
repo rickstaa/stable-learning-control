@@ -57,9 +57,6 @@ jobs:
       fail-fast: false # Run all matrix jobs
       matrix:
         python-version: [3.8, 3.9, "3.10"] # Supported python versions
-    permissions:
-      contents: read
-      pull-requests: write # Needed for codeconv to write on pull requests
     steps:
       - name: Checkout stable-learning-control repository
         uses: actions/checkout@v3
