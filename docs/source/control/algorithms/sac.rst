@@ -28,7 +28,7 @@ Quick Facts
 * SAC is an off-policy algorithm.
 * The version of SAC implemented here can only be used for environments with continuous action spaces.
 * An alternate version of SAC, which slightly changes the policy update rule, can be implemented to handle discrete action spaces.
-* The BLC implementation of SAC does not support parallelisation.
+* The SLC implementation of SAC does not support parallelisation.
 
 Further Reading
 ---------------
@@ -53,28 +53,28 @@ Documentation
 
 .. admonition:: You Should Know
 
-    In what follows, we give documentation for the PyTorch and Tensorflow implementations of SAC in BLC.
+    In what follows, we give documentation for the PyTorch and Tensorflow implementations of SAC in SLC.
     They have nearly identical function calls and docstrings, except for details relating to model construction.
     However, we include both full docstrings for completeness.
 
 Documentation: PyTorch Version
 ------------------------------
 
-.. autofunction:: bayesian_learning_control.control.algos.pytorch.sac.sac
+.. autofunction:: stable_learning_control.control.algos.pytorch.sac.sac
 
 Saved Model Contents: PyTorch Version
 -------------------------------------
 
 The PyTorch version of the SAC algorithm is implemented by subclassing the :class:`torch.nn.Module` class. As a
 result, the model weights are saved using the 'model_state' dictionary (
-:attr:`~bayesian_learning_control.control.algos.pytorch.sac.SAC.state_dict`). This saved weights can be found in
+:attr:`~stable_learning_control.control.algos.pytorch.sac.SAC.state_dict`). This saved weights can be found in
 the ``torch_save/model_state.pt`` file. For an example of how to load a model using this file, see
 :ref:`saving_and_loading` or the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html>`.
 
 Documentation: Tensorflow Version
 ---------------------------------
 
-.. autofunction:: bayesian_learning_control.control.algos.tf2.sac.sac
+.. autofunction:: stable_learning_control.control.algos.tf2.sac.sac
 
 
 Saved Model Contents: Tensorflow Version

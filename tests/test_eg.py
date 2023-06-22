@@ -1,7 +1,7 @@
 """This script is used to test whether the ExperimentGrid class is working as expected.
 """
 
-from bayesian_learning_control.control.utils.run_utils import ExperimentGrid
+from stable_learning_control.control.utils.run_utils import ExperimentGrid
 
 
 # Check if the ExperimentGrid class is still working as expected.

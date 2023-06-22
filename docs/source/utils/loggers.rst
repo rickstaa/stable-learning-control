@@ -9,9 +9,9 @@ Loggers
 Using a Logger
 ==============
 
-BLC ships with basic logging tools, implemented in the classes
-:class:`~bayesian_learning_control.utils.log_utils.logx.Logger`
-and :class:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger`. The Logger
+SLC ships with basic logging tools, implemented in the classes
+:class:`~stable_learning_control.utils.log_utils.logx.Logger`
+and :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger`. The Logger
 class contains most of the basic functionality for saving diagnostics,
 hyperparameter configurations, the state of a training run, and the trained model. The EpochLogger
 class adds a thin layer on top of that to make it easy to track the average, standard deviation, min,
@@ -19,7 +19,7 @@ and max value of a diagnostic over each epoch and across MPI workers.
 
 .. admonition:: You Should Know
 
-    All BLC algorithm implementations use an EpochLogger.
+    All SLC algorithm implementations use an EpochLogger.
 
 
 These loggers allow you to write these diagnostic to the ``stdout``, a ``csv/txt`` file and/or :tb:`Tensorboard <>`.
@@ -27,12 +27,12 @@ These loggers allow you to write these diagnostic to the ``stdout``, a ``csv/txt
 Examples
 --------
 
-First, let's look at a simple example of how an :class:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger`
+First, let's look at a simple example of how an :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger`
 keeps track of a diagnostic value:
 
 .. code-block::
 
-    >>> from bayesian_learning_control.control.utils.logx import EpochLogger
+    >>> from stable_learning_control.control.utils.logx import EpochLogger
     >>> epoch_logger = EpochLogger()
     >>> for i in range(10):
             epoch_logger.store(Test=i)
@@ -45,12 +45,12 @@ keeps track of a diagnostic value:
     |         MinTest |               0 |
     -------------------------------------
 
-The :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.store` method is used to save all
-values of ``Test`` to the :class:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger`'s internal
-state. Then, when :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` is called,
+The :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store` method is used to save all
+values of ``Test`` to the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger`'s internal
+state. Then, when :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` is called,
 it computes the average, standard deviation, min, and max of ``Test`` over all of the values in the internal state.
-The internal state is wiped clean after the call to :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.log_tabular`
-(to prevent leakage into the statistics at the next epoch). Finally, :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular`
+The internal state is wiped clean after the call to :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular`
+(to prevent leakage into the statistics at the next epoch). Finally, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular`
 is called to write the diagnostics to file, Tensorboard and/or stdout.
 
 Next, let's use the :torch:`Pytorch Classifier <tutorials/beginner/blitz/cifar10_tutorial.html>` tutorial to look at a full training procedure with the logger embedded, to highlight configuration and model
@@ -72,7 +72,7 @@ saving as well as diagnostic logging:
     import matplotlib.pyplot as plt
     import numpy as np
 
-    from bayesian_learning_control.utils.log_utils.logx import EpochLogger
+    from stable_learning_control.utils.log_utils.logx import EpochLogger
 
 
     class Net(nn.Module):
@@ -227,13 +227,13 @@ saving as well as diagnostic logging:
 
 In this example, observe that
 
-* On line 52, the :class:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger` object is initiated. We set the ``std_out`` format to the "tabular" format.
-* On line 53, :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.save_config` is used to save the hyperparameter configuration to a JSON file.
+* On line 52, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` object is initiated. We set the ``std_out`` format to the "tabular" format.
+* On line 53, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_config` is used to save the hyperparameter configuration to a JSON file.
 * On lines 81-88, 96-98, 138-141 and 160 we log information to the ``std_out``.
-* On lines 108 :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver` is used to prepare the logger to save the key elements of the CNN model.
-* On line 142, diagnostics are saved to the logger's internal state via :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.store`.
-* On line 148, the CNN model saved once per epoch via :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.save_state`.
-* On lines 61-66, :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` and :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular` are used to write the epoch diagnostics to file. Note that the keys passed into :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` are the same as the keys passed into :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.store`. We use the ``tb_write=True`` option to enable Tensorboard logging.
+* On lines 108 :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver` is used to prepare the logger to save the key elements of the CNN model.
+* On line 142, diagnostics are saved to the logger's internal state via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`.
+* On line 148, the CNN model saved once per epoch via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state`.
+* On lines 61-66, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` and :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular` are used to write the epoch diagnostics to file. Note that the keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` are the same as the keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`. We use the ``tb_write=True`` option to enable Tensorboard logging.
 
 After this script has finished, the following files should be added to a ``/tmp/experiments/<TIMESTAMP>`` folder:
 
@@ -248,11 +248,11 @@ Logging and Tensorflow
 ----------------------
 
 The preceding example was given in Pytorch. For Tensorflow, everything is the same except for L42-43:
-instead of :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver`, you would
-use :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.setup_tf_saver` and you would pass it
+instead of :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver`, you would
+use :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_tf_saver` and you would pass it
 :tf:`a Tensorflow Module <nn>` (the algorithm you are training) as an argument.
 
-The behavior of :meth:`~bayesian_learning_control.utils.log_utils.logx.EpochLogger.save_state` is the same as in the
+The behavior of :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state` is the same as in the
 PyTorch case: each time it is called,
 it'll save the latest version of the Tensorflow module.
 
@@ -262,7 +262,7 @@ Logging and MPI
 .. admonition:: You Should Know
 
     Several RL algorithms are easily parallelized by using MPI to average gradients and/or other
-    key quantities. The BLC loggers are designed to be well-behaved when using
+    key quantities. The SLC loggers are designed to be well-behaved when using
     MPI: things will only get written to stdout, file or Tensorboard from the process with rank 0. But
     information from other processes isn't lost if you use the EpochLogger: everything which
     is passed into EpochLogger via ``store``, regardless of which process it's stored in, gets
@@ -273,16 +273,16 @@ Logger Classes
 ==============
 
 
-.. autoclass:: bayesian_learning_control.utils.log_utils.logx.Logger
+.. autoclass:: stable_learning_control.utils.log_utils.logx.Logger
     :members:
 
-    .. automethod:: bayesian_learning_control.utils.log_utils.logx.Logger.__init__
+    .. automethod:: stable_learning_control.utils.log_utils.logx.Logger.__init__
 
-.. autoclass:: bayesian_learning_control.utils.log_utils.logx.EpochLogger
+.. autoclass:: stable_learning_control.utils.log_utils.logx.EpochLogger
     :show-inheritance:
     :members:
 
 Logger helper functions
 =======================
 
-.. autofunction:: bayesian_learning_control.utils.log_utils.setup_logger_kwargs
+.. autofunction:: stable_learning_control.utils.log_utils.setup_logger_kwargs

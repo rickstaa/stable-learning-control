@@ -8,9 +8,9 @@ Python Code API
 ===============
 
 All Python modules, classes, scripts, utilities and functions of the
-BLC package will be documented here.
+SLC package will be documented here.
 
-BLC modules
+SLC modules
 -----------
 
 .. autosummary::
@@ -18,14 +18,14 @@ BLC modules
    :template: custom-module-template.rst
    :recursive:
 
-   bayesian_learning_control.control
-   bayesian_learning_control.hardware
-   bayesian_learning_control.modeling
-   bayesian_learning_control.utils
-   bayesian_learning_control.common
-   bayesian_learning_control.run
+   stable_learning_control.control
+   stable_learning_control.hardware
+   stable_learning_control.modeling
+   stable_learning_control.utils
+   stable_learning_control.common
+   stable_learning_control.run
 
-BLC configuration files
+SLC configuration files
 -----------------------
 
 .. autosummary::
@@ -34,5 +34,5 @@ BLC configuration files
    :recursive:
 
 
-   bayesian_learning_control.user_config
-   bayesian_learning_control.env_config
+   stable_learning_control.user_config
+   stable_learning_control.env_config

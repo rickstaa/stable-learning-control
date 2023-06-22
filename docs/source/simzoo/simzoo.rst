@@ -6,8 +6,8 @@ Simzoo
 
 .. contents:: Table of Contents
 
-The `Simzoo <simzoo_repo>`_ module contains several `OpenAI gym environments`_ that can be used with the BLC package. It is automatically
-installed when you install the BLC package but can also be installed
+The `Simzoo <simzoo_repo>`_ module contains several `OpenAI gym environments`_ that can be used with the SLC package. It is automatically
+installed when you install the SLC package but can also be installed
 as a stand-alone package.
 
 .. _`simzoo_repo`: https://github.com/rickstaa/simzoo
@@ -63,7 +63,7 @@ being printed to the console.
 .. code-block:: python
 
     import gym
-    import bayesian_learning_control.simzoo.simzoo
+    import stable_learning_control.simzoo.simzoo
 
     env = gym.make('Oscillator-v1')
     env.reset()
@@ -90,7 +90,7 @@ Add new Simzoo Environments
 
 Please follow the steps provided in the `Openai Gym documentation`_ when creating a new environment. After
 you created your environment, you can use the `simzoo/simzoo/__init__.py`_ file to register them to the
-BLC package. Additionally, you can also add your environment into the ``__init__.py`` files in the subfolders to
+SLC package. Additionally, you can also add your environment into the ``__init__.py`` files in the subfolders to
 shorten the environment namespace (see `simzoo/simzoo/envs/biological/__init__.py`_ for an example).
 
 .. _`simzoo/simzoo/__init__.py`: https://github.com/rickstaa/simzoo/blob/main/simzoo/__init__.py
@@ -99,7 +99,7 @@ shorten the environment namespace (see `simzoo/simzoo/envs/biological/__init__.p
 Simzoo/simzoo/__init__.py
 -------------------------
 
-.. literalinclude:: ../../../bayesian_learning_control/simzoo/simzoo/__init__.py
+.. literalinclude:: ../../../stable_learning_control/simzoo/simzoo/__init__.py
    :language: python
    :linenos:
 

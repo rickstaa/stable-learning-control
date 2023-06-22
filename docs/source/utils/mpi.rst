@@ -9,14 +9,14 @@ MPI Tools
 Core MPI Utilities
 ==================
 
-.. automodule:: bayesian_learning_control.utils.mpi_utils.mpi_tools
+.. automodule:: stable_learning_control.utils.mpi_utils.mpi_tools
     :members:
 
 
 MPI + PyTorch Utilities
 =======================
 
-``bayesian_learning_control.utils.mpi_utils.mpi_pytorch`` contains a few tools to make it easy to do
+``stable_learning_control.utils.mpi_utils.mpi_pytorch`` contains a few tools to make it easy to do
 data-parallel PyTorch optimization across MPI processes. The two main ingredients are syncing parameters and
 averaging gradients before the adaptive optimizer uses them. Also, there's a hacky fix for a problem
 where the PyTorch instance in each separate process tries to get too many threads, and they start to clobber
@@ -39,7 +39,7 @@ The pattern for using these tools looks something like this:
     optimizer.step()
 
 
-.. automodule:: bayesian_learning_control.utils.mpi_utils.mpi_pytorch
+.. automodule:: stable_learning_control.utils.mpi_utils.mpi_pytorch
     :members:
 
 MPI + Tensorflow Utilities
