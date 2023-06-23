@@ -90,9 +90,9 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
     if "--exp_cfg" in cmd_line_args:
         cfg_error = False
         exp_cfg_idx = cmd_line_args.index("--exp_cfg")
-        cmd_line_args.pop(exp_cfg_idx)  # Remove exp_cfg argument
+        cmd_line_args.pop(exp_cfg_idx)  # Remove exp_cfg argument.
 
-        # Validate config path
+        # Validate config path.
         try:
             exp_cfg_file_path = cmd_line_args.pop(exp_cfg_idx)
             exp_cfg_file_path = (
@@ -128,9 +128,9 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
                     type="warning",
                 )
 
-        # Read configuration values
+        # Read configuration values.
         if not cfg_error:
-            # Load exp config
+            # Load exp config.
             with open(exp_cfg_file_path) as stream:
                 try:
                     exp_cfg_params = yaml.safe_load(stream)
@@ -142,7 +142,7 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
                         type="warning",
                     )
 
-            # Retrieve values from exp config
+            # Retrieve values from exp config.
             log_to_std_out(
                 f"Experiment hyperparameters loaded from '{exp_cfg_file_path}'",
                 type="info",
@@ -154,14 +154,14 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
                     type="warning",
                 )
             else:
-                # Retrieve algorithm if not supplied by user
+                # Retrieve algorithm if not supplied by user.
                 if exp_cfg_idx == 1:
                     if "alg_name" in exp_cfg_params.keys():
                         cmd_line_args.insert(1, exp_cfg_params.pop("alg_name", None))
                 else:
                     exp_cfg_params.pop("alg_name")
 
-                # Append cfg hyperparameters to input arguments
+                # Append cfg hyperparameters to input arguments.
                 # NOTE: Here we assume comma or space separated strings to be variants.
                 exp_cfg_params = {
                     (key if key.startswith("--") else "--" + key): val
@@ -257,7 +257,7 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
     """
     cmd, backend = _add_backend_to_cmd(cmd)
 
-    # warning
+    # warning.
     algo = safer_eval("stable_learning_control.control." + cmd, backend=backend)
 
     # Before all else, check to see if any of the flags is 'help'.
@@ -309,12 +309,12 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
     # These special shortcuts are described by SUBSTITUTIONS.
     for special_name, true_name in SUBSTITUTIONS.items():
         if special_name in arg_dict:
-            # swap it in arg dict
+            # swap it in arg dict.
             arg_dict[true_name] = arg_dict[special_name]
             del arg_dict[special_name]
 
         if special_name in given_shorthands:
-            # point the shortcut to the right name
+            # point the shortcut to the right name.
             given_shorthands[true_name] = given_shorthands[special_name]
             del given_shorthands[special_name]
 

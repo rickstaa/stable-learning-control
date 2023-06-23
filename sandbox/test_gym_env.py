@@ -17,7 +17,7 @@ ENV_NAME = "Oscillator-v1"
 if __name__ == "__main__":
     env = gym.make(ENV_NAME)
 
-    # Take T steps in the environment
+    # Take T steps in the environment.
     T = 1000
     tau = 0.1
     path = []
@@ -39,7 +39,7 @@ if __name__ == "__main__":
         t1.append(i * tau)
     print("Finished Cartpole environment simulation.")
 
-    # Plot results
+    # Plot results.
     print("Plot results.")
     fig = plt.figure(figsize=(9, 6))
     ax = fig.add_subplot(111)

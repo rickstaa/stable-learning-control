@@ -74,7 +74,7 @@ def get_activation_function(activation_fn_name, backend="torch"):
     else:
         backend_prefix = ["torch", "nn"]
 
-    # Retrieve activation function
+    # Retrieve activation function.
     if len(activation_fn_name.split(".")) == 1:
         activation_fn_name = ".".join(backend_prefix) + "." + activation_fn_name
     elif len(activation_fn_name.split(".")) == 2:

@@ -20,7 +20,7 @@ def set_device(device_type="cpu"):
         str: The type of device that is used.
     """
     if device_type.lower() == "cpu":
-        tf.config.set_visible_devices([], "GPU")  # Force disable GPU
+        tf.config.set_visible_devices([], "GPU")  # Force disable GPU.
     log_to_std_out(f"Tensorflow is using the {device_type.upper()}.", type="info")
     return device_type.lower()
 

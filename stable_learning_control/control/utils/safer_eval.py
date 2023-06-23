@@ -11,7 +11,7 @@
 .. autofunction:: safer_eval
 """  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa:E501
 
-# Import modules to which you want users to have access
+# Import modules to which you want users to have access.
 import torch  # noqa: F401
 
 import stable_learning_control as stable_learning_control  # noqa: F401
@@ -34,7 +34,7 @@ def safer_eval(*args, backend=None):
         args: The eval return values.
     """
 
-    # Import the nn module based on the backend type
+    # Import the nn module based on the backend type.
     # NOTE: This was done to enable users to specify `nn.relu` instead of
     # `torch.nn.ReLu`.
     if backend is not None and backend.lower() in ["torch", "pytorch"]:

@@ -99,15 +99,15 @@ under several Impulse disturbances.
 
     if __name__ == "__main__":
 
-        # Parse input arguments
+        # Parse input arguments.
         parser = argparse.ArgumentParser()
         parser.add_argument("fpath", type=str, help="The path where the policy is stored")
         args = parser.parse_args()
 
-        # Retrieve dataframe
+        # Retrieve dataframe.
         robustness_eval_df = pd.read_csv(Path(args.fpath).absolute())
 
-        # Retrieve observation and reference data from the dataframe
+        # Retrieve observation and reference data from the dataframe.
         o_disturbances_df = robustness_eval_df.query("variable == 'observation'").dropna(
             axis=1, how="all"
         )
@@ -115,7 +115,7 @@ under several Impulse disturbances.
             axis=1, how="all"
         )
 
-        # Merge observations and references into one dataframe
+        # Merge observations and references into one dataframe.
         obs_df_tmp = o_disturbances_df.query("observation == 3")
         obs_df_tmp["signal"] = "obs_" + (obs_df_tmp["observation"] + 1).astype(str)
         obs_df_tmp.insert(len(obs_df_tmp.columns), "type", "observation")
@@ -190,14 +190,14 @@ class to add all the required methods and attributes to make it compatible with 
     import numpy as np
     from stable_learning_control.simzoo.simzoo.common.disturber import Disturber
 
-    # Disturber config used to overwrite the default config
+    # Disturber config used to overwrite the default config.
     DISTURBER_CFG = {
-        # Disturbance applied to environment variables
+        # Disturbance applied to environment variables.
         "env": {
             "description": "Pole length disturbance",
-            # The env variable which you want to disturb
+            # The env variable which you want to disturb.
             "variable": "length",
-            # The range of values you want to use for each disturbance iteration
+            # The range of values you want to use for each disturbance iteration.
             "variable_range": np.linspace(0.5, 2.0, num=5, dtype=np.float32),
             # Label used in robustness plots.
             "label": "r: %s",
@@ -271,10 +271,10 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~stable_learning_cont
     :linenos:
     :emphasize-lines: 5
 
-    # A random noise that is applied at every timestep
+    # A random noise that is applied at every timestep.
     "noise": {
         "description": "Random noise disturbance",
-        # The means and standards deviations of the random noise disturbance
+        # The means and standards deviations of the random noise disturbance.
         "noise_range": {
             "mean": np.linspace(80, 155, num=3, dtype=np.int16),
             "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),
@@ -292,14 +292,14 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~stable_learning_cont
 
     # Disturbance applied to the *OUTPUT* of the environment step function
     "output": {
-        # The disturbance variant used when no variant is given
+        # The disturbance variant used when no variant is given.
         "default_variant": "impulse",
-        # A random noise that is applied at every timestep
+        # A random noise that is applied at every timestep.
         "noise": {
             "description": "Random noise disturbance",
-            # The means and standards deviations of the random noise disturbance
+            # The means and standards deviations of the random noise disturbance.
             "noise_range": {
-                # "mean": np.linspace(80, 155, num=3, dtype=np.int16),  # All obs
+                # "mean": np.linspace(80, 155, num=3, dtype=np.int16),  # All obs.
                 "mean": np.vstack(
                     (
                         np.linspace(80, 155, num=3, dtype=np.int16),  # Obs 1
@@ -308,7 +308,7 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~stable_learning_cont
                         np.linspace(80, 155, num=3, dtype=np.int16),  # Obs 4
                     )
                 ).T,
-                # "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # All Obs
+                # "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # All Obs.
                 "std": np.vstack(
                     (
                         np.linspace(1.0, 5.0, num=3, dtype=np.int16),  # Obs 1
@@ -332,12 +332,12 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~stable_learning_cont
     :linenos:
     :emphasize-lines: 4, 12
 
-    # Input and output noise disturbance
+    # Input and output noise disturbance.
     "noise": {
         "description": "Random input and output noise disturbance",
         "input_noise": {
             # The means and standards deviations of the random input noise
-            # disturbance
+            # disturbance.
             "noise_range": {
                 "mean": np.linspace(80, 155, num=3, dtype=np.int16),
                 "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),
@@ -345,7 +345,7 @@ When editing the ``DISTURBANCE_CFG`` config in the :class:`~stable_learning_cont
         },
         "output_noise": {
             # The means and standards deviations of the random output noise
-            # disturbance
+            # disturbance.
             "noise_range": {
                 "mean": np.linspace(80, 155, num=3, dtype=np.int16),
                 "std": np.linspace(1.0, 5.0, num=3, dtype=np.int16),

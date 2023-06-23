@@ -58,15 +58,15 @@ tf = import_tf()
 nn = import_tf(module_name="tensorflow.nn")
 Adam = import_tf(module_name="tensorflow.keras.optimizers", class_name="Adam")
 
-# Import ray tuner if installed
+# Import ray tuner if installed.
 tune = lazy_importer(module_name="ray.tune")
 
-# Script settings
+# Script settings.
 SCALE_LAMBDA_MIN_MAX = (
     0.0,
     1.0,
-)  # Range of lambda lagrance multiplier
-SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier
+)  # Range of lambda lagrance multiplier.
+SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier.
 STD_OUT_LOG_VARS_DEFAULT = [
     "Epoch",
     "TotalEnvInteracts",
@@ -212,7 +212,7 @@ class LAC(tf.keras.Model):
         }
         self._was_build = False
 
-        # Validate gymnasium env
+        # Validate gymnasium env.
         # NOTE: The current implementation only works with continuous spaces.
         if not is_gym_env(env):
             raise ValueError("Env must be a valid gymnasium environment.")
@@ -248,7 +248,7 @@ class LAC(tf.keras.Model):
             type="info",
         )
 
-        # Store algorithm parameters
+        # Store algorithm parameters.
         self._act_dim = env.action_space.shape
         self._obs_dim = env.observation_space.shape
         self._device = set_device(device)
@@ -267,7 +267,7 @@ class LAC(tf.keras.Model):
         else:
             self._target_entropy = target_entropy
 
-        # Create variables for the Lagrance multipliers
+        # Create variables for the Lagrance multipliers.
         # NOTE: Clip at 1e-37 to prevent log_alpha/log_lambda from becoming -np.inf
         self.log_alpha = tf.Variable(
             tf.math.log(1e-37 if alpha < 1e-37 else alpha), name="log_alpha"
@@ -290,7 +290,7 @@ class LAC(tf.keras.Model):
 
         self._init_targets()
 
-        # Create optimizers
+        # Create optimizers.
         # NOTE: We here optimize for log_alpha and log_labda instead of alpha and labda
         # because it is more numerically stable (see:
         # https://github.com/rail-berkeley/softlearning/issues/136)
@@ -370,11 +370,11 @@ class LAC(tf.keras.Model):
             o_
         )  # NOTE: Target actions come from *current* *target* policy
         l_pi_targ = self.ac_targ.L([o_, pi_targ_])
-        l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate
+        l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate.
 
-        # Compute Lyapunov Critic error gradients
+        # Compute Lyapunov Critic error gradients.
         with tf.GradientTape() as l_tape:
-            # Get current Lyapunov value
+            # Get current Lyapunov value.
             l1 = self.ac.L([o, a])
 
             # Calculate Lyapunov *CRITIC* error
@@ -391,7 +391,7 @@ class LAC(tf.keras.Model):
         ################################################
         # Optimize Gaussian actor ######################
         ################################################
-        # Compute actor loss gradients
+        # Compute actor loss gradients.
         with tf.GradientTape() as a_tape:
             # Retrieve log probabilities of batch observations based on *current* policy
             _, logp_pi = self.ac.pi(o)
@@ -404,11 +404,11 @@ class LAC(tf.keras.Model):
                     "if you need this."
                 )
 
-            # Get target lyapunov value
+            # Get target lyapunov value.
             pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
             lya_l_ = self.ac.L([o_, pi_])
 
-            # Compute Lyapunov Actor error
+            # Compute Lyapunov Actor error.
             l_delta = tf.reduce_mean(
                 lya_l_ - tf.stop_gradient(l1) + self._alpha3 * r
             )  # See Han eq. 11
@@ -429,9 +429,9 @@ class LAC(tf.keras.Model):
         # Optimize alpha (Entropy temperature) #########
         ################################################
         if self._adaptive_temperature:
-            # Compute alpha loss gradients
+            # Compute alpha loss gradients.
             with tf.GradientTape() as alpha_tape:
-                # Calculate alpha loss
+                # Calculate alpha loss.
                 alpha_loss = -tf.reduce_mean(
                     self.alpha * tf.stop_gradient(logp_pi + self.target_entropy)
                 )  # See Haarnoja eq. 17
@@ -447,9 +447,9 @@ class LAC(tf.keras.Model):
         # Optimize labda (Lyapunov temperature) ########
         ################################################
 
-        # Compute labda loss gradients
+        # Compute labda loss gradients.
         with tf.GradientTape() as lambda_tape:
-            # Calculate labda loss
+            # Calculate labda loss.
             # NOTE: Log_labda was used in the lambda_loss function because using
             # lambda caused the gradients to vanish. This is caused since we
             # restrict lambda within a 0-1.0 range using the clamp function
@@ -496,7 +496,7 @@ class LAC(tf.keras.Model):
         except Exception as e:
             raise Exception("LAC model could not be saved.") from e
 
-        # Save additional information
+        # Save additional information.
         save_info = {
             "alg_name": self.__class__.__name__,
             "setup_kwargs": self._setup_kwargs,
@@ -528,7 +528,7 @@ class LAC(tf.keras.Model):
                     "path and try again."
                 )
 
-        # Store initial values in order to ignore them when loading the weights
+        # Store initial values in order to ignore them when loading the weights.
         lr_a = self._lr_a.value()
         lr_alpha = self._lr_alpha.value()
         lr_lag = self._lr_lag.value()
@@ -576,7 +576,7 @@ class LAC(tf.keras.Model):
             obs_dummy = tf.random.uniform(
                 combine_shapes(1, self._obs_dim), dtype=tf.float32
             )
-            self.ac.pi.get_action(obs_dummy)  # Make sure the full graph was traced
+            self.ac.pi.get_action(obs_dummy)  # Make sure the full graph was traced.
             self.ac.pi.save(osp.join(path, "tf2_save"))
 
     def build(self):
@@ -912,7 +912,7 @@ def lac(  # noqa: C901
 
     env = env_fn()
 
-    # Validate gymnasium env
+    # Validate gymnasium env.
     # NOTE: The current implementation only works with continuous spaces.
     if not is_gym_env(env):
         raise ValueError("Env must be a valid gymnasium environment.")
@@ -959,9 +959,9 @@ def lac(  # noqa: C901
     hyper_paramet_dict = {
         k: v for k, v in locals().items() if k not in ["logger"]
     }  # Retrieve hyperparameters (Ignore logger object)
-    logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger
+    logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger.
 
-    # Retrieve max episode length
+    # Retrieve max episode length.
     if max_ep_len is None:
         max_ep_len = env.env._max_episode_steps
     else:
@@ -982,7 +982,7 @@ def lac(  # noqa: C901
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = LyapunovActorCritic if actor_critic is None else actor_critic
 
-    # Set random seed for reproducible results
+    # Set random seed for reproducible results.
     if seed is not None:
         os.environ["PYTHONHASHSEED"] = str(seed)
         os.environ["TF_CUDNN_DETERMINISTIC"] = "1"  # new flag present in tf 2.0+
@@ -1007,13 +1007,13 @@ def lac(  # noqa: C901
         device,
     )
 
-    # Create learning rate schedulers
+    # Create learning rate schedulers.
     # NOTE: Alpha and labda currently use the same scheduler as the actor.
     lr_decay_ref_var = total_steps if lr_decay_ref.lower() == "steps" else epochs
     lr_a_scheduler = get_lr_scheduler(lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var)
     lr_c_scheduler = get_lr_scheduler(lr_decay_type, lr_c, lr_c_final, lr_decay_ref_var)
 
-    # Restore policy if supplied
+    # Restore policy if supplied.
     if start_policy is not None:
         logger.log(f"Restoring model from '{start_policy}'.", type="info")
         try:
@@ -1035,7 +1035,7 @@ def lac(  # noqa: C901
         size=replay_size,
     )
 
-    # Count variables and print network structure
+    # Count variables and print network structure.
     var_counts = tuple(count_vars(module) for module in [policy.ac.pi, policy.ac.L])
     logger.log("Number of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info")
     logger.log("Network structure:\n", type="info")
@@ -1043,7 +1043,7 @@ def lac(  # noqa: C901
 
     logger.setup_tf_saver(policy)
 
-    # Setup diagnostics tb_write dict and store initial learning rates
+    # Setup diagnostics tb_write dict and store initial learning rates.
     diag_tb_log_list = [
         "ErrorL",
         "LossPi",
@@ -1092,7 +1092,7 @@ def lac(  # noqa: C901
         else:
             a = env.action_space.sample()
 
-        # Take step in the env
+        # Take step in the env.
         o_, r, d, truncated, _ = env.step(a)
         ep_ret += r
         ep_len += 1
@@ -1102,22 +1102,22 @@ def lac(  # noqa: C901
         # Make sure to update most recent observation!
         o = o_
 
-        # End of trajectory handling
+        # End of trajectory handling.
         if d or truncated:
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             o, _ = env.reset()
             ep_ret, ep_len = 0, 0
 
-        # Update handling
+        # Update handling.
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
-            # Step based learning rate decay
+            # Step based learning rate decay.
             if lr_decay_ref.lower() == "step":
                 lr_a_now = max(
                     lr_a_scheduler(t + 1), lr_a_final
-                )  # Make sure lr is bounded above final lr
+                )  # Make sure lr is bounded above final lr.
                 lr_c_now = max(
                     lr_c_scheduler(t + 1), lr_c_final
-                )  # Make sure lr is bounded above final lr
+                )  # Make sure lr is bounded above final lr.
                 policy.set_learning_rates(
                     lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
                 )
@@ -1125,8 +1125,8 @@ def lac(  # noqa: C901
             for _ in range(steps_per_update):
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
-                logger.store(**update_diagnostics)  # Log diagnostics
-            # SGD batch tb logging
+                logger.store(**update_diagnostics)  # Log diagnostics.
+            # SGD batch tb logging.
             if use_tensorboard and not tb_low_log_freq:
                 logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
 
@@ -1134,11 +1134,11 @@ def lac(  # noqa: C901
         if (t + 1) % steps_per_epoch == 0:
             epoch = (t + 1) // steps_per_epoch
 
-            # Save model
+            # Save model.
             if (epoch % save_freq == 0) or (epoch == epochs):
                 logger.save_state({"env": env}, itr=epoch)
 
-            # Test the performance of the deterministic version of the agent
+            # Test the performance of the deterministic version of the agent.
             if num_test_episodes != 0:
                 eps_ret, eps_len = test_agent(
                     policy, test_env, num_test_episodes, max_ep_len=max_ep_len
@@ -1149,19 +1149,19 @@ def lac(  # noqa: C901
                     extend=True,
                 )
 
-            # Epoch based learning rate decay
+            # Epoch based learning rate decay.
             if lr_decay_ref.lower() != "step":
                 lr_a_now = max(
                     lr_a_scheduler(epoch), lr_a_final
-                )  # Make sure lr is bounded above final
+                )  # Make sure lr is bounded above final.
                 lr_c_now = max(
                     lr_c_scheduler(epoch), lr_c_final
-                )  # Make sure lr is bounded above final
+                )  # Make sure lr is bounded above final.
                 policy.set_learning_rates(
                     lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
                 )
 
-            # Log performance measure to ray tuning
+            # Log performance measure to ray tuning.
             # NOTE: Only executed when the ray tuner invokes the script
             if hasattr(tune, "session") and tune.session._session is not None:
                 mean_ep_ret = logger.get_stats("EpRet")
@@ -1170,7 +1170,7 @@ def lac(  # noqa: C901
                     mean_ep_ret=mean_ep_ret[0], epoch=epoch, mean_ep_len=mean_ep_len[0]
                 )
 
-            # Log info about epoch
+            # Log info about epoch.
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("TotalEnvInteracts", t)
             logger.log_tabular(
@@ -1490,7 +1490,7 @@ if __name__ == "__main__":
         ),
     )
 
-    # Parse logger related arguments
+    # Parse logger related arguments.
     parser.add_argument(
         "--exp_name",
         type=str,
@@ -1549,7 +1549,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # Setup actor critic arguments
+    # Setup actor critic arguments.
     output_activation = {}
     output_activation["actor"] = safer_eval(args.act_out_a, backend="tf")
     ac_kwargs = dict(
@@ -1564,7 +1564,7 @@ if __name__ == "__main__":
         output_activation=output_activation,
     )
 
-    # Setup output dir for logger and return output kwargs
+    # Setup output dir for logger and return output kwargs.
     logger_kwargs = setup_logger_kwargs(
         args.exp_name,
         args.seed,

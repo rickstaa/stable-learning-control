@@ -52,7 +52,7 @@ class LCritic(nn.Module):
                 The tensor containing the lyapunov values of the input observations and
                 actions.
         """
-        # Make sure the observations and actions are on the right device
+        # Make sure the observations and actions are on the right device.
         self._obs_same_device = obs.device != self.L[0].weight.device
         self._act_same_device = act.device != self.L[0].weight.device
         if self._obs_same_device or self._act_same_device:

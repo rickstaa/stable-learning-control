@@ -68,12 +68,12 @@ extensions = [
     "myst_parser",
 ]
 
-# Extension settings
+# Extension settings.
 autosummary_generate = True
 autosummary_generate_overwrite = True
 autodoc_member_order = "bysource"
 
-# imgmath settings
+# imgmath settings.
 imgmath_image_format = "svg"
 imgmath_font_size = 14
 
@@ -110,7 +110,7 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-# This patterns also effect to html_static_path and html_extra_path
+# This patterns also effect to html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "TODO.*", "README.*"]
 
 # The name of the Pygments (syntax highlighting) style to use.

@@ -3,7 +3,7 @@
 
 from stable_learning_control.utils.import_utils import import_tf
 
-# Put algorithms on namespace
+# Put algorithms on namespace.
 from stable_learning_control.control.algos.pytorch.lac.lac import LAC as LAC_pytorch
 from stable_learning_control.control.algos.pytorch.sac.sac import SAC as SAC_pytorch
 

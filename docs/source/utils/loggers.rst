@@ -96,7 +96,7 @@ saving as well as diagnostic logging:
 
 
     def imshow(img):
-        img = img / 2 + 0.5  # unnormalize
+        img = img / 2 + 0.5  # unnormalize.
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()
@@ -110,7 +110,7 @@ saving as well as diagnostic logging:
         logger_kwargs=dict(),
         save_freq=1,
     ):
-        # Setup logger and save hyperparameters
+        # Setup logger and save hyperparameters.
         logger = EpochLogger(**logger_kwargs, verbose_fmt="tab")
         logger.save_config(locals())
 
@@ -137,7 +137,7 @@ saving as well as diagnostic logging:
             "truck",
         )
 
-        # print information about the dataset
+        # print information about the dataset.
         total_samples = len(trainset)
         n_iterations = math.ceil(total_samples / batch_size)
         logger.log(
@@ -149,36 +149,36 @@ saving as well as diagnostic logging:
             type="info",
         )
 
-        # get some random training images
+        # get some random training images.
         dataiter = iter(trainloader)
         images, labels = dataiter.next()
 
-        # show images
+        # show images.
         imshow(torchvision.utils.make_grid(images))
         logger.log(
             "labels:" + " ".join("%5s" % classes[labels[j]] for j in range(4)), type="info"
-        )  # print labels
+        )  # print labels.
 
-        # Define a Convolutional Neural Network
+        # Define a Convolutional Neural Network.
         net = Net()
 
-        # Define a Loss function and optimizer
+        # Define a Loss function and optimizer.
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
 
-        # Setup model saving
+        # Setup model saving.
         logger.setup_pytorch_saver(net)
 
-        # Run main training loop
+        # Run main training loop.
         start_time = time.time()
-        for epoch in range(epochs):  # loop over the dataset multiple times
+        for epoch in range(epochs):  # loop over the dataset multiple times.
             running_loss = 0.0
             correct = 0
             for i, data in enumerate(trainloader, 0):
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data
 
-                # zero the parameter gradients
+                # zero the parameter gradients.
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
@@ -188,13 +188,13 @@ saving as well as diagnostic logging:
                 loss.backward()
                 optimizer.step()
 
-                # calculate accuracy and increment running loss
+                # calculate accuracy and increment running loss.
                 _, predicted = torch.max(outputs.data, 1)
                 correct += (predicted == labels).float().sum()
                 accuracy = 100 * correct / len(trainset)
                 running_loss += loss.item()
 
-                # print statistics
+                # print statistics.
                 running_loss += loss.item()
                 if i % 2000 == 1999:  # print every 2000 mini-batches
                     logger.log(
@@ -205,11 +205,11 @@ saving as well as diagnostic logging:
                     running_loss = 0.0
                     correct = 0
 
-            # Save model
+            # Save model.
             if (epoch % save_freq == 0) or (epoch == epochs - 1):
                 logger.save_state(state_dict=dict(), itr=None)
 
-            # Log info about epoch
+            # Log info about epoch.
             logger.log_tabular("Epoch", epoch, tb_write=True)
             logger.log_tabular("Acc", with_min_and_max=True, tb_write=True)
             logger.log_tabular("Loss", average_only=True, tb_write=True)

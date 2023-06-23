@@ -21,7 +21,7 @@ import sys
 import gymnasium as gym
 import numpy as np
 
-# Import the algorithm we want to tune
+# Import the algorithm we want to tune.
 from stable_learning_control.control.algos.pytorch.sac.sac import sac
 from stable_learning_control.utils.import_utils import lazy_importer
 
@@ -40,10 +40,10 @@ def train_sac(config):
         config (dict): The Ray tuning configuration dictionary.
     """
 
-    # Unpack trainable arguments
+    # Unpack trainable arguments.
     env_name = config.pop("env_name")
 
-    # Run algorithm training
+    # Run algorithm training.
     sac(
         lambda: gym.make(env_name),
         **config,
@@ -51,18 +51,18 @@ def train_sac(config):
 
 
 if __name__ == "__main__":
-    # Pass system arguments to ray
+    # Pass system arguments to ray.
     if len(sys.argv) > 1:
         ray.init(redis_address=sys.argv[1])
 
-    # Setup the logging dir
+    # Setup the logging dir.
     dirname = osp.dirname(__file__)
     log_path = osp.abspath(osp.join(dirname, "../../data/ray_results"))
 
-    # Setup hyperparameter search starting point
+    # Setup hyperparameter search starting point.
     current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha": 0.99}]
 
-    # Setup the parameter space for you hyperparameter search
+    # Setup the parameter space for you hyperparameter search.
     # NOTE: This script uses the hyperopt search algorithm for efficient hyperparameter
     # selection. For more information see
     # https://docs.ray.io/en/latest/tune/api_docs/suggestion.html?highlight=hyperopt.
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         points_to_evaluate=current_best_params,
     )
 
-    # Start the hyperparameter tuning job
+    # Start the hyperparameter tuning job.
     # NOTE: We use the ASHA job scheduler to early terminate bad trials, pause trials,
     # clone trials, and alter hyperparameters of a running trial. For more information
     # see https://docs.ray.io/en/master/tune/api_docs/schedulers.html.
@@ -102,7 +102,7 @@ if __name__ == "__main__":
         local_dir=log_path,
     )
 
-    # Print the best trail
+    # Print the best trail.
     best_trial = analysis.get_best_trial(metric="mean_ep_ret", mode="min", scope="all")
     best_path = analysis.get_best_logdir(metric="mean_ep_ret", mode="min", scope="all")
     best_config = analysis.get_best_config(

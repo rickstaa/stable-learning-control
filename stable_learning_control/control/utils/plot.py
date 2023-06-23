@@ -195,18 +195,18 @@ def get_all_datasets(all_logdirs, legend=None, select=None, exclude=None):
     if exclude is not None:
         logdirs = [log for log in logdirs if all(not (x in log) for x in exclude)]
 
-    # Verify logdirs
+    # Verify logdirs.
     print("Plotting from...\n" + "=" * DIV_LINE_WIDTH + "\n")
     for logdir in logdirs:
         print(logdir)
     print("\n" + "=" * DIV_LINE_WIDTH)
 
-    # Make sure the legend is compatible with the logdirs
+    # Make sure the legend is compatible with the logdirs.
     assert not (legend) or (len(legend) == len(logdirs)), friendly_err(
         "Must give a legend title for each set of experiments."
     )
 
-    # Load data from logdirs
+    # Load data from logdirs.
     data = []
     if legend:
         for log, leg in zip(logdirs, legend):

@@ -22,19 +22,19 @@ if __name__ == "__main__":
         # NOTE: STEP: 1b: If step 1 fails recreate the environment and load the Pytorch/
         # TF2 agent separately.
 
-        # Create the environment
+        # Create the environment.
         # NOTE: Here the 'FlattenObservation' wrapper is used to make sure the alg works
         # with dictionary based observation spaces.
         env = gym.make("PandaReach-v1")
         env = gym.wrappers.FlattenObservation(env)
 
-        # Load the policy
+        # Load the policy.
         if AGENT_TYPE.lower() == "tf2":
             policy = load_tf_policy(AGENT_FOLDER, itr="last", env=env)  # Load TF2 agent
         else:
             policy = load_pytorch_policy(
                 AGENT_FOLDER, env=env, itr="last"
-            )  # Load Pytorch agent
+            )  # Load Pytorch agent.
 
     # NOTE: Step 2: Try to run the policy on the environment.
     try:

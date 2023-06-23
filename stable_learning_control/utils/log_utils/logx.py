@@ -89,7 +89,7 @@ class Logger:
             exp_name (str): Experiment name.
         """
         if proc_id() == 0:
-            # Parse output_fname to see if csv was requested
+            # Parse output_fname to see if csv was requested.
             extension = osp.splitext(output_fname)[1]
             self._output_csv = True if extension.lower() == ".csv" else False
 
@@ -130,10 +130,10 @@ class Logger:
         self.tb_writer = None
         self._tabular_to_tb_dict = (
             dict()
-        )  # Stores whether tabular is logged to tensorboard when dump_tabular is called
+        )  # Stores if tabular is logged to tensorboard when dump_tabular is called.
         self._step_count_dict = (
             dict()
-        )  # Used for keeping count of the current global step
+        )  # Used for keeping count of the current global step.
 
     def log(
         self,
@@ -185,7 +185,7 @@ class Logger:
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         var_name = tb_alias if tb_alias is not None else key
         var_name = tb_prefix + "/" + var_name if tb_prefix is not None else var_name
         self._write_to_tb(var_name, val, global_step=global_step)
@@ -258,7 +258,7 @@ class Logger:
             print_keys = []
             print_vals = []
 
-            # Retrieve data from current row
+            # Retrieve data from current row.
             for key in self._log_headers:
                 val = self._log_current_row.get(key, "")
                 valstr = (
@@ -271,12 +271,12 @@ class Logger:
                 print_dict[key] = valstr
                 vals.append(val)
 
-            # Log to stdout
+            # Log to stdout.
             if self.verbose:
                 if self.verbose_vars:
                     key_filter = self.verbose_vars
 
-                    # Make sure Epcoh and EnvInteract are always shown if present
+                    # Make sure Epcoh and EnvInteract are always shown if present.
                     for item in reversed(["Epoch", "TotalEnvInteracts"]):
                         if item not in key_filter and item in print_keys:
                             key_filter.insert(0, item)
@@ -313,7 +313,7 @@ class Logger:
                         ]
                     )
                     self.log(print_str)
-            else:  # Increase epoch steps and time on the same line
+            else:  # Increase epoch steps and time on the same line.
                 self.log(
                     "\r{}: {:8.3G}, {}: {:8.3g}, {}: {:8.3G} s".format(
                         "Epoch",
@@ -326,18 +326,18 @@ class Logger:
                     end="",
                 )
 
-            # Log to file
+            # Log to file.
             if self.output_file is not None:
                 if self._first_row:
                     self.output_file.write("\t".join(self._log_headers) + "\n")
                 self.output_file.write("\t".join(map(str, vals)) + "\n")
                 self.output_file.flush()
 
-            # Write tabular to tensorboard log
+            # Write tabular to tensorboard log.
             for key in self._log_headers:
                 if self._tabular_to_tb_dict[key]["tb_write"]:
                     val = self._log_current_row.get(key, "")
-                    # Use internal counter if global_step is None
+                    # Use internal counter if global_step is None.
                     if global_step is None:
                         if key in self._log_headers:
                             global_step = self._global_step
@@ -457,7 +457,7 @@ class Logger:
                 load_path = load_path[0]
             else:
                 load_path = env_path
-        # try to load environment from save
+        # try to load environment from save.
         # NOTE: Sometimes this will fail because the environment could not be pickled.
         try:
             state = joblib.load(load_path)
@@ -530,7 +530,7 @@ class Logger:
             except (ValueError, pickle.PicklingError):
                 self.log("Warning: could not pickle state_dict.", color="red")
 
-            # Save model state
+            # Save model state.
             if hasattr(self, "tf_saver_elements"):
                 backend_folder_name = "tf2_save"
                 self._tf_save(itr)
@@ -538,7 +538,7 @@ class Logger:
                 backend_folder_name = "torch_save"
                 self._pytorch_save(itr)
 
-            # Save checkpoint state
+            # Save checkpoint state.
             if self._save_checkpoints and itr is not None:
                 itr_name = (
                     "iter%d" % itr
@@ -563,7 +563,7 @@ class Logger:
                 Tensorflow models.
         """
         global tf
-        tf = import_tf()  # Import tf if installed otherwise throw warning
+        tf = import_tf()  # Import tf if installed otherwise throw warning.
         self.tf_saver_elements = what_to_save
         self.log("Policy will be saved to '{}'.\n".format(self.output_dir), type="info")
 
@@ -596,12 +596,12 @@ class Logger:
                 self, "tf_saver_elements"
             ), "First have to setup saving with self.setup_tf_saver"
 
-            # Create filename
+            # Create filename.
             fpath = osp.join(self.output_dir, "tf2_save")
             fname = osp.join(fpath, "weights_checkpoint")
             os.makedirs(fpath, exist_ok=True)
 
-            # Create Checkpoints name
+            # Create Checkpoints name.
             if self._save_checkpoints and itr is not None:
                 itr_name = (
                     "iter%d" % itr
@@ -612,7 +612,7 @@ class Logger:
                 cname = osp.join(cpath, "weights_checkpoint")
                 os.makedirs(cpath, exist_ok=True)
 
-            # Save additional algorithm information
+            # Save additional algorithm information.
             if not self._save_info_saved:
                 save_info = {
                     "alg_name": self.tf_saver_elements.__class__.__name__,
@@ -626,7 +626,7 @@ class Logger:
                 )
                 self._save_info_saved = True
 
-            # Save model
+            # Save model.
             if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
                 self.tf_saver_elements, "save_weights"
             ):
@@ -634,7 +634,7 @@ class Logger:
             else:
                 self.log(save_fail_warning, type="warning")
 
-            # Save checkpoint
+            # Save checkpoint.
             if self._save_checkpoints and itr is not None:
                 if isinstance(self.tf_saver_elements, tf.keras.Model) or hasattr(
                     self.tf_saver_elements, "save_weights"
@@ -643,7 +643,7 @@ class Logger:
                 else:
                     self.log(save_fail_warning, type="warning")
 
-                self._checkpoint += 1  # Increase epoch
+                self._checkpoint += 1  # Increase epoch.
 
     def _pytorch_save(self, itr=None):
         """Saves the PyTorch model/models using their ``state_dict``.
@@ -664,12 +664,12 @@ class Logger:
                 self, "pytorch_saver_elements"
             ), "First have to setup saving with self.setup_pytorch_saver"
 
-            # Create filename
+            # Create filename.
             fpath = osp.join(self.output_dir, "torch_save")
             fname = osp.join(fpath, "model_state.pt")
             os.makedirs(fpath, exist_ok=True)
 
-            # Create Checkpoints Name
+            # Create Checkpoints Name.
             if self._save_checkpoints and itr is not None:
                 itr_name = (
                     "iter%d" % itr
@@ -680,7 +680,7 @@ class Logger:
                 cname = osp.join(cpath, "model_state.pt")
                 os.makedirs(cpath, exist_ok=True)
 
-            # Save additional algorithm information
+            # Save additional algorithm information.
             if not self._save_info_saved:
                 save_info = {
                     "alg_name": self.pytorch_saver_elements.__class__.__name__,
@@ -696,7 +696,7 @@ class Logger:
                 )
                 self._save_info_saved = True
 
-            # Save model
+            # Save model.
             if isinstance(self.pytorch_saver_elements, torch.nn.Module) or hasattr(
                 self.pytorch_saver_elements, "state_dict"
             ):
@@ -704,7 +704,7 @@ class Logger:
             else:
                 self.log(save_fail_warning, type="warning")
 
-            # Save checkpoint
+            # Save checkpoint.
             if self._save_checkpoints:
                 if isinstance(self.pytorch_saver_elements, torch.nn.Module) or hasattr(
                     self.pytorch_saver_elements, "state_dict"
@@ -713,7 +713,7 @@ class Logger:
                 else:
                     self.log(save_fail_warning, type="warning")
 
-                self._checkpoint += 1  # Increase epoch
+                self._checkpoint += 1  # Increase epoch.
 
     def _write_to_tb(self, var_name, data, global_step=None):
         """Writes data to tensorboard log file.
@@ -729,13 +729,13 @@ class Logger:
                 counter if global step is not supplied.
         """
 
-        # Try to write data to tb as as historgram
+        # Try to write data to tb as as historgram.
         if not self.tb_writer:
             self.use_tensorboard = (
-                True  # Property that creates tf writer if set to True
+                True  # Property that creates tf writer if set to True.
             )
-        if is_scalar(data):  # Extra protection since trying to write a list freezes tb
-            try:  # Try to write as scalar
+        if is_scalar(data):  # Extra protection since trying to write a list freezes tb.
+            try:  # Try to write as scalar.
                 self.add_scalar(var_name, data, global_step=global_step)
             except (
                 AssertionError,
@@ -746,7 +746,7 @@ class Logger:
             ):
                 pass
         else:
-            # Try to write data to tb as as historgram
+            # Try to write data to tb as as historgram.
             try:
                 self.add_histogram(var_name, data, global_step=global_step)
             except (
@@ -758,7 +758,7 @@ class Logger:
             ):
                 pass
 
-            # Try to write data as image
+            # Try to write data as image.
             try:
                 self.add_image(var_name, data, global_step=global_step)
             except (
@@ -801,11 +801,11 @@ class Logger:
         """
         self._use_tensorboard = value
 
-        # Create tensorboard writer if use_tensorboard == True else delete
-        if self._use_tensorboard and not self.tb_writer:  # Create writer object
+        # Create tensorboard writer if use_tensorboard == True else delete.
+        if self._use_tensorboard and not self.tb_writer:  # Create writer object.
             if self._use_tf_backend:
                 self.log("Using Tensorflow as the Tensorboard backend.", type="info")
-                tf = import_tf()  # Import tf if installed otherwise throw warning
+                tf = import_tf()  # Import tf if installed otherwise throw warning.
                 self.tb_writer = tf.summary.create_file_writer(self.output_dir)
             else:
                 self.log(
@@ -818,10 +818,10 @@ class Logger:
                     comment=f"{exp_name.upper()}-data_"
                     + time.strftime("%Y%m%d-%H%M%S"),
                 )
-                atexit.register(self.tb_writer.close)  # Make sure the writer is closed
-        elif not self._use_tensorboard and self.tb_writer:  # Delete tensorboard writer
-            self.tb_writer.close()  # Close writer
-            atexit.unregister(self.tb_writer.close)  # Make sure the writer is closed
+                atexit.register(self.tb_writer.close)  # Make sure the writer is closed.
+        elif not self._use_tensorboard and self.tb_writer:  # Delete tensorboard writer.
+            self.tb_writer.close()  # Close writer.
+            atexit.unregister(self.tb_writer.close)  # Make sure the writer is closed.
             self.tb_writer = None
 
     @property
@@ -849,7 +849,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_hparams' method is not available when using the 'tensorflow' "
@@ -869,7 +869,7 @@ class Logger:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             kwargs["step"] = kwargs.pop("global_step")
             global tf
@@ -903,7 +903,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_scalars' method is not available when using the 'tensorflow' "
@@ -924,7 +924,7 @@ class Logger:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             kwargs["step"] = kwargs.pop("global_step")
             global tf
@@ -959,7 +959,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_histogram_raw' method is not available when using the "
@@ -979,7 +979,7 @@ class Logger:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             kwargs["step"] = kwargs.pop("global_step")
             global tf
@@ -1013,7 +1013,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_images' method is not available when using the 'tensorflow' "
@@ -1037,7 +1037,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_image_with_boxes' method is not available when using the "
@@ -1061,7 +1061,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_figure' method is not available when using the 'tensorflow' "
@@ -1084,7 +1084,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_video' method is not available when using the 'tensorflow' "
@@ -1104,7 +1104,7 @@ class Logger:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             kwargs["step"] = kwargs.pop("global_step")
             global tf
@@ -1136,7 +1136,7 @@ class Logger:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             kwargs["step"] = kwargs.pop("global_step")
             global tf
@@ -1171,7 +1171,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_onnx_graph' method is not available when using the "
@@ -1194,7 +1194,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_graph' method is not available when using the 'tensorflow' "
@@ -1218,7 +1218,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_embedding' method is not available when using the "
@@ -1241,7 +1241,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_pr_curve' method is not available when using the "
@@ -1264,7 +1264,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_pr_curve_raw' method is not available when using the "
@@ -1290,7 +1290,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_custom_scalars_multilinechart' method is not available "
@@ -1316,7 +1316,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_custom_scalars_marginchart' method is not available when "
@@ -1346,7 +1346,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_custom_scalars' method is not available when using the "
@@ -1370,7 +1370,7 @@ class Logger:
             NotImplementedError: Raised if you try to call this method when using the
                 Tensorflow backend.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             raise NotImplementedError(
                 "The 'add_mesh' method is not available when using the 'tensorflow' "
@@ -1392,7 +1392,7 @@ class Logger:
             *args: All args to pass to the Summary/SummaryWriter object.
             **kwargs: All kwargs to pass to the Summary/SummaryWriter object.
         """
-        self.use_tensorboard = True  # Make sure SummaryWriter exists
+        self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
             global tf
             with self.tb_writer.as_default():
@@ -1583,7 +1583,7 @@ class EpochLogger(Logger):
                 counter if global step is not supplied.
         """
         for k, v in kwargs.items():
-            # Store variable values in epoch_dict and increase global step count
+            # Store variable values in epoch_dict and increase global step count.
             if not (k in self.epoch_dict.keys()):
                 self.epoch_dict[k] = []
                 self._step_count_dict[k] = 0
@@ -1592,19 +1592,19 @@ class EpochLogger(Logger):
             else:
                 self.epoch_dict[k].append(v)
 
-            # Increase the step count for all the keys
+            # Increase the step count for all the keys.
             # NOTE: This is done in such a way that two values of a given key do not
-            # get the same global step value assigned to them
+            # get the same global step value assigned to them.
             self._step_count_dict[k] = (
                 self._step_count_dict[k] + 1
                 if self._step_count_dict[k] + 1 >= self._global_step
                 else self._global_step
             )
 
-            # Check if a alias was given for the current parameter
+            # Check if a alias was given for the current parameter.
             var_name = k if k not in tb_aliases.keys() else tb_aliases[k]
 
-            # Write variable value to tensorboard
+            # Write variable value to tensorboard.
             tb_write_key = (
                 (tb_write[k] if k in tb_write.keys() else False)
                 if isinstance(tb_write, dict)
@@ -1613,7 +1613,7 @@ class EpochLogger(Logger):
             if tb_write_key:
                 global_step = (
                     global_step if global_step is not None else self._global_step
-                )  # Use internal counter if global_step is None
+                )  # Use internal counter if global_step is None.
                 self._write_to_tb(var_name, v, global_step=global_step)
 
     def log_to_tb(
@@ -1646,7 +1646,7 @@ class EpochLogger(Logger):
             global_step (int, optional): Global step value to record. Uses internal step
                 counter if global step is not supplied.
         """
-        if val is not None:  # When key and value are supplied use direct write
+        if val is not None:  # When key and value are supplied use direct write.
             super().log_to_tb(
                 keys,
                 val,
@@ -1654,10 +1654,10 @@ class EpochLogger(Logger):
                 tb_alias=tb_alias,
                 global_step=global_step,
             )
-        else:  # When only keys are supplied use internal storage
+        else:  # When only keys are supplied use internal storage.
             keys = [keys] if not isinstance(keys, list) else keys
             for key in keys:
-                if global_step is None:  # Retrieve global step if not supplied
+                if global_step is None:  # Retrieve global step if not supplied.
                     if self._n_table_dumps >= 1:
                         global_step_tmp = self._global_step
                     elif key in self.epoch_dict.keys():
@@ -1767,7 +1767,7 @@ class EpochLogger(Logger):
         self._n_table_dumps += 1
         self._tb_index_dict = {
             key: 0 for key in self._tb_index_dict.keys()
-        }  # Reset tensorboard logging index storage dict
+        }  # Reset tensorboard logging index storage dict.
 
     def get_stats(self, key):
         """Lets an algorithm ask the logger for mean/std/min/max of a diagnostic.

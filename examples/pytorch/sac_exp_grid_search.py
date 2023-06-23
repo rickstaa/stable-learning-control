@@ -19,10 +19,10 @@ import argparse
 import torch
 from stable_learning_control.control.utils.run_utils import ExperimentGrid
 
-# Import the RL agent you want to perform the grid search for
+# Import the RL agent you want to perform the grid search for.
 from stable_learning_control.control.algos.pytorch.sac.sac import sac
 
-# Script parametesr
+# Scriptparameters.
 ENV_NAME = "Oscillator-v1"  # The environment on which you want to train the agent.
 
 if __name__ == "__main__":
@@ -41,5 +41,5 @@ if __name__ == "__main__":
     eg.add("ac_kwargs:hidden_sizes", [(32,), (64, 64)], "hid")
     eg.add("ac_kwargs:activation", [torch.nn.ReLU, torch.nn.ReLU], "")
 
-    # Run the grid search
+    # Run the grid search.
     eg.run(sac, num_cpu=args.cpu)

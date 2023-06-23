@@ -17,10 +17,10 @@ from stable_learning_control.control.utils.test_policy import load_policy_and_en
 
 from stable_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 
-# Disturbance settings
+# Disturbance settings.
 # NOTE: In this example we add a noise disturbance to the action
 disturbance_type = "test1"
-disturbance_variant = "test"  # MAYBE REMOVE
+disturbance_variant = "test"  # TODO: MAYBE REMOVE.
 disturbance_range = {
     "mean": np.linspace(0.0, 0.0, num=4, dtype=np.float32),
     "std": np.linspace(0.0, 20.0, num=4, dtype=np.float32),
@@ -43,7 +43,7 @@ def noise_disturbance(mean, std):
 if __name__ == "__main__":  # noqa: C901
     import argparse
 
-    # Retrieve the policy you want to load
+    # Retrieve the policy you want to load.
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str, help="The path where the policy is stored")
     parser.add_argument(
@@ -119,7 +119,7 @@ if __name__ == "__main__":  # noqa: C901
     )
     args = parser.parse_args()
 
-    # Load policy and environment
+    # Load policy and environment.
     try:
         env, policy = load_policy_and_env(
             args.fpath, args.itr if args.itr >= 0 else "last"
@@ -134,17 +134,17 @@ if __name__ == "__main__":  # noqa: C901
         )
         sys.exit(0)
 
-    # Remove action clipping if present
+    # Remove action clipping if present.
     if hasattr(env.unwrapped, "_clipped_action"):
         env.unwrapped._clipped_action = False
 
-    # Setup logger
+    # Setup logger.
     output_dir = Path(args.fpath).joinpath("eval")
     logger = EpochLogger(
         verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
     )
 
-    # Set max episode length
+    # Set max episode length.
     if args.len is None:
         max_ep_len = env._max_episode_steps
     else:
@@ -181,7 +181,7 @@ if __name__ == "__main__":  # noqa: C901
     n_disturbance = 0
     disturbances_length = len(disturbance_range["mean"])
     soi_found, ref_found = True, True
-    supports_deterministic = True  # Only supported with gaussian algorithms
+    supports_deterministic = True  # Only supported with gaussian algorithms.
     log_to_std_out("Adding random observation noise.", type="info")
     for _ in range(0, disturbances_length):
         o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
@@ -199,9 +199,9 @@ if __name__ == "__main__":  # noqa: C901
             f"Disturbance {n_disturbance}: mean: {mean}, std: {std}", type="info"
         )
 
-        # Perform disturbed episodes
+        # Perform disturbed episodes.
         while n < args.episodes:
-            # Render env if requested
+            # Render env if requested.
             if args.render and not render_error:
                 try:
                     env.render()
@@ -217,7 +217,7 @@ if __name__ == "__main__":  # noqa: C901
                         type="warning",
                     )
 
-            # Retrieve action
+            # Retrieve action.
             if args.deterministic and supports_deterministic:
                 try:
                     a = policy.get_action(o, deterministic=args.deterministic)
@@ -243,7 +243,7 @@ if __name__ == "__main__":  # noqa: C901
             )  # NOTE: In this example we add a small random noise to the action
             o, r, d, info = env.step(a)
 
-            # Increment counters
+            # Increment counters.
             ep_ret += r
             ep_len += 1
             ################################################
@@ -275,7 +275,7 @@ if __name__ == "__main__":  # noqa: C901
                     type="warning",
                 )
 
-            # Store performance measurements
+            # Store performance measurements.
             if d or (ep_len == max_ep_len):
                 died = ep_len < max_ep_len
                 logger.store(EpRet=ep_ret, EpLen=ep_len, DeathRate=(float(died)))
@@ -284,24 +284,24 @@ if __name__ == "__main__":  # noqa: C901
                     % (n, ep_ret, ep_len, died)
                 )
 
-                # Store observations
+                # Store observations.
                 o_episode_df = pd.DataFrame(path["o"])
                 o_episode_df.insert(0, "step", range(0, ep_len))
                 o_episode_df = pd.melt(
                     o_episode_df,
                     id_vars="step",
                     var_name="observation",
-                )  # Flatten robustness_eval_df
+                )  # Flatten robustness_eval_df.
                 o_episodes_dfs.append(o_episode_df)
 
-                # Store episode rewards
+                # Store episode rewards.
                 r_episode_df = pd.DataFrame(
                     {"step": range(0, ep_len), "reward": path["r"]}
                 )
                 r_episode_df.insert(len(r_episode_df.columns), "episode", n)
                 r_episodes_dfs.append(r_episode_df)
 
-                # Store states of interest
+                # Store states of interest.
                 if soi_found:
                     soi_episode_df = pd.DataFrame(path["state_of_interest"])
                     soi_episode_df.insert(0, "step", range(0, ep_len))
@@ -310,10 +310,10 @@ if __name__ == "__main__":  # noqa: C901
                         id_vars="step",
                         var_name="state_of_interest",
                         value_name="error",
-                    )  # Flatten robustness_eval_df
+                    )  # Flatten robustness_eval_df.
                     soi_episodes_dfs.append(soi_episode_df)
 
-                # Store reference
+                # Store reference.
                 if ref_found:
                     ref_episode_df = pd.DataFrame(path["reference"])
                     ref_episode_df.insert(0, "step", range(0, ep_len))
@@ -321,10 +321,10 @@ if __name__ == "__main__":  # noqa: C901
                         ref_episode_df,
                         id_vars="step",
                         var_name="reference",
-                    )  # Flatten robustness_eval_df
+                    )  # Flatten robustness_eval_df.
                     ref_episodes_dfs.append(ref_episode_df)
 
-                # Increment counters and reset storage variables
+                # Increment counters and reset storage variables.
                 n += 1
                 o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
                 path = {
@@ -334,14 +334,14 @@ if __name__ == "__main__":  # noqa: C901
                     "state_of_interest": [],
                 }
 
-        # Print robustness evaluation diagnostics
+        # Print robustness evaluation diagnostics.
         logger.log_tabular("EpRet", with_min_and_max=True)
         logger.log_tabular("EpLen", average_only=True)
         logger.log_tabular("DeathRate")
         log_to_std_out("")
         logger.dump_tabular()
 
-        # Add extra disturbance information to the robustness eval robustness_eval_df
+        # Add extra disturbance information to the robustness eval robustness_eval_df.
         disturbance_label = (
             env.disturbance_info["label"]
             if (
@@ -383,7 +383,7 @@ if __name__ == "__main__":  # noqa: C901
         )
         ref_disturbances_dfs.append(ref_disturbance_df)
 
-        # Reset storage buckets and go to next disturbance
+        # Reset storage buckets and go to next disturbance.
         o_episodes_dfs = []
         r_episodes_dfs = []
         soi_episodes_dfs = []
@@ -396,7 +396,7 @@ if __name__ == "__main__":  # noqa: C901
         n_disturbance += 1
         ################################################
 
-    # Merge robustness evaluation information for all disturbances
+    # Merge robustness evaluation information for all disturbances.
     o_disturbances_df = pd.concat(o_disturbances_dfs, ignore_index=True)
     r_disturbances_df = pd.concat(r_disturbances_dfs, ignore_index=True)
     soi_disturbances_df = pd.concat(soi_disturbances_dfs, ignore_index=True)
@@ -431,7 +431,7 @@ if __name__ == "__main__":  # noqa: C901
         disturbance_variant,
     )
 
-    # Save robustness evaluation robustness_eval_df and return it to the user
+    # Save robustness evaluation robustness_eval_df and return it to the user.
     if args.save_result:
         results_path = logger.output_dir.joinpath("results.csv")
         logger.log(
@@ -450,7 +450,7 @@ if __name__ == "__main__":  # noqa: C901
     log_to_std_out("Showing robustness evaluation plots...", type="info")
     sns.set(style="darkgrid", font_scale=args.font_scale)
 
-    # Unpack required data from robustness_eval_df
+    # Unpack required data from robustness_eval_df.
     obs_found, rew_found, soi_found, ref_found = True, True, True, True
     o_disturbances_df, ref_disturbances_df = (
         pd.DataFrame(),
@@ -481,13 +481,13 @@ if __name__ == "__main__":  # noqa: C901
     else:
         ref_found = False
 
-    # Merge observations and references
+    # Merge observations and references.
     if obs_found:
         obs_df_tmp = o_disturbances_df.copy(deep=True)
         obs_df_tmp["signal"] = "obs_" + (obs_df_tmp["observation"] + 1).astype(str)
         obs_df_tmp.insert(len(obs_df_tmp.columns), "type", "observation")
 
-        # Retrieve the requested observations
+        # Retrieve the requested observations.
         observations = args.observations if hasattr(args, "observations") else None
         observations = validate_observations(observations, o_disturbances_df)
         observations = [obs - 1 for obs in observations]  # Humans count from 1
@@ -498,7 +498,7 @@ if __name__ == "__main__":  # noqa: C901
         ref_df_tmp.insert(len(ref_df_tmp.columns), "type", "reference")
     obs_ref_df = pd.concat([obs_df_tmp, ref_df_tmp], ignore_index=True)
 
-    # Loop though all disturbances and plot the observations and references in one plot
+    # Loop though all disturbances and plot the observations and references in one plot.
     fig_title = "{} under several {}.".format(
         "Observation and reference"
         if all([obs_found, ref_found])
@@ -510,7 +510,7 @@ if __name__ == "__main__":  # noqa: C901
     obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"] = (
         obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"]
         + " (original)"
-    )  # Append original to original value
+    )  # Append original to original value.
     if not args.merged:
         num_plots = len(obs_ref_df.disturbance.unique())
         total_cols = 3
@@ -546,7 +546,7 @@ if __name__ == "__main__":  # noqa: C901
         ).set_title(fig_title)
     figs["observations"].append(fig)
 
-    # Plot mean cost
+    # Plot mean cost.
     if rew_found:
         fig = plt.figure(tight_layout=True)
         figs["costs"].append(fig)
@@ -557,7 +557,7 @@ if __name__ == "__main__":  # noqa: C901
                 r_disturbances_df["disturbance_index"] == 0, "disturbance"
             ]
             + " (original)"
-        )  # Append original to original value
+        )  # Append original to original value.
         sns.lineplot(
             data=r_disturbances_df, x="step", y="reward", ci="sd", hue="disturbance"
         ).set_title(
@@ -576,7 +576,7 @@ if __name__ == "__main__":  # noqa: C901
             type="warning",
         )
 
-    # Plot states of interest
+    # Plot states of interest.
     if soi_found:
         n_soi = soi_disturbances_df["state_of_interest"].max() + 1
         soi_disturbances_df.loc[
@@ -586,7 +586,7 @@ if __name__ == "__main__":  # noqa: C901
                 soi_disturbances_df["disturbance_index"] == 0, "disturbance"
             ]
             + " (original)"
-        )  # Append original to original value
+        )  # Append original to original value.
         for index in range(0, n_soi):
             fig = plt.figure(tight_layout=True)
             figs["states_of_interest"].append(fig)
@@ -614,7 +614,7 @@ if __name__ == "__main__":  # noqa: C901
             type="warning",
         )
 
-    # Save plots
+    # Save plots.
     if args.save_figs:
         figs_path = output_dir.joinpath("figures")
         figs_extension = (

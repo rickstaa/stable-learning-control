@@ -172,7 +172,7 @@ class TrajectoryBuffer:
                 type="warning",
             )
 
-        # Main buffers
+        # Main buffers.
         self.obs_buf = atleast_2d(
             np.zeros(combine_shapes(size, obs_dim), dtype=np.float32).squeeze()
         )
@@ -187,13 +187,13 @@ class TrajectoryBuffer:
         ).squeeze()
         self.done_buf = np.zeros(int(size), dtype=np.float32)
 
-        # Optional buffers
+        # Optional buffers.
         self.adv_buf = np.zeros(size, dtype=np.float32)
         self.ret_buf = np.zeros(size, dtype=np.float32)
         self.val_buf = np.zeros(size, dtype=np.float32)
         self.logp_buf = np.zeros(size, dtype=np.float32)
 
-        # Store buffer attributes
+        # Store buffer attributes.
         self.ptr, self.traj_ptr, self.n_traj, self._max_size = 0, 0, 0, size
         self.traj_ptrs = []
         self.traj_lengths = []
@@ -216,9 +216,9 @@ class TrajectoryBuffer:
             logp (numpy.ndarray, optional): The log probabilities of the actions.
                 Defaults to ``None``.
         """
-        assert self.ptr < self._max_size  # buffer has to have room so you can store
+        assert self.ptr < self._max_size  # buffer has to have room so you can store.
 
-        # Fill primary buffer
+        # Fill primary buffer.
         try:
             self.obs_buf[self.ptr] = obs
             self.obs_next_buf[self.ptr] = next_obs
@@ -254,7 +254,7 @@ class TrajectoryBuffer:
             )
             raise ValueError(error_msg)
 
-        # Fill optional buffer
+        # Fill optional buffer.
         if val:
             try:
                 self.val_buf[self.ptr] = val
@@ -276,7 +276,7 @@ class TrajectoryBuffer:
                 raise ValueError(error_msg)
             self._contains_logp = True
 
-        # Increase buffer pointers
+        # Increase buffer pointers.
         self.ptr += 1
 
     def finish_path(self, last_val=0):
@@ -300,7 +300,7 @@ class TrajectoryBuffer:
 
         # Calculate the advantage and rewards-to-go if buffer contains vals
         if self._contains_vals:
-            # Get the current trajectory
+            # Get the current trajectory.
             path_slice = slice(self.traj_ptr, self.ptr)
             rews = np.append(self.rew_buf[path_slice], last_val)
             vals = np.append(self.val_buf[path_slice], last_val)
@@ -312,7 +312,7 @@ class TrajectoryBuffer:
             # the next line computes rewards-to-go, to be targets for the value function
             self.ret_buf[path_slice] = discount_cumsum(rews, self._gamma)[:-1]
 
-        # Store trajectory length and update trajectory pointers
+        # Store trajectory length and update trajectory pointers.
         self.traj_lengths.append(self.ptr - self.traj_ptr)
         self.traj_ptrs.append(self.traj_ptr)
         self.traj_ptr = self.ptr
@@ -337,10 +337,10 @@ class TrajectoryBuffer:
         Returns:
             dict: The trajectory buffer.
         """
-        if not self._preempt:  # Check if buffer was full
+        if not self._preempt:  # Check if buffer was full.
             assert self.ptr == self._max_size
 
-        # Remove incomplete trajectories
+        # Remove incomplete trajectories.
         if not self._incomplete and self.traj_ptr != self.ptr:
             if not self._incomplete_warn:
                 log_to_std_out(
@@ -353,7 +353,7 @@ class TrajectoryBuffer:
         else:
             buffer_end_ptr = self.ptr
 
-        # Remove trajectories that are to short
+        # Remove trajectories that are to short.
         if self.traj_lengths[-1] < self._min_traj_size:
             if not self._min_traj_size_warn:
                 log_to_std_out(
@@ -367,7 +367,7 @@ class TrajectoryBuffer:
             buffer_end_ptr = self.traj_ptr - self.traj_lengths[-1]
             self.traj_lengths = self.traj_lengths[:-1]
 
-        # Create trajectory buffer dictionary
+        # Create trajectory buffer dictionary.
         buff_slice = slice(0, buffer_end_ptr)
         if flat:
             data = dict(
@@ -396,9 +396,9 @@ class TrajectoryBuffer:
             if self._contains_logp:
                 data["lopg"] = np.split(self.logp_buf[buff_slice], self.traj_ptrs[1:])
 
-        # Reset buffer and traj indexes
+        # Reset buffer and traj indexes.
         self.ptr, self.traj_ptr, self.traj_ptrs, self.n_traj = 0, 0, [], 0
         self.traj_lengths = []
 
-        # Return experience tuple
+        # Return experience tuple.
         return data

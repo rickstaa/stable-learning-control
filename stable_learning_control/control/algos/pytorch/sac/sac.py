@@ -61,15 +61,15 @@ from stable_learning_control.utils.log_utils import (
     setup_logger_kwargs,
 )
 
-# Import ray tuner if installed
+# Import ray tuner if installed.
 tune = lazy_importer(module_name="ray.tune")
 
-# Script settings
+# Script settings.
 SCALE_LAMBDA_MIN_MAX = (
     0.0,
     1.0,
-)  # Range of lambda lagrance multiplier
-SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier
+)  # Range of lambda lagrance multiplier.
+SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier.
 STD_OUT_LOG_VARS_DEFAULT = [
     "Epoch",
     "TotalEnvInteracts",
@@ -203,7 +203,7 @@ class SAC(nn.Module):
             k: v for k, v in locals().items() if k not in ["self", "__class__", "env"]
         }
 
-        # Validate gymnasium env
+        # Validate gymnasium env.
         # NOTE: The current implementation only works with continuous spaces.
         if not is_gym_env(env):
             raise ValueError("Env must be a valid gymnasium environment.")
@@ -239,7 +239,7 @@ class SAC(nn.Module):
             type="info",
         )
 
-        # Store algorithm parameters
+        # Store algorithm parameters.
         self._act_dim = env.action_space.shape
         self._obs_dim = env.observation_space.shape
         self._device = retrieve_device(device)
@@ -256,7 +256,7 @@ class SAC(nn.Module):
         else:
             self._target_entropy = target_entropy
 
-        # Create variables for the Lagrance multipliers
+        # Create variables for the Lagrance multipliers.
         # NOTE: Clip at 1e-37 to prevent log_alpha/log_lambda from becoming -np.inf
         self.log_alpha = nn.Parameter(
             torch.tensor(np.log(1e-37 if alpha < 1e-37 else alpha), requires_grad=True)
@@ -279,7 +279,7 @@ class SAC(nn.Module):
         for p in self.ac_targ.parameters():
             p.requires_grad = False
 
-        # Create optimizers
+        # Create optimizers.
         # NOTE: We here optimize for log_alpha instead of alpha because it is more
         # numerically stable (see:
         # https://github.com/rail-berkeley/softlearning/issues/136)
@@ -350,7 +350,7 @@ class SAC(nn.Module):
                 o_
             )  # NOTE: Target actions coming from *current* policy
 
-            # Get target Q values based on optimization type
+            # Get target Q values based on optimization type.
             q1_pi_targ = self.ac_targ.Q1(o_, pi_)
             q2_pi_targ = self.ac_targ.Q2(o_, pi_)
             if self._opt_type.lower() == "minimize":
@@ -361,10 +361,10 @@ class SAC(nn.Module):
             else:
                 q_pi_targ = torch.min(
                     q1_pi_targ, q2_pi_targ
-                )  # Use min clipping to prevent overestimation bias
+                )  # Use min clipping to prevent overestimation bias.
             q_backup = r + self._gamma * (1 - d) * (q_pi_targ - self.alpha * logp_pi_)
 
-        # Retrieve the current Q values
+        # Retrieve the current Q values.
         q1 = self.ac.Q1(o, a)
         q2 = self.ac.Q2(o, a)
 
@@ -393,7 +393,7 @@ class SAC(nn.Module):
         # Retrieve log probabilities of batch observations based on *current* policy
         pi, logp_pi = self.ac.pi(o)
 
-        # Retrieve current Q values
+        # Retrieve current Q values.
         # NOTE: Actions come from *current* policy
         q1_pi = self.ac.Q1(o, pi)
         q2_pi = self.ac.Q2(o, pi)
@@ -428,7 +428,7 @@ class SAC(nn.Module):
         if self._adaptive_temperature:
             self._log_alpha_optimizer.zero_grad()
 
-            # Calculate alpha loss
+            # Calculate alpha loss.
             alpha_loss = -(
                 self.alpha * (logp_pi.detach() + self.target_entropy)
             ).mean()  # See Haarnoja eq. 17
@@ -467,7 +467,7 @@ class SAC(nn.Module):
         except Exception as e:
             raise Exception("SAC model could not be saved.") from e
 
-        # Save additional information
+        # Save additional information.
         save_info = {
             "alg_name": self.__class__.__name__,
             "setup_kwargs": self._setup_kwargs,
@@ -612,7 +612,7 @@ class SAC(nn.Module):
         state_dict = super().state_dict()
         state_dict[
             "alg_name"
-        ] = self.__class__.__name__  # Save algorithm name state dict
+        ] = self.__class__.__name__  # Save algorithm name state dict.
         return state_dict
 
     def bound_lr(self, lr_a_final=None, lr_c_final=None, lr_alpha_final=None):
@@ -895,7 +895,7 @@ def sac(  # noqa: C901
 
     env = env_fn()
 
-    # Validate gymnasium env
+    # Validate gymnasium env.
     # NOTE: The current implementation only works with continuous spaces.
     if not is_gym_env(env):
         raise ValueError("Env must be a valid gymnasium environment.")
@@ -941,9 +941,9 @@ def sac(  # noqa: C901
     hyper_paramet_dict = {
         k: v for k, v in locals().items() if k not in ["logger"]
     }  # Retrieve hyperparameters (Ignore logger object)
-    logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger
+    logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger.
 
-    # Retrieve max episode length
+    # Retrieve max episode length.
     if max_ep_len is None:
         max_ep_len = env.env._max_episode_steps
     else:
@@ -964,7 +964,7 @@ def sac(  # noqa: C901
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = SoftActorCritic if actor_critic is None else actor_critic
 
-    # Set random seed for reproducible results
+    # Set random seed for reproducible results.
     if seed is not None:
         os.environ["PYTHONHASHSEED"] = str(seed)
         torch.manual_seed(seed)
@@ -986,7 +986,7 @@ def sac(  # noqa: C901
         device,
     )
 
-    # Restore policy if supplied
+    # Restore policy if supplied.
     if start_policy is not None:
         logger.log(f"Restoring model from '{start_policy}'.", type="info")
         try:
@@ -1009,7 +1009,7 @@ def sac(  # noqa: C901
         device=policy.device,
     )
 
-    # Count variables and print network structure
+    # Count variables and print network structure.
     var_counts = tuple(
         count_vars(module) for module in [policy.ac.pi, policy.ac.Q1, policy.ac.Q2]
     )
@@ -1020,7 +1020,7 @@ def sac(  # noqa: C901
     logger.log("Network structure:\n", type="info")
     logger.log(policy.ac, end="\n\n")
 
-    # Create learning rate schedulers
+    # Create learning rate schedulers.
     opt_schedulers = []
     lr_decay_ref_var = total_steps if lr_decay_ref.lower() == "steps" else epochs
     pi_opt_scheduler = get_lr_scheduler(
@@ -1038,7 +1038,7 @@ def sac(  # noqa: C901
 
     logger.setup_pytorch_saver(policy)
 
-    # Setup diagnostics tb_write dict and store initial learning rates
+    # Setup diagnostics tb_write dict and store initial learning rates.
     diag_tb_log_list = ["LossQ", "LossPi", "Alpha", "LossAlpha", "Entropy"]
     if use_tensorboard:
         logger.log_to_tb(
@@ -1073,7 +1073,7 @@ def sac(  # noqa: C901
         else:
             a = env.action_space.sample()
 
-        # Take step in the env
+        # Take step in the env.
         o_, r, d, truncated, _ = env.step(a)
         ep_ret += r
         ep_len += 1
@@ -1083,28 +1083,28 @@ def sac(  # noqa: C901
         # Make sure to update most recent observation!
         o = o_
 
-        # End of trajectory handling
+        # End of trajectory handling.
         if d or truncated:
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             o, _ = env.reset()
             ep_ret, ep_len = 0, 0
 
-        # Update handling
+        # Update handling.
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
-            # Step based learning rate decay
+            # Step based learning rate decay.
             if lr_decay_ref.lower() == "step":
                 for scheduler in opt_schedulers:
                     scheduler.step()
                 policy.bound_lr(
                     lr_a_final, lr_c_final, lr_a_final
-                )  # Make sure lr is bounded above the final lr
+                )  # Make sure lr is bounded above the final lr.
 
             for _ in range(steps_per_update):
                 batch = replay_buffer.sample_batch(batch_size)
                 update_diagnostics = policy.update(data=batch)
-                logger.store(**update_diagnostics)  # Log diagnostics
+                logger.store(**update_diagnostics)  # Log diagnostics.
 
-            # SGD batch tb logging
+            # SGD batch tb logging.
             if use_tensorboard and not tb_low_log_freq:
                 logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
 
@@ -1112,11 +1112,11 @@ def sac(  # noqa: C901
         if (t + 1) % steps_per_epoch == 0:
             epoch = (t + 1) // steps_per_epoch
 
-            # Save model
+            # Save model.
             if (epoch % save_freq == 0) or (epoch == epochs):
                 logger.save_state({"env": env}, itr=epoch)
 
-            # Test the performance of the deterministic version of the agent
+            # Test the performance of the deterministic version of the agent.
             if num_test_episodes != 0:
                 eps_ret, eps_len = test_agent(
                     policy, test_env, num_test_episodes, max_ep_len=max_ep_len
@@ -1127,15 +1127,15 @@ def sac(  # noqa: C901
                     extend=True,
                 )
 
-            # Epoch based learning rate decay
+            # Epoch based learning rate decay.
             if lr_decay_ref.lower() != "step":
                 for scheduler in opt_schedulers:
                     scheduler.step()
                 policy.bound_lr(
                     lr_a_final, lr_c_final, lr_a_final
-                )  # Make sure lr is bounded above the final lr
+                )  # Make sure lr is bounded above the final lr.
 
-            # Log performance measure to ray tuning
+            # Log performance measure to ray tuning.
             # NOTE: Only executed when the ray tuner invokes the script
             if hasattr(tune, "session") and tune.session._session is not None:
                 mean_ep_ret = logger.get_stats("EpRet")
@@ -1144,7 +1144,7 @@ def sac(  # noqa: C901
                     mean_ep_ret=mean_ep_ret[0], epoch=epoch, mean_ep_len=mean_ep_len[0]
                 )
 
-            # Log info about epoch
+            # Log info about epoch.
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("TotalEnvInteracts", t)
             logger.log_tabular(
@@ -1443,7 +1443,7 @@ if __name__ == "__main__":
         ),
     )
 
-    # Parse logger related arguments
+    # Parse logger related arguments.
     parser.add_argument(
         "--exp_name",
         type=str,
@@ -1502,7 +1502,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # Setup actor critic arguments
+    # Setup actor critic arguments.
     output_activation = {}
     output_activation["actor"] = safer_eval(args.act_out_a, backend="torch")
     output_activation["critic"] = safer_eval(args.act_out_c, backend="torch")
@@ -1518,7 +1518,7 @@ if __name__ == "__main__":
         output_activation=output_activation,
     )
 
-    # Setup output dir for logger and return output kwargs
+    # Setup output dir for logger and return output kwargs.
     logger_kwargs = setup_logger_kwargs(
         args.exp_name,
         args.seed,

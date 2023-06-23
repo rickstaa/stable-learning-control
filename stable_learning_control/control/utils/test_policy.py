@@ -143,7 +143,7 @@ def load_policy_and_env(fpath, itr="last"):
             )
         )
 
-    # Retrieve model path and backend
+    # Retrieve model path and backend.
     fpath, backend = _retrieve_model_folder(fpath)
 
     if itr != "last":
@@ -152,7 +152,7 @@ def load_policy_and_env(fpath, itr="last"):
         )
         itr = "%d" % itr
 
-    # try to load environment from save
+    # try to load environment from save.
     # NOTE: Sometimes this will fail because the environment could not be pickled.
     try:
         state = joblib.load(Path(fpath).parent.joinpath("vars.pkl"))
@@ -169,7 +169,7 @@ def load_policy_and_env(fpath, itr="last"):
             )
         ) from e
 
-    # load the get_action function
+    # load the get_action function.
     try:
         if backend == "tf":
             policy = load_tf_policy(fpath, env=env, itr=itr)
@@ -205,11 +205,11 @@ def load_tf_policy(fpath, env, itr="last"):
         model_path = _retrieve_iter_folder(fpath, itr)
     else:
         model_path = fpath
-    tf = import_tf()  # Import tf if installed otherwise throw warning
+    tf = import_tf()  # Import tf if installed otherwise throw warning.
     print("\n")
     log_to_std_out("Loading model from '%s'.\n\n" % fpath, type="info")
 
-    # Retrieve get_action method
+    # Retrieve get_action method.
     save_info = load_from_json(Path(fpath).joinpath("save_info.json"))
     import stable_learning_control.control.algos.tf2 as tf2_algos
 
@@ -218,7 +218,7 @@ def load_tf_policy(fpath, env, itr="last"):
     except KeyError:
         ac_kwargs = {}
     model = getattr(tf2_algos, save_info["alg_name"])(env=env, **ac_kwargs)
-    latest = tf.train.latest_checkpoint(model_path)  # Restore latest checkpoint
+    latest = tf.train.latest_checkpoint(model_path)  # Restore latest checkpoint.
     model.load_weights(latest)
 
     return model
@@ -246,7 +246,7 @@ def load_pytorch_policy(fpath, env, itr="last"):
     print("\n")
     log_to_std_out("Loading model from '%s'.\n\n" % model_file, type="info")
 
-    # Retrieve get_action method
+    # Retrieve get_action method.
     save_info = load_from_json(Path(fpath).joinpath("save_info.json"))
     import stable_learning_control.control.algos.pytorch as torch_algos
 
@@ -256,7 +256,7 @@ def load_pytorch_policy(fpath, env, itr="last"):
     except KeyError:
         ac_kwargs = {}
     model = getattr(torch_algos, save_info["alg_name"])(env=env, **ac_kwargs)
-    model.load_state_dict(model_data)  # Retore model parameters
+    model.load_state_dict(model_data)  # Retore model parameters.
 
     return model
 
@@ -290,10 +290,10 @@ def run_policy(
 
     logger = EpochLogger(verbose_fmt="table")
     o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
-    supports_deterministic = True  # Only supported with gaussian algorithms
+    supports_deterministic = True  # Only supported with gaussian algorithms.
     render_error = False
     while n < num_episodes:
-        # Render env if requested
+        # Render env if requested.
         if render and not render_error:
             try:
                 env.render()
@@ -308,7 +308,7 @@ def run_policy(
                     type="warning",
                 )
 
-        # Retrieve action
+        # Retrieve action.
         if deterministic and supports_deterministic:
             try:
                 a = policy.get_action(o, deterministic=deterministic)
@@ -324,7 +324,7 @@ def run_policy(
         else:
             a = policy.get_action(o)
 
-        # Perform action in the environment and store result
+        # Perform action in the environment and store result.
         o, r, d, _ = env.step(a)
         ep_ret += r
         ep_len += 1
