@@ -60,7 +60,7 @@ class QCritic(nn.Module):
                 The tensor containing the Q values of the input observations and
                 actions.
         """
-        # Make sure the observations and actions are on the right device
+        # Make sure the observations and actions are on the right device.
         self._obs_same_device = obs.device != self.Q[0].weight.device
         self._act_same_device = act.device != self.Q[0].weight.device
         if self._obs_same_device or self._act_same_device:

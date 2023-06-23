@@ -23,7 +23,7 @@ def test_agent(policy, env, num_episodes, max_ep_len=None):
         o, _ = env.reset()
         d, truncated, ep_ret, ep_len = False, False, 0, 0
         while not (d or truncated):
-            # Take deterministic actions at test time
+            # Take deterministic actions at test time.
             o, r, d, truncated, _ = env.step(policy.get_action(o, True))
             ep_ret += r
             ep_len += 1

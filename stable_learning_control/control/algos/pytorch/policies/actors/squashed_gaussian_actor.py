@@ -89,7 +89,7 @@ class SquashedGaussianActor(nn.Module):
                 - pi_action (:obj:`torch.Tensor`): The actions given by the policy.
                 - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.
         """  # noqa: E501
-        # Make sure the observations are on the right device
+        # Make sure the observations are on the right device.
         if obs.device != self.net[0].weight.device:
             if not self.__device_warning_logged:
                 device_warn_msg = (
@@ -109,7 +109,7 @@ class SquashedGaussianActor(nn.Module):
                 self.__device_warning_logged = True
             obs = obs.to(self.net[0].weight.device)
 
-        # Calculate mean action and standard deviation
+        # Calculate mean action and standard deviation.
         net_out = self.net(obs)
         mu = self.mu_layer(net_out)
         log_std = self.log_std_layer(net_out)
@@ -124,7 +124,7 @@ class SquashedGaussianActor(nn.Module):
         else:
             pi_action = (
                 pi_distribution.rsample()
-            )  # Sample while using the parameterization trick
+            )  # Sample while using the parameterization trick.
 
         # Compute logprob from Gaussian, and then apply correction for Tanh squashing.
         if with_logprob:
@@ -141,10 +141,10 @@ class SquashedGaussianActor(nn.Module):
         else:
             logp_pi = None
 
-        # Calculate scaled action and return the action and its log probability
+        # Calculate scaled action and return the action and its log probability.
         pi_action = torch.tanh(pi_action)  # Squash gaussian to be between -1 and 1
 
-        # Clamp the actions such that they are in range of the environment
+        # Clamp the actions such that they are in range of the environment.
         if self.act_limits is not None:
             pi_action = clamp(
                 pi_action,

@@ -113,7 +113,7 @@ class SquashedGaussianActor(tf.keras.Model):
                 - pi_action (:obj:`tensorflow.Tensor`): The actions given by the policy.
                 - logp_pi (:obj:`tensorflow.Tensor`): The log probabilities of each of these actions.
         """  # noqa: E501
-        # Calculate mean action and standard deviation
+        # Calculate mean action and standard deviation.
         net_out = self.net(obs)
         mu = self.mu_layer(net_out)
         log_std = self.log_std_layer(net_out)
@@ -127,19 +127,19 @@ class SquashedGaussianActor(tf.keras.Model):
         if deterministic:
             pi_action = mu  # determinestic action used at test time.
         else:
-            # Sample from the normal distribution and calculate the action
+            # Sample from the normal distribution and calculate the action.
             batch_size = tf.shape(input=obs)[0]
             epsilon = self._normal_distribution.sample(batch_size)
             pi_action = affine_bijector.forward(
                 epsilon
-            )  # Transform action as it was sampled from the policy distribution
+            )  # Transform action as it was sampled from the policy distribution.
 
         # Squash the action between (-1 and 1)
         pi_action = self._squash_bijector.forward(pi_action)
 
         # Compute logprob from Gaussian, and then apply correction for Tanh squashing.
         if with_logprob:
-            # Transform base_distribution to the policy distribution
+            # Transform base_distribution to the policy distribution.
             reparm_trick_bijector = tfp.bijectors.Chain(
                 (self._squash_bijector, affine_bijector)
             )
@@ -150,7 +150,7 @@ class SquashedGaussianActor(tf.keras.Model):
         else:
             logp_pi = None
 
-        # Clamp the actions such that they are in range of the environment
+        # Clamp the actions such that they are in range of the environment.
         if self.act_limits is not None:
             pi_action = clamp(
                 pi_action,

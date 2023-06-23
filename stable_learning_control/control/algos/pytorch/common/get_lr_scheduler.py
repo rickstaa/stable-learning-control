@@ -102,4 +102,4 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
     else:
         return torch.optim.lr_scheduler.LambdaLR(
             optimizer, lr_lambda=lambda step: np.longdouble(1.0)
-        )  # Return a constant function
+        )  # Return a constant function.

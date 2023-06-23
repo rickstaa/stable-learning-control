@@ -53,7 +53,7 @@ def mlp(sizes, activation, output_activation=nn.Identity):
     Returns:
         torch.nn.Sequential: The multi-layered perceptron.
     """  # noqa: E501
-    # Try to retrieve the activation function if a string was supplied
+    # Try to retrieve the activation function if a string was supplied.
     if isinstance(activation, str):
         activation = get_activation_function(activation, backend="torch")
     if isinstance(output_activation, str):

@@ -67,7 +67,7 @@ def validate_gym_env(arg_dict):
         AssertError: Raised when a environment is supplied that is not a valid gymnasium
             environment.
     """
-    # Import gymnasium environments
+    # Import gymnasium environments.
     # import gymnasium as gym
 
     # Import environment configuration file. This file can be used to inject

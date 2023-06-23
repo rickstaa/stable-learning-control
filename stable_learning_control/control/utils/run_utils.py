@@ -71,10 +71,10 @@ def call_experiment(
         datestamp (bool): Whether a datestamp should be added to the experiment name.
         kwargs: All kwargs to pass to thunk.
     """
-    # Determine number of CPU cores to run on
+    # Determine number of CPU cores to run on.
     num_cpu = psutil.cpu_count(logical=False) if num_cpu == "auto" else num_cpu
 
-    # Send random seed to thunk
+    # Send random seed to thunk.
     kwargs["seed"] = seed
 
     # Be friendly and print out your kwargs, so we all know what's up
@@ -85,7 +85,7 @@ def call_experiment(
     print(json.dumps(kwargs_json, separators=(",", ":\t"), indent=4, sort_keys=True))
     print("\n")
 
-    # Set up logger output directory
+    # Set up logger output directory.
     if "logger_kwargs" not in kwargs:
         kwargs["logger_kwargs"] = setup_logger_kwargs(
             exp_name, seed, data_dir, datestamp
@@ -101,7 +101,7 @@ def call_experiment(
             **kwargs["logger_kwargs"],
         )
 
-    # Force algorithm default if verbose_fmt is line
+    # Force algorithm default if verbose_fmt is line.
     # NOTE: Done since otherwise the stdout gets cluttered.
     if kwargs["logger_kwargs"]["verbose_fmt"] == "line":
         kwargs["logger_kwargs"]["verbose_vars"] = None
@@ -110,7 +110,7 @@ def call_experiment(
         """Setup environment used in the experiment."""
         # Make 'env_fn' from 'env_name'
         if "env_name" in kwargs:
-            # Import gymnasium environments
+            # Import gymnasium environments.
             import gymnasium as gym
 
             # Import environment configuration file. This file can be used to inject
@@ -129,13 +129,13 @@ def call_experiment(
             env_kwargs = kwargs.pop("env_kwargs", {})
             kwargs["env_fn"] = lambda: gym.make(env_name, **env_kwargs)
 
-        # Fork into multiple processes
+        # Fork into multiple processes.
         mpi_fork(num_cpu)
 
-        # Run thunk
+        # Run thunk.
         thunk(**kwargs)
 
-    # Prepare to launch a script to run the experiment
+    # Prepare to launch a script to run the experiment.
     pickled_thunk = cloudpickle.dumps(thunk_plus)
     encoded_thunk = base64.b64encode(zlib.compress(pickled_thunk)).decode("utf-8")
 
@@ -374,10 +374,10 @@ class ExperimentGrid:
                 param_name = sh if sh is not None else k
                 param_name = valid_str(param_name)
 
-                # Get variant value for parameter k
+                # Get variant value for parameter k.
                 variant_val = get_val(variant, k)
 
-                # Append to name
+                # Append to name.
                 if all_bools(v):
                     # If this is a param which only takes boolean values,
                     # only include in the name if it's True for this variant.

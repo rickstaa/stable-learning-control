@@ -170,7 +170,7 @@ def run_disturbed_policy(  # noqa: C901
         verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
     )
 
-    # Increase action space
+    # Increase action space.
     # NOTE: Needed to prevent the disturbance from being clipped by the action space.
     env.unwrapped.action_space.high = np.array(
         [np.finfo(np.float32).max for item in env.unwrapped.action_space.high]
@@ -179,7 +179,7 @@ def run_disturbed_policy(  # noqa: C901
         [np.finfo(np.float32).min for item in env.unwrapped.action_space.low]
     )
 
-    # Increase max episode length if requested
+    # Increase max episode length if requested.
     if max_ep_len is None:
         max_ep_len = env._max_episode_steps
     else:
@@ -195,7 +195,7 @@ def run_disturbed_policy(  # noqa: C901
             )
             env._max_episode_steps = max_ep_len
 
-    # Try to retrieve default type and variant if not supplied
+    # Try to retrieve default type and variant if not supplied.
     if disturbance_type is None:
         if hasattr(env.unwrapped, "_disturber_cfg"):
             if "default_type" in env.unwrapped._disturber_cfg.keys():
@@ -247,14 +247,14 @@ def run_disturbed_policy(  # noqa: C901
         env.disturbance_info["type"]
         if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys()
         else disturbance_type
-    )  # Retrieve used disturbance type
+    )  # Retrieve used disturbance type.
     disturbance_variant = (
         env.disturbance_info["variant"]
         if hasattr(env, "disturbance_info") and "variant" in env.disturbance_info.keys()
         else disturbance_variant
-    )  # Retrieve used disturbance variant
+    )  # Retrieve used disturbance variant.
 
-    # Loop though all disturbances till disturber is done
+    # Loop though all disturbances till disturber is done.
     logger.log("Starting robustness evaluation...", type="info")
     render_error = False
     path = {
@@ -272,11 +272,11 @@ def run_disturbed_policy(  # noqa: C901
     ) = ([], [], [], [])
     n_disturbance = 0
     soi_found, ref_found = True, True
-    supports_deterministic = True  # Only supported with gaussian algorithms
+    supports_deterministic = True  # Only supported with gaussian algorithms.
     while not env.disturber_done:
         o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
         while n < num_episodes:
-            # Render env if requested
+            # Render env if requested.
             if render and not render_error:
                 try:
                     env.render()
@@ -292,7 +292,7 @@ def run_disturbed_policy(  # noqa: C901
                         type="warning",
                     )
 
-            # Retrieve action
+            # Retrieve action.
             if deterministic and supports_deterministic:
                 try:
                     a = policy.get_action(o, deterministic=deterministic)
@@ -343,7 +343,7 @@ def run_disturbed_policy(  # noqa: C901
                     type="warning",
                 )
 
-            # Store performance measurements
+            # Store performance measurements.
             if d or (ep_len == max_ep_len):
                 died = ep_len < max_ep_len
                 logger.store(EpRet=ep_ret, EpLen=ep_len, DeathRate=(float(died)))
@@ -352,24 +352,24 @@ def run_disturbed_policy(  # noqa: C901
                     % (n, ep_ret, ep_len, died)
                 )
 
-                # Store observations
+                # Store observations.
                 o_episode_df = pd.DataFrame(path["o"])
                 o_episode_df.insert(0, "step", range(0, ep_len))
                 o_episode_df = pd.melt(
                     o_episode_df,
                     id_vars="step",
                     var_name="observation",
-                )  # Flatten dataframe
+                )  # Flatten dataframe.
                 o_episodes_dfs.append(o_episode_df)
 
-                # Store episode rewards
+                # Store episode rewards.
                 r_episode_df = pd.DataFrame(
                     {"step": range(0, ep_len), "reward": path["r"]}
                 )
                 r_episode_df.insert(len(r_episode_df.columns), "episode", n)
                 r_episodes_dfs.append(r_episode_df)
 
-                # Store states of interest
+                # Store states of interest.
                 if soi_found:
                     soi_episode_df = pd.DataFrame(path["state_of_interest"])
                     soi_episode_df.insert(0, "step", range(0, ep_len))
@@ -378,10 +378,10 @@ def run_disturbed_policy(  # noqa: C901
                         id_vars="step",
                         var_name="state_of_interest",
                         value_name="error",
-                    )  # Flatten dataframe
+                    )  # Flatten dataframe.
                     soi_episodes_dfs.append(soi_episode_df)
 
-                # Store reference
+                # Store reference.
                 if ref_found:
                     ref_episode_df = pd.DataFrame(path["reference"])
                     ref_episode_df.insert(0, "step", range(0, ep_len))
@@ -389,10 +389,10 @@ def run_disturbed_policy(  # noqa: C901
                         ref_episode_df,
                         id_vars="step",
                         var_name="reference",
-                    )  # Flatten dataframe
+                    )  # Flatten dataframe.
                     ref_episodes_dfs.append(ref_episode_df)
 
-                # Increment counters and reset storage variables
+                # Increment counters and reset storage variables.
                 n += 1
                 o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
                 path = {
@@ -402,7 +402,7 @@ def run_disturbed_policy(  # noqa: C901
                     "state_of_interest": [],
                 }
 
-        # Print robustness evaluation diagnostics
+        # Print robustness evaluation diagnostics.
         if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys():
             logger.log_tabular(
                 "DisturbanceType",
@@ -441,7 +441,7 @@ def run_disturbed_policy(  # noqa: C901
         log_to_std_out("")
         logger.dump_tabular()
 
-        # Add extra disturbance information to the robustness eval dataframe
+        # Add extra disturbance information to the robustness eval dataframe.
         disturbance_label = (
             env.disturbance_info["label"]
             if (
@@ -483,7 +483,7 @@ def run_disturbed_policy(  # noqa: C901
         )
         ref_disturbances_dfs.append(ref_disturbance_df)
 
-        # Reset storage buckets and go to next disturbance
+        # Reset storage buckets and go to next disturbance.
         o_episodes_dfs = []
         r_episodes_dfs = []
         soi_episodes_dfs = []
@@ -491,7 +491,7 @@ def run_disturbed_policy(  # noqa: C901
         env.next_disturbance()
         n_disturbance += 1
 
-    # Merge robustness evaluation information for all disturbances
+    # Merge robustness evaluation information for all disturbances.
     o_disturbances_df = pd.concat(o_disturbances_dfs, ignore_index=True)
     r_disturbances_df = pd.concat(r_disturbances_dfs, ignore_index=True)
     soi_disturbances_df = pd.concat(soi_disturbances_dfs, ignore_index=True)
@@ -526,7 +526,7 @@ def run_disturbed_policy(  # noqa: C901
         disturbance_variant,
     )
 
-    # Save robustness evaluation dataframe and return it to the user
+    # Save robustness evaluation dataframe and return it to the user.
     if save_result:
         results_path = logger.output_dir.joinpath("results.csv")
         logger.log(
@@ -583,7 +583,7 @@ def plot_robustness_results(  # noqa: C901
             else None
         )
 
-    # Unpack required data from dataframe
+    # Unpack required data from dataframe.
     obs_found, rew_found, soi_found, ref_found = True, True, True, True
     o_disturbances_df, ref_disturbances_df = pd.DataFrame(), pd.DataFrame()
     if "observation" in dataframe["variable"].unique():
@@ -611,13 +611,13 @@ def plot_robustness_results(  # noqa: C901
     else:
         ref_found = False
 
-    # Merge observations and references
+    # Merge observations and references.
     if obs_found:
         obs_df_tmp = o_disturbances_df.copy(deep=True)
         obs_df_tmp["signal"] = "obs_" + (obs_df_tmp["observation"] + 1).astype(str)
         obs_df_tmp.insert(len(obs_df_tmp.columns), "type", "observation")
 
-        # Retrieve the requested observations
+        # Retrieve the requested observations.
         observations = validate_observations(observations, o_disturbances_df)
         observations = [obs - 1 for obs in observations]  # Humans count from 1
         obs_df_tmp = obs_df_tmp.query(f"observation in {observations}")
@@ -627,7 +627,7 @@ def plot_robustness_results(  # noqa: C901
         ref_df_tmp.insert(len(ref_df_tmp.columns), "type", "reference")
     obs_ref_df = pd.concat([obs_df_tmp, ref_df_tmp], ignore_index=True)
 
-    # Loop though all disturbances and plot the observations and references in one plot
+    # Loop though all disturbances and plot the observations and references in one plot.
     fig_title = "{} under several {}{}.".format(
         "Observation and reference"
         if all([obs_found, ref_found])
@@ -640,7 +640,7 @@ def plot_robustness_results(  # noqa: C901
     obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"] = (
         obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"]
         + " (original)"
-    )  # Append original to original value
+    )  # Append original to original value.
     if not merged:
         num_plots = len(obs_ref_df.disturbance.unique())
         total_cols = 3
@@ -676,7 +676,7 @@ def plot_robustness_results(  # noqa: C901
         ).set_title(fig_title)
     figs["observations"].append(fig)
 
-    # Plot mean cost
+    # Plot mean cost.
     if rew_found:
         fig = plt.figure(tight_layout=True)
         figs["costs"].append(fig)
@@ -687,7 +687,7 @@ def plot_robustness_results(  # noqa: C901
                 r_disturbances_df["disturbance_index"] == 0, "disturbance"
             ]
             + " (original)"
-        )  # Append original to original value
+        )  # Append original to original value.
         sns.lineplot(
             data=r_disturbances_df, x="step", y="reward", ci="sd", hue="disturbance"
         ).set_title(
@@ -707,7 +707,7 @@ def plot_robustness_results(  # noqa: C901
             type="warning",
         )
 
-    # Plot states of interest
+    # Plot states of interest.
     if soi_found:
         n_soi = soi_disturbances_df["state_of_interest"].max() + 1
         soi_disturbances_df.loc[
@@ -717,7 +717,7 @@ def plot_robustness_results(  # noqa: C901
                 soi_disturbances_df["disturbance_index"] == 0, "disturbance"
             ]
             + " (original)"
-        )  # Append original to original value
+        )  # Append original to original value.
         for index in range(0, n_soi):
             fig = plt.figure(tight_layout=True)
             figs["states_of_interest"].append(fig)
@@ -746,7 +746,7 @@ def plot_robustness_results(  # noqa: C901
             type="warning",
         )
 
-    # Save plots
+    # Save plots.
     if save_figs:
         figs_path = output_dir.joinpath("figures")
         figs_extension = figs_fmt[1:] if figs_fmt.startswith(".") else figs_fmt
@@ -901,10 +901,10 @@ if __name__ == "__main__":  # noqa: C901
     )
     args = parser.parse_args()
 
-    # Load policy and environment
+    # Load policy and environment.
     env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
 
-    # List d_type or d_variant if requested
+    # List d_type or d_variant if requested.
     if args.list_disturbance_types or args.list_disturbance_variants:
         if hasattr(env.unwrapped, "_disturber_cfg"):
             if args.list_disturbance_types:
@@ -981,11 +981,11 @@ if __name__ == "__main__":  # noqa: C901
             log_to_std_out(friendly_err(error_msg))
         sys.exit()
 
-    # Retrieve output_dir
+    # Retrieve output_dir.
     if not args.data_dir:
         args.data_dir = args.fpath
 
-    # Perform robustness evaluation
+    # Perform robustness evaluation.
     run_results_df = run_disturbed_policy(
         env,
         policy,

@@ -44,7 +44,7 @@ class ReplayBuffer(ReplayBuffer):
             super().sample_batch(*args, **kwargs),
             dtype=torch.float32,
             device=self.device,
-        )  # Make sure output is a torch tensor
+        )  # Make sure output is a torch tensor.
 
 
 class TrajectoryBuffer(TrajectoryBuffer):
@@ -84,4 +84,4 @@ class TrajectoryBuffer(TrajectoryBuffer):
         """
         return np_to_torch(
             super().get(*args, **kwargs), dtype=torch.float32, device=self.device
-        )  # Make sure output is a torch tensor
+        )  # Make sure output is a torch tensor.

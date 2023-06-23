@@ -48,4 +48,4 @@ def get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps):
 
         return lr_scheduler
     else:
-        return lambda step: lr_start  # Return a constant learning rate
+        return lambda step: lr_start  # Return a constant learning rate.

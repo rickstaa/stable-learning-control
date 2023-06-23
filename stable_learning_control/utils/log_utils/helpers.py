@@ -57,7 +57,7 @@ def colorize(string, color, bold=False, highlight=False):
     Returns:
         str: Colorized string.
     """
-    if color:  # If not empty
+    if color:  # If not empty.
         return gym_colorize(string, color, bold, highlight)
     else:
         return string
@@ -172,10 +172,10 @@ def setup_logger_kwargs(
             A dict containing output_dir and exp_name.
     """
 
-    # Datestamp forcing
+    # Datestamp forcing.
     datestamp = datestamp or FORCE_DATESTAMP
 
-    # Make base path
+    # Make base path.
     ymd_time = time.strftime("%Y-%m-%d_") if datestamp else ""
     relpath = "".join([ymd_time, exp_name])
 

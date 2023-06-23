@@ -11,7 +11,7 @@ Example:
 
     .. code-block:: python
 
-        # Import environments you want to use
+        # Import environments you want to use.
         import custom_environment_1
         import custom_environment_2
 """  # noqa: E501

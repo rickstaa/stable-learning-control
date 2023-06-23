@@ -154,7 +154,7 @@ def mpi_statistics_scalar(x, with_min_and_max=False):
     mean = global_sum / global_n
 
     global_sum_sq = mpi_sum(np.sum((x - mean) ** 2))
-    std = np.sqrt(global_sum_sq / global_n)  # compute global std
+    std = np.sqrt(global_sum_sq / global_n)  # compute global std.
 
     if with_min_and_max:
         global_min = mpi_op(np.min(x) if len(x) > 0 else np.inf, op=MPI.MIN)
