@@ -1,7 +1,6 @@
 """A set of functions that can be used to see a algorithm perform in the environment
 it was trained on.
 """
-
 import glob
 import os
 import os.path as osp

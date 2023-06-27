@@ -1,11 +1,10 @@
 """This module contains several replay buffers that are used in multiple Pytorch and
 Tensorflow algorithms.
 """
-
 import numpy as np
+
 from stable_learning_control.common.helpers import atleast_2d, combine_shapes
 from stable_learning_control.control.common.helpers import discount_cumsum
-
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 
@@ -131,6 +130,10 @@ class TrajectoryBuffer:
         traj_ptr (int): The start index of the current trajectory.
         traj_ptrs (list): The start indexes of each trajectory.
         n_traj (int): The number of trajectories currently stored in the buffer.
+
+    .. warning::
+        This buffer has not be rigorously tested and should therefore still be regarded
+        as experimental.
     """
 
     def __init__(
@@ -198,7 +201,7 @@ class TrajectoryBuffer:
         self.traj_ptrs = []
         self.traj_lengths = []
         self._gamma, self._lam = gamma, lam
-        self._contains_vals, self._contains_logp = False, False
+        self._contains_vals, self._contains_logp = True, False
         self._preempt = preempt
         self._min_traj_size, self._min_traj_size_warn = min_trajectory_size, False
         self._incomplete, self._incomplete_warn = incomplete, False
@@ -329,8 +332,8 @@ class TrajectoryBuffer:
                 concatenated). Defaults to ``False``.
 
         .. note:
-            If you set flat to `True` all the trajectories will be concatenated into one
-            array. You can use the :attr:`~TrajectoryBuffer.traj_lengths` or
+            If you set flat to ``True`` all the trajectories will be concatenated into
+            one array. You can use the :attr:`~TrajectoryBuffer.traj_lengths` or
             :attr:`traj_ptrs` attributes to split this array into distinct
             trajectories.
 

@@ -1,10 +1,10 @@
 """Several logging related helper functions.
 """
-
 import os.path as osp
 import time
 
 from gymnasium.utils import colorize as gym_colorize
+
 from stable_learning_control.user_config import (
     DEFAULT_DATA_DIR,
     DEFAULT_STD_OUT_TYPE,

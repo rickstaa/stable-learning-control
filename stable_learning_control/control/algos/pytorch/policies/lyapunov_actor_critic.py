@@ -5,16 +5,15 @@ Lyapunov actor critic policy
 This module contains a Pytorch implementation of the Lyapunov Actor Critic policy of
 `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
-
 import torch
 import torch.nn as nn
+
 from stable_learning_control.common.helpers import strict_dict_update
 # fmt: off
 from stable_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import \
     SquashedGaussianActor  # noqa: E501
 from stable_learning_control.control.algos.pytorch.policies.critics.L_critic import \
     LCritic  # noqa: E501
-
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 # fmt: on

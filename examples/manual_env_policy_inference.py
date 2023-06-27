@@ -1,9 +1,9 @@
 """A small script which shows how to manually load a saved environment and policy when
 the CLI fails.
 """
-
 import gymnasium as gym
-import ros_gazebo_gym  # Imports the in this example used environment  # noqa: F401
+import stable_gym  # Imports the in this example used environment  # noqa: F401
+
 from stable_learning_control.control.utils.test_policy import (
     load_policy_and_env,
     load_pytorch_policy,
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         # Create the environment.
         # NOTE: Here the 'FlattenObservation' wrapper is used to make sure the alg works
         # with dictionary based observation spaces.
-        env = gym.make("PandaReach-v1")
+        env = gym.make("Oscillator-v1")
         env = gym.wrappers.FlattenObservation(env)
 
         # Load the policy.

@@ -10,7 +10,6 @@
 
 .. autofunction:: safer_eval
 """  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa:E501
-
 # Import modules to which you want users to have access.
 import torch  # noqa: F401
 

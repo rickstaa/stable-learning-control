@@ -13,14 +13,14 @@ Taken almost without modification from the Spinning Up example script in the
 
 .. _`SpinningUp documentation`: https://spinningup.openai.com/en/latest/user/running.html#using-experimentgrid
 """  # noqa
-
 import argparse
 
+import stable_gym  # Imports the in this example used environment  # noqa: F401
 import tensorflow as tf
-from stable_learning_control.control.utils.run_utils import ExperimentGrid
 
 # Import the RL agent you want to perform the grid search for.
 from stable_learning_control.control.algos.tf2.sac.sac import sac
+from stable_learning_control.control.utils.run_utils import ExperimentGrid
 
 # Scriptparameters.
 ENV_NAME = "Oscillator-v1"  # The environment on which you want to train the agent.

@@ -5,7 +5,6 @@
    :linenos:
    :lines: 9-
 """
-
 import os.path as osp
 
 # Default neural network backend for each algo (Must be either 'tf1' or 'pytorch').

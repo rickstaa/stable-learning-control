@@ -4,7 +4,6 @@ For more information on Bijectors see
 `the tensorflow documentation <https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector>`_ and
 `this stackoverflow question <https://stackoverflow.com/questions/56425301/what-is-bijectors-in-layman-terms-in-tensorflow-probability>`_.
 """  # noqa: E501
-
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp

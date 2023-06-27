@@ -1,0 +1,91 @@
+# serializer version: 1
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac]
+  ReplayBuffer(
+    act_buf=array([[0.54784673],
+         [0.40498233],
+         [1.1832223 ],
+         ...,
+         [0.        ],
+         [0.        ],
+         [0.        ]], dtype=float32),
+    done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
+    obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
+         [ 0.64476854,  0.76437783,  0.19040418],
+         [ 0.6127208 ,  0.7902995 ,  0.82443494],
+         ...,
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ]], dtype=float32),
+    obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
+         [0.6127208 , 0.7902995 , 0.82443494],
+         [0.5478287 , 0.8365905 , 1.5946429 ],
+         ...,
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ]], dtype=float32),
+    ptr=800,
+    rew_buf=array([-0.76205546, -0.7608214 , -0.89983267, ...,  0.        ,
+          0.        ,  0.        ], dtype=float32),
+    size=800,
+  )
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].1
+  -0.5342466831207275
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].2
+  -1.463881492614746
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].3
+  0.38886213302612305
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].4
+  0.36924219131469727
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].5
+  1.1571035385131836
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac]
+  ReplayBuffer(
+    act_buf=array([[0.54784673],
+         [0.10906005],
+         [0.8668971 ],
+         ...,
+         [0.        ],
+         [0.        ],
+         [0.        ]], dtype=float32),
+    done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
+    obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
+         [ 0.64476854,  0.76437783,  0.19040418],
+         [ 0.6144733 ,  0.7889376 ,  0.7800466 ],
+         ...,
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ]], dtype=float32),
+    obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
+         [0.6144733 , 0.7889376 , 0.7800466 ],
+         [0.5535567 , 0.8328115 , 1.5017843 ],
+         ...,
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ]], dtype=float32),
+    ptr=800,
+    rew_buf=array([-0.76205546, -0.7606693 , -0.88802195, ...,  0.        ,
+          0.        ,  0.        ], dtype=float32),
+    size=800,
+  )
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].1
+  -0.7410397529602051
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].2
+  -0.9618521928787231
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].3
+  -0.05327260494232178
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].4
+  -0.5727919340133667
+# ---
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].5
+  0.20232582092285156
+# ---

@@ -1,0 +1,93 @@
+# serializer version: 1
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac]
+  ReplayBuffer(
+    act_buf=array([[0.54784673],
+         [1.4406173 ],
+         [1.6042819 ],
+         ...,
+         [0.        ],
+         [0.        ],
+         [0.        ]], dtype=float32),
+    device=device(type='cpu'),
+    done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
+    obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
+         [ 0.64476854,  0.76437783,  0.19040418],
+         [ 0.60656387,  0.79503477,  0.97978014],
+         ...,
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ]], dtype=float32),
+    obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
+         [0.60656387, 0.79503477, 0.97978014],
+         [0.5319456 , 0.8467786 , 1.8166986 ],
+         ...,
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ]], dtype=float32),
+    ptr=800,
+    rew_buf=array([-0.76205546, -0.76273274, -0.9432509 , ...,  0.        ,
+          0.        ,  0.        ], dtype=float32),
+    size=800,
+  )
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].1
+  1.3941729068756104
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].2
+  -1.24482262134552
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].3
+  -0.03907895088195801
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].4
+  0.3105490207672119
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].5
+  0.8348543643951416
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac]
+  ReplayBuffer(
+    act_buf=array([[ 0.54784673],
+         [ 1.2861104 ],
+         [-1.4702797 ],
+         ...,
+         [ 0.        ],
+         [ 0.        ],
+         [ 0.        ]], dtype=float32),
+    device=device(type='cpu'),
+    done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
+    obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
+         [ 0.64476854,  0.76437783,  0.19040418],
+         [ 0.60748476,  0.7943313 ,  0.9566041 ],
+         ...,
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ]], dtype=float32),
+    obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
+         [0.60748476, 0.7943313 , 0.9566041 ],
+         [0.5532825 , 0.8329937 , 1.3318107 ],
+         ...,
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ]], dtype=float32),
+    ptr=800,
+    rew_buf=array([-0.76205546, -0.76231146, -0.93622243, ...,  0.        ,
+          0.        ,  0.        ], dtype=float32),
+    size=800,
+  )
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].1
+  -0.7179003953933716
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].2
+  -1.0258972644805908
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].3
+  -1.3354922533035278
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].4
+  1.4214999675750732
+# ---
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].5
+  -1.085166096687317
+# ---

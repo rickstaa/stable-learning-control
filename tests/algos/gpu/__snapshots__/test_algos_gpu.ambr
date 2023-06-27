@@ -1,0 +1,93 @@
+# serializer version: 1
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.lac.lac]
+  ReplayBuffer(
+    act_buf=array([[ 0.54784673],
+         [-1.4889269 ],
+         [ 0.57553554],
+         ...,
+         [ 0.        ],
+         [ 0.        ],
+         [ 0.        ]], dtype=float32),
+    device=device(type='cuda'),
+    done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
+    obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
+         [ 0.64476854,  0.76437783,  0.19040418],
+         [ 0.62388426,  0.7815168 ,  0.54034853],
+         ...,
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ]], dtype=float32),
+    obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
+         [0.62388426, 0.7815168 , 0.54034853],
+         [0.5753747 , 0.8178899 , 1.2128165 ],
+         ...,
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ]], dtype=float32),
+    ptr=800,
+    rew_buf=array([-0.76205546, -0.7628743 , -0.8343053 , ...,  0.        ,
+          0.        ,  0.        ], dtype=float32),
+    size=800,
+  )
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.lac.lac].1
+  0.9260749816894531
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.lac.lac].2
+  -1.8867743015289307
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.lac.lac].3
+  0.2758677005767822
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.lac.lac].4
+  1.9244186878204346
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.lac.lac].5
+  1.0093417167663574
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.sac.sac]
+  ReplayBuffer(
+    act_buf=array([[ 0.54784673],
+         [-1.408112  ],
+         [ 0.44849873],
+         ...,
+         [ 0.        ],
+         [ 0.        ],
+         [ 0.        ]], dtype=float32),
+    device=device(type='cuda'),
+    done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
+    obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
+         [ 0.64476854,  0.76437783,  0.19040418],
+         [ 0.62341046,  0.78189474,  0.55247074],
+         ...,
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ],
+         [ 0.        ,  0.        ,  0.        ]], dtype=float32),
+    obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
+         [0.62341046, 0.78189474, 0.55247074],
+         [0.5751509 , 0.81804734, 1.2061666 ],
+         ...,
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ],
+         [0.        , 0.        , 0.        ]], dtype=float32),
+    ptr=800,
+    rew_buf=array([-0.76205546, -0.7626402 , -0.8365878 , ...,  0.        ,
+          0.        ,  0.        ], dtype=float32),
+    size=800,
+  )
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.sac.sac].1
+  -1.41414475440979
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.sac.sac].2
+  -0.595496416091919
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.sac.sac].3
+  -1.6693120002746582
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.sac.sac].4
+  0.5870363712310791
+# ---
+# name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.control.algos.pytorch.sac.sac].5
+  -1.6882022619247437
+# ---

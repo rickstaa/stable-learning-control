@@ -61,6 +61,16 @@ Alternatively, you can also use Python its `venv <https://docs.python.org/3/libr
 using this option, make sure you set the ``--system-site-packages`` flag when creating the environment when you need access to the system python packages
 (e.g. when you use `ros_gazebo_gym <https://rickstaa.github.io/ros-gazebo-gym>`_ environments).
 
+.. todo:: 
+    # TODO: Remove. This is not needed anymore as we use the `--system-site-packages` flag when creating the environment.
+
+.. todo:: 
+    # TODO: Tensorflow conda install mpi4py install needed.
+    # TODO: Torch and Tensorflow GPU are not supported at the same time.
+    # TODO: State that when virtualenv tensorflow GPU you have to make sure your CUDA version is the same as the one used by tensorflow. https://www.tensorflow.org/install/source#gpu
+    # TODO: conda install --file requirements.txt
+    # TODO: conda add Ubuntu 22.04 steps.
+    # TODO: torch and tensorflow use different cuda version so are not compatible.
 .. admonition:: You Should Know
 
     If you're new to python environments and package management, this stuff can quickly get confusing or overwhelming,

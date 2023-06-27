@@ -6,7 +6,6 @@
     so that besides logging to tab-separated-values file (path/to/output_directory/progress.txt)
     it also logs the data to a tensorboard file.
 """  # noqa
-
 import atexit
 import glob
 import json
@@ -18,9 +17,12 @@ import time
 import joblib
 import numpy as np
 import torch
+from torch.utils.tensorboard import SummaryWriter
+
 from stable_learning_control.common.helpers import is_scalar
 from stable_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from stable_learning_control.utils.import_utils import import_tf
+from stable_learning_control.utils.log_utils import log_to_std_out
 from stable_learning_control.utils.mpi_utils.mpi_tools import (
     mpi_statistics_scalar,
     proc_id,
@@ -30,9 +32,6 @@ from stable_learning_control.utils.serialization_utils import (
     load_from_json,
     save_to_json,
 )
-from torch.utils.tensorboard import SummaryWriter
-
-from stable_learning_control.utils.log_utils import log_to_std_out
 
 
 class Logger:
@@ -83,7 +82,7 @@ class Logger:
         Attributes:
             tb_writer (torch.utils.tensorboard.writer.SummaryWriter): A tensorboard
                 writer. This is only created when you log a variable to tensorboard or
-                set the :py:attr:`.Logger.use_tensorboard` variable to ``True``.
+                set the :attr:`.Logger.use_tensorboard` variable to ``True``.
             output_dir (str): The directory in which the log data and models are saved.
             output_file (str): The name of the file in which the progress data is saved.
             exp_name (str): Experiment name.
@@ -719,7 +718,7 @@ class Logger:
         """Writes data to tensorboard log file.
 
         It currently works with scalars, histograms and images. For other data types
-        please use :py:attr:`.Logger.tb_writer`. directly.
+        please use :attr:`.Logger.tb_writer`. directly.
 
         Args:
             var_name (str): Data identifier.

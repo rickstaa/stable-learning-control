@@ -3,11 +3,10 @@
 This module contains a Pytorch implementation of the Lyapunov Critic policy of
 `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
-
 import torch
 import torch.nn as nn
-from stable_learning_control.control.algos.pytorch.common.helpers import mlp
 
+from stable_learning_control.control.algos.pytorch.common.helpers import mlp
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 

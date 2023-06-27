@@ -4,13 +4,18 @@
   "description": "A framework for training theoretically stable (and robust) Reinforcement Learning control algorithms.",
   "keywords": [
     "reinforcement-learning",
-    "simulation",
+    "control",
     "stability",
+    "robustness",
+    "simulation",
     "openai-gym",
-    "gym-environments",
     "gymnasium",
-    "gymnasium-environments",
-    "control"
+    "artificial-intelligence",
+    "deep-learning",
+    "neural-networks",
+    "machine-learning",
+    "framework",
+    "gaussian-networks"
   ],
   "homepage": "https://github.com/rickstaa/stable-learning-control#stable-learning-control",
   "bugs": {
@@ -25,8 +30,12 @@
   "scripts": {
     "prepare": "husky install",
     "sort": "sort-package-json",
-    "test": "pytest --cov=stable_learning_control --cov-report=term-missing",
-    "test:update:snapshot": "pytest --snapshot-update"
+    "test": "pytest --cov=stable_learning_control --cov-report=term-missing --ignore=tests/algos/tf2",
+    "test:update:snapshots": "pytest --snapshot-update --cov=stable_learning_control --cov-report=term-missing --ignore=tests/algos/tf2",
+    "test:tf2": "pytest --cov=stable_learning_control --cov-report=term-missing tests/algos/tf2 --ignore=tests/algos/tf2/gpu",
+    "test:tf2:update:snapshots": "pytest --snapshot-update --cov=stable_learning_control --cov-report=term-missing tests/algos/tf2 --ignore=tests/algos/tf2/gpu",
+    "test:tf2:gpu": "pytest --cov=stable_learning_control --cov-report=term-missing tests/algos/tf2/gpu",
+    "test:tf2:gpu:update:snapshots": "pytest --snapshot-update --cov=stable_learning_control --cov-report=term-missing tests/algos/tf2/gpu"
   },
   "commitlint": {
     "extends": [

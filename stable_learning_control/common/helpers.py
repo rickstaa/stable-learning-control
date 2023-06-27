@@ -1,6 +1,5 @@
 """Contains several helper functions that are used across all the SLC modules.
 """
-
 import itertools
 import string
 from collections.abc import Iterable

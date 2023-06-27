@@ -3,12 +3,12 @@
 This module contains a Tensorflow 2.x implementation of the Squashed Gaussian Actor
 policy of `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
-
 import tensorflow as tf
 import tensorflow_probability as tfp
+from tensorflow import nn
+
 from stable_learning_control.control.algos.tf2.common.bijectors import SquashBijector
 from stable_learning_control.control.algos.tf2.common.helpers import clamp, mlp
-from tensorflow import nn
 
 
 class SquashedGaussianActor(tf.keras.Model):

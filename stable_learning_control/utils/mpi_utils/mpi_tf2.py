@@ -1,6 +1,5 @@
 """Helper methods for managing TF2 MPI processes.
 """
-
 # import numpy as np
 # import tensorflow as tf
 

@@ -19,9 +19,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+
 from stable_learning_control.control.common.helpers import validate_observations
 from stable_learning_control.control.utils.test_policy import load_policy_and_env
-
 from stable_learning_control.utils.log_utils import (
     EpochLogger,
     friendly_err,

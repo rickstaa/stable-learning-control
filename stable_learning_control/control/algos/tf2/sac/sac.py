@@ -17,18 +17,22 @@ This module contains the Tensorflow 2.x implementation of the SAC algorithm of
 
 .. autofunction:: sac
 """  # NOTE: Manual autofunction/class request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa:E501
-
 import argparse
 import os
 import os.path as osp
-import random
 import sys
 import time
 from pathlib import Path
 
 import gymnasium as gym
 import numpy as np
+import tensorflow as tf
+import tensorflow.nn as nn
+from gymnasium.utils import seeding
+from tensorflow.keras.optimizers import Adam
+
 from stable_learning_control.common.helpers import combine_shapes
+from stable_learning_control.control.algos.tf2.common import get_lr_scheduler
 from stable_learning_control.control.algos.tf2.common.helpers import (
     count_vars,
     set_device,
@@ -44,19 +48,13 @@ from stable_learning_control.control.utils.gym_utils import (
     is_gym_env,
 )
 from stable_learning_control.control.utils.safer_eval import safer_eval
-from stable_learning_control.utils.import_utils import import_tf, lazy_importer
-from stable_learning_control.utils.serialization_utils import save_to_json
-
-from stable_learning_control.control.algos.tf2.common import get_lr_scheduler
+from stable_learning_control.utils.import_utils import lazy_importer
 from stable_learning_control.utils.log_utils import (
     EpochLogger,
     log_to_std_out,
     setup_logger_kwargs,
 )
-
-tf = import_tf()
-nn = import_tf(module_name="tensorflow.nn")
-Adam = import_tf(module_name="tensorflow.keras.optimizers", class_name="Adam")
+from stable_learning_control.utils.serialization_utils import save_to_json
 
 # Import ray tuner if installed.
 tune = lazy_importer(module_name="ray.tune")
@@ -92,7 +90,8 @@ class SAC(tf.keras.Model):
         ac_ (tf.Module): The (soft) target actor critic module.
         log_alpha (tf.Variable): The temperature lagrance multiplier.
         target_entropy (int): The target entropy.
-        device (str): The device the networks are placed on (CPU or GPU).
+        device (str): The device the networks are placed on (``cpu`` or ``gpu``).
+            Defaults to ``cpu``.
     """
 
     def __init__(  # noqa: C901
@@ -112,7 +111,7 @@ class SAC(tf.keras.Model):
         adaptive_temperature=True,
         lr_a=1e-4,
         lr_c=3e-4,
-        device="gpu",
+        device="cpu",
         name="SAC",
     ):
         """Soft Actor-Critic (SAC)
@@ -198,6 +197,10 @@ class SAC(tf.keras.Model):
             device (str, optional): The device the networks are placed on (``cpu``
                 or ``gpu``). Defaults to ``cpu``.
         """  # noqa: E501
+        self._device = set_device(
+            device
+        )  # NOTE: Needs to be called before super().__init__() call.
+
         super().__init__(name=name)
         self._setup_kwargs = {
             k: v for k, v in locals().items() if k not in ["self", "__class__", "env"]
@@ -243,7 +246,6 @@ class SAC(tf.keras.Model):
         # Store algorithm parameters.
         self._act_dim = env.action_space.shape
         self._obs_dim = env.observation_space.shape
-        self._device = set_device(device)
         self._adaptive_temperature = adaptive_temperature
         self._opt_type = opt_type
         self._polyak = polyak
@@ -324,9 +326,7 @@ class SAC(tf.keras.Model):
         elif s.dtype != tf.float32:
             s = tf.cast(s, dtype=tf.float32)
 
-        return tf.squeeze(
-            self.ac.act(s, deterministic)
-        )  # NOTE: Squeeze is critical to ensure a has right shape.
+        return self.ac.act(s, deterministic)
 
     @tf.function
     def update(self, data):
@@ -851,6 +851,14 @@ def sac(  # noqa: C901
             point for the training. By default a new policy is created.
         export (bool): Whether you want to export the model in the ``SavedModel`` format
             such that it can be deployed to hardware. By default ``False``.
+
+
+    Returns:
+        (tuple): tuple containing:
+
+                - policy (:class:`SAC`): The trained actor-critic policy.
+                - replay_buffer (:class:`~stable_learning_control.control.common.buffers.ReplayBuffer`): The
+                  replay buffer used during training.
     """  # noqa: E501
     total_steps = steps_per_epoch * epochs
 
@@ -882,6 +890,9 @@ def sac(  # noqa: C901
         env.reward_range.shape[0] if isinstance(env.reward_range, gym.spaces.Box) else 1
     )
 
+    logger_kwargs["verbose"] = (
+        logger_kwargs["verbose"] if "verbose" in logger_kwargs.keys() else True
+    )
     logger_kwargs["verbose_vars"] = (
         logger_kwargs["verbose_vars"]
         if (
@@ -928,13 +939,29 @@ def sac(  # noqa: C901
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = SoftActorCritic if actor_critic is None else actor_critic
 
-    # Set random seed for reproducible results.
+    # Ensure the environment is correctly seeded.
+    # NOTE: Done here since we donote:n't want to seed on every env.reset() call.
     if seed is not None:
-        os.environ["PYTHONHASHSEED"] = str(seed)
-        os.environ["TF_CUDNN_DETERMINISTIC"] = "1"  # new flag present in tf 2.0+
-        random.seed(seed)
-        np.random.seed(seed)
-        tf.random.set_seed(seed)
+        env.np_random, _ = seeding.np_random(seed)
+        env.action_space.seed(seed)
+        env.observation_space.seed(seed)
+        test_env.np_random, _ = seeding.np_random(seed)
+        test_env.action_space.seed(seed)
+        test_env.observation_space.seed(seed)
+
+    # Set random seed for reproducible results.
+    # NOTE: see https://www.tensorflow.org/api_docs/python/tf/keras/utils/set_random_seed.  # noqa: E501
+    # and https://www.tensorflow.org/api_docs/python/tf/config/experimental/enable_op_determinism.  # noqa: E501
+    # NOTE: Please note that seeding will slow down the training.
+    if seed is not None:
+        tf.keras.utils.set_random_seed(
+            seed
+        )  # Sets all random seeds for the program (Python, NumPy, and TensorFlow).
+        os.environ["PYTHONHASHSEED"] = str(
+            seed
+        )  # Ensure python hashing is deterministic.
+        tf.config.experimental.enable_op_determinism()  # Make ops deterministic.
+        # os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"  # Disable for reproducibility.
 
     policy = SAC(
         env,
@@ -1025,10 +1052,10 @@ def sac(  # noqa: C901
         if t > start_steps:
             a = policy.get_action(o)
         else:
-            a = env.action_space.sample()
+            a = tf.convert_to_tensor(env.action_space.sample(), dtype=tf.float32)
 
         # Take step in the env.
-        o_, r, d, truncated, _ = env.step(a)
+        o_, r, d, truncated, _ = env.step(a.numpy())
         ep_ret += r
         ep_len += 1
 
@@ -1186,6 +1213,8 @@ def sac(  # noqa: C901
         type="info",
     )
 
+    return policy, replay_buffer
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -1194,8 +1223,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--env",
         type=str,
-        default="stable_gym:Oscillator-v1",
-        help="the gymnasium env (default: stable_gym:Oscillator-v1)",
+        default="Pendulum-v1",
+        help="the gymnasium env (default: Pendulum-v1)",
     )  # NOTE: Ensure the environment is installed in the current python environment.
     parser.add_argument(
         "--hid_a",
@@ -1383,8 +1412,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--device",
         type=str,
-        default="gpu",
-        help="The device the networks are placed on (default: gpu)",
+        default="cpu",
+        help=(
+            "The device the networks are placed on: 'cpu' or 'gpu' (options: "
+            "default: 'cpu')",
+        ),
     )
     parser.add_argument(
         "--start_policy",

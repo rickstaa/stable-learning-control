@@ -17,7 +17,6 @@ This module contains a pytorch implementation of the LAC algorithm of
 
 .. autofunction:: lac
 """  # NOTE: Manual autofunction/class request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa:E501
-
 import argparse
 import glob
 import os
@@ -32,6 +31,10 @@ import gymnasium as gym
 import numpy as np
 import torch
 import torch.nn as nn
+from gymnasium.utils import seeding
+from torch.optim import Adam
+
+from stable_learning_control.control.algos.pytorch.common import get_lr_scheduler
 from stable_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
 from stable_learning_control.control.algos.pytorch.common.helpers import (
     count_vars,
@@ -47,18 +50,15 @@ from stable_learning_control.control.utils.gym_utils import (
     is_discrete_space,
     is_gym_env,
 )
+from stable_learning_control.control.utils.safer_eval import safer_eval
 from stable_learning_control.utils.import_utils import lazy_importer
-from stable_learning_control.utils.serialization_utils import save_to_json
-from torch.optim import Adam
-
-from stable_learning_control.control.algos.pytorch.common import get_lr_scheduler
-from stable_learning_control.control.utils import safer_eval
 from stable_learning_control.utils.log_utils import (
     EpochLogger,
     friendly_err,
     log_to_std_out,
     setup_logger_kwargs,
 )
+from stable_learning_control.utils.serialization_utils import save_to_json
 
 # Import ray tuner if installed.
 tune = lazy_importer(module_name="ray.tune")
@@ -94,7 +94,8 @@ class LAC(nn.Module):
         log_alpha (torch.Tensor): The temperature lagrance multiplier.
         log_labda (torch.Tensor): The Lyapunov lagrance multiplier.
         target_entropy (int): The target entropy.
-        device (str): The device the networks are placed on (CPU or GPU).
+        device (str): The device the networks are placed on (``cpu`` or ``gpu``).
+            Defaults to ``cpu``.
     """
 
     def __init__(  # noqa: C901
@@ -332,7 +333,7 @@ class LAC(nn.Module):
             numpy.ndarray: The current action.
         """
         return self.ac.act(
-            torch.as_tensor(s, dtype=torch.float32).to(self._device), deterministic
+            torch.as_tensor(s, dtype=torch.float32, device=self._device), deterministic
         )
 
     def update(self, data):  # noqa: C901
@@ -951,6 +952,13 @@ def lac(  # noqa: C901
             point for the training. By default a new policy is created.
         export (bool): Whether you want to export the model as a ``TorchScript`` such
             that it can be deployed on hardware. By default ``False``.
+
+    Returns:
+        (tuple): tuple containing:
+
+                - policy (:class:`LAC`): The trained actor-critic policy.
+                - replay_buffer (:class:`~stable_learning_control.control.algos.pytorch.common.buffers.ReplayBuffer`): The
+                  replay buffer used during training.
     """  # noqa: E501
     total_steps = steps_per_epoch * epochs
 
@@ -982,6 +990,9 @@ def lac(  # noqa: C901
         env.reward_range.shape[0] if isinstance(env.reward_range, gym.spaces.Box) else 1
     )
 
+    logger_kwargs["verbose"] = (
+        logger_kwargs["verbose"] if "verbose" in logger_kwargs.keys() else True
+    )
     logger_kwargs["verbose_vars"] = (
         logger_kwargs["verbose_vars"]
         if (
@@ -1027,12 +1038,24 @@ def lac(  # noqa: C901
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = LyapunovActorCritic if actor_critic is None else actor_critic
 
-    # Set random seed for reproducible results.
+    # Ensure the environment is correctly seeded.
+    # NOTE: Done here since we donote:n't want to seed on every env.reset() call.
     if seed is not None:
-        os.environ["PYTHONHASHSEED"] = str(seed)
-        torch.manual_seed(seed)
-        np.random.seed(seed)
-        random.seed(seed)
+        env.np_random, _ = seeding.np_random(seed)
+        env.action_space.seed(seed)
+        env.observation_space.seed(seed)
+        test_env.np_random, _ = seeding.np_random(seed)
+        test_env.action_space.seed(seed)
+        test_env.observation_space.seed(seed)
+
+    # Set other random seed for reproducible policy results.
+    if seed is not None:
+        np.random.seed(seed)  # Ensure numpy is deterministic.
+        torch.manual_seed(seed)  # Ensure pytorch is deterministic.
+        random.seed(seed)  # Ensure python is deterministic.
+        os.environ["PYTHONHASHSEED"] = str(
+            seed
+        )  # Ensure python hashing is deterministic.
 
     policy = LAC(
         env,
@@ -1321,6 +1344,8 @@ def lac(  # noqa: C901
         type="info",
     )
 
+    return policy, replay_buffer
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -1525,7 +1550,10 @@ if __name__ == "__main__":
         "--device",
         type=str,
         default="cpu",
-        help="The device the networks are placed on (default: cpu)",
+        help=(
+            "The device the networks are placed on: 'cpu' or 'gpu' (options: "
+            "default: 'cpu')",
+        ),
     )
     parser.add_argument(
         "--start_policy",

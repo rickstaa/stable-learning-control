@@ -1,7 +1,7 @@
 """Contains several replay buffers used in the Pytorch algorithms.
 """
-
 import torch
+
 from stable_learning_control.control.algos.pytorch.common.helpers import np_to_torch
 from stable_learning_control.control.common.buffers import (
     ReplayBuffer,

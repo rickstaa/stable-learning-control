@@ -1,6 +1,5 @@
 """Module used for managing MPI processes.
 """
-
 import os
 import subprocess
 import sys
