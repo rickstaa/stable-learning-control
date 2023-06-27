@@ -35,4 +35,3 @@ SLC configuration files
 
 
    stable_learning_control.user_config
-   stable_learning_control.env_config

@@ -1,7 +1,3 @@
-*   \[ ] Get tf GPU version to work.
-
-*   \[ ]  Add CI.
-
 *   \[ ] Add ability to not save model.
 
 *   \[ ] Update tf and torch documentation.

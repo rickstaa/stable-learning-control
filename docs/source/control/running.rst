@@ -420,5 +420,3 @@ This imports the ``custom_env_module`` and then looks for the ``CustomEnv-v0`` i
 
 .. _`OpenAi gym`: https://gym.openai.com/
 .. _`OpenAi gym custom gym environment guide`: https://github.com/openai/gym/blob/master/docs/creating-environments.md
-
-Additionally you can also add the setup code for registering your environment in the :mod:`stable_learning_control.env_config` module.

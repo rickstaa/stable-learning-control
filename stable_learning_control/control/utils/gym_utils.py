@@ -67,18 +67,7 @@ def validate_gym_env(arg_dict):
             environment.
     """
     # Import gymnasium environments.
-    # import gymnasium as gym
-
-    # Import environment configuration file. This file can be used to inject
-    # custom gymnasium environments into the slc package.
-    try:
-        import stable_learning_control.env_config  # noqa: F401
-    except Exception as e:
-        raise Exception(
-            friendly_err(
-                "Something went wrong when trying to import the 'env_config' " " file."
-            )
-        ) from e
+    # import gymnasium as gym # TODO: Check if this can be removed!
 
     # Special handling for environment: make sure that env_name is a real,
     # registered gymnasium environment.
