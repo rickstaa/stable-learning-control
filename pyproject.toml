@@ -14,12 +14,18 @@ license = {file = "LICENSE"}
 description = "A framework for training theoretically stable (and robust) Reinforcement Learning control algorithms."
 keywords = [
     "reinforcement-learning",
-    "simulation",
+    "control",
     "stability",
     "robustness",
-    "control",
+    "simulation",
     "openai-gym",
     "gymnasium",
+    "artificial-intelligence",
+    "deep-learning",
+    "neural-networks",
+    "machine-learning",
+    "framework",
+    "gaussian-networks",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -28,35 +34,35 @@ classifiers = [
 ]
 dependencies = [
     "gymnasium>=0.28.1",
-    "numpy",
-    "scipy",
+    "numpy>=1.23.5",
+    "scipy>=1.10.1",
     "torch>=1.5",
-    "joblib",
-    "tensorboard",
-    "mpi4py",
-    "psutil",
-    "tqdm",
-    "cloudpickle",
-    "seaborn",
-    "matplotlib",
-    "pandas",
-    "ruamel.yaml",
-    "ray[default]"
+    "joblib>=1.2.0",
+    "tensorboard>=2.11.2",
+    "psutil>=5.9.5",
+    "tqdm>=4.65.0",
+    "cloudpickle>=2.2.1",
+    "matplotlib>=3.7.1",
+    "ruamel.yaml>=0.17.32",
+    "ray[default]>=2.5.1",
+    "pandas>=2.0.2",
+    "seaborn>=0.12.2",
+    "mpi4py>=3.1.4",
 ]
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
 # NOTE: Ensure you have pip>=21.2 for the recursive dependencies to work.
 tf = [
-    "tensorflow>=2",
-    "tensorflow_probability"
+    "tensorflow>=2.12.0",
+    "tensorflow-probability>=0.20.1",
 ]
 tuning = [
-    "ray[tune]",
-    "hyperopt",
+    "ray[tune]>=2.5.1",
+    "hyperopt>=0.2.7",
 ]
 dev = [
-    "stable_learning_control[tf,tuning]",
+    "stable-learning_control[tf,tuning]",
     "pytest>=7.3.2",
     "pytest-cov>=4.1.0",
     "pytest-html>=3.2.0",
@@ -66,16 +72,16 @@ dev = [
 ]
 docs = [
     "stable_learning_control[tf,tuning]",
-    "docutils",
-    "sphinx",
-    "sphinx-autobuild",
-    "sphinx-rtd-theme",
-    "myst_parser",
+    "docutils<0.19",
+    "sphinx<7",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-rtd-theme>=1.2.2",
+    "myst-parser>=2.0.0",
     "pygments>=2.11.2",
 ]
 all = [
-    "stable_learning_control[tf, tuning, dev, docs]",
-]
+    "stable_learning_control[tf,tuning,dev,docs]",
+]   
 
 [project.urls]
 repository = "https://github.com/rickstaa/stable-learning-control"
@@ -94,4 +100,3 @@ readme = {file = "README.md", content_type = "text/markdown"}
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["tests"]
-norecursedirs = ["sandbox"]

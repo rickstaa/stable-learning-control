@@ -1,6 +1,5 @@
-"""Script used for testing the trajectory buffer.
+"""Script used for testing the **NEW** trajectory buffer.
 """
-
 import gymnasium as gym
 
 # from stable_learning_control.control.common.buffers import TrajectoryBuffer
@@ -8,17 +7,14 @@ from stable_learning_control.control.algos.pytorch.common.buffers import (
     TrajectoryBuffer,
 )
 
-# import numpy as np # Check why this does not get excluded?
-
-
 if __name__ == "__main__":
     # Create dummy environment.
-    env = gym.make("CartPoleCost-v0")
+    env = gym.make("CartPole-v1")
 
     # Dummy algorithm settings.
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
-    rew_dim = env.reward_range.shape[0]
+    rew_dim = env.cost_range.shape[0]
     buffer_size = int(1e6)
     epochs = 10
     local_steps_per_epoch = 100
@@ -34,15 +30,15 @@ if __name__ == "__main__":
     )
 
     # Create test dummy data.
-    o, ep_ret, ep_len = env.reset(), 0, 0
+    o, _ = env.reset()
+    ep_ret, ep_len = 0, 0
     for epoch in range(epochs):
         for t in range(local_steps_per_epoch):
             # Retrieve data from the environment.
             a = env.action_space.sample()
-            next_o, r, d, _ = env.step(a)
+            next_o, r, d, _, _ = env.step(a)
 
             # Store data in buffer.
-
             buffer.store(o, a, r, next_o, d)
 
             # Update obs (critical!)
@@ -51,8 +47,8 @@ if __name__ == "__main__":
             # Finish path.
             if d:
                 buffer.finish_path()
-                o, ep_ret, ep_len = env.reset(), 0, 0
+                o, _ = env.reset()
+                ep_ret, ep_len = 0, 0
 
         # Retrieve data from buffer.
         buffer_data = buffer.get(flat=False)
-        print("test")

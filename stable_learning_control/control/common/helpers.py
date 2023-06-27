@@ -1,17 +1,16 @@
 """Functions that are used in multiple Pytorch and Tensorflow algorithms.
 """
-
 import importlib
 
 import numpy as np
-import scipy.signal
+import scipy
 import torch  # noqa:F401
+
 from stable_learning_control.control.utils.gym_utils import (
     is_continuous_space,
     is_discrete_space,
 )
 from stable_learning_control.utils.import_utils import import_tf
-
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 tf = import_tf(frail=False)

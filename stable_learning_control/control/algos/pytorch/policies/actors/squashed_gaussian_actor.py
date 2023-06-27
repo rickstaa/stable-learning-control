@@ -3,14 +3,13 @@
 This module contains a Pytorch implementation of the Squashed Gaussian Actor policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
-
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from stable_learning_control.control.algos.pytorch.common.helpers import clamp, mlp
 from torch.distributions.normal import Normal
 
+from stable_learning_control.control.algos.pytorch.common.helpers import clamp, mlp
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 

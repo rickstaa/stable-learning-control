@@ -3,11 +3,10 @@
 This module contains a Pytorch implementation of the Q Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
-
 import torch
 import torch.nn as nn
-from stable_learning_control.control.algos.pytorch.common.helpers import mlp
 
+from stable_learning_control.control.algos.pytorch.common.helpers import mlp
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 

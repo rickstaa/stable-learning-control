@@ -1,7 +1,6 @@
 """Small function that can be used to import modules and classes while repressing the
 ImportError when a module is not found.
 """
-
 import importlib
 import sys
 

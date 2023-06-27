@@ -1,8 +1,8 @@
 """Helper methods for managing Pytorch MPI processes.
 """
-
 import numpy as np
 import torch
+
 from stable_learning_control.utils.mpi_utils.mpi_tools import (  # proc_id,
     broadcast,
     mpi_avg,

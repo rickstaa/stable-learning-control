@@ -11,7 +11,6 @@ Source code
    :linenos:
    :lines: 15-
 """  # noqa
-
 import base64
 import pickle
 import zlib

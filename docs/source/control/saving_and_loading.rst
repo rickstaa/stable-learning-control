@@ -112,7 +112,7 @@ The ``tf2_save`` directory contains:
 |``save_info.json``         | | A file used by the SLC package to ease model                |
 |                           | | loading  this file is not meant for the user.               |
 +---------------------------+---------------------------------------------------------------+
-|``saved_model.json``       | | The full TensorFlow program saved in the `SavedModel`       |
+|``saved_model.json``       | | The full TensorFlow program saved in the `SavedModel`_      |
 |                           | | format. This file can be used to deploy your model to       |
 |                           | | hardware. See the `hardware deployment documentation`_ for  |
 |                           | | more info.                                                  |

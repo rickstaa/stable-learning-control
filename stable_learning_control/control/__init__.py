@@ -1,6 +1,5 @@
 """Contains the SLC Reinforcement Learning (RL) and Imitation learning (IL) algorithms.
 """
-
 from stable_learning_control.control.algos.pytorch.lac.lac import lac as lac_pytorch
 from stable_learning_control.control.algos.pytorch.sac.sac import sac as sac_pytorch
 from stable_learning_control.utils.import_utils import import_tf

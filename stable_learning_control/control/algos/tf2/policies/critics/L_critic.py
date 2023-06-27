@@ -3,10 +3,10 @@
 This module contains a Tensorflow 2.x implementation of the Lyapunov Critic policy of
 `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
-
 import tensorflow as tf
-from stable_learning_control.control.algos.tf2.common.helpers import mlp
 from tensorflow import nn
+
+from stable_learning_control.control.algos.tf2.common.helpers import mlp
 
 
 class LCritic(tf.keras.Model):

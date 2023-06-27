@@ -6,7 +6,6 @@
 .. autofunction:: calc_linear_decay_rate
 .. autofunction:: get_lr_scheduler
 """  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa: E501
-
 from decimal import Decimal
 
 import numpy as np
@@ -32,7 +31,7 @@ def get_exponential_decay_rate(lr_start, lr_final, steps):
 def calc_linear_decay_rate(lr_init, lr_final, steps):
     """Returns the linear decay factor (G) needed to achieve a given final learning
     rate at a certain step. This decay factor can for example be used with a
-    :py:class:`torch.optim.lr_scheduler.LambdaLR` scheduler. Keep in mind that this
+    :class:`torch.optim.lr_scheduler.LambdaLR` scheduler. Keep in mind that this
     function assumes the following formula for the learning rate decay.
 
     .. math::

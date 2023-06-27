@@ -14,12 +14,12 @@ For more information on how to use this package see the `Ray tuning documentatio
 
 .. _`Ray tuning documentation`: https://docs.ray.io/en/latest/tune/index.html
 """
-
 import os.path as osp
 import sys
 
 import gymnasium as gym
 import numpy as np
+import stable_gym  # Imports the in this example used environment  # noqa: F401
 
 # Import the algorithm we want to tune.
 from stable_learning_control.control.algos.pytorch.lac.lac import lac

@@ -5,10 +5,9 @@ Soft actor critic policy
 This module contains a Pytorch implementation of the Soft Actor Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
-
-
 import torch
 import torch.nn as nn
+
 from stable_learning_control.common.helpers import strict_dict_update
 # fmt: off
 from stable_learning_control.control.algos.pytorch.policies.actors.squashed_gaussian_actor import \

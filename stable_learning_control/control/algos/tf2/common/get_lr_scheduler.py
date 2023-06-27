@@ -4,8 +4,8 @@
 
 .. autofunction:: get_lr_scheduler
 """  # NOTE: Manual autofunction request was added because of bug https://github.com/sphinx-doc/sphinx/issues/7912#issuecomment-786011464  # noqa: E501
-
 import numpy as np
+
 from stable_learning_control.utils.import_utils import import_tf
 
 tf = import_tf()

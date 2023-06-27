@@ -1,11 +1,10 @@
 """Several Tensorflow helper functions.
 """
-
 import numpy as np
 import tensorflow as tf
+
 from stable_learning_control.common.helpers import convert_to_tuple
 from stable_learning_control.control.common.helpers import get_activation_function
-
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 

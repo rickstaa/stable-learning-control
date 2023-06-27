@@ -1,7 +1,6 @@
 """Script version of the eval robustness tool. This can be used if you don't want to
 implement a disturber class.
 """
-
 import math
 import os
 import sys
@@ -12,9 +11,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+
 from stable_learning_control.control.common.helpers import validate_observations
 from stable_learning_control.control.utils.test_policy import load_policy_and_env
-
 from stable_learning_control.utils.log_utils import EpochLogger, log_to_std_out
 
 # Disturbance settings.

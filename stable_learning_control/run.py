@@ -1,7 +1,6 @@
 """Responsible for creating the CLI for the stable_learning_control package. It can
 be used to run the control, hardware, modelling packages from the terminal.
 """
-
 import os
 import os.path as osp
 import subprocess

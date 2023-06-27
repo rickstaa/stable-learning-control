@@ -1,11 +1,10 @@
 """Contains several Pytorch helper functions.
 """
-
 import numpy as np
 import torch
 import torch.nn as nn
-from stable_learning_control.control.common.helpers import get_activation_function
 
+from stable_learning_control.control.common.helpers import get_activation_function
 from stable_learning_control.utils.log_utils import log_to_std_out
 
 
@@ -159,12 +158,15 @@ def np_to_torch(input_object, dtype=None, device=None):
             torch tensors.
     """
     if isinstance(input_object, dict):
-        return {k: np_to_torch(v) for k, v in input_object.items()}
+        return {
+            k: np_to_torch(v, dtype=dtype, device=device)
+            for k, v in input_object.items()
+        }
     elif isinstance(input_object, list):
-        return [np_to_torch(v) for v in input_object]
+        return [np_to_torch(v, dtype=dtype, device=device) for v in input_object]
     elif isinstance(input_object, np.ndarray):
         try:
-            return torch.as_tensor(input_object, dtype=dtype).to(device=device)
+            return torch.as_tensor(input_object, dtype=dtype, device=device)
         except TypeError:
             return input_object
     else:

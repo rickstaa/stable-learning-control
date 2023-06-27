@@ -5,15 +5,15 @@ Soft actor critic policy
 This module contains a Tensorflow 2.x implementation of the Soft Actor Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
-
 import tensorflow as tf
+from tensorflow import nn
+
 from stable_learning_control.common.helpers import strict_dict_update
 # fmt: off
 from stable_learning_control.control.algos.tf2.policies.actors.squashed_gaussian_actor import \
     SquashedGaussianActor  # noqa: E501
 from stable_learning_control.control.algos.tf2.policies.critics.Q_critic import \
     QCritic  # noqa: E501
-from tensorflow import nn
 
 # fmt: on
 
@@ -144,4 +144,7 @@ class SoftActorCritic(tf.keras.Model):
             obs = tf.reshape(obs, (1, -1))
 
         a, _ = self.pi(obs, deterministic, False)
-        return a
+
+        return tf.squeeze(
+            a, axis=0
+        )  # NOTE: Squeeze is critical to ensure a has right shape.

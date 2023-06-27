@@ -12,6 +12,7 @@ __pycache__/
 *.pyc
 *.egg-info
 build/
+coverage.xml
 
 # node
 node_modules/

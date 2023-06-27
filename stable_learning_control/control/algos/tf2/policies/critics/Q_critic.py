@@ -3,10 +3,10 @@
 This module contains a Tensorflow 2.x implementation of the Q Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
-
 import tensorflow as tf
-from stable_learning_control.control.algos.tf2.common.helpers import mlp
 from tensorflow import nn
+
+from stable_learning_control.control.algos.tf2.common.helpers import mlp
 
 
 class QCritic(tf.keras.Model):

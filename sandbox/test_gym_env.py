@@ -1,11 +1,8 @@
 """Small script to see if a gymnasium environment can be imported.
 """
-
 import gymnasium as gym
 import matplotlib.pyplot as plt
 import numpy as np
-
-# import ros_gazebo_gym  # noqa: F401
 import stable_gym  # NOTE: Found at https://github.com/rickstaa/stable-gym # noqa: F401
 
 RANDOM_STEP = True
