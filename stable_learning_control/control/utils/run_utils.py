@@ -26,7 +26,6 @@ from stable_learning_control.common.helpers import all_bools, valid_str
 from stable_learning_control.user_config import DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
 from stable_learning_control.utils.log_utils import (
     colorize,
-    friendly_err,
     setup_logger_kwargs,
 )
 from stable_learning_control.utils.mpi_utils.mpi_tools import mpi_fork
@@ -111,18 +110,6 @@ def call_experiment(
         if "env_name" in kwargs:
             # Import gymnasium environments.
             import gymnasium as gym
-
-            # Import environment configuration file. This file can be used to inject
-            # custom gymnasium environments into the slc package.
-            try:
-                import stable_learning_control.env_config  # noqa: F401
-            except Exception as e:
-                raise Exception(
-                    friendly_err(
-                        "Something went wrong when trying to import the 'env_config' "
-                        " file."
-                    )
-                ) from e
 
             env_name = kwargs.pop("env_name")
             env_kwargs = kwargs.pop("env_kwargs", {})
