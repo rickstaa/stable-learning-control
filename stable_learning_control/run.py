@@ -82,7 +82,8 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
         list: Modified cmd line argument list that also contains any hyperparameters
             that were specified in a experimental cfg file.
 
-    .. info::
+    .. note::
+
         This function assumes comma/space separated strings (i.e. ``5, 3, 2`` or
         ``5 3 2``)) to be hyperparmeter variants.
     """

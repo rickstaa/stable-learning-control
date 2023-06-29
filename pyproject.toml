@@ -72,16 +72,11 @@ dev = [
 ]
 docs = [
     "stable_learning_control[tf,tuning]",
-    "docutils<0.19",
-    "sphinx<7",
-    "sphinx-autobuild>=2021.3.14",
-    "sphinx-rtd-theme>=1.2.2",
-    "myst-parser>=2.0.0",
-    "pygments>=2.11.2",
+    "sphinx>=6.2.1",
+    "sphinx_rtd_theme>=1.2.2",
+    "myst-parser>=1.0.0",
+    "sphinx-autoapi>=2.1.1"
 ]
-all = [
-    "stable_learning_control[tf,tuning,dev,docs]",
-]   
 
 [project.urls]
 repository = "https://github.com/rickstaa/stable-learning-control"

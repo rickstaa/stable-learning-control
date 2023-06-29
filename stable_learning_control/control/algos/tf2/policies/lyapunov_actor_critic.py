@@ -2,7 +2,7 @@
 Lyapunov actor critic policy
 ============================
 
-This module contains a Tensorflow 2.x implementation of the Lyapunov Actor Critic policy
+This module contains a TensorFlow 2.x implementation of the Lyapunov Actor Critic policy
 of `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 """
 import tensorflow as tf

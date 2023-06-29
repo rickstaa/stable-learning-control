@@ -79,7 +79,7 @@ def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
 
     Args:
         module_name (str, optional): The python module you want to import
-            (eg. tensorflow.nn). By default ``None``, meaning the Tensorflow package is
+            (eg. tensorflow.nn). By default ``None``, meaning the TensorFlow package is
             imported.
         class_name (str): The python class you want to import (eg. Adam
             from :mod:`tensorflow.keras.optimizers`). By default ``None``.
@@ -93,7 +93,7 @@ def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
 
     Returns:
         Union[:obj:`tf`, :obj:`bool`]:
-            - Tensorflow module or class if ``dry_run`` is set to ``False``.
+            - TensorFlow module or class if ``dry_run`` is set to ``False``.
             - Returns a success bool if ``dry_run`` is set to ``True``.
     """
     module_name = "tensorflow" if module_name is None else module_name

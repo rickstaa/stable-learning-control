@@ -1,6 +1,6 @@
 """Lyapunov actor critic policy.
 
-This module contains a Tensorflow 2.x implementation of the Q Critic policy of
+This module contains a TensorFlow 2.x implementation of the Q Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
 import tensorflow as tf

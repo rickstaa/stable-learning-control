@@ -1,4 +1,4 @@
-"""Module used for creating Tensorflow learning rate schedulers.
+"""Module used for creating TensorFlow learning rate schedulers.
 
 .. rubric:: Function
 

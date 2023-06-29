@@ -1,6 +1,6 @@
 """Squashed Gaussian Actor policy.
 
-This module contains a Tensorflow 2.x implementation of the Squashed Gaussian Actor
+This module contains a TensorFlow 2.x implementation of the Squashed Gaussian Actor
 policy of `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
 import tensorflow as tf

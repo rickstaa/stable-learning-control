@@ -1,6 +1,6 @@
 """Lyapunov Actor-Critic algorithm
 
-This module contains a Tensorflow 2.x implementation of the LAC algorithm of
+This module contains a TensorFlow 2.x implementation of the LAC algorithm of
 `Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
 
 .. note::
@@ -127,7 +127,7 @@ class LAC(tf.keras.Model):
                 is used while creating the network sizes. The environment must satisfy
                 the gymnasium API.
             actor_critic (tf.Module, optional): The constructor method for a
-                Tensorflow Module with an ``act`` method, a ``pi`` module and several
+                TensorFlow Module with an ``act`` method, a ``pi`` module and several
                 ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
                 accept batches of observations as inputs, and the ``Q*`` and ``L``
                 modules should accept a batch of observations and a batch of actions as
@@ -786,7 +786,7 @@ def lac(  # noqa: C901
         env_fn: A function which creates a copy of the environment.
             The environment must satisfy the gymnasium API.
         actor_critic (tf.Module, optional): The constructor method for a
-            Tensorflow Module with an ``act`` method, a ``pi`` module and several ``Q``
+            TensorFlow Module with an ``act`` method, a ``pi`` module and several ``Q``
             or ``L`` modules. The ``act`` method and ``pi`` module should accept batches
             of observations as inputs, and the ``Q*`` and
             ``L`` modules should accept a batch of observations and a batch of actions

@@ -48,7 +48,7 @@ class MpiAdamOptimizer(object):
     Adam optimizer that averages gradients across MPI processes.
 
     The compute_gradients method is taken from Baselines `MpiAdamOptimizer`_.
-    For documentation on method arguments, see the Tensorflow docs page for
+    For documentation on method arguments, see the TensorFlow docs page for
     the base :tf:`AdamOptimizer <train/AdamOptimizer>`.
 
     .. _`MpiAdamOptimizer`: https://github.com/openai/baselines/blob/master/baselines/common/mpi_adam_optimizer.py

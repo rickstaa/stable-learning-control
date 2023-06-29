@@ -1,4 +1,4 @@
-"""Contains the Pytorch and Tensorflow RL/IL algorithms.
+"""Contains the Pytorch and TensorFlow RL/IL algorithms.
 
 .. warning::
     Due to being more friendly, the Pytorch implementation was eventually used during

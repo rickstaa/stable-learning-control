@@ -1,4 +1,4 @@
-"""Checks if the Tensorflow algorithms in this package are still working as expected
+"""Checks if the TensorFlow algorithms in this package are still working as expected
 when run on the CPU.
 
 This is done by comparing the current output of the algorithm with a previously saved
@@ -31,7 +31,7 @@ class TestTF2Algos:
         # Check if tensorflow is available.
         if not importlib.util.find_spec("tensorflow"):
             pytest.skip(
-                "Tensorflow not available. Please install it using `pip install .[tf]`."
+                "TensorFlow not available. Please install it using `pip install .[tf]`."
             )
 
         # Import the algorithm run function.
