@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.3](https://github.com/rickstaa/stable-learning-control/compare/v4.0.2...v4.0.3) (2023-06-29)
+
+
+### Documentation
+
+* fix links ([#268](https://github.com/rickstaa/stable-learning-control/issues/268)) ([21c5bcf](https://github.com/rickstaa/stable-learning-control/commit/21c5bcf8823daf88d130654297383cd2a4ad14f2))
+
 ## [4.0.2](https://github.com/rickstaa/stable-learning-control/compare/v4.0.1...v4.0.2) (2023-06-29)
 
 
