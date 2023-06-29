@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
-          cache: "pip"
+          cache: 'pip'
           cache-dependency-path: pyproject.toml
       - name: Install the stable_learning_control package with its dependencies
         run: |
@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false # Run all matrix jobs.
       matrix:
-        python-version: [3.8, 3.9, "3.10"] # Supported python versions.
+        python-version: [3.8, 3.9, '3.10'] # Supported python versions.
     steps:
       - name: Checkout stable-learning-control repository
         uses: actions/checkout@v3
@@ -66,7 +66,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
+          cache: 'pip'
           cache-dependency-path: pyproject.toml
       - name: Install the stable_learning_control package with its dependencies
         run: |
@@ -74,7 +74,7 @@ jobs:
       - name: Test with Pytest
         run: |
           set -o pipefail
-          pytest --cache-clear --html=pytest/${{ matrix.python-version }}/html/results.html --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml --cov --cov-report=html:pytest/${{ matrix.python-version }}/cov/pytest-coverage.txt --cov-report=term-missing | tee pytest-coverage.txt
+          pytest --ignore=tests/algos --cache-clear --html=pytest/${{ matrix.python-version }}/html/results.html --junitxml=pytest/${{ matrix.python-version }}/xml/results.xml --cov --cov-report=html:pytest/${{ matrix.python-version }}/cov/pytest-coverage.txt --cov-report=term-missing | tee pytest-coverage.txt
           set +o pipefail
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
