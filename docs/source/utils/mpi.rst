@@ -12,14 +12,13 @@ Core MPI Utilities
 .. automodule:: stable_learning_control.utils.mpi_utils.mpi_tools
     :members:
 
-
 MPI + PyTorch Utilities
 =======================
 
 ``stable_learning_control.utils.mpi_utils.mpi_pytorch`` contains a few tools to make it easy to do
 data-parallel PyTorch optimization across MPI processes. The two main ingredients are syncing parameters and
 averaging gradients before the adaptive optimizer uses them. Also, there's a hacky fix for a problem
-where the PyTorch instance in each separate process tries to get too many threads, and they start to clobber
+where the PyTorch instance in each separate process tries to get too many threads, and they start to destroy
 each other.
 
 The pattern for using these tools looks something like this:
@@ -38,13 +37,13 @@ The pattern for using these tools looks something like this:
     mpi_avg_grads(module)   # averages gradient buffers across MPI processes!
     optimizer.step()
 
-
 .. automodule:: stable_learning_control.utils.mpi_utils.mpi_pytorch
     :members:
 
-MPI + Tensorflow Utilities
+MPI + TensorFlow Utilities
 ==========================
 
 .. todo::
-    Tools to make it easy to do data-parallel Tensorflow 2.x optimization across MPI
-    processes are not yet implemented.
+    
+    Tools to make it easy to do data-parallel TensorFlow 2.x optimization across MPI
+    processes still need to be implemented.

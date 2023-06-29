@@ -1,87 +1,53 @@
-=====================
-Release documentation
-=====================
+=======================
+Build the documentation
+=======================
 
 .. contents:: Table of Contents
-
-The SLC framework contains two :slc:`Github actions <actions>` that automatically check and
-deploy new documentation:
-
-    * The :slc:`docs_check_ci <blob/main/.github/workflows/docs_check_ci.yml>` action checks your changes to see if the documentation still builds.
-    * The :slc:`docs_publish_ci <blob/main/.github/workflows/docs_publish_ci.yml>` action deploys your documentation if a new version of the SLC framework is released.
-
-Automatic build instructions
-============================
-
-To successfully deploy your new documentation, you have to follow the following development steps:
-
-#. Create a new branch for the changes you want to make to the documentation (e.g. ``docs_change`` branch).
-#. Make your changes to this branch.
-#. Commit your changes. This will trigger the :slc:`docs_check_ci <blob/main/.github/workflows/docs_check_ci.yml>` action to run.
-#. Create a pull request into the main branch if this action ran without errors.
-#. Add a version bump label (``bump:patch``, ``bump:minor`` or ``bump:major``) to the pull request.
-#. Merge the pull request into the main branch. The documentation will now be deployed using the :slc:`docs_publish_ci <blob/main/.github/workflows/docs_publish_ci.yml>` action.
-
-.. tip::
-
-    It is a good idea to `manually build the documentation <#build-the-documentation>`_ before pushing your changes to
-    your branch. This way, you spot syntax errors early on in the development process.
-
-Manual build instructions
-=========================
 
 Install requirements
 --------------------
 
-Building the SLC's `HTML`_ documentation requires `sphinx`_,
-the SLC package and several plugins. All of the above can be
-installed using the following `pip`_ command:
+Building the :slc:`SLC <>` documentation requires `sphinx`_ and several sphinx plugins, the
+``stable_learning_control`` python package, and some `LATEX`_ system dependencies. Most of the above
+can be installed using the following `pip`_ command inside the ``./stable_learning_control`` folder:
 
 .. code-block:: bash
 
-    pip install -e .[docs]
+    pip install .[docs]
 
-.. _`sphinx`: http://www.sphinx-doc.org/en/master
-.. _`pip`: https://pypi.org/project/pip/
+To install the `LATEX`_ system dependencies, you can use the following command:
 
-If you also want to build the `LATEX`_ documentation, you have to install the `texlive-full`_
-package.
+.. code-block:: bash
 
-.. _`texlive-full`: https://tug.org/texlive/
+    sudo apt-get install texlive-latex-extra texlive-science
+
+.. _LATEX: https://www.tug.org/texlive/
+.. _sphinx: http://www.sphinx-doc.org/en/master
+.. _pip: https://pypi.org/project/pip/
 
 Build the documentation
 -----------------------
 
-Build HTML documentation
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-To build the `HTML`_ documentation, go into the :slc:`docs/ <tree/main/docs>` directory and run the
-``make html`` command. This command will generate the html documentation
-inside the ``docs/build/html`` directory.
+To build the `HTML`_ documentation, go into the :slc:`docs/ <tree/main/stable_learning_control/docs>`
+directory and run the ``make html`` command. This command will generate the html documentation inside
+the ``docs/build/html`` directory. If the documentation is successfully created, you can also use the
+``make linkcheck`` command to check for broken links.
 
 .. note::
-    Make sure you are in the Conda environment in which you installed the SLC package
-    with it's dependencies.
 
-.. _`HTML`: https://www.w3schools.com/html/
+    Ensure you are in the Conda environment where you installed the ``stable_learning_control``
+    package with its dependencies.
 
-Build LATEX documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To build the `LATEX`_ documentation, go into the :slc:`docs/ <tree/main/docs>` directory and run the
-``make latex`` command. This command will generate the html documentation
-inside the ``docs/build/latex`` directory.
-
-.. _`LATEX`: https://www.latex-project.org/help/documentation/
+.. _HTML: https://www.w3schools.com/html/
 
 Deploying
 ---------
 
-To deploy documentation to the Github Pages site for the repository,
-push the documentation to the :slc:`main <tree/main>` branch and run the
-``make gh-pages`` command inside the :slc:`docs/ <tree/main/docs>` directory.
+The documentation is automatically built and deployed to the Github Pages site by the `Docs workflow`_
+when a new version is released. You must `create a new release`_ to deploy documentation to the Github
+Pages. Additionally, you can manually deploy the documentation through the `GitHub action interface`_
+by running the `Docs workflow`_.
 
-.. warning::
-
-    Please make sure you are on the :slc:`main <tree/main>` branch while building the documentation. Otherwise,
-    errors will greet you.
+.. _`create a new release`: https://rickstaa.dev/stable-learning-control/dev/contributing.html#release-guidelines
+.. _`Docs workflow`: https://github.com/rickstaa/stable-learning-control/actions/workflows/documentation.yml
+.. _`GitHub action interface`: https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#defining-inputs-for-manually-triggered-workflows

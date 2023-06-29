@@ -12,7 +12,7 @@ SLC ships with a simple plotting utility that can be used to plot diagnostics fr
 
 .. seealso::
 
-    For more information on using this utility, see the :ref:`plot utility <plot>` documentation or code :ref:`api`.
+    For more information on this utility, see the :ref:`plot utility <plot>` documentation or code `the API reference <../autoapi/index.html>`_.
 
 .. figure:: ../images/plots/lac/example_lac_performance_plot.svg
     :align: center

@@ -1,4 +1,4 @@
-"""Several Tensorflow helper functions.
+"""Several TensorFlow helper functions.
 """
 import numpy as np
 import tensorflow as tf
@@ -20,12 +20,12 @@ def set_device(device_type="cpu"):
     """
     if device_type.lower() == "cpu":
         tf.config.set_visible_devices([], "GPU")  # Force disable GPU.
-    log_to_std_out(f"Tensorflow is using the {device_type.upper()}.", type="info")
+    log_to_std_out(f"TensorFlow is using the {device_type.upper()}.", type="info")
     return device_type.lower()
 
 
 def mlp(sizes, activation, output_activation=None, name=""):
-    """Create a multi-layered perceptron using Tensorflow.
+    """Create a multi-layered perceptron using TensorFlow.
 
     Args:
         sizes (list): The size of each of the layers.

@@ -1,6 +1,6 @@
 """Soft Actor-Critic algorithm
 
-This module contains the Tensorflow 2.x implementation of the SAC algorithm of
+This module contains the TensorFlow 2.x implementation of the SAC algorithm of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 
 .. note::
@@ -122,7 +122,7 @@ class SAC(tf.keras.Model):
                 is used while creating the network sizes. The environment must satisfy
                 the gymnasium API.
             actor_critic (tf.Module, optional): The constructor method for a
-                Tensorflow Module with an ``act`` method, a ``pi`` module and several
+                TensorFlow Module with an ``act`` method, a ``pi`` module and several
                 ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
                 accept batches of observations as inputs, and the ``Q*`` and ``L``
                 modules should accept a batch of observations and a batch of actions as
@@ -735,7 +735,7 @@ def sac(  # noqa: C901
         env_fn: A function which creates a copy of the environment.
             The environment must satisfy the gymnasium API.
         actor_critic (tf.Module, optional): The constructor method for a
-            Tensorflow Module with an ``act`` method, a ``pi`` module and several ``Q``
+            TensorFlow Module with an ``act`` method, a ``pi`` module and several ``Q``
             or ``L`` modules. The ``act`` method and ``pi`` module should accept batches
             of observations as inputs, and the ``Q*`` and
             ``L`` modules should accept a batch of observations and a batch of actions

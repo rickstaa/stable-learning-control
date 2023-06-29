@@ -1,5 +1,5 @@
 """This module contains several replay buffers that are used in multiple Pytorch and
-Tensorflow algorithms.
+TensorFlow algorithms.
 """
 import numpy as np
 

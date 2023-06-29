@@ -559,7 +559,7 @@ class Logger:
 
         Args:
             what_to_save (object): Any PyTorch model or serializable object containing
-                Tensorflow models.
+                TensorFlow models.
         """
         global tf
         tf = import_tf()  # Import tf if installed otherwise throw warning.
@@ -803,7 +803,7 @@ class Logger:
         # Create tensorboard writer if use_tensorboard == True else delete.
         if self._use_tensorboard and not self.tb_writer:  # Create writer object.
             if self._use_tf_backend:
-                self.log("Using Tensorflow as the Tensorboard backend.", type="info")
+                self.log("Using TensorFlow as the Tensorboard backend.", type="info")
                 tf = import_tf()  # Import tf if installed otherwise throw warning.
                 self.tb_writer = tf.summary.create_file_writer(self.output_dir)
             else:
@@ -846,7 +846,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -900,7 +900,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -956,7 +956,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1010,7 +1010,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1034,7 +1034,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1058,7 +1058,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1081,7 +1081,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1168,7 +1168,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1191,7 +1191,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1215,7 +1215,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1238,7 +1238,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1261,7 +1261,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1287,7 +1287,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1313,7 +1313,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1343,7 +1343,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:
@@ -1367,7 +1367,7 @@ class Logger:
 
         Raises:
             NotImplementedError: Raised if you try to call this method when using the
-                Tensorflow backend.
+                TensorFlow backend.
         """
         self.use_tensorboard = True  # Make sure SummaryWriter exists.
         if self._use_tf_backend:

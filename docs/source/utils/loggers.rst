@@ -14,15 +14,14 @@ SLC ships with basic logging tools, implemented in the classes
 and :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger`. The Logger
 class contains most of the basic functionality for saving diagnostics,
 hyperparameter configurations, the state of a training run, and the trained model. The EpochLogger
-class adds a thin layer on top of that to make it easy to track the average, standard deviation, min,
-and max value of a diagnostic over each epoch and across MPI workers.
+class adds a thin layer to make it easy to track a diagnostic's average, standard deviation, min,
+and max value over each epoch and across MPI workers.
 
 .. admonition:: You Should Know
 
     All SLC algorithm implementations use an EpochLogger.
 
-
-These loggers allow you to write these diagnostic to the ``stdout``, a ``csv/txt`` file and/or :tb:`Tensorboard <>`.
+These loggers allow you to write these diagnostics to the ``stdout``, a ``csv/txt`` file and/or :tb:`Tensorboard <>`.
 
 Examples
 --------
@@ -53,12 +52,12 @@ The internal state is wiped clean after the call to :meth:`~stable_learning_cont
 (to prevent leakage into the statistics at the next epoch). Finally, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular`
 is called to write the diagnostics to file, Tensorboard and/or stdout.
 
-Next, let's use the :torch:`Pytorch Classifier <tutorials/beginner/blitz/cifar10_tutorial.html>` tutorial to look at a full training procedure with the logger embedded, to highlight configuration and model
+Next, let's use the :torch:`Pytorch Classifier <tutorials/beginner/blitz/cifar10_tutorial.html>` tutorial to look at an entire training procedure with the logger embedded, to highlight configuration and model
 saving as well as diagnostic logging:
 
 .. code-block:: python
    :linenos:
-   :emphasize-lines: 13, 52-53, 81-88, 96-98, 108, 138-141, 142, 148, 151-158, 160
+   :emphasize-lines: 13, 51, 52, 80-87, 95-97, 107, 137-140, 141, 147, 150-157, 159
 
     import time
     import math
@@ -100,7 +99,6 @@ saving as well as diagnostic logging:
         npimg = img.numpy()
         plt.imshow(np.transpose(npimg, (1, 2, 0)))
         plt.show()
-
 
     # Simple script for training an CNN on CIFAR10.
     def train_cifar10(
@@ -221,19 +219,21 @@ saving as well as diagnostic logging:
 
         logger.log("Finished Training")
 
-
     if __name__ == "__main__":
         train_cifar10()
 
 In this example, observe that
 
-* On line 52, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` object is initiated. We set the ``std_out`` format to the "tabular" format.
-* On line 53, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_config` is used to save the hyperparameter configuration to a JSON file.
-* On lines 81-88, 96-98, 138-141 and 160 we log information to the ``std_out``.
-* On lines 108 :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver` is used to prepare the logger to save the key elements of the CNN model.
-* On line 142, diagnostics are saved to the logger's internal state via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`.
-* On line 148, the CNN model saved once per epoch via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state`.
-* On lines 61-66, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` and :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular` are used to write the epoch diagnostics to file. Note that the keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` are the same as the keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`. We use the ``tb_write=True`` option to enable Tensorboard logging.
+* on line 13, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` class is imported.
+* On line 51, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` object is initiated. We set the ``std_out`` format to the "tabular" format.
+* On line 52, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_config` is used to save the hyperparameter configuration to a JSON file.
+* On lines 80-87, 95-97, 137-140 and 159 we log information to the ``std_out``.
+* On lines 107 :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver` is used to prepare the logger to save the key elements of the CNN model.
+* On line 141, diagnostics are saved to the logger's internal state via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`.
+* On line 147, the CNN model saved once per epoch via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state`.
+* On lines 60-65, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` and :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular` are
+  used to write the epoch diagnostics to file. Note that the keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` are the same as the
+  keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`. We use the ``tb_write=True`` option to enable Tensorboard logging.
 
 After this script has finished, the following files should be added to a ``/tmp/experiments/<TIMESTAMP>`` folder:
 
@@ -244,34 +244,33 @@ After this script has finished, the following files should be added to a ``/tmp/
 
 You can then use the ``tensorboard --logdir=/tmp/experiments`` command to see the diagnostics in tensorboard.
 
-Logging and Tensorflow
+Logging and TensorFlow
 ----------------------
 
-The preceding example was given in Pytorch. For Tensorflow, everything is the same except for L42-43:
+The preceding example was given in Pytorch. For TensorFlow, everything is the same except for L42-43:
 instead of :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver`, you would
 use :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_tf_saver` and you would pass it
-:tf:`a Tensorflow Module <nn>` (the algorithm you are training) as an argument.
+:tf:`a TensorFlow Module <nn>` (the algorithm you train) as an argument.
 
 The behavior of :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state` is the same as in the
 PyTorch case: each time it is called,
-it'll save the latest version of the Tensorflow module.
+it'll save the latest version of the TensorFlow module.
+
 
 Logging and MPI
 ---------------
 
 .. admonition:: You Should Know
 
-    Several RL algorithms are easily parallelized by using MPI to average gradients and/or other
-    key quantities. The SLC loggers are designed to be well-behaved when using
-    MPI: things will only get written to stdout, file or Tensorboard from the process with rank 0. But
-    information from other processes isn't lost if you use the EpochLogger: everything which
-    is passed into EpochLogger via ``store``, regardless of which process it's stored in, gets
-    used to compute average/std/min/max values for a diagnostic.
-
+    Several RL algorithms are easily parallelized using MPI to average gradients and/or
+    other key quantities. The SLC loggers are designed to be well-behaved when using MPI:
+    things will only get written to stdout, file or Tensorboard from the process with rank
+    1. But information from other processes is preserved if you use the EpochLogger.
+    2. Everything passed into EpochLogger via ``store``, regardless of which process
+    3. it's stored in, gets used to compute average/std/min/max values for a diagnostic.
 
 Logger Classes
 ==============
-
 
 .. autoclass:: stable_learning_control.utils.log_utils.logx.Logger
     :members:
