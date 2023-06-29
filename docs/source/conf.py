@@ -101,7 +101,7 @@ intersphinx_mapping = {
         "https://www.tensorflow.org/api_docs/python",
         "https://github.com/mr-ubik/tensorflow-intersphinx/raw/master/tf2_py_objects.inv",
     ),
-    "pandas": ("http://pandas.pydata.org/pandas-docs/stable", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "numpy": ("https://numpy.org/doc/stable", None),
     "stable_gym": ("https://rickstaa.dev/stable-gym", None),
 }

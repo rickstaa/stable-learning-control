@@ -30,6 +30,8 @@ See the corresponding module documentation for more information on a given utili
 
 .. autofunction:: stable_learning_control.run.run
 
+.. _exp_grid_utility:
+
 ExperimentGrid utility
 ======================
 
@@ -39,6 +41,8 @@ SLC ships with a tool called ExperimentGrid for making hyperparameter ablations 
 
 .. autoclass:: stable_learning_control.control.utils.run_utils.ExperimentGrid
     :members:
+
+.. _exp_call_utility:
 
 Calling Experiments utility
 ===========================

@@ -16,8 +16,8 @@ Lyapunov Actor-Critic
 
 .. _`Soft Actor-Critic (SAC)`: https://arxiv.org/abs/1801.01290
 .. _`Haarnoja et al., 2019`: https://arxiv.org/abs/1801.01290
-.. _`Lyapunov Actor-Critic (LAC)`: http://arxiv.org/abs/2004.14288
-.. _`Han et al., 2020`: http://arxiv.org/abs/2004.14288
+.. _`Lyapunov Actor-Critic (LAC)`: https://arxiv.org/abs/2004.14288
+.. _`Han et al., 2020`: https://arxiv.org/abs/2004.14288
 
 
 .. important::
@@ -76,7 +76,7 @@ parameterised by deep neural networks, are jointly learned. In this way, the act
 system while only choosing actions guaranteed to be stable in mean cost. This inherent stability makes
 the LAC algorithm incredibly useful for stabilising and tracking robotic systems tasks.
 
-.. _`Han et. al 2019`: http://arxiv.org/abs/2004.14288
+.. _`Han et. al 2019`: https://arxiv.org/abs/2004.14288
 .. _`Lyapunov stability`: https://en.wikipedia.org/wiki/Lyapunov_stability
 .. _`Lyapunov critic function`: https://en.wikipedia.org/wiki/Lyapunov_function
 .. _`Lyapunov's stability conditions`: https://www.cds.caltech.edu/~murray/courses/cds101/fa02/caltech/mls93-lyap.pdf
@@ -195,7 +195,7 @@ Further Reading
 
 For more information on the LAC algorithm, please check out the original paper of `Han et al., 2020`_.
 
-.. _`Han et al., 2020`: http://arxiv.org/abs/2004.14288
+.. _`Han et al., 2020`: https://arxiv.org/abs/2004.14288
 
 
 Pseudocode
@@ -278,7 +278,7 @@ Relevant Papers
 
 .. _`Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor`: https://arxiv.org/abs/1801.01290
 .. _`Soft Actor-Critic: Algorithms and Applications`: https://arxiv.org/abs/1812.05905
-.. _`Actor-Critic Reinforcement Learning for Control with Stability Guarantee`: http://arxiv.org/abs/2004.14288
+.. _`Actor-Critic Reinforcement Learning for Control with Stability Guarantee`: https://arxiv.org/abs/2004.14288
 .. _`The general problem of the stability of motion`: https://www.researchgate.net/publication/242019659_Alexandr_Mikhailovich_Liapunov_The_general_problem_of_the_stability_of_motion_1892
 
 Acknowledgements
