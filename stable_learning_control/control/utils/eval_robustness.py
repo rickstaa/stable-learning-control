@@ -4,10 +4,8 @@ disturbances: A disturbance applied during the environment step and a perturbati
 added to the environmental parameters. For the functions in this module to work work,
 these disturbances should be implemented as methods on the environment. The
 :stable-gym:`Stable Gym <>` package contains a 	:class:`~stable_gym.common.disturber.Disturber`
-class from which a gymnasium environment can inherit to add these methods. See the `Robustness
-Evaluation Documentation
-<https://rickstaa.github.io/stable-learning-control/control/robustness_eval.html>`_
-for more information.
+class from which a gymnasium environment can inherit to add these methods. See the :ref:`Robustness
+Evaluation Documentation <robustness_eval>`_ for more information.
 """  # noqa: E501
 import math
 import os

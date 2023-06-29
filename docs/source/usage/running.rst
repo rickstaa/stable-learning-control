@@ -16,8 +16,8 @@ SLC ships with a convenient :ref:`command line interface (CLI) <runner>` that le
 quickly launch any algorithm (with any choices of hyperparameters) from the command line.
 It also serves as a thin wrapper over the utilities for watching/evaluating the trained
 policies and plotting. However, that functionality is not discussed on this page (for
-those details, see the pages on `experiment outputs`_, `robustness eval`_ and 
-`plotting`_).
+those details, see the pages on :ref:`experiment outputs <saving_and_loading>`, 
+:ref:`robustness eval <robustness_eval>` and :ref:`plotting`).
 
 The standard way to run an SLC algorithm from the command line is
 
@@ -31,10 +31,6 @@ eg:
 
     python -m stable_learning_control.run sac --env Walker2d-v2 --exp_name walker
 
-.. _`experiment outputs`: ./saving_and_loading.html
-.. _`robustness eval`: ./eval_robustness.html
-.. _`plotting`: ./plotting.html
-
 .. admonition:: You Should Know
 
     If you are using ZShell: ZShell interprets square brackets as special characters. SLC
@@ -42,7 +38,7 @@ eg:
     them or try the solution recommended `here`_
     if you want to escape them by default.
 
-.. _`here`: http://kinopyo.com/en/blog/escape-square-bracket-by-default-in-zsh
+.. _`here`: https://kinopyo.com/en/blog/escape-square-bracket-by-default-in-zsh
 
 .. admonition:: Detailed Quickstart Guide
 
@@ -59,7 +55,7 @@ eg:
 
     ``clip_ratio``, ``hid``, and ``act`` are flags to set some algorithm hyperparameters. You
     can provide multiple values for hyperparameters to run multiple experiments. Check the docs
-    to see what hyperparameters you can set (click here for the `SAC documentation`_).
+    to see what hyperparameters you can set (click here for the :ref:`SAC documentation <sac>`).
 
     ``hid`` and ``act`` are :ref:`special shortcut flags <shortcut_flags>` for setting the
     hidden sizes and activation function for the neural networks trained by the algorithm.
@@ -85,9 +81,8 @@ eg:
 
         path/to/data/YY-MM-DD_sac_ant_cli0-1_h32-32/YY-MM-DD_HH-MM-SS-sac_ant_cli0-1_h32-32_seed10
 
-.. _`SAC documentation`: ./algorithms/sac.html#documentation
-.. _`special shortcut flags`: ./running.html#shortcut-flags
-.. _`Save directory names`: ./running.html#where-results-are-saved
+.. _`special shortcut flags`: #shortcut-flags
+.. _`Save directory names`: #where-results-are-saved
 
 Choosing PyTorch or TensorFlow from the Command Line
 ----------------------------------------------------
@@ -121,7 +116,7 @@ is a valid keyword arg for the function call of an algorithm, you can set values
 ``--kwarg``.
 
 To find out what keyword args are available, see either the docs page for :ref:`an algorithm <algos>`, 
-`the API reference <../autoapi/index.html>`_ or try
+:ref:`the API reference <autoapi>` or try
 
 .. parsed-literal::
 
@@ -492,7 +487,7 @@ Using ExperimentGrid
 --------------------
 
 An easy way to find good hyperparameters is to run the same algorithm with many possible hyperparameters. LC ships with
-a simple tool for facilitating this, called `ExperimentGrid`_.
+a simple tool for facilitating this, called :ref:`ExperimentGrid <exp_grid_utility>`.
 
 Consider the example in ``stable_learning_control/examples/pytorch/sac_exp_grid_search.py``:
 
@@ -519,16 +514,12 @@ After all parameters have been added,
     eg.run(thunk, \*\*run_kwargs)
 
 runs all experiments in the grid (one experiment per valid configuration), by providing the configurations as kwargs to the
-function ``thunk``. ``ExperimentGrid.run`` uses a function named `call_experiment`_ to launch ``thunk``, and ``**run_kwargs``
-specify behaviors for ``call_experiment``. See `the documentation page`_ for details.
+function ``thunk``. ``ExperimentGrid.run`` uses a function named :ref:`call_experiment <exp_call_utility>` to launch ``thunk``, and ``**run_kwargs``
+specify behaviors for ``call_experiment``. See :ref:`the documentation page <exp_grid_utility>` for details.
 
 Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs:hidden_sizes`` in ``ExperimentGrid``), the
 basic behaviour of ``ExperimentGrid`` is the same as running things from the command line.
 (In fact, ``stable_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
-
-.. _`ExperimentGrid`: ../utils/run_utils.html#experimentgrid-utility
-.. _`the documentation page`: ../utils/run_utils.html#experimentgrid-utility
-.. _`call_experiment`: ../utils/run_utils.html#calling-experiments-utility
 
 Using the Ray tuning package
 -----------------------------

@@ -156,7 +156,7 @@ is successfully saved alongside the agent, you can watch the trained agent act i
 
 .. seealso::
 
-    For more information on using this utility, see the :ref:`test_policy` documentation or the code `the API reference <../autoapi/index.html>`_.
+    For more information on using this utility, see the :ref:`test_policy` documentation or the code :ref:`the API reference <autoapi>`.
 
 .. _manual_policy_testing:
 

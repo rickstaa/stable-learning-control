@@ -1,7 +1,5 @@
 *   \[ ] Cleanup docs.
 
-*   \[ ] Fix environment not found error place.
-
 *   \[ ] check broken links.
 
 *   \[ ] Add tensorflow warning to running.

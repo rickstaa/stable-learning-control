@@ -1,3 +1,4 @@
+.. _robustness_eval:
 
 =====================
 Evaluating Robustness
@@ -14,7 +15,7 @@ while also applying several disturbances. You can run it with:
 
 .. seealso::
 
-    For more information on all the input arguments, see the :ref:`robustness evaluation utility <eval_robustness>` documentation or code `the API reference <../autoapi/index.html>`_.
+    For more information on all the input arguments, see the :ref:`robustness evaluation utility <eval_robustness>` documentation or code :ref:`the API reference <autoapi>`.
 
 .. important::
 

@@ -22,13 +22,13 @@ To install the `LATEX`_ system dependencies, you can use the following command:
     sudo apt-get install texlive-latex-extra texlive-science
 
 .. _LATEX: https://www.tug.org/texlive/
-.. _sphinx: http://www.sphinx-doc.org/en/master
+.. _sphinx: https://www.sphinx-doc.org/en/master
 .. _pip: https://pypi.org/project/pip/
 
 Build the documentation
 -----------------------
 
-To build the `HTML`_ documentation, go into the :slc:`docs/ <tree/main/stable_learning_control/docs>`
+To build the `HTML`_ documentation, go into the :slc:`docs/ <tree/main/docs>`
 directory and run the ``make html`` command. This command will generate the html documentation inside
 the ``docs/build/html`` directory. If the documentation is successfully created, you can also use the
 ``make linkcheck`` command to check for broken links.
