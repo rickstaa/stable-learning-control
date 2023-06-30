@@ -1,5 +1,4 @@
-"""Several logging related helper functions.
-"""
+"""Several logging related helper functions."""
 import os.path as osp
 import time
 
@@ -45,7 +44,7 @@ def colorize(string, color, bold=False, highlight=False):
 
     .. seealso::
         This function wraps the :meth:`gym.utils.colorize` function to make sure that it
-        also works with empty empty color strings.
+        also works with empty color strings.
 
     Args:
         string (str): The string you want to colorize.
@@ -171,7 +170,6 @@ def setup_logger_kwargs(
         dict: logger_kwargs
             A dict containing output_dir and exp_name.
     """
-
     # Datestamp forcing.
     datestamp = datestamp or FORCE_DATESTAMP
 

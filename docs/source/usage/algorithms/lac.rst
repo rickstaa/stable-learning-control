@@ -237,13 +237,13 @@ Implementation
 Algorithm: PyTorch Version
 --------------------------
 
-.. autofunction:: stable_learning_control.control.algos.pytorch.lac.lac
+.. autofunction:: stable_learning_control.algos.pytorch.lac.lac
 
 Saved Model Contents: PyTorch Version
 -------------------------------------
 
 The PyTorch version of the LAC algorithm is implemented by subclassing the :class:`torch.nn.Module` class. As a
-result the model weights are saved using the ``model_state`` dictionary ( :attr:`~stable_learning_control.control.algos.pytorch.lac.LAC.state_dict`). 
+result the model weights are saved using the ``model_state`` dictionary ( :attr:`~stable_learning_control.algos.pytorch.lac.LAC.state_dict`). 
 These saved weights can be found in the ``torch_save/model_state.pt`` file. For an example of how to load a model using
 this file, see :ref:`saving_and_loading` or the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html>`.
 
@@ -255,7 +255,7 @@ Algorithm: TensorFlow Version
     The TensorFlow version is still experimental. It is not guaranteed to work, and it is not
     guaranteed to be up-to-date with the PyTorch version.
 
-.. autofunction:: stable_learning_control.control.algos.tf2.lac.lac
+.. autofunction:: stable_learning_control.algos.tf2.lac.lac
 
 Saved Model Contents: TensorFlow Version
 ----------------------------------------

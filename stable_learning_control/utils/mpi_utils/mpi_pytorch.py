@@ -1,4 +1,8 @@
 """Helper methods for managing Pytorch MPI processes.
+
+.. note::
+    This module is not yet used in any of the current algorithms, but is kept here for
+    future reference.
 """
 import numpy as np
 import torch
@@ -11,8 +15,8 @@ from stable_learning_control.utils.mpi_utils.mpi_tools import (  # proc_id,
 
 
 def setup_pytorch_for_mpi():
-    """Avoid slowdowns caused by each separate process's PyTorch using
-    more than its fair share of CPU resources.
+    """Avoid slowdowns caused by each separate process's PyTorch using more than its
+    fair share of CPU resources.
     """
     # print(
     #     "Proc %d: Reporting original number of Torch threads as %d."

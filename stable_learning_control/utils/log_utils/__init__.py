@@ -10,4 +10,4 @@ from stable_learning_control.utils.log_utils.helpers import (
     log_to_std_out,
     setup_logger_kwargs,
 )
-from stable_learning_control.utils.log_utils.logx import EpochLogger, Logger
+from stable_learning_control.utils.log_utils.logx import EpochLogger

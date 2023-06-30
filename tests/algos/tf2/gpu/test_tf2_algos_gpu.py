@@ -13,8 +13,8 @@ import tensorflow as tf
 from gymnasium.utils import seeding
 
 ALGOS = [
-    "stable_learning_control.control.algos.tf2.lac.lac",
-    "stable_learning_control.control.algos.tf2.sac.sac",
+    "stable_learning_control.algos.tf2.lac.lac",
+    "stable_learning_control.algos.tf2.sac.sac",
 ]
 
 
@@ -30,10 +30,10 @@ class TestTF2AlgosGPU:
 
     def test_reproducibility(self, algo, device, snapshot):
         """Checks if the algorithm is still working as expected."""
-        # Check if tensorflow is available.
+        # Check if TensorFlow is available.
         if not importlib.util.find_spec("tensorflow"):
             pytest.skip(
-                "TensorFlow not available. Please install it using `pip install .[tf]`."
+                "TensorFlow not available. Please install it using `pip install .[tf2]`."
             )
 
         # Check if the GPU is available.

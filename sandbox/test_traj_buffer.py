@@ -2,10 +2,8 @@
 """
 import gymnasium as gym
 
-# from stable_learning_control.control.common.buffers import TrajectoryBuffer
-from stable_learning_control.control.algos.pytorch.common.buffers import (
-    TrajectoryBuffer,
-)
+# from stable_learning_control.common.buffers import TrajectoryBuffer
+from stable_learning_control.algos.pytorch.common.buffers import TrajectoryBuffer
 
 if __name__ == "__main__":
     # Create dummy environment.

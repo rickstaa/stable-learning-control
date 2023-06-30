@@ -1,5 +1,4 @@
-"""Contains several helper functions that are used across all the SLC modules.
-"""
+"""Contains several helper functions that are used throughout the SLC package."""
 import itertools
 import string
 from collections.abc import Iterable
@@ -77,20 +76,6 @@ def get_unique_list(input_list, trim=True):
         return list({item for item in input_list if item != ""})
     else:
         return list({item for item in input_list})
-
-
-def sum_tuples(*args):
-    """Returns the elementwise sum of a several tuples/lists.
-
-    Args:
-        *args (Union[tuple, list]): Input arguments for which you want to calculate the
-            elementwise sum.
-
-    Returns:
-        tuple: A tuple containing the elementwise sum of the input tuples/lists.
-    """
-    elem_sum = [sum(x) for x in zip(*args)]
-    return elem_sum[0] if len(elem_sum) == 1 else tuple(elem_sum)
 
 
 def combine_shapes(*args):
@@ -176,7 +161,7 @@ def all_bools(vals):
     return all([isinstance(v, bool) for v in vals])
 
 
-def is_scalar(obj):  # noqa: C901
+def is_scalar(obj):
     """Recursive function that checks whether a input
 
     Args:

@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac]
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.lac.lac]
   ReplayBuffer(
     act_buf=array([[0.54784673],
          [0.40498233],
@@ -29,22 +29,22 @@
     size=800,
   )
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].1
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.lac.lac].1
   -0.5342466831207275
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].2
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.lac.lac].2
   -1.463881492614746
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].3
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.lac.lac].3
   0.38886213302612305
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].4
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.lac.lac].4
   0.36924219131469727
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.lac.lac].5
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.lac.lac].5
   1.1571035385131836
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac]
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.sac.sac]
   ReplayBuffer(
     act_buf=array([[0.54784673],
          [0.10906005],
@@ -74,18 +74,18 @@
     size=800,
   )
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].1
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.sac.sac].1
   -0.7410397529602051
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].2
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.sac.sac].2
   -0.9618521928787231
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].3
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.sac.sac].3
   -0.05327260494232178
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].4
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.sac.sac].4
   -0.5727919340133667
 # ---
-# name: TestTF2Algos.test_reproducibility[stable_learning_control.control.algos.tf2.sac.sac].5
+# name: TestTF2Algos.test_reproducibility[stable_learning_control.algos.tf2.sac.sac].5
   0.20232582092285156
 # ---

@@ -3,9 +3,9 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import sys
 from datetime import datetime
 from importlib.metadata import version
-import sys
 
 # Mock mpi4py to get around having to install it on RTD server (which fails)
 # Also to mock PyTorch, because it is too large for the RTD server to download
@@ -51,6 +51,7 @@ extensions = [
     "sphinx.ext.viewcode",  # Add a link to the Python source code for python objects.
     "myst_parser",  # Support for MyST Markdown syntax.
     "autoapi.extension",  # Generate API documentation from code.
+    "sphinx.ext.autodoc",  # Include documentation from docstrings.
     "sphinx.ext.imgmath",  # Render math as images.
     "sphinx.ext.todo",  # Support for todo items.
 ]
@@ -143,9 +144,8 @@ html_context = {
     "conf_py_path": "/docs/source/",  # needs leading and trailing slashes!
 }
 
-
 # -- External links dictionary -----------------------------------------------
-# Here you will find some often used global url definitions and intersphinx mappings.
+# Here you will find some often used global url definitions.
 extlinks = {
     "slc": ("https://github.com/rickstaa/stable-learning-control/%s", None),
     "slc-docs": ("https://stable-learning-control.readthedocs.io/en/latest/%s", None),
@@ -156,7 +156,7 @@ extlinks = {
     "stable-gym": ("https://github.com/rickstaa/stable-gym/%s", None),
     "ros-gazebo-gym": ("https://github.com/rickstaa/ros-gazebo-gym/%s", None),
     "gymnasium": ("https://gymnasium.farama.org/%s", None),
-    "tf": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
+    "tf2": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
     "tb": ("https://www.tensorflow.org/tensorboard/%s", None),
 }
 

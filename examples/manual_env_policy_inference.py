@@ -4,7 +4,7 @@ the CLI fails.
 import gymnasium as gym
 import stable_gym  # Imports the in this example used environment  # noqa: F401
 
-from stable_learning_control.control.utils.test_policy import (
+from stable_learning_control.utils.test_policy import (
     load_policy_and_env,
     load_pytorch_policy,
     load_tf_policy,

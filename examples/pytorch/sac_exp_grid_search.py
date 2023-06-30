@@ -1,9 +1,8 @@
 """Example script that shows you how to use the ExperimentGrid utility for a PyTorch algorithm.
 
 This utility can helps you to find the right hyperparameters for you agent and environment using a
-grid search. This is equivalent to running the
-``python -m stable_learning_control.run`` command line command with multiple
-parameters.
+grid search. This is equivalent to running the ``python -m stable_learning_control.run``
+command line command with multiple parameters.
 
 You can modify this script to your liking to run a grid search for your algorithm
 and environment.
@@ -19,8 +18,8 @@ import stable_gym  # Imports the in this example used environment  # noqa: F401
 import torch
 
 # Import the RL agent you want to perform the grid search for.
-from stable_learning_control.control.algos.pytorch.sac.sac import sac
-from stable_learning_control.control.utils.run_utils import ExperimentGrid
+from stable_learning_control.algos.pytorch.sac import sac
+from stable_learning_control.utils.run_utils import ExperimentGrid
 
 # Scriptparameters.
 ENV_NAME = "Oscillator-v1"  # The environment on which you want to train the agent.

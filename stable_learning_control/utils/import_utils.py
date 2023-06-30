@@ -1,5 +1,5 @@
-"""Small function that can be used to import modules and classes while repressing the
-ImportError when a module is not found.
+"""Contains functions that can be used to import modules and classes while repressing
+the ImportError when a module is not found.
 """
 import importlib
 import sys
@@ -7,12 +7,10 @@ import sys
 IMPORT_WARNING = "No module named '{}'. Did you run the `pip install .{}` command?"
 
 
-def lazy_importer(  # noqa: C901
-    module_name, class_name=None, frail=False, dry_run=False
-):
-    """A simple lazy importer tries to import a module but is to lazy to complain when a
-    module is not installed. This function can be used to (lazily) load modules meaning
-    only load modules if they are available.
+def lazy_importer(module_name, class_name=None, frail=False, dry_run=False):
+    """A simple lazy importer tries to import a module but is too lazy to complain when
+    a module is not installed. This function can be used to (lazily) load modules
+    meaning only load modules if they are available.
 
     Args:
         module_name (str): The python module you want to import
@@ -20,7 +18,7 @@ def lazy_importer(  # noqa: C901
         class_name (str): The python class you want to import. By default ``None``.
         frail (bool, optional): Throw ImportError when module can not be imported.
             Defaults to ``False``.
-        dry_run (bool, optional): Do not actually import tensorflow if available.
+        dry_run (bool, optional): Do not actually import TensorFlow if available.
             Defaults to ``False``.
 
     Raises:
@@ -53,7 +51,7 @@ def lazy_importer(  # noqa: C901
                 raise ImportError(
                     IMPORT_WARNING.format(
                         module_name,
-                        "[tf]"
+                        "[tf2]"
                         if module_name.lower() == "tensorflow"
                         else ("[tuning]" if module_name == "ray" else ""),
                     )
@@ -66,7 +64,7 @@ def lazy_importer(  # noqa: C901
         raise ImportError(
             IMPORT_WARNING.format(
                 module_name,
-                "[tf]"
+                "[tf2]"
                 if module_name.lower() == "tensorflow"
                 else ("[tuning]" if module_name == "ray" else ""),
             )
@@ -74,7 +72,7 @@ def lazy_importer(  # noqa: C901
 
 
 def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
-    """Tries to import tensorflow and throws custom warning if tensorflow is not
+    """Tries to import TensorFlow and throws custom warning if TensorFlow is not
     installed.
 
     Args:
@@ -83,13 +81,13 @@ def import_tf(module_name=None, class_name=None, frail=True, dry_run=False):
             imported.
         class_name (str): The python class you want to import (eg. Adam
             from :mod:`tensorflow.keras.optimizers`). By default ``None``.
-        frail (bool, optional): Throw ImportError when tensorflow can not be imported.
+        frail (bool, optional): Throw ImportError when TensorFlow can not be imported.
             Defaults to ``true``.
-        dry_run (bool, optional): Do not actually import tensorflow if available.
+        dry_run (bool, optional): Do not actually import TensorFlow if available.
             Defaults to ``False``.
 
     Raises:
-        ImportError: A custom import error if tensorflow is not installed.
+        ImportError: A custom import error if TensorFlow is not installed.
 
     Returns:
         Union[:obj:`tf`, :obj:`bool`]:

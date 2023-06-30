@@ -12,8 +12,8 @@ import pytest
 from gymnasium.utils import seeding
 
 ALGOS = [
-    "stable_learning_control.control.algos.pytorch.lac.lac",
-    "stable_learning_control.control.algos.pytorch.sac.sac",
+    "stable_learning_control.algos.pytorch.lac.lac",
+    "stable_learning_control.algos.pytorch.sac.sac",
 ]
 
 

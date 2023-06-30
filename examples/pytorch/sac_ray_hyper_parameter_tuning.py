@@ -1,9 +1,8 @@
 """Example script that shows you how you can use the Ray hyperparameter Tuner on a
 Pytorch algorithm.
 
-Can be used to tune the hyper parameters of any of the Stable Learning Control RL
-or IL agents using the
-`Ray tuning package <https://docs.ray.io/en/latest/tune/index.htm>`_.
+Can be used to tune the hyper parameters of any of the Stable Learning Control RL agent
+using the `Ray tuning package <https://docs.ray.io/en/latest/tune/index.htm>`_.
 
 How to use
 ----------
@@ -22,7 +21,7 @@ import numpy as np
 import stable_gym  # Imports the in this example used environment  # noqa: F401
 
 # Import the algorithm we want to tune.
-from stable_learning_control.control.algos.pytorch.sac.sac import sac
+from stable_learning_control.algos.pytorch.sac import sac
 from stable_learning_control.utils.import_utils import lazy_importer
 
 ray = lazy_importer(module_name="ray", frail=True)

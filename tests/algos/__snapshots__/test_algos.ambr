@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac]
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac]
   ReplayBuffer(
     act_buf=array([[0.54784673],
          [1.4406173 ],
@@ -30,22 +30,22 @@
     size=800,
   )
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].1
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].1
   1.3941729068756104
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].2
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].2
   -1.24482262134552
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].3
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].3
   -0.03907895088195801
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].4
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].4
   0.3105490207672119
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.lac.lac].5
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].5
   0.8348543643951416
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac]
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac]
   ReplayBuffer(
     act_buf=array([[ 0.54784673],
          [ 1.2861104 ],
@@ -76,18 +76,18 @@
     size=800,
   )
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].1
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].1
   -0.7179003953933716
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].2
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].2
   -1.0258972644805908
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].3
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].3
   -1.3354922533035278
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].4
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].4
   1.4214999675750732
 # ---
-# name: TestTorchAlgos.test_reproducibility[stable_learning_control.control.algos.pytorch.sac.sac].5
+# name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].5
   -1.085166096687317
 # ---

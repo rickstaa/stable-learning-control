@@ -117,7 +117,6 @@ The ``tf2_save`` directory contains:
 |                           | | :ref:`hardware deployment documentation<hardware>` for more info. |
 +---------------------------+---------------------------------------------------------------------+
 
-.. _`hardware deployment documentation`: ../hardware/hardware.html # TODO: REplace
 .. _`SavedModel`: https://www.tensorflow.org/guide/saved_model
 .. _`TensorFlow save and load documentation`: https://www.tensorflow.org/tutorials/keras/save_and_load
 
@@ -185,7 +184,7 @@ or :ref:`load_tf2_policy` documentation below to load the policy in a Python scr
 .. code-block::
 
     >>> import gym
-    >>> from stable_learning_control.control.utils.test_policy import load_pytorch_policy, run_policy
+    >>> from stable_learning_control.utils.test_policy import load_pytorch_policy, run_policy
     >>> import your_env
     >>> env = gym.make('<YOUR_ENV_NAME>')
     >>> policy = load_pytorch_policy("/path/to/output_directory", env=env)
@@ -195,8 +194,8 @@ or :ref:`load_tf2_policy` documentation below to load the policy in a Python scr
     Episode 1    EpRet -346.164      EpLen 99
     ...
 
-If you want to load a Tensorflow agent, please replace the :meth:`~stable_learning_control.control.utils.test_policy.load_pytorch_policy` with
-:meth:`~stable_learning_control.control.utils.test_policy.load_tf_policy`. An example script for manually loading policies can be found in the
+If you want to load a Tensorflow agent, please replace the :meth:`~stable_learning_control.utils.test_policy.load_pytorch_policy` with
+:meth:`~stable_learning_control.utils.test_policy.load_tf_policy`. An example script for manually loading policies can be found in the
 ``examples`` folder (i.e. :slc:`manual_env_policy_inference.py <blob/main/examples/manual_env_policy_inference.py>`).
 
 .. _load_pytorch_policy:
@@ -216,7 +215,7 @@ the :torch:`PyTorch documentation <tutorials/beginner/saving_loading_models.html
 
     from stable_learning_control.utils.log_utils.logx import EpochLogger
 
-    from stable_learning_control.control.algos.pytorch import LAC
+    from stable_learning_control.algos.pytorch import LAC
 
     MODEL_LOAD_FOLDER = "./data/lac/oscillator-v1/runs/run_1614680001"
     MODEL_PATH = osp.join(MODEL_LOAD_FOLDER, "torch_save/model_state.pt")
@@ -249,7 +248,7 @@ In this example, observe that
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
 
-Additionally, each algorithm also contains a :obj:`~stable_learning_control.control.algos.pytorch.lac.LAC.restore` method, which serves as a
+Additionally, each algorithm also contains a :obj:`~stable_learning_control.algos.pytorch.lac.LAC.restore` method, which serves as a
 wrapper around the :obj:`torch.load` and  :obj:`torch.nn.Module.load_state_dict` methods.
 
 .. _load_tf2_policy:
@@ -266,7 +265,7 @@ Load TensorFlow Policy
 
     from stable_learning_control.utils.log_utils.logx import EpochLogger
 
-    from stable_learning_control.control.algos.tf2 import LAC
+    from stable_learning_control.algos.tf2 import LAC
 
     MODEL_LOAD_FOLDER = "./data/lac/oscillator-v1/runs/run_1614673367"
     MODEL_PATH = osp.join(MODEL_LOAD_FOLDER, "tf2_save")
@@ -302,7 +301,7 @@ In this example, observe that
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
 
-Additionally, each algorithm also contains a :obj:`~stable_learning_control.control.algos.tf2.lac.LAC.restore` method
+Additionally, each algorithm also contains a :obj:`~stable_learning_control.algos.tf2.lac.LAC.restore` method
 which serves as a wrapper around the :obj:`tf.train.latest_checkpoint` and  :obj:`tf.keras.Model.load_weights` methods.
 
 Using Trained Value Functions
