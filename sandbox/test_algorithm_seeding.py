@@ -6,11 +6,9 @@ import torch
 import torch.nn as nn
 from gymnasium.utils import seeding
 
-from stable_learning_control.control.algos.pytorch.common.buffers import ReplayBuffer
-from stable_learning_control.control.algos.pytorch.lac.lac import (
-    LAC,
-    LyapunovActorCritic,
-)
+from stable_learning_control.algos.pytorch.common.buffers import ReplayBuffer
+from stable_learning_control.algos.pytorch.lac import LAC
+from stable_learning_control.algos.pytorch.policies import LyapunovActorCritic
 
 if __name__ == "__main__":
     env = gym.make("Oscillator-v1")

@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from stable_learning_control.control.common.helpers import validate_observations
-from stable_learning_control.control.utils.test_policy import load_policy_and_env
+from stable_learning_control.utils.eval_robustness import validate_observations
 from stable_learning_control.utils.log_utils import EpochLogger, log_to_std_out
+from stable_learning_control.utils.test_policy import load_policy_and_env
 
 # Disturbance settings.
 # NOTE: In this example we add a noise disturbance to the action
@@ -39,7 +39,7 @@ def noise_disturbance(mean, std):
     return np.random.normal(mean, std)
 
 
-if __name__ == "__main__":  # noqa: C901
+if __name__ == "__main__":
     import argparse
 
     # Retrieve the policy you want to load.

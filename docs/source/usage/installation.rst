@@ -27,10 +27,15 @@ For mac this command can be used:
 
     brew install openmpi
 
-.. attention::
+.. note::
 
     The `Microsoft MPI`_ package can be used for Windows. 
 
+.. attention::
+    The MPI functionality is not yet fully implemented for the SLC algorithms. As a result,
+    the MPI library is not yet required to run the SLC package. However, it is still
+    recommended to install the MPI library as it will be required in the future.
+    
 .. _`mpi4py`: https://mpi4py.readthedocs.io/en/stable/
 .. _`Open MPI`: https://www.open-mpi.org/
 .. _`Microsoft MPI`: https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi
@@ -85,8 +90,9 @@ Installing Stable Learning Control
 After you successfully setup your python environment, you can install the SLC package and its dependencies in
 this environment. The SLC has two versions you can install:
 
-    - A version which uses :torch:`Pytorch <>` as the backend of the RL/IL algorithms.
-    - A **experimental** version which uses :tensorflow:`TensorFlow 2.0 <>` as the RL/IL algorithms.
+    - ``torch``: A version which uses :torch:`Pytorch <>` as the backend of the RL algorithms.
+    - ``tf2``: A **experimental** version which uses :tensorflow:`TensorFlow 2.0 <>` as the backend
+      of the RL algorithms.
 
 .. note::
 
@@ -135,7 +141,7 @@ package with the the following command:
 
 .. code-block:: bash
 
-    pip install -e .[tf]
+    pip install -e .[tf2]
 
 .. warning::
 

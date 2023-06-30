@@ -1,5 +1,4 @@
-"""Module used for managing MPI processes.
-"""
+"""Module used for managing MPI processes."""
 import os
 import subprocess
 import sys

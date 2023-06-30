@@ -1,4 +1,8 @@
 """Helper methods for managing TF2 MPI processes.
+
+.. note::
+    This module is not yet translated to TF2. It is not used by any of the current
+    algorithms, but is kept here for future reference.
 """
 # import numpy as np
 # import tensorflow as tf

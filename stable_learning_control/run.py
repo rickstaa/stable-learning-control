@@ -1,5 +1,5 @@
 """Responsible for creating the CLI for the stable_learning_control package. It can
-be used to run the control, hardware, modelling packages from the terminal.
+be used to start the training of an algorithm, or run any of the other utilities.
 """
 import os
 import os.path as osp
@@ -11,16 +11,16 @@ from textwrap import dedent
 import ruamel.yaml as yaml
 
 from stable_learning_control.common.helpers import flatten, get_unique_list
-from stable_learning_control.control.utils.gym_utils import validate_gym_env
-from stable_learning_control.control.utils.run_utils import ExperimentGrid
-from stable_learning_control.control.utils.safer_eval import safer_eval
 from stable_learning_control.user_config import DEFAULT_BACKEND
+from stable_learning_control.utils.gym_utils import validate_gym_env
 from stable_learning_control.utils.import_utils import import_tf
-from stable_learning_control.utils.log_utils import friendly_err, log_to_std_out
+from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
+from stable_learning_control.utils.run_utils import ExperimentGrid
+from stable_learning_control.utils.safer_eval_util import safer_eval
 from stable_learning_control.version import __version__
 
-# Command line args that will go to ExperimentGrid.run, and must possess unique
-# values (therefore must be treated separately).
+# Command line args that will go to ExperimentGrid.run, and must possess unique values
+# (therefore must be treated separately).
 RUN_KEYS = ["num_cpu", "data_dir", "datestamp"]
 
 # Command line sweetener, allowing short-form flags for common, longer flags.
@@ -46,10 +46,10 @@ SUBSTITUTIONS = {
     "verbose_vars": "logger_kwargs:verbose_vars",
 }
 
-# Only some algorithms can be parallelized (have num_cpu > 1):
+# Only some algorithms can be parallelized (have num_cpu > 1).
 MPI_COMPATIBLE_ALGOS = []
 
-# Algo names (used in a few places)
+# Algo names (used in a few places).
 BASE_ALGO_NAMES = ["sac", "lac"]
 
 
@@ -61,7 +61,7 @@ def _parse_hyperparameter_variants(exp_val):
         exp_val (object): The variable to parse.
 
     Returns:
-        union[:obj:`str`, :obj`list`]: A hyper parameter string or list.
+        union[:obj:`str`, :obj:`list`]: A hyper parameter string or list.
     """
     if not isinstance(exp_val, str):
         return str(exp_val)
@@ -69,11 +69,11 @@ def _parse_hyperparameter_variants(exp_val):
         return get_unique_list(exp_val.replace(" ", ",").split(","))
 
 
-def _parse_exp_cfg(cmd_line_args):  # noqa: C901
-    """This function parses the cmd line args to see if it contains the 'exp_cfg' flag.
-    If this flag is present it uses the 'exp_cfg' file path (next cmd_line arg) to add
-    any hyperparameters found in this experimental configuration file to the cmd line
-    arguments.
+def _parse_exp_cfg(cmd_line_args):
+    """This function parses the cmd line args to see if it contains the ``exp_cfg``
+    flag. If this flag is present it uses the ``exp_cfg`` file path (next cmd_line arg)
+    to add any hyperparameters found in this experimental configuration file to the cmd
+    line arguments.
 
     Args:
         cmd_line_args (list): The cmd line input arguments.
@@ -88,13 +88,15 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
         ``5 3 2``)) to be hyperparmeter variants.
     """
     if "--exp_cfg" in cmd_line_args:
-        cfg_error = False
         exp_cfg_idx = cmd_line_args.index("--exp_cfg")
         cmd_line_args.pop(exp_cfg_idx)  # Remove exp_cfg argument.
 
         # Validate config path.
+        cfg_error = False
         try:
             exp_cfg_file_path = cmd_line_args.pop(exp_cfg_idx)
+            if exp_cfg_file_path.startswith("--"):
+                raise IndexError
             exp_cfg_file_path = (
                 exp_cfg_file_path
                 if exp_cfg_file_path.endswith(".yml")
@@ -154,7 +156,7 @@ def _parse_exp_cfg(cmd_line_args):  # noqa: C901
                     type="warning",
                 )
             else:
-                # Retrieve algorithm if not supplied by user.
+                # Remove 'alg_name' from exp_cfg if '--exp_cfg' was not the first arg.
                 if exp_cfg_idx == 1:
                     if "alg_name" in exp_cfg_params.keys():
                         cmd_line_args.insert(1, exp_cfg_params.pop("alg_name", None))
@@ -190,11 +192,11 @@ def _add_backend_to_cmd(cmd):
         (tuple): tuple containing:
 
             - cmd (:obj:`str`): The new cmd.
-            - backend (:obj:`str`): The used backend (options: ``tf`` or ``pytorch``).
+            - backend (:obj:`str`): The used backend (options: ``tf2`` or ``pytorch``).
 
     Raises:
         AssertError:
-            Raised when a the tensorflow backend is requested but tensorflow is not
+            Raised when a the TensorFlow backend is requested but TensorFlow is not
             installed.
     """
     if cmd in BASE_ALGO_NAMES:
@@ -204,8 +206,8 @@ def _add_backend_to_cmd(cmd):
     else:
         backend = cmd.split("_")[-1]
 
-    # Throw error if tf algorithm is requested but tensorflow is not installed.
-    if backend == "tf":
+    # Throw error if tf algorithm is requested but TensorFlow is not installed.
+    if backend.lower() == "tf2":
         try:
             import_tf(dry_run=True)
         except ImportError as e:
@@ -220,6 +222,8 @@ def _process_arg(arg, backend=None):
 
     Args:
         arg (str): Input argument.
+        backend (str): The machine learning backend you want to use. Options are ``tf2``
+            or ``torch``. By default ``None``, meaning no backend is assumed.
 
     Returns:
         obj: Processed input argument.
@@ -245,7 +249,7 @@ def _add_with_backends(algo_list):
     return algo_list_with_backends
 
 
-def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
+def _parse_and_execute_grid_search(cmd, args):
     """Interprets algorithm name and cmd line args into an ExperimentGrid.
 
     Args:
@@ -253,12 +257,12 @@ def _parse_and_execute_grid_search(cmd, args):  # noqa: C901
         args (list): The command arguments.
 
     Raises:
-        ImportError: A custom import error if tensorflow is not installed.
+        ImportError: A custom import error if TensorFlow is not installed.
     """
     cmd, backend = _add_backend_to_cmd(cmd)
 
     # warning.
-    algo = safer_eval("stable_learning_control.control." + cmd, backend=backend)
+    algo = safer_eval("stable_learning_control." + cmd, backend=backend)
 
     # Before all else, check to see if any of the flags is 'help'.
     valid_help = ["--help", "-h", "help"]
@@ -437,14 +441,11 @@ def run(input_args):
             + str_valid_subs
         )
         print(special_info)
-
     elif cmd in valid_version:
         print("stable_learning_control, version {}".format(__version__))
     elif cmd in valid_utils:
         # Execute the correct utility file.
-        runfile = osp.join(
-            osp.abspath(osp.dirname(__file__)), "control", "utils", cmd + ".py"
-        )
+        runfile = osp.join(osp.abspath(osp.dirname(__file__)), "utils", cmd + ".py")
         args = [sys.executable if sys.executable else "python", runfile] + input_args[
             2:
         ]
@@ -458,13 +459,13 @@ def run(input_args):
 
 if __name__ == "__main__":
     """
-    This is a wrapper allowing command-line interfaces to individual
-    algorithms and the plot / test_policy utilities.
+    This is a wrapper allowing command-line interfaces to individual algorithms and the
+    plot, test policy and test robustness utilities.
 
-    For utilities, it only checks which thing to run, and calls the
-    appropriate file, passing all arguments through.
+    For utilities, it only checks which thing to run, and calls the appropriate file,
+    passing all arguments through.
 
-    For algorithms, it sets up an ExperimentGrid object and uses the
-    ExperimentGrid run routine to execute each possible experiment.
+    For algorithms, it sets up an ExperimentGrid object and uses the ExperimentGrid run
+    routine to execute each possible experiment.
     """
     run(sys.argv)

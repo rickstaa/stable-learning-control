@@ -1,2 +1,3 @@
-"""Contains several functions that are used across all the SLC modules.
+"""Contains several helper functions and classes that are used throughout the SLC
+package.
 """

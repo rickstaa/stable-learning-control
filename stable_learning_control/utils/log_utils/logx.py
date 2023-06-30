@@ -22,7 +22,7 @@ from torch.utils.tensorboard import SummaryWriter
 from stable_learning_control.common.helpers import is_scalar
 from stable_learning_control.user_config import DEFAULT_STD_OUT_TYPE
 from stable_learning_control.utils.import_utils import import_tf
-from stable_learning_control.utils.log_utils import log_to_std_out
+from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 from stable_learning_control.utils.mpi_utils.mpi_tools import (
     mpi_statistics_scalar,
     proc_id,
@@ -77,12 +77,12 @@ class Logger:
             save_checkpoints (bool, optional): Save checkpoints during training.
                 Defaults to ``False``.
             backend (str, optional): The backend you want to use for writing to
-                tensorboard. Options are: ``tf`` or ``torch``. Defaults to ``torch``.
+                tensorboard. Options are: ``tf2`` or ``torch``. Defaults to ``torch``.
 
         Attributes:
             tb_writer (torch.utils.tensorboard.writer.SummaryWriter): A tensorboard
                 writer. This is only created when you log a variable to tensorboard or
-                set the :attr:`.Logger.use_tensorboard` variable to ``True``.
+                set the :attr:`Logger.use_tensorboard` variable to ``True``.
             output_dir (str): The directory in which the log data and models are saved.
             output_file (str): The name of the file in which the progress data is saved.
             exp_name (str): Experiment name.
@@ -125,7 +125,7 @@ class Logger:
         self._checkpoint = 0
         self._save_info_saved = False
 
-        self._use_tf_backend = backend.lower() in ["tf", "tensorflow"]
+        self._use_tf_backend = backend.lower() == "tf2"
         self.tb_writer = None
         self._tabular_to_tb_dict = (
             dict()
@@ -207,10 +207,10 @@ class Logger:
         Args:
             key (str): The name of the diagnostic. If you are logging a
                 diagnostic whose state has previously been saved with
-                :meth:`.EpochLogger.store`, the key here has to match the key you used
+                :meth:`EpochLogger.store`, the key here has to match the key you used
                 there.
             val: A value for the diagnostic. If you have previously saved
-                values for this key via :meth:`.EpochLogger.store`, do *not* provide a
+                values for this key via :meth:`EpochLogger.store`, do *not* provide a
                 ``val`` here.
             tb_write (bool, optional): Boolean specifying whether you also want to write
                 the value to the tensorboard logfile. Defaults to ``False``.
@@ -242,7 +242,7 @@ class Logger:
             "tb_alias": tb_alias,
         }
 
-    def dump_tabular(self, global_step=None):  # noqa: C901
+    def dump_tabular(self, global_step=None):
         """Write all of the diagnostics from the current iteration.
 
         Writes both to ``stdout``, tensorboard and to the output file.
@@ -476,7 +476,7 @@ class Logger:
             input_object (object): The input object you want to save.
             output_filename (str): The output filename.
             output_path (str): The output path. By default the
-                :attr:`.Logger.output_dir`  is used.
+                :attr:`Logger.output_dir`  is used.
         """
         if proc_id() == 0:
             input_object_json = convert_json(input_object)
@@ -718,7 +718,7 @@ class Logger:
         """Writes data to tensorboard log file.
 
         It currently works with scalars, histograms and images. For other data types
-        please use :attr:`.Logger.tb_writer`. directly.
+        please use :attr:`Logger.tb_writer`. directly.
 
         Args:
             var_name (str): Data identifier.
@@ -784,15 +784,15 @@ class Logger:
     @property
     def use_tensorboard(self):
         """Variable specifying whether the logger uses Tensorboard. A Tensorboard writer
-        is created on the :attr:`.Logger.tb_writer` attribute when
-        :attr:`~.Logger.use_tensorboard` is set to ``True``
+        is created on the :attr:`Logger.tb_writer` attribute when
+        :attr:`~Logger.use_tensorboard` is set to ``True``
         """
         return self._use_tensorboard
 
     @use_tensorboard.setter
     def use_tensorboard(self, value):
         """Custom setter that makes sure a Tensorboard writer is present on the
-        :attr:`.Logger.tb_writer` attribute when ``use_tensorboard`` is set to ``True``
+        :attr:`Logger.tb_writer` attribute when ``use_tensorboard`` is set to ``True``
         . This tensorboard writer can be used to write to the Tensorboard.
 
         Args:
@@ -830,7 +830,7 @@ class Logger:
 
     """Tensorboard related methods
     Below are several wrapper methods which make the Tensorboard writer methods
-    available directly on the :class:`.EpochLogger` class.
+    available directly on the :class:`EpochLogger` class.
     """
 
     def add_hparams(self, *args, **kwargs):
@@ -1520,7 +1520,7 @@ class Logger:
 
 class EpochLogger(Logger):
     """
-    A variant of :class:`.Logger` tailored for tracking average values over epochs.
+    A variant of :class:`Logger` tailored for tracking average values over epochs.
 
     **Typical use case:** there is some quantity which is calculated many times
     throughout an epoch, and at the end of the epoch, you would like to
@@ -1544,11 +1544,11 @@ class EpochLogger(Logger):
 
     Attributes:
         epoch_dict (dict): Dictionary used to store variables you want to log into the
-           :class:`.EpochLogger` current state.
+           :class:`EpochLogger` current state.
     """
 
     def __init__(self, *args, **kwargs):
-        """Constructs all the necessary attributes for the :class:`.EpochLogger`
+        """Constructs all the necessary attributes for the :class:`EpochLogger`
         object.
         """
         super().__init__(*args, **kwargs)
@@ -1564,7 +1564,7 @@ class EpochLogger(Logger):
         global_step=None,
         **kwargs,
     ):
-        """Save something into the :class:`.EpochLogger`'s current state.
+        """Save something into the :class:`EpochLogger`'s current state.
 
         Provide an arbitrary number of keyword arguments with numerical
         values.
@@ -1754,7 +1754,7 @@ class EpochLogger(Logger):
         self.epoch_dict[key] = []
 
     def dump_tabular(self, *args, **kwargs):
-        """Small wrapper around the :meth:`.Logger.dump_tabular` method which
+        """Small wrapper around the :meth:`Logger.dump_tabular` method which
         makes sure that the tensorboard index track dictionary is reset after the table
         is dumped.
 

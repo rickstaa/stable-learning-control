@@ -31,7 +31,7 @@ keeps track of a diagnostic value:
 
 .. code-block::
 
-    >>> from stable_learning_control.control.utils.logx import EpochLogger
+    >>> from stable_learning_control.utils.logx import EpochLogger
     >>> epoch_logger = EpochLogger()
     >>> for i in range(10):
             epoch_logger.store(Test=i)
@@ -250,7 +250,7 @@ Logging and TensorFlow
 The preceding example was given in Pytorch. For TensorFlow, everything is the same except for L42-43:
 instead of :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver`, you would
 use :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_tf_saver` and you would pass it
-:tf:`a TensorFlow Module <nn>` (the algorithm you train) as an argument.
+:tf2:`a TensorFlow Module <nn>` (the algorithm you train) as an argument.
 
 The behavior of :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state` is the same as in the
 PyTorch case: each time it is called,

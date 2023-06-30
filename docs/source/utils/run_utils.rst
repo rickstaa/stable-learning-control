@@ -16,15 +16,15 @@ can use the following command to check which utilities are available quickly:
 
 The SLC package currently contains the following utilities:
 
-+---------+-----------------------+------------------------------------------------------------------------------------------------------------------------------+
-| Module  | Utility               | description                                                                                                                  |
-+=========+=======================+==============================================================================================================================+
-| Control | :ref:`test_policy`    | Utility used to evaluate the performance of the trained policy in a given environment.                                       |
-+---------+-----------------------+------------------------------------------------------------------------------------------------------------------------------+
-|         | :ref:`plot`           | Utility used to plot diagnostics from experiments.                                                                           |
-+---------+-----------------------+------------------------------------------------------------------------------------------------------------------------------+
-|         | :ref:`eval_robustness`| Utility used to evaluate the robustness of a trained policy against external disturbances and changes in initial conditions. |
-+---------+-----------------------+------------------------------------------------------------------------------------------------------------------------------+
++-----------------------+------------------------------------------------------------------------------------------------------------------------------+
+| Utility               | description                                                                                                                  |
++=======================+==============================================================================================================================+
+| :ref:`test_policy`    | Utility used to evaluate the performance of the trained policy in a given environment.                                       |
++-----------------------+------------------------------------------------------------------------------------------------------------------------------+
+| :ref:`plot`           | Utility used to plot diagnostics from experiments.                                                                           |
++-----------------------+------------------------------------------------------------------------------------------------------------------------------+
+| :ref:`eval_robustness`| Utility used to evaluate the robustness of a trained policy against external disturbances and changes in initial conditions. |
++-----------------------+------------------------------------------------------------------------------------------------------------------------------+
 
 See the corresponding module documentation for more information on a given utility.
 
@@ -39,7 +39,7 @@ SLC ships with a tool called ExperimentGrid for making hyperparameter ablations 
 
 .. _`the rllab tool`: https://github.com/rll/rllab/blob/master/rllab/misc/instrument.py#L173
 
-.. autoclass:: stable_learning_control.control.utils.run_utils.ExperimentGrid
+.. autoclass:: stable_learning_control.utils.run_utils.ExperimentGrid
     :members:
 
 .. _exp_call_utility:
@@ -47,4 +47,4 @@ SLC ships with a tool called ExperimentGrid for making hyperparameter ablations 
 Calling Experiments utility
 ===========================
 
-.. autofunction:: stable_learning_control.control.utils.run_utils.call_experiment
+.. autofunction:: stable_learning_control.utils.run_utils.call_experiment

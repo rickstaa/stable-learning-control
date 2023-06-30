@@ -23,8 +23,8 @@ ready-to-use compatible environments can be found in the  :stable-gym:`stable-gy
    This framework was built upon the `SpinningUp`_ educational resource. By doing this, we 
    hope to make it easier for new researchers to start with our Algorithms. If you are new
    to RL, check out the SpinningUp documentation and play with it before diving into our
-   codebase. Our implementation sometimes deviates from the `SpinningUp`_ version to
-   increase code maintainability, extensibility, and readability.
+   codebase. Our implementation deviates from the `SpinningUp`_ version to increase code
+   maintainability, extensibility, and readability.
 
 .. _`Han et al. 2020`: https://arxiv.org/abs/2004.14288
 .. _`Lyapunov stability theory`: https://en.wikipedia.org/wiki/Lyapunov_stability

@@ -35,7 +35,7 @@ the ``docs/build/html`` directory. If the documentation is successfully created,
 
 .. note::
 
-    Ensure you are in the Conda environment where you installed the ``stable_learning_control``
+    Ensure you are in the Conda environment where you installed the :slc:`stable_learning_control <>`
     package with its dependencies.
 
 .. _HTML: https://www.w3schools.com/html/

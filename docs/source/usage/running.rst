@@ -126,7 +126,7 @@ to see a readout of the docstring.
 
 .. admonition:: You Should Know
 
-    Values pass through :meth:`~stable_learning_control.control.utils.safer_eval.safer_eval()` before
+    Values pass through :meth:`~stable_learning_control.utils.safer_eval_util.safer_eval()` before
     being used so that you can describe some functions and objects directly from the command line.
     For example:
 
@@ -494,7 +494,7 @@ Consider the example in ``stable_learning_control/examples/pytorch/sac_exp_grid_
 .. literalinclude:: /../../examples/pytorch/sac_exp_grid_search.py
    :language: python
    :linenos:
-   :lines: 18-
+   :lines: 17-
    :emphasize-lines: 19-25, 28
 
 (An equivalent TensorFlow example is available in ``stable_learning_control/examples/tf2/sac_exp_grid_search.py``.)
@@ -538,7 +538,7 @@ Consider the example in ``stable_learning_control/examples/pytorch/sac_ray_hyper
 .. literalinclude:: /../../examples/pytorch/sac_ray_hyper_parameter_tuning.py
    :language: python
    :linenos:
-   :lines: 17-
+   :lines: 16-
    :emphasize-lines: 19-34, 47, 54-66, 72-87
 
 (An equivalent TensorFlow example is available in ``stable_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``.)
