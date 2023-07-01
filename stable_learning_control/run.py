@@ -13,7 +13,7 @@ import ruamel.yaml as yaml
 from stable_learning_control.common.helpers import flatten, get_unique_list
 from stable_learning_control.user_config import DEFAULT_BACKEND
 from stable_learning_control.utils.gym_utils import validate_gym_env
-from stable_learning_control.utils.import_utils import import_tf
+from stable_learning_control.utils.import_utils import tf_installed
 from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
 from stable_learning_control.utils.run_utils import ExperimentGrid
 from stable_learning_control.utils.safer_eval_util import safer_eval
@@ -208,11 +208,13 @@ def _add_backend_to_cmd(cmd):
 
     # Throw error if tf algorithm is requested but TensorFlow is not installed.
     if backend.lower() == "tf2":
-        try:
-            import_tf(dry_run=True)
-        except ImportError as e:
-            raise ImportError(friendly_err(e.args[0]))
-
+        if not tf_installed():
+            raise AssertionError(
+                friendly_err(
+                    "You requested a TensorFlow algorithm but TensorFlow is not "
+                    "installed. Did you run the `pip install .[tf2]` command?"
+                )
+            )
     return cmd, backend
 
 

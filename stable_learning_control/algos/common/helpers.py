@@ -11,7 +11,7 @@ from stable_learning_control.utils.gym_utils import (
 )
 from stable_learning_control.utils.import_utils import import_tf
 
-tf = import_tf(frail=False)
+tf = import_tf(frail=False)  # Suppress import warning.
 tensorflow = tf
 
 
@@ -77,6 +77,15 @@ def get_activation_function(activation_fn_name, backend="torch"):
     elif len(activation_fn_name.split(".")) == 2:
         if activation_fn_name.split(".")[0] == "nn":
             activation_fn_name = backend_prefix[0] + "." + activation_fn_name
+    else:
+        if activation_fn_name.split(".")[0] not in backend_prefix:
+            raise ValueError(
+                "'{}' is not a valid '{}' activation function.".format(
+                    activation_fn_name, backend_prefix[0]
+                )
+            )
+
+    # Import activation function.
     try:
         return getattr(
             importlib.import_module(".".join(activation_fn_name.split(".")[:-1])),

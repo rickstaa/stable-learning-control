@@ -562,7 +562,7 @@ class Logger:
                 TensorFlow models.
         """
         global tf
-        tf = import_tf()  # Import tf if installed otherwise throw warning.
+        tf = import_tf()  # Throw custom warning if tf is not installed.
         self.tf_saver_elements = what_to_save
         self.log("Policy will be saved to '{}'.\n".format(self.output_dir), type="info")
 
@@ -804,7 +804,7 @@ class Logger:
         if self._use_tensorboard and not self.tb_writer:  # Create writer object.
             if self._use_tf_backend:
                 self.log("Using TensorFlow as the Tensorboard backend.", type="info")
-                tf = import_tf()  # Import tf if installed otherwise throw warning.
+                tf = import_tf()  # Throw custom warning if tf is not installed.
                 self.tb_writer = tf.summary.create_file_writer(self.output_dir)
             else:
                 self.log(

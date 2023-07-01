@@ -201,7 +201,7 @@ def load_tf_policy(fpath, env, itr="last"):
         model_path = _retrieve_iter_folder(fpath, itr)
     else:
         model_path = fpath
-    tf = import_tf()  # Import tf if installed otherwise throw warning.
+    tf = import_tf()  # Import tf if installed otherwise throw custom warning.
     print("\n")
     log_to_std_out("Loading model from '%s'.\n\n" % fpath, type="info")
 

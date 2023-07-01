@@ -132,9 +132,9 @@ to see a readout of the docstring.
 
     .. parsed-literal::
 
-        python -m stable_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ELU
+        python -m stable_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ReLU
 
-    sets ``torch.nn.ELU`` as the activation function. (TensorFlow equivalent: run ``sac_tf`` with ``--act tf.nn.relu``.)
+    sets ``torch.nn.ReLU`` as the activation function. (TensorFlow equivalent: run ``sac_tf`` with ``--act tf.nn.relu``.)
 
 .. admonition:: You Should Know
 
@@ -218,39 +218,39 @@ Some algorithm arguments are relatively long, and we enabled shortcuts for them:
 
 .. option:: --hid, --ac_kwargs:hidden_sizes
 
-    :obj:`:obj:`list of ints``. Sets the sizes of the hidden layers in the neural networks of both the actor and critic.
+    :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of both the actor and critic.
 
 .. option:: --hid_a, --ac_kwargs:hidden_sizes:actor
 
-    :obj:`:obj:`list of ints``. Sets the sizes of the hidden layers in the neural networks of the actor.
+    :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of the actor.
 
 .. option:: --hid_c, --ac_kwargs:hidden_sizes:critic
 
-    :obj:`:obj:`list of ints``. Sets the sizes of the hidden layers in the neural networks of the critic.
+    :obj:`list of ints`. Sets the sizes of the hidden layers in the neural networks of the critic.
 
 .. option:: --act, --ac_kwargs:activation
 
-    :obj:`tf op`. The activation function for the neural networks in the actor and critic.
+    :mod:`torch.nn` or :mod:`tf.nn`. The activation function for the neural networks in the actor and critic.
 
 .. option:: --act_out, --ac_kwargs:output_activation
 
-   :obj:`tf op`. The activation function for the neural networks in the actor and critic.
+   :mod:`torch.nn` or :mod:`tf.nn`. The activation function for the neural networks in the actor and critic.
 
 .. option:: --act_a, --ac_kwargs:activation:actor
 
-   :obj:`tf op`. The activation function for the neural networks in the actor.
+   :mod:`torch.nn` or :mod:`tf.nn`. The activation function for the neural networks in the actor.
 
 .. option:: --act_c, --ac_kwargs:activation:critic
 
-   :obj:`tf op`. The activation function for the neural networks in the critic.
+   :mod:`torch.nn` or :mod:`tf.nn`. The activation function for the neural networks in the critic.
 
 .. option:: --act_out_a, --ac_kwargs:output_activation:actor
 
-   :obj:`tf op`. The activation function for the output activation function of the actor.
+   :mod:`torch.nn` or :mod:`tf.nn`. The activation function for the output activation function of the actor.
 
 .. option:: --act_out_c, --ac_kwargs:output_activation:critic
 
-   :obj:`tf op`. The activation function for the output activation function of the critic.
+   :mod:`torch.nn` or :mod:`tf.nn`. The activation function for the output activation function of the critic.
 
 These flags are valid for all current SLC algorithms.
 
@@ -539,14 +539,14 @@ Consider the example in ``stable_learning_control/examples/pytorch/sac_ray_hyper
    :language: python
    :linenos:
    :lines: 16-
-   :emphasize-lines: 19-34, 47, 54-66, 72-87
+   :emphasize-lines: 17-32, 45, 52-64, 70-85
 
 (An equivalent TensorFlow example is available in ``stable_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``.)
 
-In this example, on lines ``19-34`` we first create a small wrapper function that ensures that the Ray Tuner serves the
-hyperparameters in the SLC algorithm's format. Following in line ``47``, we set the starting point for several
-hyperparameters used in the hyperparameter search. Next, on lines ``54-66``, we define the hyperparameter search space.
-Lastly, we start the hyperparameter search using the :meth:`tune.run` method online ``72-87``.
+In this example, on lines ``17-32`` we first create a small wrapper function that ensures that the Ray Tuner serves the
+hyperparameters in the SLC algorithm's format. Following in line ``45``, we set the starting point for several
+hyperparameters used in the hyperparameter search. Next, on lines ``52-64``, we define the hyperparameter search space.
+Lastly, we start the hyperparameter search using the :meth:`tune.run` method online ``70-85``.
 
 The Ray tuner will search for the best hyperparameter combination when running the script. While doing so, it will print
 the results both to the ``std_out`` and a Tensorboard file. You can check these Tensorboard logs using the

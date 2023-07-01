@@ -3,7 +3,7 @@ import numpy as np
 
 from stable_learning_control.utils.import_utils import import_tf
 
-tf = import_tf()
+tf = import_tf()  # Try to import TensorFlow and throw custom warning if not available.
 
 
 def get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps):

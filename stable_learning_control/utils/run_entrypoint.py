@@ -15,6 +15,9 @@ import base64
 import pickle
 import zlib
 
+# NOTE: This is needed because of https://github.com/pytorch/pytorch/issues/99637
+import torch  # noqa: F401
+
 if __name__ == "__main__":
     import argparse
 

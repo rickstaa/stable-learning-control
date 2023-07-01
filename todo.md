@@ -1,7 +1,7 @@
 *   \[ ] Check time limit truncated TimeLimit Wrapper comment.
 
-*   \[ ] Check trianing.
+*   \[ ] Fix env check function.
 
 *   \[ ] Check plot.
 
-*   \[ ] Check evulation.
+*   \[ ] Check inference.
