@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.4](https://github.com/rickstaa/stable-learning-control/compare/v4.0.3...v4.0.4) (2023-07-01)
+
+
+### Bug Fixes
+
+* improve tensorflow lazy import ([#272](https://github.com/rickstaa/stable-learning-control/issues/272)) ([75192a4](https://github.com/rickstaa/stable-learning-control/commit/75192a4bb456f7bbb0391fb1e63e4622054d2e33))
+
 ## [4.0.3](https://github.com/rickstaa/stable-learning-control/compare/v4.0.2...v4.0.3) (2023-06-29)
 
 
