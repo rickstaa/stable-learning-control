@@ -85,3 +85,16 @@ def clamp(data, min_bound, max_bound):
             boundaries.
     """
     return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
+
+
+def full_model_summary(model):
+    """Prints a full summary of all the layers of a TensorFlow model.
+
+    Args:
+        layer (:tf:`keras.layers`): The model to print the full summary of.
+    """
+    if hasattr(model, "layers"):
+        model.summary()
+        print("\n\n")
+        for layer in model.layers:
+            full_model_summary(layer)

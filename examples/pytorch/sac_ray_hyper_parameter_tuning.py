@@ -18,17 +18,15 @@ import sys
 
 import gymnasium as gym
 import numpy as np
+import ray
 import stable_gym  # Imports the in this example used environment  # noqa: F401
+from hyperopt import hp
+from ray import tune
+from ray.tune.schedulers import ASHAScheduler
+from ray.tune.suggest.hyperopt import HyperOptSearch
 
 # Import the algorithm we want to tune.
 from stable_learning_control.algos.pytorch.sac import sac
-from stable_learning_control.utils.import_utils import lazy_importer
-
-ray = lazy_importer(module_name="ray", frail=True)
-from hyperopt import hp  # noqa: E402
-from ray import tune  # noqa: E402
-from ray.tune.schedulers import ASHAScheduler  # noqa: E402
-from ray.tune.suggest.hyperopt import HyperOptSearch  # noqa: E402
 
 
 def train_sac(config):

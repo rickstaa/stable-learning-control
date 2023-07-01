@@ -7,8 +7,8 @@
 """
 from stable_learning_control.algos.pytorch.lac.lac import LAC as LAC_pytorch
 from stable_learning_control.algos.pytorch.sac.sac import SAC as SAC_pytorch
-from stable_learning_control.utils.import_utils import import_tf
+from stable_learning_control.utils.import_utils import tf_installed
 
-if import_tf(dry_run=True, frail=False):
+if tf_installed():
     from stable_learning_control.algos.tf2.lac.lac import LAC as LAC_tf
     from stable_learning_control.algos.tf2.sac.sac import SAC as SAC_tf

@@ -26,7 +26,11 @@ from tensorflow.keras.optimizers import Adam
 from stable_learning_control.algos.common.buffers import ReplayBuffer
 from stable_learning_control.algos.common.helpers import heuristic_target_entropy
 from stable_learning_control.algos.tf2.common.get_lr_scheduler import get_lr_scheduler
-from stable_learning_control.algos.tf2.common.helpers import count_vars, set_device
+from stable_learning_control.algos.tf2.common.helpers import (
+    count_vars,
+    full_model_summary,
+    set_device,
+)
 from stable_learning_control.algos.tf2.policies.soft_actor_critic import SoftActorCritic
 from stable_learning_control.common.helpers import combine_shapes
 from stable_learning_control.utils.eval_utils import test_agent
@@ -554,23 +558,15 @@ class SAC(tf.keras.Model):
         """Small wrapper around the :meth:`tf.keras.Model.summary()` method used to
         apply a custom format to the model summary.
         """
-        if not self._was_build:
+        if not self._was_build:  # Ensure the model is build.
             self.build()
         super().summary()
-        print("")
-        self.ac.summary()
-        print("")
-        self.ac.pi.summary()
-        print("")
-        self.ac.pi.net.summary()
-        print("")
-        self.ac.Q1.summary()
-        print("")
-        self.ac.Q1.Q.summary()
-        print("")
-        self.ac.Q2.summary()
-        self.ac.Q2.Q.summary()
-        print("")
+
+    def full_summary(self):
+        """Prints a full summary of all the layers of the TensorFlow model"""
+        if not self._was_build:  # Ensure the model is build.
+            self.build()
+        full_model_summary(self)
 
     def set_learning_rates(self, lr_a=None, lr_c=None, lr_alpha=None):
         """Adjusts the learning rates of the optimizers.
@@ -999,7 +995,7 @@ def sac(
         type="info",
     )
     logger.log("Network structure:\n", type="info")
-    policy.summary()
+    policy.full_summary()
 
     logger.setup_tf_saver(policy)
 
