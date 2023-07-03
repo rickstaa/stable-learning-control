@@ -2,7 +2,6 @@
 `gymnasium package <https://gymnasium.farama.org/>`_.
 """
 import importlib
-import sys
 
 import gymnasium as gym
 from gymnasium import spaces
@@ -74,65 +73,37 @@ def validate_gym_env(arg_dict):
     assert "env_name" in arg_dict, friendly_err(
         "You did not give a valid value for --env_name! Please try again."
     )
-    # TODO: Remove this when having checked why this was here in the first page as gym
-    # handles this?
-    # for env_name in arg_dict["env_name"]:
-    #     if env_name not in gym.envs.registry:
-    #         err_msg = dedent(
-    #             """
-    #             %s is not registered with gymnasium.
 
-    #             Recommendations:
-    #                 * Check for a typo (did you include the version tag?)
-
-    #                 * View the complete list of valid gymnasium environments at
-    #                     https://gymnasium.farama.org/api/env/
-    #             """
-    #             % (env_name)
-    #         )
-    #         assert False, err_msg
-
-
-def import_gym_env_pkg(
-    module_name, frail=True, dry_run=False
-):  # TODO: Remove since it is not used? It was used in 4d23b1e.
-    """Tries to import the custom gymnasium environment package.
-
-    Args:
-        module_name (str): The python module you want to import.
-        frail (bool, optional): Throw ImportError when TensorFlow can not be imported.
-            Defaults to ``true``.
-        dry_run (bool, optional): Do not actually import TensorFlow if available.
-            Defaults to ``False``.
-
-    Raises:
-        ImportError: A import error if the package could not be imported.
-
-    Returns:
-        Union[:obj:`gym.env`, bool]:
-            - Custom env package if ``dry_run`` is set to ``False``.
-            - Returns a success bool if ``dry_run`` is set to ``True``.
-    """
-    module_name = module_name[0] if isinstance(module_name, list) else module_name
-    try:
-        if module_name in sys.modules:
-            if not dry_run:
-                return sys.modules[module_name]
-            else:
-                return True
-        elif importlib.util.find_spec(module_name) is not None:
-            if not dry_run:
-                return importlib.import_module(module_name)
-            else:
-                return True
-        else:
-            if frail:
+    # Check if the environment is a valid gymnasium environment.
+    for env_name in arg_dict["env_name"]:
+        if ":" in env_name:
+            # Try to import the custom gymnasium environment package.
+            try:
+                importlib.import_module(env_name.split(":")[0])
+                env_name = env_name.split(":")[1]
+            except ImportError as e:
                 raise ImportError(
-                    friendly_err("No module named '{}'.".format(module_name))
+                    friendly_err(
+                        "Could not import custom gymnasium environment package: "
+                        + str(e)
+                    )
                 )
-            return False
-    except (ImportError, KeyError, AttributeError) as e:
-        if ImportError:
-            if not frail:
-                return False
-        raise e
+
+        # Check if the environment is a valid gymnasium environment.
+        if env_name not in gym.envs.registry:
+            err_msg = friendly_err(
+                """
+                %s is not registered with gymnasium.
+
+                Recommendations:
+                    * Check for a typo (did you include the version tag?)
+
+                    * Gymnasium environments: View the complete list of valid gymnasium
+                      environments at https://gymnasium.farama.org/api/env/
+
+                    * Custom environments: Ensure the custom environment is installed
+                      and you specify the module prefix (e.g. `custom_module:env_name`).
+                """
+                % (env_name)
+            )
+            assert False, err_msg
