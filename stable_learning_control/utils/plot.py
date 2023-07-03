@@ -75,10 +75,10 @@ def plot_data(
     #     y=value,
     #     units="Unit",
     #     condition=condition,
-    #     ci="sd",
+    #     errorbar="sd",
     #     **kwargs,
     # )  # NOTE: Use for seaborn < 0.8.1
-    sns.lineplot(data=data, x=xaxis, y=value, hue=condition, ci="sd", **kwargs)
+    sns.lineplot(data=data, x=xaxis, y=value, hue=condition, errorbar="sd", **kwargs)
     plt.legend(loc="best").set_draggable(True)
     # plt.legend(
     #     loc="upper center",
