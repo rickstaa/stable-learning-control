@@ -69,25 +69,8 @@ def plot_data(
     if isinstance(data, list):
         data = pd.concat(data, ignore_index=True)
     sns.set(style="darkgrid", font_scale=font_scale)
-    # sns.tsplot(
-    #     data=data,
-    #     x=xaxis,
-    #     y=value,
-    #     units="Unit",
-    #     condition=condition,
-    #     errorbar="sd",
-    #     **kwargs,
-    # )  # NOTE: Use for seaborn < 0.8.1
     sns.lineplot(data=data, x=xaxis, y=value, hue=condition, errorbar="sd", **kwargs)
     plt.legend(loc="best").set_draggable(True)
-    # plt.legend(
-    #     loc="upper center",
-    #     ncol=6,
-    #     handlelength=1,
-    #     mode="expand",
-    #     borderaxespad=0.0,
-    #     prop={"size": 13},
-    # )  # NOTE: Use for Spining Up benchmark like plot
 
     xscale = np.max(np.asarray(data[xaxis])) > 5e3
     if xscale:
