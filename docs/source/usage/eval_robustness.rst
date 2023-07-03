@@ -130,7 +130,7 @@ under several Impulse disturbances.
             data=obs_ref_df,
             x="step",
             y="value",
-            ci="sd",
+            errorbar="sd",
             hue="disturbance",
             style="type",
         ).set_title("Observation 2 and reference 1 for several disturbance values")

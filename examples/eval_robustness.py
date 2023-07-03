@@ -530,7 +530,7 @@ if __name__ == "__main__":
                 data=obs_ref_df.query(f"disturbance == '{var}'"),
                 x="step",
                 y="value",
-                ci="sd",
+                errorbar="sd",
                 hue="signal",
                 style="type",
                 ax=axes[row][pos],
@@ -541,7 +541,7 @@ if __name__ == "__main__":
     else:
         fig = plt.figure(tight_layout=True)
         sns.lineplot(
-            data=obs_ref_df, x="step", y="value", ci="sd", hue="disturbance"
+            data=obs_ref_df, x="step", y="value", errorbar="sd", hue="disturbance"
         ).set_title(fig_title)
     figs["observations"].append(fig)
 
@@ -558,7 +558,11 @@ if __name__ == "__main__":
             + " (original)"
         )  # Append original to original value.
         sns.lineplot(
-            data=r_disturbances_df, x="step", y="reward", ci="sd", hue="disturbance"
+            data=r_disturbances_df,
+            x="step",
+            y="reward",
+            errorbar="sd",
+            hue="disturbance",
         ).set_title(
             "Mean cost under several {}.".format(
                 "{} disturbances".format(obs_ref_df.disturbance_variant[0])
@@ -593,7 +597,7 @@ if __name__ == "__main__":
                 data=soi_disturbances_df.query(f"state_of_interest == {index}"),
                 x="step",
                 y="error",
-                ci="sd",
+                errorbar="sd",
                 hue="disturbance",
             ).set_title(
                 "{} under several {}.".format(
