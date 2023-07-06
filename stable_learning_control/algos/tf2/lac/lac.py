@@ -220,6 +220,7 @@ class LAC(tf.keras.Model):
                 "need this."
             )
 
+        # Print out some information about the environment and algorithm.
         if hasattr(env.unwrapped.spec, "id"):
             log_to_std_out(
                 "You are using the '{}' environment.".format(env.unwrapped.spec.id),
@@ -359,7 +360,7 @@ class LAC(tf.keras.Model):
         # Get target Lyapunov value (Bellman-backup)
         pi_targ_, _ = self.ac_targ.pi(
             o_
-        )  # NOTE: Target actions come from *current* *target* policy
+        )  # NOTE: Target actions come from *current* *target* policy.
         l_pi_targ = self.ac_targ.L([o_, pi_targ_])
         l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate.
 
@@ -386,14 +387,6 @@ class LAC(tf.keras.Model):
         with tf.GradientTape() as a_tape:
             # Retrieve log probabilities of batch observations based on *current* policy
             _, logp_pi = self.ac.pi(o)
-
-            if self._opt_type.lower() == "maximize":
-                raise NotImplementedError(
-                    "The LAC algorithm does not yet support maximization "
-                    "environments. Please open a feature/pull request on "
-                    "https://github.com/rickstaa/stable-learning-control/issues "
-                    "if you need this."
-                )
 
             # Get target lyapunov value.
             pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
@@ -444,7 +437,7 @@ class LAC(tf.keras.Model):
             # NOTE: Log_labda was used in the lambda_loss function because using
             # lambda caused the gradients to vanish. This is caused since we
             # restrict lambda within a 0-1.0 range using the clamp function
-            # (see #38). Using log_lambda also is more numerically stable.
+            # (see #34). Using log_lambda also is more numerically stable.
             labda_loss = -tf.reduce_mean(
                 self.log_labda * tf.stop_gradient(l_delta)
             )  # See formulas under Han eq. 14
@@ -714,7 +707,7 @@ class LAC(tf.keras.Model):
 
 
 def validate_args(**kwargs):
-    """Checks if the input argument have valid values.
+    """Checks if the input arguments have valid values.
 
     Raises:
         ValueError: If a value is invalid.

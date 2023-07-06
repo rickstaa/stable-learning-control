@@ -95,10 +95,10 @@ def combine_shapes(*args):
 
 
 def strict_dict_update(input_dict, update_obj):
-    """Updates a dictionary with values supplied in another dictionary or list. If a
-    list is supplied this list will be applied to all keys in the dictionary. This
-    function performs strict update, meaning that it does not add new keys to the
-    dictionary.
+    """Updates a dictionary with values supplied in another :obj:`dict` or python
+    :class:`object`. This function performs a strict update, meaning it does not add
+    new keys to the original dictionary.Additionally, if a Python object is supplied, it
+    will be applied to all keys in the dictionary.
 
     Args:
         input_dict (dict): The input dictionary.
@@ -117,8 +117,8 @@ def strict_dict_update(input_dict, update_obj):
             if key in input_dict.keys():
                 input_dict[key] = val
             else:
-                ignored.append(key)
-    else:
+                ignored.append(key)  # Ignore keys that are not in the dictionary.
+    else:  # Apply object to all keys in the dictionary.
         for key in input_dict:
             input_dict[key] = update_obj
     return input_dict, ignored

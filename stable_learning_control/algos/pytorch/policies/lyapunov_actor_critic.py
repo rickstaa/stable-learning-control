@@ -76,11 +76,10 @@ class LyapunovActorCritic(nn.Module):
         if "critic" in ignored:
             log_to_std_out(
                 (
-                    "Critic output activation function ignored since it is "
-                    "not possible to set the critic output activation function when "
-                    "using the LyapunovActorCritic architecture. This is since it by "
-                    "design requires the critic output activation to by of type "
-                    "'torch.square'."
+                    "The critic output activation function was ignored since it can "
+                    "not be set using the LyapunovActorCritic architecture. This is "
+                    "since it, by design, uses the 'torch.square' output activation "
+                    "function."
                 ),
                 type="warning",
             )

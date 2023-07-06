@@ -47,7 +47,8 @@ def mlp(sizes, activation, output_activation=nn.Identity):
         activation (union[:obj:`torch.nn.modules.activation`, :obj:`str`]): The
             activation function used for the hidden layers.
         output_activation (union[:obj:`torch.nn.modules.activation`, :obj:`str`], optional):
-            The activation function used for the output layers. Defaults to torch.nn.Identity.
+            The activation function used for the output layers. Defaults to
+            :class:`torch.nn.Identity`.
 
     Returns:
         torch.nn.Sequential: The multi-layered perceptron.
@@ -114,18 +115,18 @@ def compare_models(model_1, model_2):
         return False
 
 
-def clamp(data, min_bound, max_bound):
-    """Clamp all the values of a input to be between the min and max boundaries.
+def rescale(data, min_bound, max_bound):
+    """Rescale normalized data (i.e. between ``-1`` and ``1``) to a desired range.
 
     Args:
-        data (Union[numpy.ndarray, list]): Input data.
-        min_bound (Union[numpy.ndarray, list]): Array containing the desired minimum
-            values.
-        max_bound (Union[numpy.ndarray, list]): Array containing the desired maximum
-            values.
+        data (Union[torch.Tensor, numpy.ndarray, list]): Normalized input data.
+        min_bound (Union[numpy.ndarray, list]): Array containing the minimum value of
+            the desired range.
+        max_bound (Union[numpy.ndarray, list]): Array containing the maximum value of
+            the desired range.
 
     Returns:
-        numpy.ndarray: Array which has it values clamped between the min and max
+        torch.Tensor: Array which has it values scaled between the min and max
             boundaries.
     """
     data = torch.tensor(data) if not isinstance(data, torch.Tensor) else data

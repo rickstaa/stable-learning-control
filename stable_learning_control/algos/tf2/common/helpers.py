@@ -70,18 +70,18 @@ def count_vars(module):
     return sum([np.prod(p.shape) for p in module.trainable_variables])
 
 
-def clamp(data, min_bound, max_bound):
-    """Clamp all the values of a input to be between the min and max boundaries.
+def rescale(data, min_bound, max_bound):
+    """Rescale normalized data (i.e. between ``-1`` and ``1``) to a desired range.
 
     Args:
-        data (Union[numpy.ndarray, list]): Input data.
-        min_bound (Union[numpy.ndarray, list]): Array containing the desired minimum
-            values.
-        max_bound (Union[numpy.ndarray, list]): Array containing the desired maximum
-            values.
+        data (Union[numpy.ndarray, list]): Normalized input data.
+        min_bound (Union[numpy.ndarray, list]): Array containing the minimum value of
+            the desired range.
+        max_bound (Union[numpy.ndarray, list]): Array containing the maximum value of
+            the desired range.
 
     Returns:
-        numpy.ndarray: Array which has it values clamped between the min and max
+        numpy.ndarray: Array which has it values scaled between the min and max
             boundaries.
     """
     return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
