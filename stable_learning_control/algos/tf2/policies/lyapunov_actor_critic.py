@@ -77,11 +77,10 @@ class LyapunovActorCritic(tf.keras.Model):
         if "critic" in ignored:
             log_to_std_out(
                 (
-                    "Critic output activation function ignored since it is "
-                    "not possible to set the critic output activation function when "
-                    "using the LyapunovActorCritic architecture. This is since it by "
-                    "design requires the critic output activation to by of type "
-                    "'tf.math.square'.",
+                    "The critic output activation function was ignored since it can "
+                    "not be set using the LyapunovActorCritic architecture. This is "
+                    "since it, by design, uses the 'tf.math.square' output activation "
+                    "function."
                 ),
                 type="warning",
             )

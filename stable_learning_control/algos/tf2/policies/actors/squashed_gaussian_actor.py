@@ -8,7 +8,7 @@ import tensorflow_probability as tfp
 from tensorflow import nn
 
 from stable_learning_control.algos.tf2.common.bijectors import SquashBijector
-from stable_learning_control.algos.tf2.common.helpers import clamp, mlp
+from stable_learning_control.algos.tf2.common.helpers import mlp, rescale
 
 
 class SquashedGaussianActor(tf.keras.Model):
@@ -150,9 +150,9 @@ class SquashedGaussianActor(tf.keras.Model):
         else:
             logp_pi = None
 
-        # Clamp the actions such that they are in range of the environment.
+        # Rescale the normalized actions such that they are in range of the environment.
         if self.act_limits is not None:
-            pi_action = clamp(
+            pi_action = rescale(
                 pi_action,
                 min_bound=self.act_limits["low"],
                 max_bound=self.act_limits["high"],

@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions.normal import Normal
 
-from stable_learning_control.algos.pytorch.common.helpers import clamp, mlp
+from stable_learning_control.algos.pytorch.common.helpers import mlp, rescale
 from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 
 
@@ -143,9 +143,9 @@ class SquashedGaussianActor(nn.Module):
         # Calculate scaled action and return the action and its log probability.
         pi_action = torch.tanh(pi_action)  # Squash gaussian to be between -1 and 1
 
-        # Clamp the actions such that they are in range of the environment.
+        # Rescale the normalized actions such that they are in range of the environment.
         if self.act_limits is not None:
-            pi_action = clamp(
+            pi_action = rescale(
                 pi_action,
                 min_bound=self.act_limits["low"],
                 max_bound=self.act_limits["high"],

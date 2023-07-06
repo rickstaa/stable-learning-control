@@ -209,6 +209,7 @@ class SAC(tf.keras.Model):
                 "need this."
             )
 
+        # Print out some information about the environment and algorithm.
         if hasattr(env.unwrapped.spec, "id"):
             log_to_std_out(
                 "You are using the '{}' environment.".format(env.unwrapped.spec.id),
@@ -660,7 +661,7 @@ class SAC(tf.keras.Model):
 
 
 def validate_args(**kwargs):
-    """Checks if the input argument have valid values.
+    """Checks if the input arguments have valid values.
 
     Raises:
         ValueError: If a value is invalid.
