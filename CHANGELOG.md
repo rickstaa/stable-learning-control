@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.5](https://github.com/rickstaa/stable-learning-control/compare/v4.0.4...v4.0.5) (2023-07-06)
+
+
+### Bug Fixes
+
+* ensure 'test_policy' works with gymnasium&gt;=0.28.1 ([#276](https://github.com/rickstaa/stable-learning-control/issues/276)) ([80fe370](https://github.com/rickstaa/stable-learning-control/commit/80fe370a6132e1663fd2dadb4d8397a5adea1b3b))
+* fix environment validation ([#280](https://github.com/rickstaa/stable-learning-control/issues/280)) ([a8a0346](https://github.com/rickstaa/stable-learning-control/commit/a8a0346c9e2f4bf583a15dea11bdac00b7f9db4d))
+
+
+### Documentation
+
+* fix incorrect package naming ([#282](https://github.com/rickstaa/stable-learning-control/issues/282)) ([5337841](https://github.com/rickstaa/stable-learning-control/commit/533784112dac20adbd649d0b2a81ccbbf41119de))
+
 ## [4.0.4](https://github.com/rickstaa/stable-learning-control/compare/v4.0.3...v4.0.4) (2023-07-01)
 
 
