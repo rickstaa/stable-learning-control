@@ -1,4 +1,4 @@
-alg_name: lac @
+alg_name: lac
 exp_name: lac_oscillator_exp
 env_name: "stable_gym:Oscillator-v1"
 ac_kwargs:
