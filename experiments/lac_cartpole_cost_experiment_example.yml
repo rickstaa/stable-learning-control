@@ -1,5 +1,5 @@
 alg_name: lac
-exp_name: lac_cart_pole_cost_exp
+exp_name: lac_cartpole_cost_exp
 env_name: "CartPoleCost-v0"
 ac_kwargs:
   hidden_sizes:
