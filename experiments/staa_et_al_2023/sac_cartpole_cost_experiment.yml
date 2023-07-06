@@ -1,10 +1,10 @@
-alg_name: lac
-exp_name: lac_oscillator_exp
-env_name: "stable_gym:Oscillator-v1"
+alg_name: sac
+exp_name: sac_cartpole_cost_exp
+env_name: "stable_gym:CartPoleCost-v1"
 ac_kwargs:
   hidden_sizes:
     actor: [256, 256] # NOTE: Han et al. 2020 code uses [64, 64].
-    critic: [256, 256, 16] # NOTE: Haarnoja et al. 2018 uses [256, 256].
+    critic: [64, 64, 16] # NOTE: Haarnoja et al. 2018 uses [256, 256].
   activation:
     actor: "nn.ReLU" 
     critic: "nn.ReLU"
