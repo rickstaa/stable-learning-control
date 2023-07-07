@@ -20,7 +20,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from stable_learning_control.common.helpers import is_scalar
-from stable_learning_control.user_config import DEFAULT_STD_OUT_TYPE
+from stable_learning_control.user_config import DEFAULT_STD_OUT_TYPE, PRINT_CONFIG
 from stable_learning_control.utils.import_utils import import_tf
 from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 from stable_learning_control.utils.mpi_utils.mpi_tools import (
@@ -46,7 +46,7 @@ class Logger:
         output_dir=None,
         output_fname="progress.csv",
         exp_name=None,
-        verbose=True,
+        verbose=False,
         verbose_fmt=DEFAULT_STD_OUT_TYPE,
         verbose_vars=[],
         save_checkpoints=False,
@@ -66,14 +66,14 @@ class Logger:
                 will know to group them. (Use case: if you run the same
                 hyperparameter configuration with multiple random seeds, you
                 should give them all the same ``exp_name``.)
-            verbose (bool, optional): Whether you want to log to the std_out. Defaults
-                to ``True``.
+            verbose (bool, optional): Whether you want to log to the stdout. Defaults
+                to ``False``.
             verbose_fmt (str, optional): The format in which the statistics are
                 displayed to the terminal. Options are ``tab`` which supplies them as a
                 table and ``line`` which prints them in one line. Default is set in the
                 :mod:`~stable_learning_control.user_config` file.
             verbose_vars (list, optional): A list of variables you want to log to the
-                std_out. By default all variables are logged.
+                stdout. By default all variables are logged.
             save_checkpoints (bool, optional): Save checkpoints during training.
                 Defaults to ``False``.
             backend (str, optional): The backend you want to use for writing to
@@ -404,7 +404,8 @@ class Logger:
                 config_json, separators=(",", ":\t"), indent=4, sort_keys=True
             )
             self.log("Saving config:\n", type="info")
-            self.log(output)
+            if PRINT_CONFIG:
+                self.log(output)
             with open(osp.join(self.output_dir, "config.json"), "w") as out:
                 out.write(output)
 

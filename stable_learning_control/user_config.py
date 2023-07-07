@@ -26,7 +26,10 @@ DEFAULT_SHORTHAND = True
 # Tells the GridSearch how many seconds to pause for before launching experiments.
 WAIT_BEFORE_LAUNCH = 5
 
-# Logger std out output type.
+# Print config when saved.
+PRINT_CONFIG = True
+
+# Logger stdout output type.
 # NOTE:The format in which the training statistics are displayed to the terminal.
 # Options are "table"  which supplies them as a table and "line" which prints them in
 # one line.
