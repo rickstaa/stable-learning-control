@@ -1,5 +1,5 @@
 alg_name: sac
-exp_name: sac_oscillator_exp
+exp_name: sac_oscillator_han_2020_exp
 env_name: "stable_gym:Oscillator-v1"
 ac_kwargs:
   hidden_sizes:
