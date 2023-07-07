@@ -17,7 +17,7 @@ steps_per_epoch: 2048
 start_steps: 0
 update_every: 100
 update_after: 1000
-steps_per_update: 80 # NOTE: Haarnoja et al. 2018 uses 1.0.
+steps_per_update: 50 # NOTE: Haarnoja et al. 2018 uses 1.0.
 num_test_episodes: 10
 alpha: 1.0
 gamma: 0.995
