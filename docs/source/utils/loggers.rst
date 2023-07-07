@@ -49,7 +49,7 @@ values of ``Test`` to the :class:`~stable_learning_control.utils.log_utils.logx.
 state. Then, when :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` is called,
 it computes the average, standard deviation, min, and max of ``Test`` over all of the values in the internal state.
 The internal state is wiped clean after the call to :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular`
-(to prevent leakage into the statistics at the next epoch). Finally, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular`
+(to prevent leakage into the diagnostics at the next epoch). Finally, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular`
 is called to write the diagnostics to file, Tensorboard and/or stdout.
 
 Next, let's use the :torch:`Pytorch Classifier <tutorials/beginner/blitz/cifar10_tutorial.html>` tutorial to look at an entire training procedure with the logger embedded, to highlight configuration and model
@@ -192,7 +192,7 @@ saving as well as diagnostic logging:
                 accuracy = 100 * correct / len(trainset)
                 running_loss += loss.item()
 
-                # print statistics.
+                # print diagnostics.
                 running_loss += loss.item()
                 if i % 2000 == 1999:  # print every 2000 mini-batches
                     logger.log(

@@ -46,7 +46,7 @@ class Logger:
         output_dir=None,
         output_fname="progress.csv",
         exp_name=None,
-        verbose=False,
+        quiet=False,
         verbose_fmt=DEFAULT_STD_OUT_TYPE,
         verbose_vars=[],
         save_checkpoints=False,
@@ -66,9 +66,9 @@ class Logger:
                 will know to group them. (Use case: if you run the same
                 hyperparameter configuration with multiple random seeds, you
                 should give them all the same ``exp_name``.)
-            verbose (bool, optional): Whether you want to log to the stdout. Defaults
-                to ``False``.
-            verbose_fmt (str, optional): The format in which the statistics are
+            quiet (bool, optional): Whether you want to suppress logging of the
+                diagnostics to the stdout. Defaults to ``False``.
+            verbose_fmt (str, optional): The format in which the diagnostics are
                 displayed to the terminal. Options are ``tab`` which supplies them as a
                 table and ``line`` which prints them in one line. Default is set in the
                 :mod:`~stable_learning_control.user_config` file.
@@ -105,8 +105,8 @@ class Logger:
                 os.makedirs(self.output_dir)
             self.output_file = open(osp.join(self.output_dir, output_fname), "w")
             atexit.register(self.output_file.close)
-            self.log("Logging data to %s" % self.output_file.name, type="info")
-            self.verbose = verbose
+            self.log("Logging data to '%s'." % self.output_file.name, type="info")
+            self.quiet = quiet
             self.verbose_table = verbose_fmt.lower() != "line"
             self.verbose_vars = [
                 item.replace("Avg", "Average") for item in verbose_vars
@@ -114,7 +114,7 @@ class Logger:
         else:
             self.output_dir = None
             self.output_file = None
-            self.verbose = None
+            self.quiet = None
             self.verbose_table = None
             self.verbose_vars = None
         self.exp_name = exp_name
@@ -271,7 +271,7 @@ class Logger:
                 vals.append(val)
 
             # Log to stdout.
-            if self.verbose:
+            if not self.quiet:
                 if self.verbose_vars:
                     key_filter = self.verbose_vars
 
@@ -403,10 +403,12 @@ class Logger:
             output = json.dumps(
                 config_json, separators=(",", ":\t"), indent=4, sort_keys=True
             )
-            self.log("Saving config:\n", type="info")
+            config_file = osp.join(self.output_dir, "config.json")
+            self.log("Saving config to '%s'." % config_file, type="info")
             if PRINT_CONFIG:
+                self.log("\nconfig:\n")
                 self.log(output)
-            with open(osp.join(self.output_dir, "config.json"), "w") as out:
+            with open(config_file, "w") as out:
                 out.write(output)
 
     @classmethod
@@ -1665,7 +1667,7 @@ class EpochLogger(Logger):
                 else:
                     global_step_tmp = global_step
 
-                self._log_tb_statistics(
+                self._log_tb_diagnostics(
                     key,
                     with_min_and_max=with_min_and_max,
                     average_only=average_only,
@@ -1791,7 +1793,7 @@ class EpochLogger(Logger):
         )
         return mpi_statistics_scalar(vals)
 
-    def _log_tb_statistics(
+    def _log_tb_diagnostics(
         self,
         key,
         with_min_and_max=False,
@@ -1800,7 +1802,7 @@ class EpochLogger(Logger):
         tb_alias=None,
         global_step=None,
     ):
-        """Calculates the statistics of a given key from all the new data found in the
+        """Calculates the diagnostics of a given key from all the new data found in the
         Loggers internal storage.
 
         Args:

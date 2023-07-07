@@ -37,7 +37,7 @@ The robustness evaluation tool can save several files to disk that contain infor
 |``figures/``           | | A directory containing the robustness evaluation plots when the  |
 |                       | | ``--save_figs`` flag was used.                                   |
 +-----------------------+--------------------------------------------------------------------+
-|``eval_statistics.csv``| | File with general performance statistics for the episodes and    |
+|``eval_statistics.csv``| | File with general performance diagnostics for the episodes and    |
 |                       | | disturbances used during the robustness evaluation.              |
 +-----------------------+--------------------------------------------------------------------+
 |``results.csv``        | | Pandas data frame containing all the data that was collected for |

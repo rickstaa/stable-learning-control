@@ -973,8 +973,8 @@ def lac(
         env.reward_range.shape[0] if isinstance(env.reward_range, gym.spaces.Box) else 1
     )
 
-    logger_kwargs["verbose"] = (
-        logger_kwargs["verbose"] if "verbose" in logger_kwargs.keys() else False
+    logger_kwargs["quiet"] = (
+        logger_kwargs["quiet"] if "quiet" in logger_kwargs.keys() else False
     )
     logger_kwargs["verbose_vars"] = (
         logger_kwargs["verbose_vars"]
@@ -1319,7 +1319,7 @@ def lac(
     if export:
         policy.export(logger.output_dir)
 
-    print("" if logger_kwargs["verbose"] else "\n")
+    print("" if not logger_kwargs["quiet"] else "\n")
     logger.log(
         "Training finished after {}s".format(time.time() - start_time),
         type="info",
@@ -1563,11 +1563,11 @@ if __name__ == "__main__":
         help="the name of the experiment (default: lac)",
     )
     parser.add_argument(
-        "--verbose",
-        "-v",
+        "--quiet",
+        "-q",
         type=bool,
         default=False,
-        help="log diagnostics to stdout (default: False)",
+        help="suppress logging of diagnostics to stdout (default: False)",
     )
     parser.add_argument(
         "--verbose_fmt",
@@ -1636,7 +1636,7 @@ if __name__ == "__main__":
         save_checkpoints=args.save_checkpoints,
         use_tensorboard=args.use_tensorboard,
         tb_log_freq=args.tb_log_freq,
-        verbose=args.verbose,
+        quiet=args.quiet,
         verbose_fmt=args.verbose_fmt,
         verbose_vars=args.verbose_vars,
     )
