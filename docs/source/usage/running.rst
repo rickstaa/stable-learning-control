@@ -295,18 +295,19 @@ The CLI also contains several (shortcut) flags that can be used to change the be
     :obj:`str`. The tensorboard log frequency. Options are ``low`` (Recommended: logs at every epoch) and
     ``high`` (logs at every SGD update batch). Defaults to ``low`` since this is less resource intensive.
 
-.. option:: --verbose, --logger_kwargs:verbose
+.. option:: --quiet, --logger_kwargs:quiet
 
-    :obj:`bool`. Whether you want to log to the stdout. Defaults to ``False``.
+    :obj:`bool`. Suppress logging of diagnostics to the stdout. Defaults to ``False``.
 
 .. option:: --verbose_fmt, --logger_kwargs:verbose_fmt
 
-    :obj:`bool`. The format in which the statistics are displayed to the terminal. Options are ``table``, which
-    supplies them as a table and ``line``, which prints them in one line. Defaults to ``line``.
+    :obj:`bool`. The format in which the diagnostics are displayed to the terminal when ``quiet`` is ``False``. 
+    Options are ``table``, which supplies them as a table and ``line``, which prints them in one line. 
+    Defaults to ``line``.
 
 .. option:: --verbose_vars, --logger_kwargs:verbose_vars
 
-    :obj:`list`. A list of variables you want to log to the stdout. By default, all variables are logged.
+    :obj:`list`. A list of variables you want to log to the stdout when ``quiet`` is ``False``. By default, all variables are logged.
 
 .. important::
 
