@@ -297,7 +297,7 @@ The CLI also contains several (shortcut) flags that can be used to change the be
 
 .. option:: --verbose, --logger_kwargs:verbose
 
-    :obj:`bool`. Whether you want to log to the std_out. Defaults to ``True``.
+    :obj:`bool`. Whether you want to log to the stdout. Defaults to ``False``.
 
 .. option:: --verbose_fmt, --logger_kwargs:verbose_fmt
 
@@ -306,7 +306,7 @@ The CLI also contains several (shortcut) flags that can be used to change the be
 
 .. option:: --verbose_vars, --logger_kwargs:verbose_vars
 
-    :obj:`list`. A list of variables you want to log to the std_out. By default, all variables are logged.
+    :obj:`list`. A list of variables you want to log to the stdout. By default, all variables are logged.
 
 .. important::
 
@@ -549,7 +549,7 @@ hyperparameters used in the hyperparameter search. Next, on lines ``52-64``, we 
 Lastly, we start the hyperparameter search using the :meth:`tune.run` method online ``70-85``.
 
 The Ray tuner will search for the best hyperparameter combination when running the script. While doing so, it will print
-the results both to the ``std_out`` and a Tensorboard file. You can check these Tensorboard logs using the
+the results both to the ``stdout`` and a Tensorboard file. You can check these Tensorboard logs using the
 ``tensorboard --logdir ./data/ray_results`` command. For more information on how the ray tuning package works, see
 the `Ray tuning documentation`_.
 

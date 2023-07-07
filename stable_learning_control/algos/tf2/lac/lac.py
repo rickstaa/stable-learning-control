@@ -923,7 +923,7 @@ def lac(
     )
 
     logger_kwargs["verbose"] = (
-        logger_kwargs["verbose"] if "verbose" in logger_kwargs.keys() else True
+        logger_kwargs["verbose"] if "verbose" in logger_kwargs.keys() else False
     )
     logger_kwargs["verbose_vars"] = (
         logger_kwargs["verbose_vars"]
@@ -932,7 +932,7 @@ def lac(
             and logger_kwargs["verbose_vars"] is not None
         )
         else STD_OUT_LOG_VARS_DEFAULT
-    )  # NOTE: Done to ensure the std_out doesn't get cluttered.
+    )  # NOTE: Done to ensure the stdout doesn't get cluttered.
     logger_kwargs["backend"] = "tf2"  # NOTE: Use TensorFlow tensorboard backend
     tb_low_log_freq = (
         logger_kwargs.pop("tb_log_freq").lower() == "low"
@@ -1509,15 +1509,15 @@ if __name__ == "__main__":
         "--verbose",
         "-v",
         type=bool,
-        default=True,
-        help="log diagnostics to std out (default: True)",
+        default=False,
+        help="log diagnostics to stdout (default: False)",
     )
     parser.add_argument(
         "--verbose_fmt",
         type=str,
         default="line",
         help=(
-            "log diagnostics std out format (options: 'table' or 'line', default: "
+            "log diagnostics stdout format (options: 'table' or 'line', default: "
             "line)"
         ),
     )
@@ -1525,7 +1525,7 @@ if __name__ == "__main__":
         "--verbose_vars",
         nargs="+",
         default=STD_OUT_LOG_VARS_DEFAULT,
-        help=("a space separated list of the values you want to show on the std out."),
+        help=("a space separated list of the values you want to show on the stdout."),
     )
     parser.add_argument(
         "--save_freq",

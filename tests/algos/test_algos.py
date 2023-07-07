@@ -38,7 +38,6 @@ class TestTorchAlgos:
             epochs=1,
             update_after=400,
             steps_per_epoch=800,
-            logger_kwargs=dict(verbose=False),
             device="cpu",
         )
 

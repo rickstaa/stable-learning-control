@@ -114,7 +114,7 @@ def setup_logger_kwargs(
     save_checkpoints=False,
     use_tensorboard=False,
     tb_log_freq="low",
-    verbose=True,
+    verbose=False,
     verbose_fmt=DEFAULT_STD_OUT_TYPE,
     verbose_vars=[],
     data_dir=None,
@@ -153,13 +153,13 @@ def setup_logger_kwargs(
         tb_log_freq (str, optional): The tensorboard log frequency. Options are ``low``
             (Recommended: logs at every epoch) and ``high`` (logs at every SGD update "
             batch). Defaults to ``low`` since this is less resource intensive.
-        verbose (bool, optional): Whether you want to log to the std_out. Defaults
-            to ``True``.
+        verbose (bool, optional): Whether you want to log to the stdout. Defaults
+            to ``False``.
         verbose_fmt (str, optional): The format in which the statistics are
             displayed to the terminal. Options are ``table`` which supplies them as a
             table and ``line`` which prints them in one line. Defaults to ``line``.
         verbose_vars (list, optional): A list of variables you want to log to the
-            std_out. By default all variables are logged.
+            stdout. By default all variables are logged.
         data_dir (str, optional): Path to folder where results should be saved.
             Default is the ``DEFAULT_DATA_DIR`` in
             ``stable_learning_control/user_config.py``. Defaults to ``None``.

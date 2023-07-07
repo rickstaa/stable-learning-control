@@ -225,9 +225,9 @@ saving as well as diagnostic logging:
 In this example, observe that
 
 * on line 13, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` class is imported.
-* On line 51, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` object is initiated. We set the ``std_out`` format to the "tabular" format.
+* On line 51, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` object is initiated. We set the ``stdout`` format to the "tabular" format.
 * On line 52, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_config` is used to save the hyperparameter configuration to a JSON file.
-* On lines 80-87, 95-97, 137-140 and 159 we log information to the ``std_out``.
+* On lines 80-87, 95-97, 137-140 and 159 we log information to the ``stdout``.
 * On lines 107 :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver` is used to prepare the logger to save the key elements of the CNN model.
 * On line 141, diagnostics are saved to the logger's internal state via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`.
 * On line 147, the CNN model saved once per epoch via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state`.
