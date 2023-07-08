@@ -1,9 +1,9 @@
-alg_name: lac
-exp_name: lac_cartpole_cost_exp
+alg_name: sac
+exp_name: sac_cartpole_cost_exp
 env_name: "stable_gym:CartPoleCost-v1"
 ac_kwargs:
   hidden_sizes:
-    actor: [64, 64]
+    actor: [256, 256] # NOTE: Han et al. 2020 code uses [64, 64].
     critic: [64, 64, 16] # NOTE: Haarnoja et al. 2018 uses [256, 256].
   activation:
     actor: "nn.ReLU" 
@@ -19,9 +19,7 @@ update_every: 100
 update_after: 1000
 steps_per_update: 80 # NOTE: Haarnoja et al. 2018 uses 1.0.
 num_test_episodes: 10
-alpha: 2.0
-alpha3: 0.1 # NOTE: Han et al. 2020 article states 1.0 (see #284).
-labda: 0.99 # NOTE: Han et al. 2020 uses 1.0.
+alpha: 2.0 # NOTE: Han et al. 2020 uses 1.0 in the code.
 gamma: 0.995
 polyak: 0.995
 adaptive_temperature: True

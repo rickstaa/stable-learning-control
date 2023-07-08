@@ -1,18 +1,18 @@
 alg_name: lac
-exp_name: lac_cartpole_cost_exp
-env_name: "stable_gym:CartPoleCost-v1"
+exp_name: lac_oscillator_complicated_exp
+env_name: "stable_gym:OscillatorComplicated-v1"
 ac_kwargs:
   hidden_sizes:
-    actor: [64, 64]
-    critic: [64, 64, 16] # NOTE: Haarnoja et al. 2018 uses [256, 256].
+    actor: [256, 256] # NOTE: Han et al. 2020 code uses [64, 64].
+    critic: [256, 256, 16] # NOTE: Haarnoja et al. 2018 uses [256, 256].
   activation:
     actor: "nn.ReLU" 
     critic: "nn.ReLU"
   output_activation:
     actor: "nn.ReLU"
 opt_type: "minimize"
-max_ep_len: 250
-epochs: 490
+max_ep_len: 400
+epochs: 50
 steps_per_epoch: 2048
 start_steps: 0
 update_every: 100
