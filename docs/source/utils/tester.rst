@@ -20,9 +20,8 @@ There are a few flags for options:
 
 .. option:: -l L, --len=L, default=0
 
-    :obj:`int`. Maximum length of test episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has
-    reached a terminal state in the environment. (Note: setting L=0 will not prevent gymnasium envs wrapped by TimeLimit wrappers from ending when they reach
-    their pre-set maximum episode length.)
+    :obj:`int`. Maximum length of test episode/trajectory/rollout. The default of ``0`` 
+    means no maximum episode length (i.e. episodes only end when the agent has reached a terminal state in the environment).
 
 .. option:: -n N, --episodes=N, default=100
 
@@ -74,7 +73,7 @@ There are a few flags for options:
 
 .. option:: -l L, --len=L, default=0
 
-    :obj:`int`. Maximum length of evaluation episode / trajectory / rollout. The default of 0 means no maximum episode length---episodes only end when the agent has
+    :obj:`int`. Maximum length of evaluation episode / trajectory / rollout. The default of ``0`` means no maximum episode length---episodes only end when the agent has
     reached a terminal state in the environment. (Note: setting L=0 will not prevent gymnasium envs wrapped by TimeLimit wrappers from ending when they reach
     their pre-set maximum episode length.)
 
@@ -89,7 +88,7 @@ There are a few flags for options:
 .. option:: -i I, --itr=I, default=-1
 
     :obj:`int`. Specify the snapshot (checkpoint) for which you want to see the policy performance. Use case: Sometimes, it's nice to evaluate the robustness of the agent from many
-    different points in training (e.g. at iteration 50, 100, 150, etc.). The default value of this flag means "use the latest snapshot."
+    different points in training (e.g. at iteration 50, 100, 150, etc.). The default value of ``-1`` means "use the latest snapshot."
 
     .. important::
 
@@ -130,9 +129,9 @@ There are a few flags for options:
 
     :obj:`bool`. Specifies whether you want to automatically disable the baseline (i.e., zero disturbance) from being added to the disturbance array.
 
-.. option:: --obs
+.. option:: --obs, default=None
 
-    *:obj:`list of ints`*. The observations you want to show in the observations/reference plots. By default, all observations will be shown.
+    *:obj:`list of ints`*. The observations you want to show in the observations/reference plots. The default value of :obj:`None` means all observations will be shown.
 
 .. option:: --merged, default=False
 

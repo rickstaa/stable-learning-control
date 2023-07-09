@@ -62,7 +62,7 @@ SLC ships with a simple plotting utility that can be used to plot diagnostics fr
     correct performance measure for the on-policy algorithms, or ``AverageTestEpRet``, the correct performance measure for the off-policy
     algorithms. The plotter will automatically figure out which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for each logdir.
 
-.. option:: --count
+.. option:: --count, default=False
 
     Optional flag. By default, the plotter shows y-values averaged across all results that share an ``exp_name``, typically a set of identical experiments that only vary in the random seed. But if you'd like to see all of those curves separately, use the ``--count`` flag.
 
