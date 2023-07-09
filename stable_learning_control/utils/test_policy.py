@@ -5,15 +5,16 @@ import glob
 import os
 import os.path as osp
 import re
-import time
 from pathlib import Path
 
 import joblib
 import torch
 
-from stable_learning_control.common.exceptions import EnvLoadError, PolicyLoadError
+from stable_learning_control.common.exceptions import (EnvLoadError,
+                                                       PolicyLoadError)
 from stable_learning_control.utils.import_utils import import_tf
-from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
+from stable_learning_control.utils.log_utils.helpers import (friendly_err,
+                                                             log_to_std_out)
 from stable_learning_control.utils.log_utils.logx import EpochLogger
 from stable_learning_control.utils.serialization_utils import load_from_json
 
@@ -284,17 +285,13 @@ def run_policy(
         "handle this situation."
     )
 
-    # Apply episode length and render settings.
-    if max_ep_len is not None:
+    # Apply episode length and set render mode.
+    if max_ep_len is not None and max_ep_len != 0:
         env.env._max_episode_steps = max_ep_len
-    if render:  # Enable rendering if requested.
+    if render:
         render_modes = env.unwrapped.metadata.get("render_modes", [])
         if render_modes:
-            env.unwrapped.render_mode = (
-                "human"
-                if "human" in render_modes
-                else None
-            )
+            env.unwrapped.render_mode = "human" if "human" in render_modes else None
         else:
             log_to_std_out(
                 (
@@ -348,7 +345,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str, help="The path where the policy is stored")
     parser.add_argument(
-        "--len", "-l", type=int, default=0, help="The episode length (default: 800)"
+        "--len", "-l", type=int, default=0, help="The episode length (default: 0)"
     )
     parser.add_argument(
         "--episodes",
