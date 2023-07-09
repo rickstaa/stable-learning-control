@@ -1,6 +1,6 @@
 {
   "name": "stable-learning-control",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "A framework for training theoretically stable (and robust) Reinforcement Learning control algorithms.",
   "keywords": [
     "reinforcement-learning",

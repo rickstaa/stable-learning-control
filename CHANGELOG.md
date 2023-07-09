@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.6](https://github.com/rickstaa/stable-learning-control/compare/v4.0.5...v4.0.6) (2023-07-09)
+
+
+### Bug Fixes
+
+* fix 'test_policy' rendering ([#291](https://github.com/rickstaa/stable-learning-control/issues/291)) ([48443ca](https://github.com/rickstaa/stable-learning-control/commit/48443ca1b15854b00f67272ab88a2766624d5530))
+
+
+### Documentation
+
+* improve documentation defaults ([be99008](https://github.com/rickstaa/stable-learning-control/commit/be990083f951c8cb12ee30948d12cb3db2864913))
+
 ## [4.0.5](https://github.com/rickstaa/stable-learning-control/compare/v4.0.4...v4.0.5) (2023-07-06)
 
 
