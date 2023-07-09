@@ -304,9 +304,9 @@ The CLI also contains several (shortcut) flags that can be used to change the be
     :obj:`bool`. The format in which the diagnostics are displayed to the terminal when ``quiet`` is ``False``. 
     Options are ``table``, which supplies them as a table and ``line``, which prints them in one line. 
 
-.. option:: --verbose_vars, --logger_kwargs:verbose_vars
+.. option:: --verbose_vars, --logger_kwargs:verbose_vars, default=None
 
-    :obj:`list`. A list of variables you want to log to the stdout when ``quiet`` is ``False``. By default, all variables are logged.
+    :obj:`list`. A list of variables you want to log to the stdout when ``quiet`` is ``False``. The default :obj:`None` means that all variables are logged.
 
 .. important::
 
