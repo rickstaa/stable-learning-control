@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.7](https://github.com/rickstaa/stable-learning-control/compare/v4.0.6...v4.0.7) (2023-07-09)
+
+
+### Bug Fixes
+
+* fix 'test_policy' episode length bug ([#292](https://github.com/rickstaa/stable-learning-control/issues/292)) ([6d34f74](https://github.com/rickstaa/stable-learning-control/commit/6d34f74f8a18104ad92644aa624cee2c57135aad))
+
 ## [4.0.6](https://github.com/rickstaa/stable-learning-control/compare/v4.0.5...v4.0.6) (2023-07-09)
 
 
