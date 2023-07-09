@@ -958,7 +958,7 @@ def lac(
             logger.log(
                 (
                     f"You defined your 'max_ep_len' to be {max_ep_len} "
-                    "while the environment 'max_epsisode_steps' is "
+                    "while the environment 'max_episode_steps' is "
                     f"{env.env._max_episode_steps}. As a result the environment "
                     f"'max_episode_steps' has been increased to {max_ep_len}"
                 ),
