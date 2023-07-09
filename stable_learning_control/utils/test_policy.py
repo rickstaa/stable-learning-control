@@ -284,27 +284,31 @@ def run_policy(
         "handle this situation."
     )
 
+    # Apply episode length and render settings.
+    if max_ep_len is not None:
+        env.env._max_episode_steps = max_ep_len
+    if render:  # Enable rendering if requested.
+        render_modes = env.unwrapped.metadata.get("render_modes", [])
+        if render_modes:
+            env.unwrapped.render_mode = (
+                "human"
+                if "human" in render_modes
+                else None
+            )
+        else:
+            log_to_std_out(
+                (
+                    f"Nothing was rendered since the '{env.unwrapped.spec.id}' "
+                    f"environment does not contain a 'human' render mode."
+                ),
+                type="warning",
+            )
+
     logger = EpochLogger(verbose_fmt="table")
     o, _ = env.reset()
     r, d, ep_ret, ep_len, n = 0, False, 0, 0, 0
     supports_deterministic = True  # Only supported with gaussian algorithms.
-    render_error = False
     while n < num_episodes:
-        # Render env if requested.
-        if render and not render_error:
-            try:
-                env.render()
-                time.sleep(1e-3)
-            except NotImplementedError:
-                render_error = True
-                log_to_std_out(
-                    (
-                        "Nothing was rendered since no render method was "
-                        f"implemented for the '{env.unwrapped.spec.id}' environment."
-                    ),
-                    type="warning",
-                )
-
         # Retrieve action.
         if deterministic and supports_deterministic:
             try:
