@@ -43,7 +43,7 @@ if __name__ == "__main__":
     ax.plot(t1, np.array(path)[:, 0], color="orange", label="x")
     ax.plot(t1, np.array(path)[:, 1], color="magenta", label="x_dot")
     ax.plot(t1, np.array(path)[:, 2], color="sienna", label="theta")
-    ax.plot(t1, np.array(path)[:, 3], color="blue", label=" theat_dot1")
+    ax.plot(t1, np.array(path)[:, 3], color="blue", label="theta_dot1")
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
