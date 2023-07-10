@@ -731,7 +731,7 @@ class Logger:
                 counter if global step is not supplied.
         """
 
-        # Try to write data to tb as as historgram.
+        # Try to write data to tb as as histogram.
         if not self.tb_writer:
             self.use_tensorboard = (
                 True  # Property that creates tf writer if set to True.
@@ -748,7 +748,7 @@ class Logger:
             ):
                 pass
         else:
-            # Try to write data to tb as as historgram.
+            # Try to write data to tb as as histogram.
             try:
                 self.add_histogram(var_name, data, global_step=global_step)
             except (
@@ -914,7 +914,7 @@ class Logger:
         return self.tb_writer.add_scalars(*args, **kwargs)
 
     def add_histogram(self, *args, **kwargs):
-        """Add historgram to tb summary.
+        """Add histogram to tb summary.
 
         Wrapper that calls the
         :obj:`torch.utils.tensorboard.SummaryWriter.add_histogram` or
