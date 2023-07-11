@@ -1,0 +1,39 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+cff-version: 1.2.0
+title: rickstaa/stable-learning-control
+message: >-
+  If you want to cite this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Rick
+    family-names: Staa
+    affiliation: TU Delft
+    orcid: 'https://orcid.org/0000-0003-4835-2040'
+  - given-names: Wei
+    family-names: Pan
+    affiliation: The University of Manchester
+    orcid: 'https://orcid.org/0000-0003-1121-9879'
+identifiers:
+  - type: url
+    value: 'https://zenodo.org/badge/latestdoi/271989240'
+repository-code: 'https://github.com/rickstaa/stable-learning-control'
+abstract: >-
+  A framework for training theoretically stable (and robust)
+  Reinforcement Learning control algorithms.
+keywords:
+  - reinforcement-learning
+  - control
+  - stability
+  - robustness
+  - simulation
+  - openai-gym
+  - gymnasium
+  - artificial-intelligence
+  - deep-learning
+  - neural-networks
+  - machine-learning
+  - framework
+  - gaussian-networks
+license: MIT

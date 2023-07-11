@@ -5,6 +5,7 @@
 [![Python 3](https://img.shields.io/badge/Python->=3.8-brightgreen)](https://www.python.org/)
 [![codecov](https://codecov.io/gh/rickstaa/stable-learning-control/branch/main/graph/badge.svg?token=4SAME74CJ7)](https://codecov.io/gh/rickstaa/stable-learning-control)
 [![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![DOI](https://zenodo.org/badge/271989240.svg)](https://zenodo.org/badge/latestdoi/271989240)
 
 ## Package Overview
 

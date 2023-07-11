@@ -1,0 +1,41 @@
+{
+    "description": "A framework for training theoretically stable (and robust) Reinforcement Learning control algorithms.",
+    "license": "MIT",
+    "title": "rickstaa/stable-learning-control",
+    "upload_type": "software",
+    "keywords": [
+        "reinforcement-learning",
+        "control",
+        "stability",
+        "robustness",
+        "simulation",
+        "openai-gym",
+        "gymnasium",
+        "artificial-intelligence",
+        "deep-learning",
+        "neural-networks",
+        "machine-learning",
+        "framework",
+        "gaussian-networks"
+    ],
+    "creators": [
+        {
+            "orcid": "0000-0003-4835-2040",
+            "affiliation": "TU Delft",
+            "name": "Rick Staa"
+        },
+        {
+            "orcid": "0000-0003-1121-9879",
+            "affiliation": "The University of Manchester",
+            "name": "Wei Pan"
+        },
+        {
+            "name": "dds0117"
+        },
+        {
+            "affiliation": "@mend",
+            "name": "Mend Renovate"
+        }
+    ],
+    "access_right": "open"
+}
