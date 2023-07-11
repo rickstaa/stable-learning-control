@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.9](https://github.com/rickstaa/stable-learning-control/compare/v4.0.8...v4.0.9) (2023-07-11)
+
+
+### Documentation
+
+* add zenodo reference information ([#300](https://github.com/rickstaa/stable-learning-control/issues/300)) ([7180fb3](https://github.com/rickstaa/stable-learning-control/commit/7180fb37f3027338873ad487c0fbeaaaeec114e5))
+
 ## [4.0.8](https://github.com/rickstaa/stable-learning-control/compare/v4.0.7...v4.0.8) (2023-07-10)
 
 
