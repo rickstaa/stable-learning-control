@@ -28,7 +28,7 @@ def is_gym_env(env):
     Returns:
         bool: Boolean specifying whether object is gymnasium environment.
     """
-    return isinstance(env, gym.core.Env)
+    return isinstance(env, gym.Env)
 
 
 def is_continuous_space(space):

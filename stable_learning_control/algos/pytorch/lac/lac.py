@@ -961,12 +961,15 @@ def lac(
             "need this."
         )
 
-    env = gym.wrappers.FlattenObservation(
-        env
-    )  # NOTE: Done to make sure the alg works with dict observation spaces
+    # Create test environment.
     if num_test_episodes != 0:
         test_env = env_fn()
-        test_env = gym.wrappers.FlattenObservation(test_env)
+
+    # Flatten observation space and get observation, action and reward space dimensions.
+    # NOTE: Done to ensure the algorithm works with GoalEnv environments. See
+    # https://robotics.farama.org/content/multi-goal_api/#goalenv.
+    env = gym.wrappers.FlattenObservation(env)
+    test_env = gym.wrappers.FlattenObservation(test_env)
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape[0]
     rew_dim = (
