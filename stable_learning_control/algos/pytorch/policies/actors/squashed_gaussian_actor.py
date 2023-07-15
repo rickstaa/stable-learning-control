@@ -40,8 +40,7 @@ class SquashedGaussianActor(nn.Module):
         log_std_min=-20,
         log_std_max=2.0,
     ):
-        """Constructs all the necessary attributes for the Squashed Gaussian Actor
-        object.
+        """Initialise the SquashedGaussianActor object.
 
         Args:
             obs_dim (int): Dimension of the observation space.

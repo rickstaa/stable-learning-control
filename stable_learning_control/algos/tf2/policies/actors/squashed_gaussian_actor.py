@@ -40,8 +40,7 @@ class SquashedGaussianActor(tf.keras.Model):
         name="gaussian_actor",
         **kwargs,
     ):
-        """Constructs all the necessary attributes for the Squashed Gaussian Actor
-        object.
+        """Initialise the SquashedGaussianActor object.
 
         Args:
             obs_dim (int): Dimension of the observation space.

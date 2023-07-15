@@ -1551,9 +1551,7 @@ class EpochLogger(Logger):
     """
 
     def __init__(self, *args, **kwargs):
-        """Constructs all the necessary attributes for the :class:`EpochLogger`
-        object.
-        """
+        """Initialise a EpochLogger."""
         super().__init__(*args, **kwargs)
         self.epoch_dict = dict()
         self._tb_index_dict = dict()

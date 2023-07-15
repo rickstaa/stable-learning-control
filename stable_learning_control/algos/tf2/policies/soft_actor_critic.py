@@ -38,8 +38,7 @@ class SoftActorCritic(tf.keras.Model):
         output_activation=OUTPUT_ACTIVATION_DEFAULT,
         name="soft_actor_critic",
     ):
-        """Constructs all the necessary attributes for the (soft) actor-critic network
-        object.
+        """Initialise the SoftActorCritic object.
 
         Args:
             observation_space (:obj:`gym.space.box.Box`): A gymnasium observation space.

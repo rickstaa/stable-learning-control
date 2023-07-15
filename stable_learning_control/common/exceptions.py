@@ -10,7 +10,7 @@ class EnvLoadError(Exception):
     """
 
     def __init__(self, message="", log_message="", **details):
-        """Initializes the EePoseLookupError exception object.
+        """Initialise the EePoseLookupError exception object.
 
         Args:
             message (str, optional): Exception message specifying whether the exception
@@ -34,7 +34,7 @@ class PolicyLoadError(Exception):
     """
 
     def __init__(self, message="", log_message="", **details):
-        """Initializes the EePoseLookupError exception object.
+        """Initialise the EePoseLookupError exception object.
 
         Args:
             message (str, optional): Exception message specifying whether the exception

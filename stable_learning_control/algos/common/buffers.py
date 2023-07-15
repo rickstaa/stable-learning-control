@@ -22,7 +22,7 @@ class ReplayBuffer:
     """
 
     def __init__(self, obs_dim, act_dim, rew_dim, size):
-        """Constructs all the necessary attributes for the FIFO ReplayBuffer object.
+        """Initialise the ReplayBuffer object.
 
         Args:
             obs_dim (tuple): The size of the observation space.
@@ -148,7 +148,7 @@ class TrajectoryBuffer:
         gamma=0.99,
         lam=0.95,
     ):
-        """Constructs all the necessary attributes for the trajectory buffer object.
+        """Initialise the TrajectoryBuffer object.
 
         Args:
             obs_dim (tuple): The size of the observation space.
