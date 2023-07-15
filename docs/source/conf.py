@@ -56,6 +56,7 @@ extensions = [
     "sphinx.ext.todo",  # Support for todo items.
 ]
 autoapi_dirs = ["../../stable_learning_control"]
+autoapi_python_class_content = "both"
 myst_heading_anchors = 2  # Add anchors to headings.
 
 # Extensions settings.

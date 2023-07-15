@@ -25,7 +25,7 @@ class LCritic(tf.keras.Model):
         name="lyapunov_critic",
         **kwargs,
     ):
-        """Constructs all the necessary attributes for the Soft Q critic object.
+        """Initialise the LCritic object.
 
         Args:
             obs_dim (int): Dimension of the observation space.

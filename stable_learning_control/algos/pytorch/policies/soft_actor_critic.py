@@ -38,8 +38,7 @@ class SoftActorCritic(nn.Module):
         activation=ACTIVATION_DEFAULT,
         output_activation=OUTPUT_ACTIVATION_DEFAULT,
     ):
-        """Constructs all the necessary attributes for the (soft) actor-critic network
-        object.
+        """Initialise the SoftActorCritic object.
 
         Args:
             observation_space (:obj:`gym.space.box.Box`): A gymnasium observation space.

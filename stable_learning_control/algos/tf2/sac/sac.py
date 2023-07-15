@@ -102,7 +102,7 @@ class SAC(tf.keras.Model):
         device="cpu",
         name="SAC",
     ):
-        """Soft Actor-Critic (SAC)
+        """Initialise the SAC algorithm.
 
         Args:
             env (:obj:`gym.env`): The gymnasium environment the SAC is training in. This is

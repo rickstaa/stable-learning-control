@@ -263,7 +263,7 @@ def run_disturbed_policy(
                         type="info",
                     )
 
-    # Initialize the disturber!
+    # Initialise the disturber!
     try:
         env.init_disturber(
             disturbance_type=disturbance_type,

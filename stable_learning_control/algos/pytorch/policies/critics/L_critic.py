@@ -24,7 +24,7 @@ class LCritic(nn.Module):
         hidden_sizes,
         activation=nn.ReLU,
     ):
-        """Constructs all the necessary attributes for the Soft Q critic object.
+        """Initialise the LCritic object.
 
         Args:
             obs_dim (int): Dimension of the observation space.

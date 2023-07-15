@@ -76,7 +76,7 @@ STD_OUT_LOG_VARS_DEFAULT = [
 
 
 class LAC(nn.Module):
-    """The Lyapunov actor critic algorithm.
+    """The Lyapunov (soft) Actor-Critic (LAC) algorithm.
 
     Attributes:
         ac (torch.nn.Module): The (lyapunov) actor critic module.
@@ -109,7 +109,7 @@ class LAC(nn.Module):
         lr_c=3e-4,
         device="cpu",
     ):
-        """Lyapunov (soft) Actor-Critic (LAC)
+        """Initialise the LAC algorithm.
 
         Args:
             env (:obj:`gym.env`): The gymnasium environment the LAC is training in. This is

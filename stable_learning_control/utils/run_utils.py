@@ -209,7 +209,7 @@ class ExperimentGrid:
     """Tool for running many experiments given hyperparameter ranges."""
 
     def __init__(self, name=""):
-        """Initiate object.
+        """Initialise the ExperimentGrid object.
 
         Args:
             name (str): Experimental grid id.

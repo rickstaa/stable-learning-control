@@ -21,7 +21,7 @@ class ReplayBuffer(CommonReplayBuffer):
     """
 
     def __init__(self, device="cpu", *args, **kwargs):
-        """Constructs all the necessary attributes for the FIFO ReplayBuffer object.
+        """Initialise the ReplayBuffer object.
 
         Args:
             device (str, optional): The computational device to put the sampled
@@ -59,7 +59,7 @@ class TrajectoryBuffer(CommonTrajectoryBuffer):
     """
 
     def __init__(self, device="cpu", *args, **kwargs):
-        """Constructs all the necessary attributes for the FIFO ReplayBuffer object.
+        """Initialise the TrajectoryBuffer object.
 
         Args:
             device (str, optional): The computational device to put the sampled

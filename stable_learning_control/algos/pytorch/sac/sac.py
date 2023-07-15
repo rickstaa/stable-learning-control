@@ -106,7 +106,7 @@ class SAC(nn.Module):
         lr_c=3e-4,
         device="cpu",
     ):
-        """Soft Actor-Critic (SAC)
+        """Initialise the SAC algorithm.
 
         Args:
             env (:obj:`gym.env`): The gymnasium environment the SAC is training in. This is

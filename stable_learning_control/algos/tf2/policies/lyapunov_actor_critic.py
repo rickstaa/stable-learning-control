@@ -41,8 +41,7 @@ class LyapunovActorCritic(tf.keras.Model):
         output_activation=OUTPUT_ACTIVATION_DEFAULT,
         name="lyapunov_actor_critic",
     ):
-        """Constructs all the necessary attributes for the lyapunov (soft) actor-critic
-        network object.
+        """Initialise the LyapunovActorCritic object.
 
         Args:
             observation_space (:obj:`gym.space.box.Box`): A gymnasium observation space.

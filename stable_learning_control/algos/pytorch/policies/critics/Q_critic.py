@@ -25,7 +25,7 @@ class QCritic(nn.Module):
         activation=nn.ReLU,
         output_activation=nn.Identity,
     ):
-        """Constructs all the necessary attributes for the Soft Q critic object.
+        """Initialise the QCritic object.
 
         Args:
             obs_dim (int): Dimension of the observation space.

@@ -21,7 +21,7 @@ class SquashBijector(tfp.bijectors.Bijector):
             validate_args (bool, optional): Whether to validate input with asserts. If
                 validate_args is False, and the inputs are invalid, correct behavior is
                 not guaranteed. Defaults to False.
-            name (str, optional): The name to give Ops created by the initializer.
+            name (str, optional): The name to give Ops created by the initialiser.
                 Defaults to "tanh".
         """
         super().__init__(
