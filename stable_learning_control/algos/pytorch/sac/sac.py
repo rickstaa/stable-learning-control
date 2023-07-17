@@ -916,10 +916,8 @@ def sac(
     env = gym.wrappers.FlattenObservation(env)
     test_env = gym.wrappers.FlattenObservation(test_env)
     obs_dim = env.observation_space.shape
-    act_dim = env.action_space.shape[0]
-    rew_dim = (
-        env.reward_range.shape[0] if isinstance(env.reward_range, gym.spaces.Box) else 1
-    )
+    act_dim = env.action_space.shape
+    rew_dim = 1
 
     logger_kwargs["quiet"] = (
         logger_kwargs["quiet"] if "quiet" in logger_kwargs.keys() else False
