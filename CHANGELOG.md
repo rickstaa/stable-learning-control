@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/rickstaa/stable-learning-control/compare/v4.0.10...v4.1.0) (2023-08-02)
+
+
+### Features
+
+* improve 'eval_robustness' utility ([#313](https://github.com/rickstaa/stable-learning-control/issues/313)) ([3985867](https://github.com/rickstaa/stable-learning-control/commit/3985867fb1d452a343c7abcccda7ae37c74286dd))
+
+
+### Documentation
+
+* update admonitions to new GFM specs ([ae7d3bc](https://github.com/rickstaa/stable-learning-control/commit/ae7d3bc652ee399c648cab8fca7fc68d707da6d0))
+
 ## [4.0.10](https://github.com/rickstaa/stable-learning-control/compare/v4.0.9...v4.0.10) (2023-07-15)
 
 
