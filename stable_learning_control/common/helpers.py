@@ -1,5 +1,6 @@
 """Contains several helper functions that are used throughout the SLC package."""
 import itertools
+import re
 import string
 from collections.abc import Iterable
 
@@ -170,10 +171,10 @@ def is_scalar(obj):
     Returns:
         boole: Boolean specifying whether the object is a scalar.
     """
-    if type(obj) in [int, float]:
+    if isinstance(obj, (int, float)):
         return True
     elif np.isscalar(obj):
-        if type(obj) == np.str_:
+        if isinstance(obj, str):
             try:
                 float(obj)
                 return True
@@ -181,12 +182,12 @@ def is_scalar(obj):
                 return False
         else:
             return True
-    elif type(obj) == np.ndarray:
+    elif isinstance(obj, np.array):
         if obj.shape == (1,):
             return is_scalar(obj[0])
         else:
             return False
-    elif type(obj) == torch.Tensor:
+    elif isinstance(obj, torch.Tensor):
         if len(obj.shape) == 0:
             try:
                 float(obj)
@@ -200,7 +201,7 @@ def is_scalar(obj):
                 return False
         else:
             return False
-    elif type(obj) == str:
+    elif isinstance(obj, str):
         try:
             float(obj)
             return True
@@ -208,3 +209,35 @@ def is_scalar(obj):
             return False
     else:
         return False
+
+
+def get_env_id(env):
+    """Returns the environment id of a given environment.
+
+    Args:
+        env (:obj:`gym.Env`): The environment.
+
+    Returns:
+        str: The environment id.
+    """
+    return (
+        env.unwrapped.spec.id
+        if hasattr(env.unwrapped.spec, "id")
+        else type(env.unwrapped).__name__
+    )
+
+
+def convert_to_snake_case(input_str):
+    """Converts a string from camel/pascal case to snake case.
+
+    Args:
+        input_str (str): The input string.
+
+    Returns:
+        str: The converted string.
+    """
+    return re.sub(
+        "([a-z0-9])([A-Z])",
+        r"\1_\2",
+        re.sub("(.)([A-Z][a-z]+)", r"\1_\2", input_str),
+    ).lower()

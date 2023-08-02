@@ -24,6 +24,7 @@ from gymnasium.utils import seeding
 from tensorflow.keras.optimizers import Adam
 
 from stable_learning_control.algos.common.buffers import ReplayBuffer
+from stable_learning_control.common.helpers import get_env_id
 from stable_learning_control.algos.common.helpers import heuristic_target_entropy
 from stable_learning_control.algos.tf2.common.get_lr_scheduler import get_lr_scheduler
 from stable_learning_control.algos.tf2.common.helpers import (
@@ -212,7 +213,7 @@ class SAC(tf.keras.Model):
         # Print out some information about the environment and algorithm.
         if hasattr(env.unwrapped.spec, "id"):
             log_to_std_out(
-                "You are using the '{}' environment.".format(env.unwrapped.spec.id),
+                "You are using the '{}' environment.".format(get_env_id(env)),
                 type="info",
             )
         else:
@@ -1371,7 +1372,7 @@ if __name__ == "__main__":
         default="epoch",
         help=(
             "the reference variable that is used for decaying the learning rate "
-            "'epoch' or 'step' (default: 'epoch')"
+            "'epoch' or 'step' (default: epoch)"
         ),
     )
     parser.add_argument(
@@ -1395,7 +1396,7 @@ if __name__ == "__main__":
         default="cpu",
         help=(
             "The device the networks are placed on: 'cpu' or 'gpu' (options: "
-            "default: 'cpu')",
+            "default: cpu)"
         ),
     )
     parser.add_argument(
@@ -1471,7 +1472,6 @@ if __name__ == "__main__":
         help=(
             "the tensorboard log frequency. Options are 'low' (Recommended: logs at "
             "every epoch) and 'high' (logs at every SGD update batch). Default is 'low'"
-            ""
         ),
     )
     args = parser.parse_args()

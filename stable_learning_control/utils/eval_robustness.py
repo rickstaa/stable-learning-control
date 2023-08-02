@@ -1,120 +1,282 @@
 """Contains a utility that can be used to evaluate the stability and robustness of an
-algorithm.
-
-This is done by evaluating an algorithm's performance under two
-disturbances: A disturbance applied during the environment step and a perturbation
-added to the environmental parameters. For the functions in this module to work work,
-these disturbances should be implemented as methods on the environment. The
-:stable-gym:`Stable Gym <>` package contains a :class:`~stable_gym.common.disturber.Disturber`
-class from which a gymnasium environment can inherit to add these methods. See the
-:ref:`Robustness Evaluation Documentation <robustness_eval>` for more information.
-"""  # noqa: E501
-import math
+algorithm. See the :ref:`Robustness Evaluation Documentation <robustness_eval>` for
+more information.
+"""
+import ast
+import importlib
+import inspect
 import os
 import sys
-import time
 from pathlib import Path
+from textwrap import dedent
 
+import gymnasium as gym
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from stable_learning_control.common.helpers import convert_to_snake_case, get_env_id
 from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
 from stable_learning_control.utils.log_utils.logx import EpochLogger
 from stable_learning_control.utils.test_policy import load_policy_and_env
 
-REQUIRED_DISTURBER_OBJECTS = {
-    "methods": ["init_disturber", "disturbed_step", "next_disturbance"],
-    "attributes": ["disturber_done"],
-}
 
-
-def validate_observations(observations, obs_dataframe):
-    """Checks if the request observations exist in the ``obs_dataframe`` displays a
-    warning if they do not.
+def get_human_readable_disturber_label(disturber_label):
+    """Get a human readable label for a given disturber label.
 
     Args:
-        observations (list): The requested observations.
-        obs_dataframe (pandas.DataFrame): The dataframe with the observations that are
-            present.
+        disturber_label (str): The disturber label.
 
     Returns:
-        list: List with the observations that are present in the dataframe.
+        str: The human readable disturber label.
     """
-    valid_vals = obs_dataframe.observation.unique()
-    if observations is None:
-        return list(valid_vals)
-    else:
-        invalid_vals = [obs for obs in map(int, observations) if obs not in valid_vals]
-        valid_observations = [
-            obs for obs in map(int, observations) if obs in valid_vals
-        ]
-        if len(observations) == len(invalid_vals):
-            log_to_std_out(
-                "{} not valid. All observations plotted instead.".format(
-                    f"Observations {invalid_vals} are"
-                    if len(invalid_vals) > 1
-                    else f"Observation {invalid_vals[0]} is"
-                ),
-                type="warning",
-            )
-            valid_observations = list(valid_vals)
-        elif invalid_vals:
-            log_to_std_out(
-                "{} not valid.".format(
-                    f"Observations {invalid_vals} could not plotted as they are"
-                    if len(invalid_vals) > 1
-                    else f"Observation {invalid_vals[0]} could not be plotted as it is"
-                ),
-                type="warning",
-            )
-        return valid_observations
+    human_str = ""
+    for i, s in enumerate(disturber_label.split("_")):
+        if i == 0:
+            human_str += f"{s}"
+        elif i % 2 == 0:
+            human_str += f", {s}"
+        else:
+            human_str += f"={s}"
+    return human_str
 
 
-def _disturber_implemented(env):
-    """Checks if the environment inherits from the
-    :class:`~stable_gym.common.disturber.Disturber`
-    class or that the methods and attributes that are required for the robustness
-    evaluation are present.
+def add_disturbance_label_column(dataframe):
+    """Add a column that contains a disturbance label. This label will be created
+    by concatenating all disturber parameters.
+
+    .. note::
+        This function will not add a disturbance label if the dataframe already contains
+        a disturbance label.
+
+    Args:
+        dataframe (pd.DataFrame): The dataframe containing the disturber parameters.
 
     Returns:
-        (tuple): tuple containing:
+        pd.DataFrame: The dataframe with the disturbance label column.
 
-            - compatible (:obj:`bool`): Whether the environment is compatible with the
-                robustness evaluation tool.
-            - missing_attributes (:obj:`dict`): Dictionary that contains the 'methods'
-                and 'attributes' that are missing.
+    Raises:
+        ValueError: If the dataframe does not contain a 'disturber' column.
     """
-    missing_methods_mask = [
-        not hasattr(env, obj) for obj in REQUIRED_DISTURBER_OBJECTS["methods"]
-    ]
-    missing_attributes_mask = [
-        not hasattr(env, obj) for obj in REQUIRED_DISTURBER_OBJECTS["attributes"]
-    ]
-    missing_methods = [
-        i
-        for (i, v) in zip(REQUIRED_DISTURBER_OBJECTS["methods"], missing_methods_mask)
-        if v
-    ]
-    missing_attributes = [
-        i
-        for (i, v) in zip(
-            REQUIRED_DISTURBER_OBJECTS["attributes"], missing_attributes_mask
+    # Return dataframe if it already contains a disturbance label.
+    if "disturbance_label" in dataframe.columns:
+        return dataframe["disturbance_label"].fillna("baseline")
+
+    # Create disturbance label.
+    if "disturber" in dataframe.columns:
+        disturbance_label_df = dataframe.apply(
+            lambda row: "_".join(
+                [
+                    "{key}_{value}".format(
+                        key=key.split("_")[1],
+                        value=round(value, 2) if isinstance(value, float) else value,
+                    )
+                    for key, value in row.items()
+                    if key.startswith("disturber_")
+                ]
+            )
+            if row["disturber"] != "baseline"
+            else "baseline",
+            axis=1,
         )
-        if v
+
+        return disturbance_label_df
+    elif "disturber" not in dataframe.columns:
+        raise ValueError("The dataframe does not contain a 'disturber' column. ")
+
+
+def get_available_disturbers():
+    """Get all disturbers that are available in the ``stable_learning_control`` package.
+
+    Returns:
+        list: List with all available disturbers.
+    """
+    disturber_module = importlib.import_module("stable_learning_control.disturbers")
+    disturber_names = [
+        name
+        for name, obj in inspect.getmembers(disturber_module)
+        if inspect.isclass(obj) and issubclass(obj, gym.Wrapper)
     ]
-    return (
-        not all(missing_methods_mask + missing_attributes_mask),
-        {"methods": missing_methods, "attributes": missing_attributes},
+    return disturber_names
+
+
+def get_available_disturbers_string():
+    """Get a string with all available disturbers that are available in the
+    ``stable_learning_control`` package.
+
+    Returns:
+        str: String with all available disturbers.
+    """
+    available_disturbers = get_available_disturbers()
+    str_valid_disturbers = ""
+    for disturber_name in available_disturbers:
+        str_valid_disturbers += f" - {disturber_name}\n"
+    list_disturbers_msg = (
+        dedent(
+            """
+            Currently available disturbers in the SLC package are:
+            """
+        )
+        + str_valid_disturbers
+        + dedent(
+            """
+            You can use the '--disturbance_type' argument to specify the disturber and
+            the '--help' argument to get more information about a given disturber.
+
+            For example:
+
+                python -m stable_learning_control.run eval_robustness [path/to/output_directory] [disturber] --help
+            """  # noqa: E501
+        )
     )
+    return list_disturbers_msg
+
+
+def print_available_disturbers():
+    """Print all available disturbers that are available in the
+    ``stable_learning_control`` package.
+    """
+    available_disturbers_string = get_available_disturbers_string()
+    print(available_disturbers_string)
+
+
+def load_disturber(disturber_id):
+    """Load a given disturber. The disturber name can include an unloaded module in
+    "module:disturber_name" style. If no module is given, the disturber is loaded from
+    the ``stable_learning_control.disturbers`` module.
+
+    Args:
+        disturber_id (str): The name of the disturber you want to load.
+
+    Returns:
+        The loaded disturber object.
+
+    Raises:
+        ModuleNotFoundError: If the given module could not be imported.
+        TypeError: If the given disturber is not a subclass of the :class:`gym.Wrapper`
+            class.
+        AttributeError: If the given disturber does not exist in the given module.
+    """
+    module, disturber_name = (
+        (None, disturber_id) if ":" not in disturber_id else disturber_id.split(":")
+    )
+
+    # Load disturber from the given module.
+    if module is not None:
+        # Try to import the module.
+        try:
+            disturber_module = importlib.import_module(module)
+        except ModuleNotFoundError as e:
+            raise ModuleNotFoundError(
+                friendly_err(
+                    f"{e}. Disturber retrieval via importing a module failed. "
+                    f"Check whether '{module}' contains '{disturber_name}'."
+                )
+            ) from e
+
+        # Load disturber from the module.
+        try:
+            disturber = getattr(disturber_module, disturber_name)
+        except AttributeError as e:
+            raise AttributeError(
+                friendly_err(
+                    f"{e}. Disturber '{disturber_name}' could not be found in "
+                    f"module '{module}'."
+                )
+            ) from e
+
+    else:
+        # Load disturber from the SLC disturbers.
+        disturber_module = importlib.import_module("stable_learning_control.disturbers")
+        try:
+            disturber = getattr(disturber_module, disturber_name)
+        except AttributeError as e:
+            raise AttributeError(
+                friendly_err(
+                    f"Disturber '{disturber_name}' could not be found in "
+                    f"module '{disturber_module}'.\n"
+                    f"{get_available_disturbers_string()}"
+                )
+            ) from e
+
+    # Validate whether the disturber is a subclass of the gym.Wrapper class.
+    if not issubclass(disturber, gym.Wrapper):
+        raise TypeError(
+            friendly_err(
+                f"Disturber '{disturber_name}' is not a valid disturber since it "
+                "does not inherit from the 'gym.Wrapper' class."
+            )
+        )
+
+    return disturber
+
+
+def retrieve_disturber_variants(disturber_range_dict):
+    """Retrieves all disturber variants from the given disturber configuration
+    dictionary. Variants are created by combining the key values over indexes.
+
+    Args:
+        disturber_range_dict (dict): The disturber configuration dictionary.
+
+    Returns:
+        list: List with all disturber variants.
+
+    Raises:
+        TypeError: Thrown when the values in the disturber configuration variables are
+            not of type ``float``, ``int`` or ``list``.
+        ValueError: Thrown when the values in the disturber configuration variables do
+            not have the same length.
+    """
+    # Throw warning if values are not float int or list.
+    if not all(
+        [
+            isinstance(value, (float, int, list))
+            for value in disturber_range_dict.values()
+        ]
+    ):
+        raise TypeError(
+            friendly_err(
+                "All values in the 'disturber_range_dict' dictionary should be of type "
+                "'float', 'int' or 'list'."
+            )
+        )
+
+    # Convert all values to lists.
+    disturber_range_dict = {
+        key: [value] if not isinstance(value, list) else value
+        for key, value in disturber_range_dict.items()
+    }
+
+    # Throw a warning if the values don't have the same length.
+    if not all(
+        [
+            len(value) == len(list(disturber_range_dict.values())[0])
+            for value in disturber_range_dict.values()
+        ]
+    ):
+        raise ValueError(
+            friendly_err(
+                "All values in the '--disturber_config' dictionary should have the "
+                "same length."
+            )
+        )
+
+    # Get the disturber variants.
+    # NOTE: Combines key values over indexes.
+    disturber_variants = [
+        {key: value[ii] for key, value in disturber_range_dict.items()}
+        for ii in range(len(list(disturber_range_dict.values())[0]))
+    ]
+
+    return disturber_variants
 
 
 def run_disturbed_policy(
     env,
     policy,
-    disturbance_type,
-    disturbance_variant=None,
+    disturber,
+    disturber_config,
     include_baseline=True,
     max_ep_len=None,
     num_episodes=100,
@@ -123,213 +285,218 @@ def run_disturbed_policy(
     save_result=False,
     output_dir=None,
 ):
-    """Evaluates the disturbed policy inside a given gymnasium environment. This function
-    loops to all the disturbances that are specified in the environment and outputs the
-    results of all these episodes in a pandas dataframe.
+    """Evaluates the disturbed policy inside a given gymnasium environment. This
+    function loops to all the disturbances that are specified in the environment and
+    outputs the results of all these episodes as a :obj:pandas.Dataframe`.
 
     Args:
         env (:obj:`gym.env`): The gymnasium environment.
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
-        disturbance_type (str): The disturbance type you want to apply. Valid options
-            are the onces that are implemented in the gymnasium environment (e.g.
-            ``env``, ``input``, ``output``, ``combined`` ...).
-        disturbance_variant (str, optional): The variant of the disturbance (e.g.
-            ``impulse``, ``periodic``, ``noise``, ...)
+        disturber (obj:`gym.Wrapper`): The disturber you want to use.
+        disturber_config (dict): The disturber configuration dictionary. Contains the
+            variables that you want to pass to the disturber. It sets up the range of
+            disturbances you wish to evaluate.
         include_baseline (bool): Whether you want to automatically add the baseline
-            (i.e. zero disturbance) when it not present.
-        max_ep_len (int, optional): The maximum episode length. Defaults to None.
+            (i.e. zero disturbance) when it not present. Defaults to ``True``.
+        max_ep_len (int, optional): The maximum episode length. Defaults to ``None``.
+            Meaning the maximum episode length of the environment is used.
         num_episodes (int, optional): Number of episodes you want to perform in the
-            environment. Defaults to 100.
+            environment. Defaults to ``100``.
         render (bool, optional): Whether you want to render the episode to the screen.
             Defaults to ``True``.
         deterministic (bool, optional): Whether you want the action from the policy to
             be deterministic. Defaults to ``True``.
         save_result (bool, optional): Whether you want to save the dataframe with the
-            results to disk.
+            results to disk. Defaults to ``False``.
         output_dir (str, optional): A directory for saving the diagnostics to. If
             ``None``, defaults to a temp directory of the form
             ``/tmp/experiments/somerandomnumber``.
 
     Returns:
-        :obj:`pandas.DataFrame`:
-            Dataframe that contains information about all the episodes and disturbances.
+        :obj:`pandas.DataFrame`: Dataframe that contains information about all the
+            episodes and disturbances.
 
     Raises:
-        RuntimeError: Thrown when the environment you specified is not compatible with
-            the robustness evaluation tool.
-        ValueError: Thrown when the disturbance type or variant is not supported by the
-            disturber.
-        TypeError: Thrown when no disturbance variant supplied and it is needed for the
-            requested disturbance type.
-    """  # noqa: E501
-    # Validate environment, environment disturber
+        AssertionError: Thrown when the environment or policy is not found.
+    """
+    # Retrieve disturber variants.
+    disturber_variants = (
+        retrieve_disturber_variants(disturber_config)
+        if disturber_config is not None
+        else []
+    )
+
+    # Throw error if baseline is disabled and no disturber variants are present.
+    if not include_baseline and not disturber_variants:
+        raise ValueError(
+            friendly_err(
+                "You disabled the baseline evaluation and no disturber variants are "
+                "present. Please check the '--disturber_config' dictionary and try "
+                "again."
+            )
+        )
+
+    # Let the user know that only the baseline is evaluated and change output dir.
+    if not disturber_variants:
+        log_to_std_out(
+            (
+                "You did not supply a '--disturber_config' dictionary. As a result only "
+                "the baseline will be evaluated."
+            ),
+            type="warning",
+        )
+
+    # Setup logger.
+    if output_dir is not None:
+        output_dir = Path(output_dir).joinpath(
+            "eval/{}".format(
+                convert_to_snake_case(disturber.__name__)
+                if disturber_variants
+                else "baseline"
+            )
+        )
+    logger = EpochLogger(
+        verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
+    )
+
     assert env is not None, friendly_err(
         "Environment not found!\n\n It looks like the environment wasn't saved, and we "
         "can't run the agent in it. :( \n\n Check out the documentation page on the "
         "page on the robustness evaluation utility for how to handle this situation."
     )
-    assert env is not None, friendly_err(
+    assert policy is not None, friendly_err(
         "Policy not found!\n\n It looks like the policy could not be loaded. :( \n\n "
         "Check out the documentation page on the robustness evaluation utility for how "
         "to handle this situation."
     )
 
-    disturber_implemented, missing_objects = _disturber_implemented(env)
-    if not disturber_implemented:
-        missing_keys = [key for key, item in missing_objects.items() if len(item) >= 1]
-        missign_methods_str = [
-            key if len(item) > 1 else key[:-1]
-            for key, item in missing_objects.items()
-            if len(item) >= 1
-        ]
-        missing_warn_string = (
-            (
-                f"{missing_objects[missing_keys[0]]} "
-                f"{missign_methods_str[0]} and "
-                f"{missing_objects[missing_keys[1]]} "
-                f"{missign_methods_str[1]}"
-            )
-            if len(missing_keys) > 1
-            else (f"{missing_objects[missing_keys[0]]} " f"{missign_methods_str[0]}")
-        )
-        raise RuntimeError(
-            friendly_err(
-                "The environment does not seem to be compatible with the robustness "
-                f"evaluation tool. The tool expects to find the {missing_warn_string} "
-                "but they are not implemented. Please check the Robustness Evaluation "
-                "documentation and try again."
-            )
-        )
-
-    output_dir = (
-        Path(output_dir).joinpath("eval") if output_dir is not None else output_dir
-    )
-    logger = EpochLogger(
-        verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
-    )
-
     # Increase action space.
     # NOTE: Needed to prevent the disturbance from being clipped by the action space.
     env.unwrapped.action_space.high = np.array(
-        [np.finfo(np.float32).max for item in env.unwrapped.action_space.high]
+        [
+            np.finfo(env.unwrapped.action_space.dtype).max
+            for _ in env.unwrapped.action_space.high
+        ]
     )
     env.unwrapped.action_space.low = np.array(
-        [np.finfo(np.float32).min for item in env.unwrapped.action_space.low]
+        [
+            np.finfo(env.unwrapped.action_space.dtype).min
+            for _ in env.unwrapped.action_space.low
+        ]
     )
 
-    # Increase max episode length if requested.
-    if max_ep_len is None:
-        max_ep_len = env._max_episode_steps
-    else:
-        if max_ep_len > env._max_episode_steps:
+    # Apply episode length and set render mode.
+    if max_ep_len is not None and max_ep_len != 0:
+        if max_ep_len > env.env._max_episode_steps:
             logger.log(
                 (
                     f"You defined your 'max_ep_len' to be {max_ep_len} "
-                    "while the environment 'max_episide_steps' is "
-                    f"{env._max_episode_steps}. As a result the environment "
+                    "while the environment 'max_episode_steps' is "
+                    f"{env.env._max_episode_steps}. As a result the environment "
                     f"'max_episode_steps' has been increased to {max_ep_len}"
                 ),
                 type="warning",
             )
-            env._max_episode_steps = max_ep_len
-
-    # Try to retrieve default type and variant if not supplied.
-    if disturbance_type is None:
-        if hasattr(env.unwrapped, "_disturber_cfg"):
-            if "default_type" in env.unwrapped._disturber_cfg.keys():
-                disturbance_type = env.unwrapped._disturber_cfg["default_type"]
-                log_to_std_out(
-                    (
-                        "INFO: No disturbance type given default type "
-                        f"'{disturbance_type}' used instead."
-                    ),
-                    type="info",
-                )
-    if disturbance_variant is None:
-        if hasattr(env.unwrapped, "_disturber_cfg"):
-            if disturbance_type in env.unwrapped._disturber_cfg.keys():
-                if (
-                    "default_variant"
-                    in env.unwrapped._disturber_cfg[disturbance_type].keys()
-                ):
-                    disturbance_variant = env.unwrapped._disturber_cfg[
-                        disturbance_type
-                    ]["default_variant"]
-                    log_to_std_out(
-                        (
-                            "INFO: No disturbance variant given default variant "
-                            f"'{disturbance_variant}' used instead."
-                        ),
-                        type="info",
-                    )
-
-    # Initialise the disturber!
-    try:
-        env.init_disturber(
-            disturbance_type=disturbance_type,
-            disturbance_variant=disturbance_variant,
-            include_baseline=include_baseline,
-        ),
-    except (ValueError, TypeError) as e:
-        if len(e.args) > 1:
-            raise Exception(
-                friendly_err(
-                    "You did not give a valid value for --{}! Please try again.".format(
-                        e.args[1]
-                    )
-                )
-            ) from e
+        env.env._max_episode_steps = max_ep_len
+    else:
+        max_ep_len = env.env._max_episode_steps
+    if render:
+        render_modes = env.unwrapped.metadata.get("render_modes", [])
+        if render_modes:
+            env.unwrapped.render_mode = "human" if "human" in render_modes else None
         else:
-            raise e
-    disturbance_type = (
-        env.disturbance_info["type"]
-        if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys()
-        else disturbance_type
-    )  # Retrieve used disturbance type.
-    disturbance_variant = (
-        env.disturbance_info["variant"]
-        if hasattr(env, "disturbance_info") and "variant" in env.disturbance_info.keys()
-        else disturbance_variant
-    )  # Retrieve used disturbance variant.
+            logger.log(
+                (
+                    f"Nothing was rendered since the '{get_env_id(env)}' "
+                    f"environment does not contain a 'human' render mode."
+                ),
+                type="warning",
+            )
 
-    # Loop though all disturbances till disturber is done.
-    logger.log("Starting robustness evaluation...", type="info")
-    render_error = False
+    # Create environment list for each disturbance variant.
+    variants_envs = []
+    if include_baseline:
+        variants_envs.append(env)
+    for variant in disturber_variants:
+        try:
+            disturbance_variant = disturber(env, **variant)
+        except Exception as e:
+            if isinstance(e, TypeError):
+                raise TypeError(
+                    friendly_err(
+                        "Something went wrong when trying to initialize the "
+                        f"'{disturber.__name__}' disturber with arguments `{variant}`. "
+                        "Please check the disturber arguments supplied in the "
+                        "'disturber_config' dictionary and try again. You can find more "
+                        f"information about the '{disturber.__name__}' disturber "
+                        "through the '--help' flag."
+                    )
+                )
+            else:
+                raise friendly_err(e)
+        variants_envs.append(disturbance_variant)
+
+    # Setup storage variables.
     path = {
         "o": [],
         "r": [],
         "reference": [],
-        "state_of_interest": [],
+        "reference_error": [],
     }
-    o_episodes_dfs, r_episodes_dfs, soi_episodes_dfs, ref_episodes_dfs = [], [], [], []
-    (
-        o_disturbances_dfs,
-        r_disturbances_dfs,
-        soi_disturbances_dfs,
-        ref_disturbances_dfs,
-    ) = ([], [], [], [])
-    n_disturbance = 0
-    soi_found, ref_found = True, True
-    supports_deterministic = True  # Only supported with gaussian algorithms.
-    while not env.disturber_done:
-        o, r, d, ep_ret, ep_len, n = env.reset(), 0, False, 0, 0, 0
-        while n < num_episodes:
-            # Render env if requested.
-            if render and not render_error:
-                try:
-                    env.render()
-                    time.sleep(1e-3)
-                except NotImplementedError:
-                    render_error = True
-                    logger.log(
-                        (
-                            "WARNING: Nothing was rendered since no render method was "
-                            f"implemented for the '{env.unwrapped.spec.id}' "
-                            "environment."
-                        ),
-                        type="warning",
-                    )
+    time = []
+    variant_df = pd.DataFrame()
+    variants_df = pd.DataFrame()
+    ref_found, ref_error_found, supports_deterministic = True, True, True
+    time_attribute = None
+    time_step_attribute = None
 
+    # Check if environment has time attribute.
+    if hasattr(env.unwrapped, "time") or hasattr(env.unwrapped, "t"):
+        time_attribute = "time" if hasattr(env.unwrapped, "time") else "t"
+    if (
+        hasattr(env.unwrapped, "dt")
+        or hasattr(env.unwrapped, "tau")
+        or hasattr(env.unwrapped, "timestep")
+        or hasattr(env.unwrapped, "time_step")
+    ):
+        time_step_attribute = (
+            "dt"
+            if hasattr(env.unwrapped, "dt")
+            else "tau"
+            if hasattr(env.unwrapped, "tau")
+            else "timestep"
+            if hasattr(env.unwrapped, "timestep")
+            else "time_step"
+        )
+    if time_attribute is None and time_step_attribute is None:
+        logger.log(
+            (
+                "No time attributes (i.e. 'time', 't', 'dt', 'tau', 'timestep', "
+                "'time_step') were found on the environment. As a result a time "
+                "step of '1' will be used."
+            ),
+            type="warning",
+        )
+
+    # Evaluate each disturbance variant.
+    logger.log("\n")
+    logger.log("Performing robustness evaluation...", type="info")
+    for variant_idx, variant_env in enumerate(variants_envs):
+        if include_baseline and variant_idx == 0:
+            logger.log("Evaluating baseline...", type="info")
+        else:
+            logger.log(
+                (
+                    f"Evaluating '{disturber.__name__}' with "
+                    f"`{disturber_variants[variant_idx-1]}` parameters..."
+                ),
+                type="info",
+            )
+
+        # Perform episodes.
+        o, _ = variant_env.reset()
+        r, d, ep_ret, ep_len, n, t = 0, False, 0, 0, 0, 0
+        while n < num_episodes:
             # Retrieve action.
             if deterministic and supports_deterministic:
                 try:
@@ -346,560 +513,898 @@ def run_disturbed_policy(
             else:
                 a = policy.get_action(o)
 
-            # Perform (disturbed) action in the environment and store result
-            if disturbance_type == "env":
-                o, r, d, info = env.step(a)
+            # Perform action in the environment and store result.
+            o, r, d, truncated, info = variant_env.step(a)
+
+            # Track time.
+            time.append(t)
+            if time_attribute is not None:
+                t = variant_env.unwrapped.__getattribute__(time_attribute)
+            elif time_step_attribute is not None:
+                t += variant_env.unwrapped.__getattribute__(time_step_attribute)
             else:
-                o, r, d, info = env.disturbed_step(a)
+                t += 1
+
+            # Store step information.
             ep_ret += r
             ep_len += 1
-
-            # Store path, cost, reference and state of interest
             path["o"].append(o)
             path["r"].append(r)
-            if "reference" in info.keys():
+            if ref_found and "reference" in info.keys():
                 path["reference"].append(info["reference"])
             else:
+                if ref_found:
+                    logger.log(
+                        (
+                            "No 'reference' found in info dictionary. Please add the "
+                            "reference to the info dictionary of the environment if "
+                            "you want to have it show up in the evaluation results."
+                        ),
+                        type="warning",
+                    )
                 ref_found = False
-            if "state_of_interest" in info.keys():
-                path["state_of_interest"].append(info["state_of_interest"])
+            if ref_error_found and "reference_error" in info.keys():
+                path["reference_error"].append(info["reference_error"])
             else:
-                soi_found = False
-            if any([not ref_found, not soi_found]):
-                warning_str = (
-                    " 'state_of_interest' and 'reference' "
-                    if all([not ref_found, not soi_found])
-                    else (" 'state_of_interest' " if not soi_found else " 'reference' ")
-                )
-                logger.log(
-                    (
-                        f"No{warning_str}variable found in the info dictionary that "
-                        "was returned from the environment step method. In order to "
-                        "use all feature from the robustness evaluation tool, please "
-                        "make sure your environment returns the reference."
-                    ),
-                    type="warning",
-                )
+                if ref_error_found:
+                    logger.log(
+                        (
+                            "No 'reference_error' found in info dictionary. Please add "
+                            "the reference to the info dictionary of the environment "
+                            "if you want to have it show up in the evaluation results."
+                        ),
+                        type="warning",
+                    )
+                ref_error_found = False
 
-            # Store performance measurements.
-            if d or (ep_len == max_ep_len):
-                died = ep_len < max_ep_len
+            # Store episode information.
+            if d or truncated:
+                died = not truncated
                 logger.store(EpRet=ep_ret, EpLen=ep_len, DeathRate=(float(died)))
                 logger.log(
                     "Episode %d \t EpRet %.3f \t EpLen %d \t Died %s"
                     % (n, ep_ret, ep_len, died)
                 )
 
-                # Store observations.
-                o_episode_df = pd.DataFrame(path["o"])
-                o_episode_df.insert(0, "step", range(0, ep_len))
-                o_episode_df = pd.melt(
-                    o_episode_df,
-                    id_vars="step",
-                    var_name="observation",
-                )  # Flatten dataframe.
-                o_episodes_dfs.append(o_episode_df)
-
-                # Store episode rewards.
-                r_episode_df = pd.DataFrame(
-                    {"step": range(0, ep_len), "reward": path["r"]}
-                )
-                r_episode_df.insert(len(r_episode_df.columns), "episode", n)
-                r_episodes_dfs.append(r_episode_df)
-
-                # Store states of interest.
-                if soi_found:
-                    soi_episode_df = pd.DataFrame(path["state_of_interest"])
-                    soi_episode_df.insert(0, "step", range(0, ep_len))
-                    soi_episode_df = pd.melt(
-                        soi_episode_df,
-                        id_vars="step",
-                        var_name="state_of_interest",
-                        value_name="error",
-                    )  # Flatten dataframe.
-                    soi_episodes_dfs.append(soi_episode_df)
-
-                # Store reference.
+                # Store episode data.
+                episode_df = pd.DataFrame(np.arange(0, ep_len), columns=["step"])
+                episode_df.insert(len(episode_df.columns), "time", time)
+                episode_df.insert(len(episode_df.columns), "episode", n)
+                if isinstance(path["o"][0], np.ndarray):
+                    episode_df = pd.concat(
+                        [
+                            episode_df,
+                            pd.DataFrame(
+                                np.array(path["o"]),
+                                columns=[
+                                    f"observation_{i}"
+                                    for i in range(1, len(path["o"][0]) + 1)
+                                ],
+                            ),
+                        ],
+                        axis=1,
+                    )
+                else:
+                    episode_df.insert(len(episode_df.columns), "observation", path["o"])
+                episode_df.insert(len(episode_df.columns), "cost", path["r"])
                 if ref_found:
-                    ref_episode_df = pd.DataFrame(path["reference"])
-                    ref_episode_df.insert(0, "step", range(0, ep_len))
-                    ref_episode_df = pd.melt(
-                        ref_episode_df,
-                        id_vars="step",
-                        var_name="reference",
-                    )  # Flatten dataframe.
-                    ref_episodes_dfs.append(ref_episode_df)
+                    if isinstance(path["reference"][0], np.ndarray):
+                        episode_df = pd.concat(
+                            [
+                                episode_df,
+                                pd.DataFrame(
+                                    np.array(path["reference"]),
+                                    columns=[
+                                        f"reference_{i}"
+                                        for i in range(1, len(path["reference"][0]) + 1)
+                                    ],
+                                ),
+                            ],
+                            axis=1,
+                        )
+                    else:
+                        episode_df.insert(
+                            len(episode_df.columns), "reference", path["reference"]
+                        )
+                if ref_error_found:
+                    if isinstance(path["reference_error"][0], np.ndarray):
+                        episode_df = pd.concat(
+                            [
+                                episode_df,
+                                pd.DataFrame(
+                                    np.array(path["reference_error"]),
+                                    columns=[
+                                        f"reference_error_{i}"
+                                        for i in range(
+                                            1, len(path["reference_error"][0]) + 1
+                                        )
+                                    ],
+                                ),
+                            ],
+                            axis=1,
+                        )
+                    else:
+                        episode_df.insert(
+                            len(episode_df.columns),
+                            "reference_error",
+                            path["reference_error"],
+                        )
+                variant_df = pd.concat(
+                    [variant_df, episode_df], axis=0, ignore_index=True
+                )
 
-                # Increment counters and reset storage variables.
-                n += 1
-                o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
+                # Reset env, episode storage buckets and increment episode counter.
+                o, info = variant_env.reset()
+                r, d, ep_ret, ep_len, n, t = 0, False, 0, 0, n + 1, 0
                 path = {
                     "o": [],
                     "r": [],
                     "reference": [],
-                    "state_of_interest": [],
+                    "reference_error": [],
                 }
+                time = []
 
-        # Print robustness evaluation diagnostics.
-        if hasattr(env, "disturbance_info") and "type" in env.disturbance_info.keys():
-            logger.log_tabular(
-                "DisturbanceType",
-                env.disturbance_info["type"].replace("_disturbance", ""),
-            )
-        if (
-            hasattr(env, "disturbance_info")
-            and "variant" in env.disturbance_info.keys()
-        ):
-            logger.log_tabular("DisturbanceVariant", env.disturbance_info["variant"])
-        if hasattr(env, "disturbance_info") and (
-            "variables" in env.disturbance_info.keys()
-            and any(
-                [
-                    "value" in v.keys()
-                    for k, v in env.disturbance_info["variables"].items()
-                ]
-            )
-        ):
-            for var_name, var_value in env.disturbance_info["variables"].items():
-                val = var_value["value"]
-                if isinstance(val, dict):
-                    for key, val in val.items():
-                        if isinstance(val, (list, np.ndarray)):
-                            for ii, item in enumerate(val):
-                                logger.log_tabular(
-                                    "{}_{}_{}".format(var_name, (ii + 1), key), item
-                                )
-                        else:
-                            logger.log_tabular("{}_{}".format(var_name, key), val)
-                else:
-                    logger.log_tabular(var_name, val)
+        # Print variant diagnostics.
         logger.log_tabular("EpRet", with_min_and_max=True)
         logger.log_tabular("EpLen", average_only=True)
         logger.log_tabular("DeathRate")
-        log_to_std_out("")
+        logger.log_tabular(
+            "Disturber",
+            "baseline" if include_baseline and variant_idx == 0 else disturber.__name__,
+        )
+        if len(disturber_variants) > 1:
+            for var_name, var_value in disturber_variants[
+                max(0, variant_idx - 1) if include_baseline else variant_idx
+            ].items():
+                if isinstance(var_value, list):
+                    for i, var_value_i in enumerate(var_value):
+                        logger.log_tabular(
+                            f"Disturber_{var_name}_{i+1}",
+                            np.nan
+                            if include_baseline and variant_idx == 0
+                            else var_value_i,
+                        )
+                else:
+                    logger.log_tabular(
+                        f"Disturber_{var_name}",
+                        np.nan if include_baseline and variant_idx == 0 else var_value,
+                    )
+        logger.log("")
         logger.dump_tabular()
+        logger.log("")
 
-        # Add extra disturbance information to the robustness eval dataframe.
-        disturbance_label = (
-            env.disturbance_info["label"]
-            if (
-                hasattr(env, "disturbance_info")
-                and "label" in env.disturbance_info.keys()
+        # Add disturbance information to the robustness evaluation dataframe.
+        variant_df.insert(
+            len(variant_df.columns),
+            "disturber",
+            "baseline" if include_baseline and variant_idx == 0 else disturber.__name__,
+        )
+        if len(disturber_variants) > 1:
+            for var_name, var_value in disturber_variants[
+                max(0, variant_idx - 1) if include_baseline else variant_idx
+            ].items():
+                if isinstance(var_value, list):
+                    for i, var_value_i in enumerate(var_value):
+                        variant_df.insert(
+                            len(variant_df.columns),
+                            f"disturber_{var_name}_{i+1}",
+                            np.nan
+                            if include_baseline and variant_idx == 0
+                            else var_value_i,
+                        )
+                else:
+                    variant_df.insert(
+                        len(variant_df.columns),
+                        f"disturber_{var_name}",
+                        np.nan if include_baseline and variant_idx == 0 else var_value,
+                    )
+        if hasattr(
+            variant_env, "disturbance_label"
+        ):  # NOTE: Add disturbance label if available in the environment.
+            variant_df.insert(
+                len(variant_df.columns),
+                "disturbance_label",
+                variant_env.disturbance_label,
             )
-            else "Disturbance: {}".format(str(n_disturbance + 1))
-        )
-        o_disturbance_df = pd.concat(o_episodes_dfs, ignore_index=True)
-        o_disturbance_df.insert(
-            len(o_disturbance_df.columns), "disturbance", disturbance_label
-        )
-        o_disturbance_df.insert(
-            len(o_disturbance_df.columns), "disturbance_index", n_disturbance
-        )
-        o_disturbances_dfs.append(o_disturbance_df)
-        r_disturbance_df = pd.concat(r_episodes_dfs, ignore_index=True)
-        r_disturbance_df.insert(
-            len(r_disturbance_df.columns), "disturbance", disturbance_label
-        )
-        r_disturbance_df.insert(
-            len(r_disturbance_df.columns), "disturbance_index", n_disturbance
-        )
-        r_disturbances_dfs.append(r_disturbance_df)
-        soi_disturbance_df = pd.concat(soi_episodes_dfs, ignore_index=True)
-        soi_disturbance_df.insert(
-            len(soi_disturbance_df.columns), "disturbance", disturbance_label
-        )
-        soi_disturbance_df.insert(
-            len(soi_disturbance_df.columns), "disturbance_index", n_disturbance
-        )
-        soi_disturbances_dfs.append(soi_disturbance_df)
-        ref_disturbance_df = pd.concat(ref_episodes_dfs, ignore_index=True)
-        ref_disturbance_df.insert(
-            len(ref_disturbance_df.columns), "disturbance", disturbance_label
-        )
-        ref_disturbance_df.insert(
-            len(ref_disturbance_df.columns), "disturbance_index", n_disturbance
-        )
-        ref_disturbances_dfs.append(ref_disturbance_df)
+        variants_df = pd.concat([variants_df, variant_df], axis=0, ignore_index=True)
 
-        # Reset storage buckets and go to next disturbance.
-        o_episodes_dfs = []
-        r_episodes_dfs = []
-        soi_episodes_dfs = []
-        ref_episodes_dfs = []
-        env.next_disturbance()
-        n_disturbance += 1
-
-    # Merge robustness evaluation information for all disturbances.
-    o_disturbances_df = pd.concat(o_disturbances_dfs, ignore_index=True)
-    r_disturbances_df = pd.concat(r_disturbances_dfs, ignore_index=True)
-    soi_disturbances_df = pd.concat(soi_disturbances_dfs, ignore_index=True)
-    ref_disturbances_df = pd.concat(ref_disturbances_dfs, ignore_index=True)
-
-    # Return/save robustness evaluation dataframe
-    o_disturbances_df.insert(len(o_disturbances_df.columns), "variable", "observation")
-    r_disturbances_df.insert(len(r_disturbances_df.columns), "variable", "reward")
-    soi_disturbances_df.insert(
-        len(soi_disturbances_df.columns), "variable", "state_of_interest"
-    )
-    ref_disturbances_df.insert(
-        len(ref_disturbances_df.columns), "variable", "reference"
-    )
-    robustness_eval_df = pd.concat(
-        [
-            o_disturbances_df,
-            r_disturbances_df,
-            soi_disturbances_df,
-            ref_disturbances_df,
-        ],
-        ignore_index=True,
-    )
-    robustness_eval_df.insert(
-        len(robustness_eval_df.columns),
-        "disturbance_type",
-        disturbance_type,
-    )
-    robustness_eval_df.insert(
-        len(robustness_eval_df.columns),
-        "disturbance_variant",
-        disturbance_variant,
-    )
+        # Reset variant storage buckets.
+        variant_df = pd.DataFrame()
 
     # Save robustness evaluation dataframe and return it to the user.
     if save_result:
-        results_path = logger.output_dir.joinpath("results.csv")
+        logger.log("Saving robustness evaluation dataframe...", type="info")
+        results_path = logger.output_dir.joinpath("eval_results.csv")
         logger.log(
             f"Saving robustness evaluation results to path: {results_path}", type="info"
         )
-        robustness_eval_df.to_csv(results_path, index=False)
-    return robustness_eval_df
+        variants_df.to_csv(results_path, index=False)
+        logger.log("Robustness evaluation dataframe saved.", type="info")
+    return variants_df
 
 
 def plot_robustness_results(
     dataframe,
-    output_dir,
-    save_figs=False,
-    font_scale=1.5,
     observations=None,
-    merged=False,
+    references=None,
+    reference_errors=None,
+    absolute_reference_errors=False,
+    merge_reference_errors=False,
+    use_subplots=False,
+    use_time=False,
+    save_plots=False,
+    font_scale=1.5,
     figs_fmt="pdf",
+    output_dir=None,
 ):
-    """Creates several Useful plots out of the dataframe that was collected in the
-    :meth:`run_disturbed_policy` method.
+    """Creates several useful plots out of a robustness evaluation dataframe that was
+    collected in the :meth:`run_disturbed_policy` method.
 
     Args:
         dataframe (pandas.DataFrame): The data frame that contains the robustness
-            information.
-        output_dir (str): The directory where you want to save the output figures to.
-        save_figs (bool): Whether you want to save the created plots to disk.  Defaults
+            evaluation information information.
+        observations (list): The observations you want to show in the observations plot.
+            By default for clarity only the first 6 observations are shown.
+        references (list): The references you want to show in the reference plot. By
+            default for clarity only the first references is shown.
+        reference_errors (list): The reference errors you want to show in the reference
+            error plot. By default for clarity only the first reference error is shown.
+        absolute_reference_errors (bool): Whether you want to plot the absolute
+            reference errors instead of relative reference errors. Defaults to
+            ``False``.
+        merge_reference_errors (bool): Whether you want to merge the reference errors
+            into one reference error. Defaults to ``False``.
+        use_subplots (bool): Whether you want to use subplots instead of separate
+            figures. Defaults to ``False``.
+        use_time (bool): Whether you want to use the time as the x-axis. Defaults to
+            ``False``.
+        save_plots (bool): Whether you want to save the created plots to disk. Defaults
             to ``False``.
         font_scale (int): The font scale you want to use for the plot text. Defaults to
             ``1.5``.
-        observations (list): The observations you want to show in the observations plot.
-            By default all observations are shown.
-        merged (bool):
-            Merge all observations into one plot. By default observations under each
-            disturbance are show in a separate subplot.
         figs_fmt (str, optional): In which format you want to save the plots. Defaults
             to ``pdf``.
+        output_dir (str, optional):The directory where you want to save the output
+            figures to. If ``None``, defaults to a temp directory of the form
+            ``/tmp/experiments/somerandomnumber``.
     """
-    output_dir = Path(output_dir).joinpath("eval")
+    # Retrieve disturbances and disturber name from dataframe.
+    dataframe["disturbance_label"] = add_disturbance_label_column(dataframe)
+    disturber_name = dataframe["disturber"].unique()[-1]
+
+    # Setup logger, x-axis variable and output directory.
+    if output_dir is not None:
+        output_dir = Path(output_dir).joinpath(
+            "eval/{}".format(
+                convert_to_snake_case(disturber.__name__)
+                if disturber_name != "baseline"
+                else "baseline"
+            )
+        )
+    logger = EpochLogger(output_dir=output_dir, output_dir_exists_warning=False)
+    x_axis_var = "time" if use_time else "step"
+
+    # Create a dictionary to store all plots.
     figs = {
-        "observations": [],
-        "costs": [],
-        "states_of_interest": [],
-    }  # Store all plots (Needed for save)
-    log_to_std_out("Showing robustness evaluation plots...", type="info")
+        "observation": [],
+        "cost": [],
+        "reference_error": [],
+    }
+
+    # Absolute reference errors if requested.
+    if absolute_reference_errors:
+        for col in dataframe.columns:
+            if col.startswith("reference_error_") or col == "reference_error":
+                dataframe[col] = dataframe[col].abs()
+
+    # Merge reference errors if requested.
+    if merge_reference_errors:
+        if "reference_error" not in dataframe.columns:
+            dataframe["reference_error"] = dataframe[
+                [col for col in dataframe.columns if col.startswith("reference_error_")]
+            ].sum(axis=1)
+            dataframe = dataframe.drop(
+                [
+                    col
+                    for col in dataframe.columns
+                    if col.startswith("reference_error_")
+                ],
+                axis=1,
+            )
+        else:
+            logger.log(
+                "Only one reference error present in dataframe, skipping merging...",
+                type="warn",
+            )
+
+    # Initialize Seaborn style and font scale.
+    logger.log("\n")
+    logger.log("Showing robustness evaluation plots...", type="info")
     sns.set(style="darkgrid", font_scale=font_scale)
-    time_instant = None
-    if hasattr(env, "disturbance_info") and "cfg" in env.disturbance_info.keys():
-        time_instant_keys = [
-            key for key in env.disturbance_info["cfg"].keys() if "_instant" in key
+
+    # Retrieve available observations, references and reference errors.
+    available_obs = (
+        [1]
+        if "observation" in dataframe.columns
+        else [
+            int(col.replace("observation_", ""))
+            for col in dataframe.columns
+            if col.startswith("observation_")
         ]
-        time_instant = (
-            env.disturbance_info["cfg"][time_instant_keys[0]]
-            if time_instant_keys
-            else None
-        )
-
-    # Unpack required data from dataframe.
-    obs_found, rew_found, soi_found, ref_found = True, True, True, True
-    o_disturbances_df, ref_disturbances_df = pd.DataFrame(), pd.DataFrame()
-    if "observation" in dataframe["variable"].unique():
-        o_disturbances_df = dataframe.query("variable == 'observation'").dropna(
-            axis=1, how="all"
-        )
-    else:
-        obs_found = False
-    if "reward" in dataframe["variable"].unique():
-        r_disturbances_df = dataframe.query("variable == 'reward'").dropna(
-            axis=1, how="all"
-        )
-    else:
-        rew_found = False
-    if "state_of_interest" in dataframe["variable"].unique():
-        soi_disturbances_df = dataframe.query("variable == 'state_of_interest'").dropna(
-            axis=1, how="all"
-        )
-    else:
-        soi_found = False
-    if "state_of_interest" in dataframe["variable"].unique():
-        ref_disturbances_df = dataframe.query("variable == 'reference'").dropna(
-            axis=1, how="all"
-        )
-    else:
-        ref_found = False
-
-    # Merge observations and references.
-    if obs_found:
-        obs_df_tmp = o_disturbances_df.copy(deep=True)
-        obs_df_tmp["signal"] = "obs_" + (obs_df_tmp["observation"] + 1).astype(str)
-        obs_df_tmp.insert(len(obs_df_tmp.columns), "type", "observation")
-
-        # Retrieve the requested observations.
-        observations = validate_observations(observations, o_disturbances_df)
-        observations = [obs - 1 for obs in observations]  # Humans count from 1
-        obs_df_tmp = obs_df_tmp.query(f"observation in {observations}")
-    if ref_found:
-        ref_df_tmp = ref_disturbances_df.copy(deep=True)
-        ref_df_tmp["signal"] = "ref_" + (ref_df_tmp["reference"] + 1).astype(str)
-        ref_df_tmp.insert(len(ref_df_tmp.columns), "type", "reference")
-    obs_ref_df = pd.concat([obs_df_tmp, ref_df_tmp], ignore_index=True)
-
-    # Loop though all disturbances and plot the observations and references in one plot.
-    fig_title = "{} under several {}{}.".format(
-        "Observation and reference"
-        if all([obs_found, ref_found])
-        else ("Observation" if obs_found else "reference"),
-        "{} disturbances".format(obs_ref_df.disturbance_variant[0])
-        if "disturbance_variant" in obs_ref_df.keys()
-        else "disturbances",
-        f" at step {time_instant}" if time_instant else "",
     )
-    obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"] = (
-        obs_ref_df.loc[obs_ref_df["disturbance_index"] == 0, "disturbance"]
-        + " (original)"
-    )  # Append original to original value.
-    if not merged:
-        num_plots = len(obs_ref_df.disturbance.unique())
-        total_cols = 3
-        total_rows = math.ceil(num_plots / total_cols)
-        fig, axes = plt.subplots(
-            nrows=total_rows,
-            ncols=total_cols,
-            figsize=(7 * total_cols, 7 * total_rows),
-            tight_layout=True,
-            sharex=True,
-            squeeze=False,
-        )
-        fig.suptitle(fig_title)
-        for ii, var in enumerate(obs_ref_df.disturbance.unique()):
-            row = ii // total_cols
-            pos = ii % total_cols
-            sns.lineplot(
-                data=obs_ref_df.query(f"disturbance == '{var}'"),
-                x="step",
-                y="value",
-                errorbar="sd",
-                hue="signal",
-                style="type",
-                ax=axes[row][pos],
-                legend="auto" if ii == 0 else False,
-            ).set_title(var)
-        plt.figlegend(loc="center right")
-        axes[0][0].get_legend().remove()
-    else:
-        fig = plt.figure(tight_layout=True)
-        sns.lineplot(
-            data=obs_ref_df, x="step", y="value", errorbar="sd", hue="disturbance"
-        ).set_title(fig_title)
-    figs["observations"].append(fig)
+    available_refs = (
+        [1]
+        if "reference" in dataframe.columns
+        else [
+            int(col.replace("reference_", ""))
+            for col in dataframe.columns
+            if col.startswith("reference_")
+            and not col.replace("reference_", "").startswith("error")
+        ]
+    )
+    available_ref_errors = (
+        [1]
+        if "reference_error" in dataframe.columns
+        else [
+            int(col.replace("reference_error_", ""))
+            for col in dataframe.columns
+            if col.startswith("reference_error_")
+        ]
+    )
 
-    # Plot mean cost.
-    if rew_found:
-        fig = plt.figure(tight_layout=True)
-        figs["costs"].append(fig)
-        r_disturbances_df.loc[
-            r_disturbances_df["disturbance_index"] == 0, "disturbance"
-        ] = (
-            r_disturbances_df.loc[
-                r_disturbances_df["disturbance_index"] == 0, "disturbance"
-            ]
-            + " (original)"
-        )  # Append original to original value.
-        sns.lineplot(
-            data=r_disturbances_df,
-            x="step",
-            y="reward",
-            errorbar="sd",
-            hue="disturbance",
-        ).set_title(
-            "Mean cost under several {}{}.".format(
-                "{} disturbances".format(obs_ref_df.disturbance_variant[0])
-                if "disturbance_variant" in obs_ref_df.keys()
-                else "disturbances",
-                f" at step {time_instant}" if time_instant else "",
-            )
-        )
-    else:
-        log_to_std_out(
-            (
-                "Mean costs plot could not we shown as no 'rewards' field was found ",
-                "in the supplied dataframe.",
-            ),
-            type="warning",
-        )
-
-    # Plot states of interest.
-    if soi_found:
-        n_soi = soi_disturbances_df["state_of_interest"].max() + 1
-        soi_disturbances_df.loc[
-            soi_disturbances_df["disturbance_index"] == 0, "disturbance"
-        ] = (
-            soi_disturbances_df.loc[
-                soi_disturbances_df["disturbance_index"] == 0, "disturbance"
-            ]
-            + " (original)"
-        )  # Append original to original value.
-        for index in range(0, n_soi):
-            fig = plt.figure(tight_layout=True)
-            figs["states_of_interest"].append(fig)
-            sns.lineplot(
-                data=soi_disturbances_df.query(f"state_of_interest == {index}"),
-                x="step",
-                y="error",
-                errorbar="sd",
-                hue="disturbance",
-            ).set_title(
-                "{} under several {}{}.".format(
-                    "State of interest" if n_soi == 1 else f"State of interest {index}",
-                    "{} disturbances".format(obs_ref_df.disturbance_variant[0])
-                    if "disturbance_variant" in obs_ref_df.keys()
-                    else "disturbances",
-                    f" at step {time_instant}" if time_instant else "",
+    # Filter observations if requested.
+    if len(available_obs) > 0:
+        if observations is not None:
+            # Validate requested observations.
+            if not all([obs.isdigit() for obs in observations]):
+                raise ValueError(
+                    "Observations must be a list of integers. Please check your input."
                 )
+            observations = [int(obs) for obs in observations]
+            if any([obs < 1 for obs in observations]):
+                raise ValueError(
+                    "Observations must be a list of integers greater than '0'. Please "
+                    "check your input."
+                )
+            if any([obs > max(available_obs) for obs in observations]):
+                raise ValueError(
+                    f"Observations must be a list of integers smaller than or equal to "
+                    f"'{max(available_obs)}'. Please check your input."
+                )
+
+            # Remove observation columns that are not requested.
+            if "observation" not in dataframe.columns:
+                unwanted_obs = [
+                    col
+                    for col in dataframe.columns
+                    if col.startswith("observation_")
+                    and int(col.replace("observation_", "")) not in observations
+                ]
+            elif "observation" in dataframe.columns:
+                unwanted_obs = ["observation"] if len(observations) == 0 else []
+            dataframe = dataframe.drop(unwanted_obs, axis=1)
+            available_obs = observations
+        else:  # Show only the first 6 observations by default.
+            available_obs = available_obs[:6]
+
+    # Filter references if requested.
+    if len(available_refs) > 0:
+        if references is not None:
+            # Validate requested references.
+            if not all([ref.isdigit() for ref in references]):
+                raise ValueError(
+                    "References must be a list of integers. Please check your input."
+                )
+            references = [int(ref) for ref in references]
+            if any([ref < 1 for ref in references]):
+                raise ValueError(
+                    "References must be a list of integers greater than '0'. Please "
+                    "check your input."
+                )
+            if any([ref > max(available_refs) for ref in references]):
+                raise ValueError(
+                    f"References must be a list of integers smaller than or equal to "
+                    f"'{max(available_refs)}'. Please check your input."
+                )
+
+            # Remove reference columns that are not requested.
+            if "reference" not in dataframe.columns:
+                unwanted_refs = [
+                    col
+                    for col in dataframe.columns
+                    if col.startswith("reference_")
+                    and not col.replace("reference_", "").startswith("error")
+                    and int(col.replace("reference_", "")) not in references
+                ]
+            elif "reference" in dataframe.columns:
+                unwanted_refs = ["reference"] if len(references) == 0 else []
+            dataframe = dataframe.drop(unwanted_refs, axis=1)
+            available_refs = references
+        else:  # Show only the first 6 references by default.
+            available_refs = available_refs[:6]
+
+    # Filter reference errors if requested.
+    if len(available_ref_errors) > 0:
+        if reference_errors is not None:
+            # Validate requested reference errors.
+            if not all([ref_err.isdigit() for ref_err in reference_errors]):
+                raise ValueError(
+                    "Reference errors must be a list of integers. Please check your "
+                    "input."
+                )
+            reference_errors = [int(ref_err) for ref_err in reference_errors]
+            if any([ref_err < 1 for ref_err in reference_errors]):
+                raise ValueError(
+                    "Reference errors must be a list of integers greater than '0'. "
+                    "Please check your input."
+                )
+            if any(
+                [ref_err > max(available_ref_errors) for ref_err in reference_errors]
+            ):
+                raise ValueError(
+                    f"Reference errors must be a list of integers smaller than or "
+                    f"equal to '{max(available_ref_errors)}'. Please check your "
+                    "input."
+                )
+
+            # Remove reference error columns that are not requested.
+            if "reference_error" not in dataframe.columns:
+                unwanted_ref_errors = [
+                    col
+                    for col in dataframe.columns
+                    if col.startswith("reference_error_")
+                    and int(col.replace("reference_error_", "")) not in reference_errors
+                ]
+            elif "reference_error" in dataframe.columns:
+                unwanted_ref_errors = (
+                    ["reference_error"] if len(reference_errors) == 0 else []
+                )
+            dataframe = dataframe.drop(unwanted_ref_errors, axis=1)
+            available_ref_errors = reference_errors
+        else:
+            available_ref_errors = available_ref_errors[:6]
+
+    # Plot mean observations and references per disturbance variant.
+    if len(available_obs) > 0 or len(available_refs) > 0:
+        logger.log(
+            "Plotting mean observations and references per disturbance variant...",
+            type="info",
+        )
+        n_plots = len(dataframe["disturbance_label"].unique())
+        figs_tmp = []
+        for disturbance_idx, disturbance in enumerate(
+            dataframe["disturbance_label"].unique()
+        ):
+            # Get observations in long format.
+            disturbance_df = dataframe[dataframe["disturbance_label"] == disturbance]
+            obs_value_vars = (
+                ["observation"]
+                if "observation" in dataframe.columns
+                else [f"observation_{obs}" for obs in available_obs]
             )
-        plt.show()
+            obs_disturbance_df = disturbance_df.melt(
+                id_vars=[x_axis_var, "disturbance_label"],
+                value_vars=obs_value_vars,
+                var_name="observation",
+                value_name="value",
+            )
+
+            # Get references in long format.
+            refs_value_vars = (
+                ["reference"]
+                if "reference" in dataframe.columns
+                else [f"reference_{ref}" for ref in available_refs]
+            )
+            refs_disturbance_df = disturbance_df.melt(
+                id_vars=[x_axis_var, "disturbance_label"],
+                value_vars=refs_value_vars,
+                var_name="reference",
+                value_name="value",
+            )
+
+            # Replace observations and references with short names.
+            obs_disturbance_df["observation"] = obs_disturbance_df["observation"].apply(
+                lambda x: "observation"
+                if x == "observation"
+                else x.replace("observation_", "obs_")
+            )
+            refs_disturbance_df["reference"] = refs_disturbance_df["reference"].apply(
+                lambda x: "reference"
+                if x == "reference"
+                else x.replace("reference_", "ref_")
+            )
+
+            # Initialize plot/subplots and title.
+            if use_subplots:
+                if disturbance_idx % 6 == 0:
+                    fig, axs = plt.subplots(
+                        ncols=min(n_plots - disturbance_idx, 3),
+                        nrows=min(int(np.ceil((n_plots - disturbance_idx) / 3)), 2),
+                        figsize=(12, 6),
+                        tight_layout=True,
+                    )
+                    plt.suptitle(
+                        f"Mean observations and references under '{disturber_name}' "
+                        "disturber"
+                    )
+                ax = (
+                    axs.flatten()[disturbance_idx % 6]
+                    if isinstance(axs, np.ndarray)
+                    else axs
+                )
+
+                # Create plot title.
+                plot_title = get_human_readable_disturber_label(disturbance)
+            else:
+                fig, ax = plt.subplots(figsize=(12, 6), tight_layout=True)
+
+                # Create plot title.
+                if len(available_obs) > 0 and len(available_refs) > 0:
+                    plot_title = "Mean {} and {} ".format(
+                        "observations" if len(available_obs) > 1 else "observation",
+                        "references" if len(available_refs) > 1 else "reference",
+                    )
+                elif len(available_obs) > 0:
+                    plot_title = "Mean {} ".format(
+                        "observations" if len(available_obs) > 1 else "observation"
+                    )
+                else:
+                    plot_title = "Mean {} ".format(
+                        "references" if len(available_refs) > 1 else "reference"
+                    )
+                if disturbance == "baseline":
+                    plot_title += "baseline conditions"
+                else:
+                    plot_title += (
+                        f"under '{disturber_name}' disturber with "
+                        f"`{get_human_readable_disturber_label(disturbance)}`"
+                    )  # Fix when disturbance label.
+            fig.canvas.manager.resize(*fig.canvas.manager.window.maxsize())
+
+            # Add observations to plot.
+            if len(available_obs) > 0:
+                sns.lineplot(
+                    data=obs_disturbance_df,
+                    x=x_axis_var,
+                    y="value",
+                    hue="observation",
+                    palette="tab10",
+                    legend="full",
+                    ax=ax,
+                )
+
+            # Add references to plot.
+            if len(available_refs) > 0:
+                sns.lineplot(
+                    data=refs_disturbance_df,
+                    x=x_axis_var,
+                    y="value",
+                    hue="reference",
+                    palette="hls",
+                    legend="full",
+                    ax=ax,
+                    linestyle="--",
+                )
+
+            # Apply plot settings.
+            ax.set_xlabel(x_axis_var)
+            ax.set_ylabel("Value")
+            ax.set_title(
+                plot_title,
+            )
+            ax.get_legend().set_title(None)
+
+            # Store figure.
+            if (
+                use_subplots
+                and disturbance_idx % 6 == 5
+                or disturbance_idx == n_plots - 1
+            ):
+                figs_tmp.append(fig)
+            else:
+                figs_tmp.append(fig)
+
+        # Store plot.
+        figs["observation"] = figs_tmp
     else:
-        log_to_std_out(
+        if not (observations and references):
+            logger.log(
+                (
+                    "No observations or references available in dataframe. Skipping "
+                    "observation plot."
+                ),
+                type="warning",
+            )
+
+    # Plot mean cost per disturbance variant in one plot if available.
+    if "cost" in dataframe.columns:
+        logger.log("Plotting mean cost per disturbance variant...", type="info")
+        fig, ax = plt.subplots(figsize=(12, 6), tight_layout=True)
+        fig.canvas.manager.resize(*fig.canvas.manager.window.maxsize())
+        sns.lineplot(
+            data=dataframe,
+            x=x_axis_var,
+            y="cost",
+            hue="disturbance_label",
+            palette="tab10",
+            legend="full",
+            ax=ax,
+        )
+        ax.set_xlabel(x_axis_var)
+        ax.set_ylabel("Cost")
+        ax.set_title(f"Mean cost under '{disturber_name}' disturber")
+        ax.get_legend().set_title(None)
+        figs["cost"].append(fig)
+    else:
+        logger.log(
             (
-                "State of interest plot could not we shown as no 'state_of_interest' "
-                "field was found in the supplied dataframe.",
+                "Mean cost not plotted since no cost information was found in the "
+                "supplied dataframe. Please ensure the dataframe contains the 'cost' "
+                "key."
             ),
             type="warning",
         )
+
+    # Plot mean reference error per disturbance variant.
+    if len(available_ref_errors) > 0:
+        logger.log(
+            "Plotting mean reference error per disturbance variant...", type="info"
+        )
+        n_plots = len(dataframe["disturbance_label"].unique())
+        figs_tmp = []
+        for disturbance_idx, disturbance in enumerate(
+            dataframe["disturbance_label"].unique()
+        ):
+            # Get reference error in long format.
+            disturbance_df = dataframe[dataframe["disturbance_label"] == disturbance]
+            ref_errors_value_vars = (
+                ["reference_error"]
+                if "reference_error" in dataframe.columns
+                else [
+                    f"reference_error_{ref_error}" for ref_error in available_ref_errors
+                ]
+            )
+            ref_errors_disturbance_df = disturbance_df.melt(
+                id_vars=[x_axis_var, "disturbance_label"],
+                value_vars=ref_errors_value_vars,
+                var_name="reference_error",
+                value_name="value",
+            )
+
+            # Replace reference error with short names.
+            ref_errors_disturbance_df["reference_error"] = ref_errors_disturbance_df[
+                "reference_error"
+            ].apply(
+                lambda x: "reference_error"
+                if x == "reference_error"
+                else x.replace("reference_error_", "ref_error_")
+            )
+
+            # Initialize plot/subplots and title.
+            if use_subplots:
+                if disturbance_idx % 6 == 0:
+                    fig, axs = plt.subplots(
+                        ncols=min(n_plots - disturbance_idx, 3),
+                        nrows=min(int(np.ceil((n_plots - disturbance_idx) / 3)), 2),
+                        figsize=(12, 6),
+                        tight_layout=True,
+                    )
+                ax = (
+                    axs.flatten()[disturbance_idx % 6]
+                    if isinstance(axs, np.ndarray)
+                    else axs
+                )
+
+                # Create plot title.
+                plot_title = get_human_readable_disturber_label(disturbance)
+            else:
+                fig, ax = plt.subplots(figsize=(12, 6), tight_layout=True)
+
+                # Create plot title.
+                plot_title = "Mean {} ".format(
+                    "reference errors"
+                    if len(available_ref_errors) > 1
+                    else "reference error",
+                )
+                if disturbance == "baseline":
+                    plot_title += "baseline conditions"
+                else:
+                    plot_title += (
+                        f"under '{disturber_name}' disturber with "
+                        f"`{get_human_readable_disturber_label(disturbance)}`"
+                    )
+            fig.canvas.manager.resize(*fig.canvas.manager.window.maxsize())
+
+            # Add reference error to plot.
+            sns.lineplot(
+                data=ref_errors_disturbance_df,
+                x=x_axis_var,
+                y="value",
+                hue="reference_error",
+                palette="tab10",
+                legend="full",
+                ax=ax,
+            )
+
+            # Configure plot.
+            ax.set_xlabel(x_axis_var)
+            ax.set_ylabel("Value")
+            ax.set_title(
+                plot_title,
+            )
+            ax.get_legend().set_title(None)
+
+            # Add figure title if using subplots.
+            if use_subplots:
+                plt.suptitle(f"Mean reference error under '{disturber_name}' disturber")
+
+            # Store figure.
+            if (
+                use_subplots
+                and disturbance_idx % 6 == 5
+                or disturbance_idx == n_plots - 1
+            ):
+                figs_tmp.append(fig)
+            else:
+                figs_tmp.append(fig)
+
+        # Store plot.
+        figs["reference_error"] = figs_tmp
+    else:
+        if not reference_errors:
+            logger.log(
+                (
+                    "Mean reference error not plotted since no reference error "
+                    "information was found in the supplied dataframe. Please ensure "
+                    "the dataframe contains the 'reference_error' key."
+                ),
+                type="warning",
+            )
 
     # Save plots.
-    if save_figs:
-        figs_path = output_dir.joinpath("figures")
+    if save_plots:
+        figs_path = logger.output_dir.joinpath("figures")
         figs_extension = figs_fmt[1:] if figs_fmt.startswith(".") else figs_fmt
         os.makedirs(figs_path, exist_ok=True)
-        log_to_std_out("Saving plots...", type="info")
-        log_to_std_out(f"Saving figures to path: {figs_path}", type="info")
-        if obs_found or ref_found:
-            figs["observations"][0].savefig(
-                output_dir.joinpath("figures", f"obserations.{figs_extension}"),
-                bbox_inches="tight",
-            )
-        if rew_found:
-            figs["costs"][0].savefig(
-                output_dir.joinpath("figures", f"costs.{figs_extension}"),
-                bbox_inches="tight",
-            )
-        if soi_found:
-            for index, fig in enumerate(figs["states_of_interest"]):
+        logger.log("Saving plots...", type="info")
+        logger.log(f"Saving figures to path: {figs_path}", type="info")
+        if figs["observation"]:
+            for idx, fig in enumerate(figs["observation"]):
+                if not use_subplots:
+                    fig_id = "{}-{}".format(
+                        convert_to_snake_case(disturber_name),
+                        dataframe["disturbance_label"].unique()[idx],
+                    )
+                else:
+                    fig_id = "{}-subplots-fig_{}".format(
+                        convert_to_snake_case(disturber_name), idx + 1
+                    )
                 fig.savefig(
-                    output_dir.joinpath(
-                        "figures",
-                        f"soi.{figs_extension}" if n_soi == 1 else f"soi_{index}.pdf",
-                    ),
+                    figs_path.joinpath(f"observations-{fig_id}.{figs_extension}"),
                     bbox_inches="tight",
                 )
+        if figs["cost"]:
+            figs["cost"][0].savefig(
+                output_dir.joinpath(
+                    "figures",
+                    f"cost-{convert_to_snake_case(disturber_name)}.{figs_extension}",
+                ),
+                bbox_inches="tight",
+            )
+        if figs["reference_error"]:
+            for idx, fig in enumerate(figs["reference_error"]):
+                if not use_subplots:
+                    fig_id = "{}-{}".format(
+                        convert_to_snake_case(disturber_name),
+                        dataframe["disturbance_label"].unique()[idx],
+                    )
+                else:
+                    fig_id = "{}-subplots-fig_{}".format(
+                        convert_to_snake_case(disturber_name), idx + 1
+                    )
+                fig.savefig(
+                    figs_path.joinpath(f"reference_error-{fig_id}.{figs_extension}"),
+                    bbox_inches="tight",
+                )
+        logger.log("Plots saved.", type="info")
+
+    # Wait for user to close plots before continuing.
+    plt.show()
 
 
 if __name__ == "__main__":
     import argparse
 
+    # Print available disturbers if '--list-disturbers'/'--list' argument is supplied.
+    args = sys.argv[1:]
+    if "--list-disturbers" in args or "--list" in args:
+        print_available_disturbers()
+        sys.exit()
+
+    # Check if '--help', '-h' or 'help' is supplied after the disturber name.
+    disturber_help = False
+    if len(args) == 3:
+        disturber_name = args[1]
+        disturber_help = args[2] in ["--help", "-h", "help"]
+        if disturber_help:
+            # Remove '--help', '-h' or 'help' from args to prevent argparse error.
+            sys.argv.pop(3)
+
+    # Parse other arguments.
     parser = argparse.ArgumentParser()
     parser.add_argument("fpath", type=str, help="The path where the policy is stored")
+    parser.add_argument(
+        "disturber",
+        type=str,
+        help=(
+            "The disturber you want to use for the robustness evaluation (e.g. "
+            "'ObservationRandomNoiseDisturber'). Can include an unloaded module "
+            "in 'module:disturber_name' style."
+        ),
+    )
+    parser.add_argument(
+        "--list_disturbers",
+        "--list",
+        action="store_true",
+        help="List available disturbers in the SLC package",
+    )
+    parser.add_argument(
+        "--disturber_config",
+        "--cfg",
+        type=str,
+        help=(
+            "The configuration you want to pass to the disturber. It sets up the range "
+            "of disturbances you wish to evaluate. Expects a dictionary that depends "
+            "on the specified disturber (e.g. \"{'mean': [0.25, 0.25], 'std': [0.05, "
+            "0.05]}\" for 'ObservationRandomNoiseDisturber' disturber)"
+        ),
+    )
     parser.add_argument(
         "--data_dir",
         type=str,
         help=(
-            "The path where you want to store to store the robustness eval results. By "
-            "default the ``DEFAULT_DATA_DIR`` from the ``user_config`` will be used."
+            "The path where you want to store to store the robustness evaluation "
+            "results, meaning the dataframe and the plots (default: 'DEFAULT_DATA_DIR' "
+            "parameter from the 'user_config' file)"
         ),
-    )
-    parser.add_argument(
-        "--len",
-        "-l",
-        type=int,
-        default=None,
-        help="The episode length (defaults to environment max_episode_steps)",
-    )
-    parser.add_argument(
-        "--episodes",
-        "-n",
-        type=int,
-        default=100,
-        help="The number of episodes you want to run per disturbance (default: 100)",
-    )
-    parser.add_argument(
-        "--render",
-        "-r",
-        action="store_true",
-        help="Whether you want to render the environment step (default: True)",
     )
     parser.add_argument(
         "--itr",
         "-i",
         type=int,
         default=-1,
-        help="The policy iteration (epoch) you want to use (default: 'last')",
+        help="The policy iteration (epoch) you want to use (default: last)",
+    )
+    parser.add_argument(
+        "--len",
+        "-l",
+        type=int,
+        default=None,
+        help="The episode length (default: environment 'max_episode_steps')",
+    )
+    parser.add_argument(
+        "--episodes",
+        "-n",
+        type=int,
+        default=100,
+        help=(
+            "The number of episodes you want to run per disturbance variant "
+            "(default: 100)"
+        ),
+    )
+    parser.add_argument(
+        "--render",
+        "-r",
+        action="store_true",
+        help="Whether you want to render the environment step (default: False)",
     )
     parser.add_argument(
         "--deterministic",
         "-d",
         action="store_true",
-        help="Whether you want to use a deterministic policy (default: True)",
-    )
-    parser.add_argument(
-        "--save_result",
-        action="store_true",
         help=(
-            "Whether you want to save the robustness evaluation dataframe to disk "
-            "(default: False)"
-        ),
-    )
-    parser.add_argument(
-        "--list_disturbance_types",
-        action="store_true",
-        help=(
-            "Lists the available disturbance types for the trained agent and stored "
-            "environment."
-        ),
-    )
-    parser.add_argument(
-        "--list_disturbance_variants",
-        action="store_true",
-        help=(
-            "Lists the available disturbance variants that are available for a given "
-            "disturbance type."
-        ),
-    )
-    parser.add_argument(
-        "--disturbance_type",
-        "-d_type",
-        type=str,
-        help="The disturbance type you want to investigate",
-    )
-    parser.add_argument(
-        "--disturbance_variant",
-        "-d_variant",
-        type=str,
-        default=None,
-        help=(
-            "The disturbance variant you want to investigate (only required for some "
-            "disturbance types)"
+            "Whether you want to use a deterministic policy. Only available for "
+            "Gaussian policies (default: False)"
         ),
     )
     parser.add_argument(
@@ -908,28 +1413,87 @@ if __name__ == "__main__":
         action="store_true",
         help=(
             "Whether you want to disable the baseline (i.e. zero disturbance) from "
-            "being added to the disturbance array automatically."
+            "being added to the disturbance array automatically (default: False)"
         ),
     )
     parser.add_argument(
+        "--observations",
         "--obs",
         default=None,
-        nargs="+",
-        help="The observations you want to show in the observations/references plot",
-    )
-    parser.add_argument(
-        "--merged",
-        default=None,
-        action="store_true",
+        nargs="*",
         help=(
-            "Merge all observations into one plot. By default observations under each "
-            "disturbance are show in a separate subplot."
+            "The observations you want to show in the observations/references plot "
+            "(default: only the first 6 observations). Keep empty to hide observations"
         ),
     )
     parser.add_argument(
-        "--save_figs",
+        "--references",
+        "--refs",
+        default=None,
+        nargs="*",
+        help=(
+            "The references you want to show in the observations/references plot "
+            "(default: only the first reference). Keep empty to hide references"
+        ),
+    )
+    parser.add_argument(
+        "--reference_errors",
+        "--ref_errs",
+        default=None,
+        nargs="*",
+        help=(
+            "The reference errors you want to show in the reference errors plot "
+            "(default: only the first reference error). Keep empty to hide reference "
+            "errors"
+        ),
+    )
+    parser.add_argument(
+        "--absolute_reference_errors",
+        "--abs_ref_errs",
         action="store_true",
-        help="Whether you want to save the plots (default: True)",
+        help=(
+            "Whether you want to use absolute reference errors instead of relative "
+            "reference errors (default: False)"
+        ),
+    )
+    parser.add_argument(
+        "--merge_reference_errors",
+        "--merge_ref_errs",
+        action="store_true",
+        help=(
+            "Whether you want to merge the reference errors into one reference error "
+            "(default: False)"
+        ),
+    )
+    parser.add_argument(
+        "--use_subplots",
+        action="store_true",
+        help=(
+            "Whether you want to use subplots instead of separate figures "
+            "(default: False)"
+        ),
+    )
+    parser.add_argument(
+        "--use_time",
+        action="store_true",
+        help=(
+            "Whether you want to use time as the x-axis instead of steps "
+            "(default: False)"
+        ),
+    )
+    parser.add_argument(
+        "--save_result",
+        "--save",
+        action="store_true",
+        help=(
+            "Whether you want to save the robustness evaluation dataframe to disk "
+            "(default: False)"
+        ),
+    )
+    parser.add_argument(
+        "--save_plots",
+        action="store_true",
+        help="Whether you want to save the plots (default: False)",
     )
     parser.add_argument(
         "--figs_fmt",
@@ -939,100 +1503,51 @@ if __name__ == "__main__":
     parser.add_argument(
         "--font_scale",
         default=1.5,
-        help="The font scale you want to use for the plot text.",
+        help="The font scale you want to use for the plot text (default: 1.5)",
     )
     args = parser.parse_args()
 
     # Load policy and environment.
     env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")
 
-    # List d_type or d_variant if requested.
-    if args.list_disturbance_types or args.list_disturbance_variants:
-        if hasattr(env.unwrapped, "_disturber_cfg"):
-            if args.list_disturbance_types:
-                d_type_info_msg = (
-                    "The following disturbance types are implemented for the "
-                    f"'{policy.__class__.__name__}' in the '{env.unwrapped.spec.id}' "
-                    "environment:"
-                )
-                for item in {
-                    k
-                    for k in env.unwrapped._disturber_cfg.keys()
-                    if k not in ["default_type"]
-                }:
-                    d_type_info_msg += f"\t\n - {item}"
-                log_to_std_out(friendly_err(d_type_info_msg))
-            if args.list_disturbance_variants and args.disturbance_type:
-                try:
-                    d_variant_msg = (
-                        "The following disturbance types are implemented for "
-                        f"disturbance '{policy.__class__.__name__}' in the "
-                        f"'{env.unwrapped.spec.id}' environment when using disturbance "
-                        f"type '{args.disturbance_type}':"
-                    )
-                    for item in {
-                        k
-                        for k in env.unwrapped._disturber_cfg[
-                            args.disturbance_type
-                        ].keys()
-                        if k not in ["default_type"]
-                    }:
-                        d_variant_msg += f"\t\n - {item}"
-                    log_to_std_out(
-                        friendly_err(
-                            d_variant_msg, prepend=(not args.list_disturbance_types)
-                        ),
-                    )
-                except KeyError:
-                    error_msg = (
-                        f"Disturbance type {args.disturbance_type} does not exist for "
-                        f"'{policy.__class__.__name__}' in the "
-                        f"'{env.unwrapped.spec.id}' environment. Please specify a  "
-                        "valid disturbance type and try again. You can check all the "
-                        "valid disturbance types using the --list_disturbance_types "
-                        "flag."
-                    )
-                    log_to_std_out(
-                        friendly_err(
-                            error_msg, prepend=(not args.list_disturbance_types)
-                        ),
-                    )
-            elif args.list_disturbance_variants and not args.disturbance_type:
-                error_msg = (
-                    "Disturbance variants could not be retrieved as no disturbance "
-                    "type was given. Please specify a disturbance type and try again."
-                )
-                log_to_std_out(
-                    friendly_err(error_msg, prepend=(not args.list_disturbance_types))
-                )
-        else:
-            error_msg = (
-                "{} could not be listed as no disturber config ".format(
-                    "Disturbance types/variants"
-                    if (args.list_disturbance_types and args.list_disturbance_variants)
-                    else (
-                        "Disturbance types"
-                        if args.list_disturbance_types
-                        else "Disturbance variants"
-                    )
-                )
-                + "'disturber_cfg' attribute was found on the environment. Please "
-                "make sure your environment is compatible with the robustness eval "
-                "utility and try again."
+    # Load the disturber or throw an error if it does not exist.
+    disturber = load_disturber(args.disturber)
+
+    # Return disturber help if requested.
+    if disturber_help:
+        print(f"\n\nShowing docstring for '{args.disturber}:\n'")
+        print(
+            "\t{}\n".format(inspect.cleandoc(disturber.__doc__).replace("\n", "\n\t"))
+        )
+        print(
+            "\t{}\n\n".format(
+                inspect.cleandoc(disturber.__init__.__doc__).replace("\n", "\n\t")
             )
-            log_to_std_out(friendly_err(error_msg))
+        )
         sys.exit()
+
+    # Retrieve disturber configuration.
+    try:
+        if args.disturber_config is not None:
+            args.disturber_config = ast.literal_eval(args.disturber_config)
+    except ValueError:
+        raise ValueError(
+            friendly_err(
+                "The supplied '--disturber_config' is not a valid dictionary. Please "
+                "make sure you supply a valid dictionary."
+            )
+        )
 
     # Retrieve output_dir.
     if not args.data_dir:
         args.data_dir = args.fpath
 
-    # Perform robustness evaluation.
+    # Perform robustness evaluation and plot results.
     run_results_df = run_disturbed_policy(
         env,
         policy,
-        args.disturbance_type,
-        disturbance_variant=args.disturbance_variant,
+        disturber,
+        disturber_config=args.disturber_config,
         include_baseline=(not args.disable_baseline),
         max_ep_len=args.len,
         num_episodes=args.episodes,
@@ -1043,10 +1558,15 @@ if __name__ == "__main__":
     )
     plot_robustness_results(
         run_results_df,
-        observations=args.obs,
-        merged=args.merged,
-        output_dir=args.data_dir,
+        observations=args.observations,
+        references=args.references,
+        reference_errors=args.reference_errors,
+        absolute_reference_errors=args.absolute_reference_errors,
+        merge_reference_errors=args.merge_reference_errors,
+        use_subplots=args.use_subplots,
+        use_time=args.use_time,
+        save_plots=args.save_plots,
         font_scale=args.font_scale,
-        save_figs=args.save_figs,
         figs_fmt=args.figs_fmt,
+        output_dir=args.data_dir,
     )

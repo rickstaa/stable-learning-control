@@ -17,7 +17,7 @@ quickly launch any algorithm (with any choices of hyperparameters) from the comm
 It also serves as a thin wrapper over the utilities for watching/evaluating the trained
 policies and plotting. However, that functionality is not discussed on this page (for
 those details, see the pages on :ref:`experiment outputs <saving_and_loading>`, 
-:ref:`robustness eval <robustness_eval>` and :ref:`plotting`).
+:ref:`robustness evaluation <robustness_eval>` and :ref:`plotting`).
 
 The standard way to run an SLC algorithm from the command line is
 
@@ -189,9 +189,14 @@ Environment Flags
     prefix the environment name with a module name, separated by a colon, to specify a
     custom gymnasium environment (i.e. ``--env stable_gym:Oscillator-v1``).
 
-.. option:: --env_kwargs
+.. option:: --env_k, --env_kwargs
 
-    :obj:`object`. Additional keyword arguments you want to pass to the gym environment.
+    :obj:`object`. Additional keyword arguments you want to pass to the gym environment. If 
+    you, for example, want to change the forward reward weight and healthy reward of the
+    `Walker2d-v2`_ environment, you can do so by passing ``--env_kwargs "{'forward_reward_weight': 0.5, 'healthy_reward': 0.5}"``
+    to the run command.
+
+.. _`Walker2d-v2`: https://mgoulao.github.io/gym-docs/environments/mujoco/walker2d/
 
 .. _alg_flags:
 
@@ -201,7 +206,7 @@ Algorithm Flags
 General Flags
 ~~~~~~~~~~~~~
 
-.. option:: --save_checkpoints
+.. option:: --save_cps, --save_checkpoints
 
     Only the most recent state of the agent and environment is saved by default. When the
     ``--save_checkpoints`` flag is supplied, a snapshot (checkpoint) of the agent and
@@ -276,7 +281,7 @@ These flags are not hyperparameters of any algorithm but change the experimental
     :obj:`path str`. Set the base save directory for this experiment or set of experiments. If none is given, 
     the ``DEFAULT_DATA_DIR`` in ``stable_learning_control/user_config.py`` will be used.
 
-.. option:: --datestamp
+.. option:: --dt, --datestamp
 
     :obj:`bool`. Include the date and time in the name for the save directory of the experiment.
 
@@ -286,7 +291,7 @@ Logger Flags
 The CLI also contains several (shortcut) flags that can be used to change the behaviour of the
 :class:`stable_learning_control.utils.log_utils.logx.EpochLogger`.
 
-.. option:: --use_tensorboard, --logger_kwargs:use_tensorboard
+.. option:: --use_tb, --logger_kwargs:use_tensorboard
 
     :obj:`bool`. Enables tensorboard logging.
 
@@ -312,7 +317,6 @@ The CLI also contains several (shortcut) flags that can be used to change the be
 
     The verbose_vars list should be supplied as a list that can be evaluated in Python (e.g. 
     ``--verbose_vars ["Lr_a", "Lr_c"]``).
-
 
 Using experimental configuration files (yaml)
 ---------------------------------------------

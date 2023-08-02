@@ -1,7 +1,7 @@
 """Lyapunov critic policy.
 
 This module contains a TensorFlow 2.x implementation of the Lyapunov Critic policy of
-`Han et al. 2020 <http://arxiv.org/abs/2004.14288>`_.
+`Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_.
 """
 import tensorflow as tf
 from tensorflow import nn

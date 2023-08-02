@@ -38,7 +38,7 @@ For mac this command can be used:
     
 .. _`mpi4py`: https://mpi4py.readthedocs.io/en/stable/
 .. _`Open MPI`: https://www.open-mpi.org/
-.. _`Microsoft MPI`: https://docs.microsoft.com/en-us/message-passing-interface/microsoft-mpi
+.. _`Microsoft MPI`: https://learn.microsoft.com/en-us/message-passing-interface/microsoft-mpi
 
 .. _install:
 
@@ -77,8 +77,8 @@ Alternatively, you can use Python's `venv`_ package to create a virtual environm
 
 .. _`venv`: https://docs.python.org/3/library/venv.html
 .. _`Anaconda3-5.3.1`: https://repo.anaconda.com/archive/
-.. _`Anaconda documentation`: https://docs.continuum.io/anaconda/install
-.. _`FreeCodeCamp`: https://medium.freecodecamp.org/why-you-need-python-environments-and-how-to-manage-them-with-conda-85f155f4353c
+.. _`Anaconda documentation`: https://docs.continuum.io/free/anaconda/install/
+.. _`FreeCodeCamp`: https://www.freecodecamp.org/news/why-you-need-python-environments-and-how-to-manage-them-with-conda-85f155f4353c
 .. _`Towards Data Science`: https://towardsdatascience.com/environment-management-with-conda-python-2-3-b9961a8a5097
 .. _`documentation page from Conda`: https://conda.io/docs/user-guide/tasks/manage-environments.html
 
@@ -155,7 +155,7 @@ package with the the following command:
     choose to use `venv`_ instead of Conda, you must ensure the correct version of `CUDA`_
     and `cuDNN`_ are installed on your system.
 
-.. _`TensorFlow installation guide`: https://www.tensorflow.org/install/gpu
+.. _`TensorFlow installation guide`: https://www.tensorflow.org/install/pip
 .. _`the TensorFlow`: https://www.tensorflow.org/install/source#gpu
 .. _`Pytorch`: https://pytorch.org/get-started/locally/
 .. _`CUDA`: https://developer.nvidia.com/cuda-toolkit

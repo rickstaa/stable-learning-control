@@ -1,6 +1,6 @@
 alg_name: lac
 exp_name: lac_cartpole_cost_exp
-env_name: "CartPoleCost-v0"
+env_name: "stable_gym:CartPoleCost-v1"
 ac_kwargs:
   hidden_sizes:
     actor: [64, 64]

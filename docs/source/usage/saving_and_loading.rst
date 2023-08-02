@@ -151,7 +151,7 @@ is successfully saved alongside the agent, you can watch the trained agent act i
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run test_policy path/to/output_directory
+    python -m stable_learning_control.run test_policy [path/to/output_directory]
 
 .. seealso::
 
@@ -354,7 +354,7 @@ the :obj:`tf.saved_model.load` method.
 For more information on deploying TensorFlow models, see `the TensorFlow documentation`_.
 
 .. _`TFLITE`: https://www.tensorflow.org/lite
-.. _`TensorFlow.js`: https://js.tensorflow.org
+.. _`TensorFlow.js`: https://www.tensorflow.org/js/
 .. _`TensorFlow Serving`: https://www.tensorflow.org/tfx/tutorials/serving/rest_simple
 .. _`TensorFlow Hub`: https://www.tensorflow.org/hub
 .. _`SavedModel format`: https://www.tensorflow.org/guide/saved_model

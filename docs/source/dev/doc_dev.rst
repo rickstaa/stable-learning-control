@@ -33,10 +33,15 @@ directory and run the ``make html`` command. This command will generate the html
 the ``docs/build/html`` directory. If the documentation is successfully created, you can also use the
 ``make linkcheck`` command to check for broken links.
 
-.. note::
+.. attention::
 
     Ensure you are in the Conda environment where you installed the :slc:`stable_learning_control <>`
     package with its dependencies.
+
+.. note::
+
+    Sometimes the ``make linkcheck`` command doesn't show the results on the stdout. You can also find the results
+    in the ``docs/build/linkcheck`` folder. 
 
 .. _HTML: https://www.w3schools.com/html/
 
