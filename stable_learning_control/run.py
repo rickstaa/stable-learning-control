@@ -7,6 +7,7 @@ import subprocess
 import sys
 from copy import deepcopy
 from textwrap import dedent
+import inspect
 
 import ruamel.yaml as yaml
 
@@ -26,6 +27,7 @@ RUN_KEYS = ["num_cpu", "data_dir", "datestamp"]
 # Command line sweetener, allowing short-form flags for common, longer flags.
 SUBSTITUTIONS = {
     "env": "env_name",
+    "env_k": "env_kwargs",
     "hid": "ac_kwargs:hidden_sizes",
     "hid_a": "ac_kwargs:hidden_sizes:actor",
     "hid_c": "ac_kwargs:hidden_sizes:critic",
@@ -38,8 +40,8 @@ SUBSTITUTIONS = {
     "cpu": "num_cpu",
     "dt": "datestamp",
     "q": "quiet",
-    "use_tensorboard": "logger_kwargs:use_tensorboard",
-    "save_checkpoints": "logger_kwargs:save_checkpoints",
+    "use_tb": "logger_kwargs:use_tensorboard",
+    "save_cps": "logger_kwargs:save_checkpoints",
     "tb_log_freq": "logger_kwargs:tb_log_freq",
     "quiet": "logger_kwargs:quiet",
     "verbose_fmt": "logger_kwargs:verbose_fmt",
@@ -270,7 +272,7 @@ def _parse_and_execute_grid_search(cmd, args):
     valid_help = ["--help", "-h", "help"]
     if any([arg in valid_help for arg in args]):
         print("\n\nShowing docstring for stable_learning_control." + cmd + ":\n")
-        print(algo.__doc__)
+        print("\t{}\n\n".format(inspect.cleandoc(algo.__doc__).replace("\n", "\n\t")))
         sys.exit()
 
     # Make first pass through args to build base arg_dict. Anything
@@ -417,7 +419,7 @@ def run(input_args):
 
         # Provide some useful details for algorithm running.
         subs_list = [
-            "--" + k.ljust(10) + "for".ljust(10) + "--" + v
+            "--" + k.ljust(17) + "for".ljust(8) + "--" + v
             for k, v in SUBSTITUTIONS.items()
         ]
         str_valid_subs = "\n\t" + "\n\t".join(subs_list)

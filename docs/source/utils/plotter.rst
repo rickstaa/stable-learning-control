@@ -13,9 +13,9 @@ SLC ships with a simple plotting utility that can be used to plot diagnostics fr
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run plot [path/to/output_directory ...] [--legend [LEGEND ...]]
-        [--xaxis XAXIS] [--value [VALUE ...]] [--count] [--smooth S]
-        [--select [SEL ...]] [--exclude [EXC ...]]
+    python -m stable_learning_control.run plot [path/to/output_directory ...] [-h] [--legend [LEGEND [LEGEND ...]]] 
+        [--xaxis XAXIS] [--value [VALUE [VALUE ...]]] [--count] [--smooth SMOOTH]
+        [--select [SELECT [SELECT ...]]] [--exclude [EXCLUDE [EXCLUDE ...]]] [--est EST]
 
 **Positional Arguments:**
 
@@ -77,3 +77,7 @@ SLC ships with a simple plotting utility that can be used to plot diagnostics fr
 .. option:: --exclude=[EXC ...]
 
     :obj:`list of strings`. Optional exclusion rule: plotter will only show curves from logdirs that do not contain these substrings.
+
+.. option:: --est=[EST], default='mean'
+
+    :obj:`str`. The estimator you want to use for the plot. Options are ``mean`` (default), ``min``, ``max``.

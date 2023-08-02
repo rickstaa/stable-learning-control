@@ -9,7 +9,7 @@
 
 ## Package Overview
 
-The Stable Learning Control (SLC) framework is a collection of robust Reinforcement Learning control algorithms designed to ensure stability. These algorithms are built upon the Lyapunov actor-critic architecture introduced by [Han et al. 2020](http://arxiv.org/abs/2004.14288). They guarantee stability and robustness by leveraging [Lyapunov stability theory](https://en.wikipedia.org/wiki/Lyapunov_stability). These algorithms are specifically tailored for use with [gymnasium environments](https://gymnasium.farama.org/) that feature a positive definite cost function. Several ready-to-use compatible environments can be found in the [stable-gym](https://github.com/rickstaa/stable-gym) package.
+The Stable Learning Control (SLC) framework is a collection of robust Reinforcement Learning control algorithms designed to ensure stability. These algorithms are built upon the Lyapunov actor-critic architecture introduced by [Han et al. 2020](https://arxiv.org/abs/2004.14288). They guarantee stability and robustness by leveraging [Lyapunov stability theory](https://en.wikipedia.org/wiki/Lyapunov_stability). These algorithms are specifically tailored for use with [gymnasium environments](https://gymnasium.farama.org/) that feature a positive definite cost function. Several ready-to-use compatible environments can be found in the [stable-gym](https://github.com/rickstaa/stable-gym) package.
 
 ## Installation and Usage
 
@@ -21,5 +21,5 @@ We use [husky](https://github.com/typicode/husky) pre-commit hooks and github ac
 
 ## References
 
-*   [Han et al. 2020](http://arxiv.org/abs/2004.14288) - Used as a basis for the Lyapunov actor-critic architecture.
+*   [Han et al. 2020](https://arxiv.org/abs/2004.14288) - Used as a basis for the Lyapunov actor-critic architecture.
 *   [Spinningup](https://spinningup.openai.com/en/latest/) - Used as a basis for the code structure.

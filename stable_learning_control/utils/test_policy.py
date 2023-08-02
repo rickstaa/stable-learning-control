@@ -10,6 +10,7 @@ from pathlib import Path
 import joblib
 import torch
 
+from stable_learning_control.common.helpers import get_env_id
 from stable_learning_control.common.exceptions import EnvLoadError, PolicyLoadError
 from stable_learning_control.utils.import_utils import import_tf
 from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
@@ -272,6 +273,7 @@ def run_policy(
         render (bool, optional): Whether you want to render the episode to the screen.
             Defaults to ``True``.
     """
+    logger = EpochLogger(verbose_fmt="table")
     assert env is not None, friendly_err(
         "Environment not found!\n\n It looks like the environment wasn't saved, and we "
         "can't run the agent in it. :( \n\n Check out the documentation page on the "
@@ -285,21 +287,33 @@ def run_policy(
 
     # Apply episode length and set render mode.
     if max_ep_len is not None and max_ep_len != 0:
+        if max_ep_len > env.env._max_episode_steps:
+            logger.log(
+                (
+                    f"You defined your 'max_ep_len' to be {max_ep_len} "
+                    "while the environment 'max_episode_steps' is "
+                    f"{env.env._max_episode_steps}. As a result the environment "
+                    f"'max_episode_steps' has been increased to {max_ep_len}"
+                ),
+                type="warning",
+            )
         env.env._max_episode_steps = max_ep_len
+
+    # Set render mode.
     if render:
         render_modes = env.unwrapped.metadata.get("render_modes", [])
         if render_modes:
             env.unwrapped.render_mode = "human" if "human" in render_modes else None
         else:
-            log_to_std_out(
+            logger.log(
                 (
-                    f"Nothing was rendered since the '{env.unwrapped.spec.id}' "
+                    f"Nothing was rendered since the '{get_env_id(env)}' "
                     f"environment does not contain a 'human' render mode."
                 ),
                 type="warning",
             )
 
-    logger = EpochLogger(verbose_fmt="table")
+    # Perform episodes.
     o, _ = env.reset()
     r, d, ep_ret, ep_len, n = 0, False, 0, 0, 0
     supports_deterministic = True  # Only supported with gaussian algorithms.
@@ -310,7 +324,7 @@ def run_policy(
                 a = policy.get_action(o, deterministic=deterministic)
             except TypeError:
                 supports_deterministic = False
-                log_to_std_out(
+                logger.log(
                     "Input argument 'deterministic' ignored as the algorithm does "
                     "not support deterministic actions. This is only supported for "
                     "gaussian  algorithms.",
@@ -356,20 +370,23 @@ if __name__ == "__main__":
         "--norender",
         "-nr",
         action="store_true",
-        help="Whether you want to render the environment step (default: True)",
+        help="Whether you want to render the environment step (default: False)",
     )
     parser.add_argument(
         "--itr",
         "-i",
         type=int,
         default=-1,
-        help="The policy iteration (epoch) you want to use (default: 'last')",
+        help="The policy iteration (epoch) you want to use (default: last)",
     )
     parser.add_argument(
         "--deterministic",
         "-d",
         action="store_true",
-        help="Whether you want to use a deterministic policy (default: True)",
+        help=(
+            "Whether you want to use a deterministic policy. Only available for "
+            "Gaussian policies (default: False)"
+        ),
     )
     args = parser.parse_args()
     env, policy = load_policy_and_env(args.fpath, args.itr if args.itr >= 0 else "last")

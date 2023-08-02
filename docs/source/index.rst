@@ -50,7 +50,7 @@ ready-to-use compatible environments can be found in the  :stable-gym:`stable-gy
    utils/mpi
    utils/run_utils
    utils/plotter
-   utils/tester
+   utils/testers
 
 .. toctree::
    :maxdepth: 2

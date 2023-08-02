@@ -141,7 +141,9 @@ def rescale(data, min_bound, max_bound):
         else max_bound.to(data.device)
     )
 
-    return (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
+    # Return rescaled data in the same format as the input data.
+    data_rescaled = (data + 1.0) * (max_bound - min_bound) / 2 + min_bound
+    return data_rescaled.astype(data.dtype) if isinstance(data, np.ndarray) else data
 
 
 def np_to_torch(input_object, dtype=None, device=None):

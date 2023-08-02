@@ -8,9 +8,9 @@ SLC ships with a simple plotting utility that can be used to plot diagnostics fr
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run plot [path/to/output_directory ...] [--legend [LEGEND ...]]
-        [--xaxis XAXIS] [--value [VALUE ...]] [--count] [--smooth S]
-        [--select [SEL ...]] [--exclude [EXC ...]]
+    python -m stable_learning_control.run plot [path/to/output_directory ...] [-h] [--legend [LEGEND [LEGEND ...]]] 
+        [--xaxis XAXIS] [--value [VALUE [VALUE ...]]] [--count] [--smooth SMOOTH]
+        [--select [SELECT [SELECT ...]]] [--exclude [EXCLUDE [EXCLUDE ...]]] [--est EST]
 
 .. seealso::
 

@@ -331,19 +331,19 @@ def plot():
         "--xaxis",
         "-x",
         default="TotalEnvInteracts",
-        help="Data used for the x-axis (default: 'TotalEnvInteracts')",
+        help="Data used for the x-axis (default: TotalEnvInteracts)",
     )
     parser.add_argument(
         "--value",
         "-y",
         default="Performance",
         nargs="*",
-        help="Data used for the y-axis (default: 'performance')",
+        help="Data used for the y-axis (default: performance)",
     )
     parser.add_argument(
         "--count",
         action="store_true",
-        help="Whether you want to average over all the results",
+        help="Whether you want to average over all the results (default: False)",
     )
     parser.add_argument(
         "--smooth", "-s", type=int, default=1, help="The size of the averaging window"

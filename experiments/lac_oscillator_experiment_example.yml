@@ -1,6 +1,6 @@
 alg_name: lac
 exp_name: lac_oscillator_exp
-env_name: "Oscillator-v1"
+env_name: "stable_gym:Oscillator-v1"
 ac_kwargs:
   hidden_sizes:
     actor: [64, 64]

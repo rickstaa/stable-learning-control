@@ -2,8 +2,8 @@
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac]
   ReplayBuffer(
     act_buf=array([[0.54784673],
-         [1.4406173 ],
-         [1.6042819 ],
+         [0.72030866],
+         [0.796717  ],
          ...,
          [0.        ],
          [0.        ],
@@ -12,44 +12,44 @@
     done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
     obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
          [ 0.64476854,  0.76437783,  0.19040418],
-         [ 0.60656387,  0.79503477,  0.97978014],
+         [ 0.61085004,  0.7917463 ,  0.87173384],
          ...,
          [ 0.        ,  0.        ,  0.        ],
          [ 0.        ,  0.        ,  0.        ],
          [ 0.        ,  0.        ,  0.        ]], dtype=float32),
     obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
-         [0.60656387, 0.79503477, 0.97978014],
-         [0.5319456 , 0.8467786 , 1.8166986 ],
+         [0.61085004, 0.7917463 , 0.87173384],
+         [0.5462504 , 0.8376219 , 1.5850512 ],
          ...,
          [0.        , 0.        , 0.        ],
          [0.        , 0.        , 0.        ],
          [0.        , 0.        , 0.        ]], dtype=float32),
     ptr=800,
-    rew_buf=array([-0.76205546, -0.76273274, -0.9432509 , ...,  0.        ,
+    rew_buf=array([-0.76205546, -0.7611762 , -0.91140604, ...,  0.        ,
           0.        ,  0.        ], dtype=float32),
     size=800,
   )
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].1
-  1.3941729068756104
+  0.8403626680374146
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].2
-  -1.24482262134552
+  -0.5881332159042358
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].3
-  -0.03907895088195801
+  0.06388402730226517
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].4
-  0.3105490207672119
+  0.532431423664093
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.lac.lac].5
-  0.8348543643951416
+  0.5220913290977478
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac]
   ReplayBuffer(
     act_buf=array([[ 0.54784673],
-         [ 1.2861104 ],
-         [-1.4702797 ],
+         [ 0.64305526],
+         [-0.73479456],
          ...,
          [ 0.        ],
          [ 0.        ],
@@ -58,36 +58,36 @@
     done_buf=array([0., 0., 0., ..., 0., 0., 0.], dtype=float32),
     obs_buf=array([[ 0.6520163 ,  0.758205  , -0.46042657],
          [ 0.64476854,  0.76437783,  0.19040418],
-         [ 0.60748476,  0.7943313 ,  0.9566041 ],
+         [ 0.6113087 ,  0.79139227,  0.86014587],
          ...,
          [ 0.        ,  0.        ,  0.        ],
          [ 0.        ,  0.        ,  0.        ],
          [ 0.        ,  0.        ,  0.        ]], dtype=float32),
     obs_next_buf=array([[0.64476854, 0.76437783, 0.19040418],
-         [0.60748476, 0.7943313 , 0.9566041 ],
-         [0.5532825 , 0.8329937 , 1.3318107 ],
+         [0.6113087 , 0.79139227, 0.86014587],
+         [0.5568093 , 0.8306403 , 1.3434708 ],
          ...,
          [0.        , 0.        , 0.        ],
          [0.        , 0.        , 0.        ],
          [0.        , 0.        , 0.        ]], dtype=float32),
     ptr=800,
-    rew_buf=array([-0.76205546, -0.76231146, -0.93622243, ...,  0.        ,
+    rew_buf=array([-0.76205546, -0.7610709 , -0.90824586, ...,  0.        ,
           0.        ,  0.        ], dtype=float32),
     size=800,
   )
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].1
-  -0.7179003953933716
+  -0.3054710924625397
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].2
-  -1.0258972644805908
+  -0.5438500046730042
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].3
-  -1.3354922533035278
+  -0.5551561713218689
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].4
-  1.4214999675750732
+  0.7831009030342102
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].5
-  -1.085166096687317
+  -0.43937113881111145
 # ---

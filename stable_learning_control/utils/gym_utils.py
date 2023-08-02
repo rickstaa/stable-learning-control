@@ -65,9 +65,6 @@ def validate_gym_env(arg_dict):
         AssertError: Raised when a environment is supplied that is not a valid gymnasium
             environment.
     """
-    # Import gymnasium environments.
-    # import gymnasium as gym # TODO: Check if this can be removed!
-
     # Special handling for environment: make sure that env_name is a real,
     # registered gymnasium environment.
     assert "env_name" in arg_dict, friendly_err(

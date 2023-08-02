@@ -1,0 +1,10 @@
+alg_name: lac
+exp_name: lac_ant_env_kwargs_test_exp
+env_name: "stable_gym:AntCost-v1"
+env_kwargs:
+  terminate_when_unhealthy: False
+  healthy_z_range: [0.2, 1.0]
+  contact_force_range: [-1.0, 1.0]
+  reset_noise_scale: 0.1
+  exclude_current_positions_from_observation: True
+epochs: 2
