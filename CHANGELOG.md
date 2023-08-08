@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/rickstaa/stable-learning-control/compare/v4.1.0...v4.2.0) (2023-08-08)
+
+
+### Features
+
+* improve hyperparmeter tuning, logger and add W&B logging ([#314](https://github.com/rickstaa/stable-learning-control/issues/314)) ([74afd65](https://github.com/rickstaa/stable-learning-control/commit/74afd658bcd22579221b5f51c9e5d074f1929857))
+
+
+### Documentation
+
+* update contribution note ([#316](https://github.com/rickstaa/stable-learning-control/issues/316)) ([44a35af](https://github.com/rickstaa/stable-learning-control/commit/44a35af889331a1b1077a5d8035ec78ef084b368))
+
 ## [4.1.0](https://github.com/rickstaa/stable-learning-control/compare/v4.0.10...v4.1.0) (2023-08-02)
 
 
