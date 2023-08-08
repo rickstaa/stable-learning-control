@@ -948,7 +948,7 @@ def lac(
     # Setup algorithm parameters.
     total_steps = steps_per_epoch * epochs
     env = env_fn()
-    hyper_param_dict["env"] = get_env_id(env)  # Store env id in hyperparameter dict.
+    hyper_param_dict["env"] = env  # Add env to hyperparameters.
 
     # Validate gymnasium env.
     # NOTE: The current implementation only works with continuous spaces.
@@ -998,6 +998,11 @@ def lac(
         else False
     )
     use_wandb = logger_kwargs.get("use_wandb")
+    if use_wandb and not logger_kwargs.get("wandb_run_name"):
+        # Create wandb_run_name if wandb is used and no name is provided.
+        logger_kwargs["wandb_run_name"] = PurePath(logger_kwargs["output_dir"]).parts[
+            -1
+        ]
     logger = EpochLogger(**logger_kwargs)
 
     # Retrieve max episode length.
@@ -1687,8 +1692,6 @@ if __name__ == "__main__":
             f"../../../../../data/lac/{args.env.lower()}/runs/run_{int(time.time())}",
         )
     )
-    if args.use_wandb:  # Add the wandb run name to the logger kwargs.
-        logger_kwargs["wandb_run_name"] = PurePath(logger_kwargs["ouput_dir"]).parts[-1]
     torch.set_num_threads(torch.get_num_threads())
 
     lac(

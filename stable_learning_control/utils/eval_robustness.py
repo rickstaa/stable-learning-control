@@ -3,13 +3,13 @@ algorithm. See the :ref:`Robustness Evaluation Documentation <robustness_eval>` 
 more information.
 """
 import ast
+import copy
 import importlib
 import inspect
 import os
 import sys
 from pathlib import Path, PurePath
 from textwrap import dedent
-import copy
 
 import gymnasium as gym
 import matplotlib.pyplot as plt
@@ -19,44 +19,13 @@ import seaborn as sns
 
 from stable_learning_control.common.helpers import (
     convert_to_snake_case,
+    convert_to_wandb_config,
     friendly_err,
     get_env_id,
 )
 from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 from stable_learning_control.utils.log_utils.logx import EpochLogger
 from stable_learning_control.utils.test_policy import load_policy_and_env
-
-
-def convert_to_wandb_config(config):
-    """Transform the config to a format that looks better on Weights & Biases.
-
-    Args:
-        config (dict): The config that should be transformed.
-
-    Returns:
-        dict: The transformed config.
-    """
-    wandb_config = {}
-    for key, value in config.items():
-        if (
-            key
-            in [
-                "output_dir",
-                "use_wandb",
-                "wandb_job_type",
-                "wandb_project",
-                "wandb_group",
-                "wandb_run_name",
-            ]
-            or value is None
-        ):  # Filter keys.
-            continue
-        elif key == "env":  # Transform env object to env id.
-            value = get_env_id(value)
-        elif key in ["policy", "disturber"]:  # Transform policy object to policy id.
-            value = "{}.{}".format(value.__module__, value.__class__.__name__)
-        wandb_config[key] = value
-    return wandb_config
 
 
 def get_human_readable_disturber_label(disturber_label):

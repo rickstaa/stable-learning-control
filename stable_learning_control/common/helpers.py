@@ -4,6 +4,7 @@ import re
 import string
 from collections.abc import Iterable, MutableMapping
 
+import gymnasium as gym
 import numpy as np
 import torch
 
@@ -220,11 +221,51 @@ def get_env_id(env):
     Returns:
         str: The environment id.
     """
-    return (
-        env.unwrapped.spec.id
-        if hasattr(env.unwrapped.spec, "id")
-        else type(env.unwrapped).__name__
-    )
+    if isinstance(env, gym.Env):
+        return (
+            env.unwrapped.spec.id
+            if hasattr(env.unwrapped.spec, "id")
+            else type(env.unwrapped).__name__
+        )
+    return env
+
+
+def get_env_class(env):
+    """Get the environment class.
+
+    Args:
+        env (:obj:`gym.Env`): The environment.
+
+    Returns:
+        str: The environment class.
+    """
+    if isinstance(env, gym.Env):
+        return "{}.{}".format(
+            env.unwrapped.__module__, env.unwrapped.__class__.__name__
+        )
+    return env
+
+
+def parse_config_env_key(config):
+    """Replace environment objects (i.e. gym.Env) with their id and class path if they
+    are present in the config. Also removes the 'env_fn' from the config.
+
+    Args:
+        config (dict): The configuration dictionary.
+
+    Returns:
+        dict: The parsed configuration dictionary.
+    """
+    parsed_config = {}
+    for key, val in config.items():
+        if key == "env" and isinstance(val, gym.Env):
+            parsed_config[key] = get_env_id(val)
+            parsed_config["env_class"] = get_env_class(val)
+        elif key == "env_fn":  # Remove env_fn from config.
+            continue
+        else:
+            parsed_config[key] = val
+    return parsed_config
 
 
 def convert_to_snake_case(input_str):
@@ -278,3 +319,57 @@ def flatten_dict(d, parent_key="", sep="."):
         else:
             items.append((new_key, v))
     return dict(items)
+
+
+def convert_to_wandb_config(config):
+    """Transform the config to a format that looks better on Weights & Biases.
+
+    Args:
+        config (dict): The config that should be transformed.
+
+    Returns:
+        dict: The transformed config.
+    """
+    wandb_config = {}
+    for key, value in config.items():
+        if (
+            key
+            in [
+                "env_fn",
+                "output_dir",
+                "use_wandb",
+                "wandb_job_type",
+                "wandb_project",
+                "wandb_group",
+                "wandb_run_name",
+            ]
+            or value is None
+        ):  # Filter keys.
+            continue
+        elif key in ["policy", "disturber"]:  # Transform policy object to policy id.
+            value = "{}.{}".format(value.__module__, value.__class__.__name__)
+        elif key == "env" and isinstance(value, gym.Env):
+            wandb_config["env_class"] = get_env_class(value)
+            value = get_env_id(value)
+        wandb_config[key] = value
+    return wandb_config
+
+
+def convert_to_tb_config(config):
+    """Transform the config to a format that looks better on TensorBoard.
+
+    Args:
+        config (dict): The config that should be transformed.
+
+    Returns:
+        dict: The transformed config.
+    """
+    tb_config = {}
+    for key, value in config.items():
+        if key in ["env_fn"]:  # Skip env_fn.
+            continue
+        elif key == "env" and isinstance(value, gym.Env):
+            tb_config["env_class"] = get_env_class(value)
+            value = get_env_id(value)
+        tb_config[key] = value
+    return flatten_dict(tb_config)

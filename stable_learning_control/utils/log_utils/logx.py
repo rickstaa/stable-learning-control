@@ -11,6 +11,7 @@
     - Logs to Weights & Biases (besides logging to a file).
 """  # noqa
 import atexit
+import copy
 import glob
 import json
 import os
@@ -19,14 +20,18 @@ import pickle
 import re
 import time
 from pathlib import Path
-import copy
 
 import joblib
 import numpy as np
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
-from stable_learning_control.common.helpers import is_scalar, flatten_dict
+from stable_learning_control.common.helpers import (
+    convert_to_tb_config,
+    convert_to_wandb_config,
+    is_scalar,
+    parse_config_env_key,
+)
 from stable_learning_control.user_config import (
     DEFAULT_STD_OUT_TYPE,
     PRINT_CONFIG,
@@ -529,6 +534,7 @@ class Logger:
             config (object): Configuration Python object you want to save.
         """
         if proc_id() == 0:
+            config = parse_config_env_key(config)
             self._config = config
             config_json = convert_json(config)
             if self.exp_name is not None:
@@ -1027,13 +1033,7 @@ class Logger:
     def _wandb_config(self):
         """Transform the config to a format that looks better on Weights & Biases."""
         if self.wandb and self._config:
-            wandb_config = {}
-            for key, value in self._config.items():
-                if key in ["env_fn"]:  # Skip env_fn.
-                    continue
-                else:
-                    wandb_config[key] = value
-            return wandb_config
+            return convert_to_wandb_config(self._config)
         return None
 
     def watch_model_in_wandb(self, model):
@@ -1098,13 +1098,7 @@ class Logger:
     def _tb_config(self):
         """Modify the config to a format that looks better on Tensorboard."""
         if self.use_tensorboard and self._config:
-            tb_config = {}
-            for key, value in self._config.items():
-                if key in ["env_fn"]:  # Skip env_fn.
-                    continue
-                else:
-                    tb_config[key] = value
-            return flatten_dict(tb_config)
+            return convert_to_tb_config(self._config)
         return None
 
     @property
