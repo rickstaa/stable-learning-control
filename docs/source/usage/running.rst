@@ -1,3 +1,5 @@
+.. _running_experiments:
+
 ===================
 Running Experiments
 ===================
@@ -152,6 +154,8 @@ to see a readout of the docstring.
 
     to get the same result.
 
+.. _running_multiple_experiments:
+
 Launching Multiple Experiments at Once
 --------------------------------------
 
@@ -206,9 +210,9 @@ Algorithm Flags
 General Flags
 ~~~~~~~~~~~~~
 
-.. option:: --save_cps, --save_checkpoints
+.. option:: --save_cps, --save_checkpoints, default: False
 
-    Only the most recent state of the agent and environment is saved by default. When the
+    :obj:`bool`. Only the most recent state of the agent and environment is saved by default. When the
     ``--save_checkpoints`` flag is supplied, a snapshot (checkpoint) of the agent and
     environment will be saved at each epoch. These snapshots are saved in a ``checkpoints``
     folder inside the Logger output directory (for more information, see
@@ -291,14 +295,30 @@ Logger Flags
 The CLI also contains several (shortcut) flags that can be used to change the behaviour of the
 :class:`stable_learning_control.utils.log_utils.logx.EpochLogger`.
 
-.. option:: --use_tb, --logger_kwargs:use_tensorboard
+.. option:: --use_tb, --logger_kwargs:use_tensorboard, default=False
 
-    :obj:`bool`. Enables tensorboard logging.
+    :obj:`bool`. Enables TensorBoard logging.
 
 .. option:: --tb_log_freq, --logger_kwargs:tb_log_freq, default='low'
 
-    :obj:`str`. The tensorboard log frequency. Options are ``low`` (Recommended: logs at every epoch) and
+    :obj:`str`. The TensorBoard log frequency. Options are ``low`` (Recommended: logs at every epoch) and
     ``high`` (logs at every SGD update batch). Defaults to ``low`` since this is less resource intensive.
+
+.. option:: --use_wandb, --logger_kwargs:use_wandb, default=False
+
+    :obj:`bool`. Enables Weights & Biases logging.
+
+.. option:: --wandb_job_type, --logger_kwargs:wandb_job_type, default='train'
+
+    :obj:`str`. The Weights & Biases job type.
+
+.. option:: --wandb_project, --logger_kwargs:wandb_project, default='stable_learning_control'
+    
+        :obj:`str`. The Weights & Biases project name.
+
+.. option:: --wandb_group, --logger_kwargs:wandb_group, default=None
+
+    :obj:`str`. The Weights & Biases group name.
 
 .. option:: --quiet, --logger_kwargs:quiet, default=False
 
@@ -317,6 +337,8 @@ The CLI also contains several (shortcut) flags that can be used to change the be
 
     The verbose_vars list should be supplied as a list that can be evaluated in Python (e.g. 
     ``--verbose_vars ["Lr_a", "Lr_c"]``).
+
+.. _exp_cfg:
 
 Using experimental configuration files (yaml)
 ---------------------------------------------
@@ -354,8 +376,11 @@ by `Haarnoja et al., 2019`_.
             critic: [256, 256, 16]
         lr_a: "1e-4, 1e-3, 1e-2"
 
+    Additionally, if you want to specify a `on/off`_ flag, you can supply an empty key.
+
 .. _`YAML`: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
 .. _`Haarnoja et al., 2019`: https://arxiv.org/abs/1801.01290
+.. _`on/off`: https://docs.python.org/dev/library/argparse.html#core-functionality
 
 Where Results are Saved
 -----------------------
@@ -419,7 +444,7 @@ Extra
     ``stable_learning_control/run.py``.
 
 Use transfer learning
-----------------------------------------------------
+---------------------
 
 The ``start_policy`` command-line flag allows you to use an already trained algorithm as the starting point for
 your new algorithm:
@@ -431,7 +456,7 @@ your new algorithm:
     where the already trained policy is found.
 
 Using custom environments
-----------------------------------------------------
+-------------------------
 
 The SLC package can be used with any :gymnasium:`Gymnasium-based <>` environment. To use a custom environment, you need
 to ensure it inherits from the :class:`gym.Env` class and implements the following methods:
@@ -498,10 +523,8 @@ Consider the example in ``stable_learning_control/examples/pytorch/sac_exp_grid_
 .. literalinclude:: /../../examples/pytorch/sac_exp_grid_search.py
    :language: python
    :linenos:
-   :lines: 17-
-   :emphasize-lines: 19-25, 28
-
-(An equivalent TensorFlow example is available in ``stable_learning_control/examples/tf2/sac_exp_grid_search.py``.)
+   :lines: 16-
+   :emphasize-lines: 22-28, 31
 
 After making the ExperimentGrid object, parameters are added to it with
 
@@ -525,36 +548,6 @@ Except for the absence of shortcut kwargs (you can't use ``hid`` for ``ac_kwargs
 basic behaviour of ``ExperimentGrid`` is the same as running things from the command line.
 (In fact, ``stable_learning_control.run`` uses an ``ExperimentGrid`` under the hood.)
 
-Using the Ray tuning package
------------------------------
-
-The SLC package can also be used with more advanced tuning algorithms. An example of how to use SLC with
-the Ray Tuning package can be found in ``stable_learning_control/examples/torch/sac_ray_hyper_parameter_tuning.py`` and
-``stable_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``. The requirements for this example can be
-installed using the following command:
-
-.. code-block:: bash
-
-    pip install .[tuning]
-
-Consider the example in ``stable_learning_control/examples/pytorch/sac_ray_hyper_parameter_tuning.py``:
-
-.. literalinclude:: /../../examples/pytorch/sac_ray_hyper_parameter_tuning.py
-   :language: python
-   :linenos:
-   :lines: 16-
-   :emphasize-lines: 17-32, 45, 52-64, 70-85
-
-(An equivalent TensorFlow example is available in ``stable_learning_control/examples/tf2/sac_ray_hyper_parameter_tuning.py``.)
-
-In this example, on lines ``17-32`` we first create a small wrapper function that ensures that the Ray Tuner serves the
-hyperparameters in the SLC algorithm's format. Following in line ``45``, we set the starting point for several
-hyperparameters used in the hyperparameter search. Next, on lines ``52-64``, we define the hyperparameter search space.
-Lastly, we start the hyperparameter search using the :meth:`tune.run` method online ``70-85``.
-
-The Ray tuner will search for the best hyperparameter combination when running the script. While doing so, it will print
-the results both to the ``stdout`` and a Tensorboard file. You can check these Tensorboard logs using the
-``tensorboard --logdir ./data/ray_results`` command. For more information on how the ray tuning package works, see
-the `Ray tuning documentation`_.
-
-.. _`Ray tuning documentation`: https://docs.ray.io/en/latest/tune/index.html
+..  note::
+    
+    An equivalent TensorFlow example is available in ``stable_learning_control/examples/tf2/sac_exp_grid_search.py``.

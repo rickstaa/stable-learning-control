@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from stable_learning_control.utils.log_utils.helpers import friendly_err
+from stable_learning_control.common.helpers import friendly_err
 
 DIV_LINE_WIDTH = 50
 VALID_DATA_FILES = ["progress.txt", "progress.csv"]

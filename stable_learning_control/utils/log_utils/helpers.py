@@ -7,6 +7,8 @@ from gymnasium.utils import colorize as gym_colorize
 from stable_learning_control.user_config import (
     DEFAULT_DATA_DIR,
     DEFAULT_STD_OUT_TYPE,
+    DEFAULT_WANDB_JOB_TYPE,
+    DEFAULT_WANDB_PROJECT,
     FORCE_DATESTAMP,
 )
 from stable_learning_control.utils.mpi_utils.mpi_tools import proc_id
@@ -23,22 +25,6 @@ LOG_TYPES = {
 }
 
 
-def friendly_err(err_msg, prepend=True, append=True):
-    """Add whitespace line to error message to make it more readable.
-
-    Args:
-        err_msg (str): Error message.
-        prepend (bool, optional): whether to prepend empty whitespace line before the
-            string. Defaults to ``True``.
-        append (bool, optional): Whether to append empty whitespace line after the
-            string. Defaults to ``True``.
-
-    Returns:
-        str: Error message with extra whitespace line.
-    """
-    return ("\n\n" if prepend else "") + err_msg + ("\n\n" if append else "")
-
-
 def colorize(string, color, bold=False, highlight=False):
     """Colorize a string.
 
@@ -49,7 +35,8 @@ def colorize(string, color, bold=False, highlight=False):
     Args:
         string (str): The string you want to colorize.
         color (str): The color you want to use.
-        bold (bool, optional): Whether you want the text to be bold text has to be bold.
+        bold (bool, optional): Whether you want the text to be bold. Defaults to
+            ``False``.
         highlight (bool, optional):  Whether you want to highlight the text. Defaults to
             ``False``.
 
@@ -114,6 +101,11 @@ def setup_logger_kwargs(
     save_checkpoints=False,
     use_tensorboard=False,
     tb_log_freq="low",
+    use_wandb=False,
+    wandb_job_type=DEFAULT_WANDB_JOB_TYPE,
+    wandb_project=DEFAULT_WANDB_PROJECT,
+    wandb_group=None,
+    wandb_run_name=None,
     quiet=False,
     verbose_fmt=DEFAULT_STD_OUT_TYPE,
     verbose_vars=[],
@@ -148,11 +140,21 @@ def setup_logger_kwargs(
         seed (int, optional): Seed for random number generators used by experiment.
         save_checkpoints (bool, optional): Save checkpoints during training.
             Defaults to ``False``.
-        use_tensorboard (bool, optional): Whether you want to use tensorboard. Defaults
+        use_tensorboard (bool, optional): Whether you want to use TensorBoard. Defaults
             to ``True``.
-        tb_log_freq (str, optional): The tensorboard log frequency. Options are ``low``
+        tb_log_freq (str, optional): The TensorBoard log frequency. Options are ``low``
             (Recommended: logs at every epoch) and ``high`` (logs at every SGD update "
             batch). Defaults to ``low`` since this is less resource intensive.
+        use_wandb (bool, optional): Whether you want to use Weights & Biases. Defaults
+            to ``False``.
+        wandb_job_type (str, optional): The Weights & Biases job type. Defaults to
+            ``None``.
+        wandb_project (str, optional): The name of the Weights & Biases project you
+            want to log to. Defaults to ``None``.
+        wandb_group (str, optional): The name of the Weights & Biases group you want to
+            assign the run to. Defaults to ``None``.
+        wandb_run_name (str, optional): The name of the Weights & Biases run. Defaults
+            to ``None`` which means that the run name is automatically generated.
         quiet (bool, optional): Whether you want to suppress logging of the diagnostics
             to the stdout. Defaults to ``False``.
         verbose_fmt (str, optional): The format in which the diagnostics are
@@ -192,9 +194,31 @@ def setup_logger_kwargs(
         exp_name=exp_name,
         save_checkpoints=save_checkpoints,
         use_tensorboard=use_tensorboard,
+        use_wandb=use_wandb,
+        wandb_job_type=wandb_job_type,
+        wandb_project=wandb_project,
+        wandb_group=wandb_group,
+        wandb_run_name=wandb_run_name,
         tb_log_freq=tb_log_freq,
         quiet=quiet,
         verbose_fmt=verbose_fmt,
         verbose_vars=verbose_vars,
     )
     return logger_kwargs
+
+
+def dict_to_mdtable(d, key="Name", val="Value"):
+    """Convert a dictionary to a markdown table.
+
+    Args:
+        d (dict): The dictionary you want to convert.
+        key (str, optional): The name of the key column. Defaults to ``"Name"``.
+        val (str, optional): The name of the value column. Defaults to ``"Value"``.
+
+    Returns:
+        str: The markdown table.
+    """
+    rows = [f"| {key} | {val} |"]
+    rows += ["|--|--|"]
+    rows += [f"| {k} | {v} |" for k, v in d.items()]
+    return "  \n".join(rows)

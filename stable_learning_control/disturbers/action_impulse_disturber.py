@@ -5,7 +5,8 @@ a gymnasium environment with a impulse applied at a certain time step (i.e.
 import gymnasium as gym
 import numpy as np
 
-from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
+from stable_learning_control.common.helpers import friendly_err
+from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 
 
 def get_time_attribute(env):

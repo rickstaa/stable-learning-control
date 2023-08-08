@@ -35,6 +35,7 @@ def safer_eval(*args, backend=None):
         backend (str): The machine learning backend you want to use. Options are ``tf2``
             or ``torch``. Defaults to ``None`` meaning no backend is assumed and both
             backends are tried.
+
     Returns:
         args: The eval return values.
     """

@@ -1,32 +1,46 @@
 """Example script that shows you how you can use the Ray hyperparameter Tuner on a
-Pytorch algorithm.
+the Tensorflow version of the Soft Actor Critic (SAC) algorithm. It uses the
+``Oscillator-v1`` environment in the :stable_gym:`stable_gym <>` package.
 
-Can be used to tune the hyper parameters of any of the Stable Learning Control RL agent
-using the `Ray tuning package <https://docs.ray.io/en/latest/tune/index.htm>`_.
+It can tune the hyperparameters of any Stable Learning Control RL agent
+using the `Ray tuning package <https://docs.ray.io/en/latest/tune/index.htm>`_. This
+example uses the `HyperOpt`_ search algorithm to optimize the hyperparameters search
+and the `ASHA`_ scheduler to terminate bad trials, pause trials, clone trials, and alter
+hyperparameters of a running trial. It was based on the `tutorial`_ provided by the
+Ray team.
+
+.. note::
+
+    This example also contains a :cont:`USE_WANDB` flag that allows you to log the
+    results of the hyperparameter search to `Weights & Biases`_ (WandB). For more
+    information on how to use WandB, see the `Weights & Biases documentation`_.
 
 How to use
 ----------
 
 The results of using this tuner are placed in the ``./data/ray_results`` folder and can
-be viewed in tensorboard using the ``tensorboard --logdir="./data/ray_results`` command.
-For more information on how to use this package see the `Ray tuning documentation`_.
+be viewed in TensorBoard using the ``tensorboard --logdir="./data/ray_results`` command.
+For more information on how to use this package, see the `Ray tuning documentation`_.
 
 .. _`Ray tuning documentation`: https://docs.ray.io/en/latest/tune/index.html
-"""
+.. _HyperOpt: https://docs.ray.io/en/latest/tune/api_docs/search_space.html#tune-hyperopt
+.. _ASHA: https://docs.ray.io/en/latest/tune/api_docs/schedulers.html#tune-schedulers-asha
+.. _tutorial: https://docs.ray.io/en/latest/tune/examples/hyperopt_example.html
+.. _`Weights & Biases`: https://wandb.ai/site
+.. _`Weights & Biases documentation`: https://docs.wandb.ai/
+"""  # noqa: E501
 import os.path as osp
-import sys
 
 import gymnasium as gym
-import numpy as np
-import ray
-import stable_gym  # Imports the in this example used environment  # noqa: F401
-from hyperopt import hp
-from ray import tune
+from ray import tune, air
 from ray.tune.schedulers import ASHAScheduler
-from ray.tune.suggest.hyperopt import HyperOptSearch
+from ray.tune.search.hyperopt import HyperOptSearch
 
 # Import the algorithm we want to tune.
 from stable_learning_control.algos.tf2.sac import sac
+
+# Script parameters.
+USE_WANDB = False
 
 
 def train_sac(config):
@@ -48,64 +62,79 @@ def train_sac(config):
 
 
 if __name__ == "__main__":
-    # Pass system arguments to ray.
-    if len(sys.argv) > 1:
-        ray.init(redis_address=sys.argv[1])
+    # NOTE: Uncomment if you want to debug the code.
+    # import ray
+    # ray.init(local_mode=True)
+
+    # Setup Weights & Biases logging.
+    ray_callbacks = []
+    if USE_WANDB:
+        from ray.air.integrations.wandb import WandbLoggerCallback
+
+        ray_callbacks.append(
+            WandbLoggerCallback(
+                job_type="tune",
+                project="stable-learning-control",
+                name="lac_ray_hyper_parameter_tuning_example",
+            )
+        )
 
     # Setup the logging dir.
     dirname = osp.dirname(__file__)
     log_path = osp.abspath(osp.join(dirname, "../../data/ray_results"))
 
     # Setup hyperparameter search starting point.
-    current_best_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha": 0.99}]
+    initial_params = [{"gamma": 0.995, "lr_a": 1e-4, "alpha": 0.99}]
 
     # Setup the parameter space for you hyperparameter search.
-    # NOTE: This script uses the hyperopt search algorithm for efficient hyperparameter
-    # selection. For more information see
-    # https://docs.ray.io/en/latest/tune/api_docs/suggestion.html?highlight=hyperopt.
-    # For the options see https://github.com/hyperopt/hyperopt/wiki/FMin.
     search_space = {
-        "env_name": "Oscillator-v1",
+        "env_name": "stable_gym:Oscillator-v1",
         "opt_type": "minimize",
-        "gamma": hp.uniform("gamma", 0.9, 0.999),
-        "lr_a": hp.loguniform("lr_a", np.log(1e-6), np.log(1e-3)),
-        "alpha": hp.uniform("alpha3", 0.9, 1.0),
+        "gamma": tune.uniform(0.9, 0.999),
+        "lr_a": tune.loguniform(1e-6, 1e-3),
+        "alpha": tune.uniform(0.9, 1.0),
+        "epochs": 2,
     }
-    hyperopt_search = HyperOptSearch(
-        search_space,
-        metric="mean_ep_ret",
-        mode="min",  # NOTE: Should be equal to the 'opt_type'
-        points_to_evaluate=current_best_params,
+
+    # Initialize the hyperparameter tuning job.
+    # NOTE: Available algorithm metrics are found in the `progress.csv` by the SLC CLI.
+    trainable_with_cpu_gpu = tune.with_resources(
+        train_sac,
+        {"cpu": 12, "gpu": 1},
+    )
+    tuner = tune.Tuner(
+        trainable_with_cpu_gpu,
+        param_space=search_space,
+        tune_config=tune.TuneConfig(
+            metric="AverageEpRet",
+            mode="min",  # NOTE: Should be equal to the 'opt_type'
+            search_alg=HyperOptSearch(
+                points_to_evaluate=initial_params,
+            ),
+            scheduler=ASHAScheduler(
+                time_attr="epoch",
+                max_t=200,
+                grace_period=10,
+            ),
+            num_samples=20,
+        ),
+        run_config=air.RunConfig(
+            storage_path=log_path,
+            name=f"tune_sac_{search_space['env_name'].replace(':', '_')}",
+            callbacks=ray_callbacks,
+        ),
     )
 
     # Start the hyperparameter tuning job.
-    # NOTE: We use the ASHA job scheduler to early terminate bad trials, pause trials,
-    # clone trials, and alter hyperparameters of a running trial. For more information
-    # see https://docs.ray.io/en/master/tune/api_docs/schedulers.html.
-    analysis = tune.run(
-        train_sac,
-        resources_per_trial={"cpu": 8, "gpu": 1},
-        name="tune_sac_oscillator_1",
-        num_samples=200,
-        scheduler=ASHAScheduler(
-            time_attr="epoch",
-            metric="mean_ep_ret",
-            mode="min",  # NOTE: Should be equal to the 'opt_type'
-            max_t=200,
-            grace_period=40,
-        ),
-        config=search_space,
-        search_alg=hyperopt_search,
-        local_dir=log_path,
-    )
+    results = tuner.fit()
 
     # Print the best trail.
-    best_trial = analysis.get_best_trial(metric="mean_ep_ret", mode="min", scope="all")
-    best_path = analysis.get_best_logdir(metric="mean_ep_ret", mode="min", scope="all")
-    best_config = analysis.get_best_config(
-        metric="mean_ep_ret", mode="min", scope="all"
+    best_trial = results.get_best_trial(metric="AverageEpRet", mode="min", scope="all")
+    best_path = results.get_best_logdir(metric="AverageEpRet", mode="min", scope="all")
+    best_config = results.get_best_config(
+        metric="AverageEpRet", mode="min", scope="all"
     )
-    best_result = analysis.fetch_trial_dataframes()[best_path]["mean_ep_len"].min()
+    best_result = results.fetch_trial_dataframes()[best_path]["AverageEpLen"].min()
     print("The hyperparameter tuning job has finished.")
     print(f"Best trail: {best_trial}")
     print(f"Best result: {best_result}")

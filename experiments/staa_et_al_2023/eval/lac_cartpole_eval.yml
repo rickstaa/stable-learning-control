@@ -1,0 +1,6 @@
+disturber: ActionRandomNoiseDisturber
+disturber_config: 
+  mean: [0.5234234324, 1.5234234234]
+  std: [0.523423423, 1.5234234234324]
+deterministic:
+disable_baseline:

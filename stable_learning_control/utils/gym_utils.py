@@ -6,7 +6,7 @@ import importlib
 import gymnasium as gym
 from gymnasium import spaces
 
-from stable_learning_control.utils.log_utils.helpers import friendly_err
+from stable_learning_control.common.helpers import friendly_err
 
 # from textwrap import dedent
 

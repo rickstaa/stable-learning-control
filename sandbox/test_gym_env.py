@@ -1,14 +1,15 @@
-"""Small script to see if a gymnasium environment can be imported.
+"""Small example script to see if a gymnasium environment can be imported. In this
+example, we use the ``Oscillator-v1`` environment in the :stable_gym:`stable_gym <>`
+package.
 """
 import gymnasium as gym
 import matplotlib.pyplot as plt
 import numpy as np
-import stable_gym  # NOTE: Found at https://github.com/rickstaa/stable-gym # noqa: F401
 
 RANDOM_STEP = True
-ENV_NAME = "Oscillator-v1"
-# ENV_NAME = "Ex3EKF-v1"
-# ENV_NAME = "CartPoleCost-v0"
+ENV_NAME = "stable_gym:Oscillator-v1"
+# ENV_NAME = "stable_gym:Ex3EKF-v1"
+# ENV_NAME = "stable_Gym:CartPoleCost-v0"
 # ENV_NAME = "PandaReach-v1"
 
 if __name__ == "__main__":

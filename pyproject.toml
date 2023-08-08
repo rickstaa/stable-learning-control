@@ -39,6 +39,7 @@ dependencies = [
     "torch>=1.5",
     "joblib>=1.2.0",
     "tensorboard>=2.11.2",
+    "wandb>=0.15.8",
     "psutil>=5.9.5",
     "tqdm>=4.65.0",
     "cloudpickle>=2.2.1",
@@ -59,6 +60,7 @@ tf2 = [
 ]
 tuning = [
     "ray[tune]>=2.5.1",
+    "ray[air]>=2.5.1",
     "hyperopt>=0.2.7",
 ]
 dev = [

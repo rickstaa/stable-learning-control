@@ -37,6 +37,7 @@ ready-to-use compatible environments can be found in the  :stable-gym:`stable-gy
    usage/installation
    usage/algorithms
    usage/running
+   usage/hyperparameter_tuning
    usage/saving_and_loading
    usage/plotting
    usage/eval_robustness

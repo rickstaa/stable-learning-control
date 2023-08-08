@@ -6,6 +6,7 @@
 [![codecov](https://codecov.io/gh/rickstaa/stable-learning-control/branch/main/graph/badge.svg?token=4SAME74CJ7)](https://codecov.io/gh/rickstaa/stable-learning-control)
 [![Contributions](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![DOI](https://zenodo.org/badge/271989240.svg)](https://zenodo.org/badge/latestdoi/271989240)
+[![Weights & Biases dashboard](https://img.shields.io/badge/Weights_&_Biases-FFCC33?style=flat\&logo=WeightsAndBiases\&logoColor=black)](https://wandb.ai/rickstaa/stable-learning-control)
 
 ## Package Overview
 

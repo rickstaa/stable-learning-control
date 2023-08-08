@@ -169,6 +169,7 @@ class SquashedGaussianActor(tf.keras.Model):
                 policy (used at test time). When true the mean action of the stochastic
                 policy is returned. If ``False`` the action is sampled from the
                 stochastic policy. Defaults to ``False``.
+
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.
@@ -191,6 +192,7 @@ class SquashedGaussianActor(tf.keras.Model):
                 policy (used at test time). When true the mean action of the stochastic
                 policy is returned. If ``False`` the action is sampled from the
                 stochastic policy. Defaults to ``False``.
+
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.

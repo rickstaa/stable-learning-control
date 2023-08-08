@@ -85,6 +85,7 @@ def load_from_json(path):
 
     Args:
         path (str): The path of the json file you want to load.
+
     Returns:
         (object): The Json load object.
     """

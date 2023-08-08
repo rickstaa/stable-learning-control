@@ -4,7 +4,7 @@ the :class`ImportError` when a module is not found.
 import importlib
 import sys
 
-from stable_learning_control.utils.log_utils.helpers import friendly_err
+from stable_learning_control.common.helpers import friendly_err
 
 
 def lazy_importer(module_name, class_name=None, frail=False):

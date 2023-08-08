@@ -159,6 +159,7 @@ extlinks = {
     "gymnasium": ("https://gymnasium.farama.org/%s", None),
     "tf2": ("https://www.tensorflow.org/api_docs/python/tf/%s", None),
     "tb": ("https://www.tensorflow.org/tensorboard/%s", None),
+    "wandb": ("https://docs.wandb.ai/%s", None),
 }
 
 

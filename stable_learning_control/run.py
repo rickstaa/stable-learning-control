@@ -11,11 +11,15 @@ import inspect
 
 import ruamel.yaml as yaml
 
-from stable_learning_control.common.helpers import flatten, get_unique_list
+from stable_learning_control.common.helpers import (
+    flatten,
+    get_unique_list,
+    friendly_err,
+)
 from stable_learning_control.user_config import DEFAULT_BACKEND
 from stable_learning_control.utils.gym_utils import validate_gym_env
 from stable_learning_control.utils.import_utils import tf_installed
-from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
+from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 from stable_learning_control.utils.run_utils import ExperimentGrid
 from stable_learning_control.utils.safer_eval_util import safer_eval
 from stable_learning_control.version import __version__
@@ -41,6 +45,10 @@ SUBSTITUTIONS = {
     "dt": "datestamp",
     "q": "quiet",
     "use_tb": "logger_kwargs:use_tensorboard",
+    "use_wandb": "logger_kwargs:use_wandb",
+    "wandb_job_type": "logger_kwargs:wandb_job_type",
+    "wandb_proj": "logger_kwargs:wandb_project",
+    "wandb_group": "logger_kwargs:wandb_group",
     "save_cps": "logger_kwargs:save_checkpoints",
     "tb_log_freq": "logger_kwargs:tb_log_freq",
     "quiet": "logger_kwargs:quiet",
@@ -57,14 +65,17 @@ BASE_ALGO_NAMES = ["sac", "lac"]
 
 def _parse_hyperparameter_variants(exp_val):
     """Function parses exp config values to make sure that comma/space separated
-    strings (i.e. ``5, 3, 2`` or ``5 3 2``)) are recognized as hyperparmeter variants.
+    strings (i.e. ``5, 3, 2`` or ``5 3 2``)) are recognized as hyperparameter variants.
 
     Args:
         exp_val (object): The variable to parse.
 
     Returns:
-        union[:obj:`str`, :obj:`list`]: A hyper parameter string or list.
+        union[:obj:`str`, :obj:`list`, :obj:`None`]: A hyper parameter string or list.
+            Returns ``None`` if ``exp_val`` is ``None``.
     """
+    if exp_val is None:
+        return None
     if not isinstance(exp_val, str):
         return str(exp_val)
     else:
@@ -165,7 +176,7 @@ def _parse_exp_cfg(cmd_line_args):
                 else:
                     exp_cfg_params.pop("alg_name")
 
-                # Append cfg hyperparameters to input arguments.
+                # Append cfg hyperparameters to the input arguments.
                 # NOTE: Here we assume comma or space separated strings to be variants.
                 exp_cfg_params = {
                     (key if key.startswith("--") else "--" + key): val
@@ -179,7 +190,141 @@ def _parse_exp_cfg(cmd_line_args):
                         ]
                     )
                 )
+
+                # Remove None values so that they are treated as on/off flags (see
+                # https://docs.python.org/3/library/argparse.html#core-functionality).
+                exp_cfg_params = [val for val in exp_cfg_params if val is not None]
             cmd_line_args.extend(exp_cfg_params)
+
+    return cmd_line_args
+
+
+def _parse_eval_cfg(cmd_line_args):
+    """This function parses the cmd line args to see if it contains the ``eval_cfg``
+    flag. If this flag is present it uses the ``eval_cfg`` file path (next cmd_line arg)
+    to add any hyperparameters found in this eval configuration file to the cmd
+    line arguments.
+
+    Args:
+        cmd_line_args (list): The cmd line input arguments.
+
+    Returns:
+        list: Modified cmd line argument list that also contains any hyperparameters
+            that were specified in a eval cfg file.
+
+    .. note::
+
+        This function assumes comma/space separated strings (i.e. ``5, 3, 2`` or
+        ``5 3 2``)) to be hyperparmeter variants.
+    """
+    if "--eval_cfg" in cmd_line_args:
+        # If 'eval_robustness' is not first argument add it to the front.
+        if "eval_robustness" not in cmd_line_args:
+            cmd_line_args.insert(1, "eval_robustness")
+        else:
+            eval_robustness_idx = cmd_line_args.index("eval_robustness")
+            if eval_robustness_idx != 1:
+                cmd_line_args.pop("eval_robustness", None)
+                cmd_line_args.insert(1, "eval_robustness")
+
+        # Retrieve '--eval_cfg' argument.
+        eval_cfg_idx = cmd_line_args.index("--eval_cfg")
+        cmd_line_args.pop(eval_cfg_idx)  # Remove eval_cfg argument.
+
+        # Validate config path.
+        cfg_error = False
+        try:
+            eval_cfg_file_path = cmd_line_args.pop(eval_cfg_idx)
+            if eval_cfg_file_path.startswith("--"):
+                raise IndexError
+            eval_cfg_file_path = (
+                eval_cfg_file_path
+                if eval_cfg_file_path.endswith(".yml")
+                else eval_cfg_file_path + ".yml"
+            )
+            if not osp.exists(eval_cfg_file_path):
+                project_path = osp.abspath(osp.join(osp.dirname(__file__), ".."))
+                eval_cfg_file_path = osp.abspath(
+                    osp.join(project_path, "experiments", eval_cfg_file_path)
+                )
+                if not osp.exists(eval_cfg_file_path):
+                    raise FileNotFoundError(
+                        "No eval configuration file found at "
+                        f"'{eval_cfg_file_path}'."
+                    )
+        except (IndexError, FileNotFoundError) as e:
+            cfg_error = True
+            if isinstance(e, IndexError):
+                log_to_std_out(
+                    "You did not supply a eval configuration path. As a result "
+                    "the '--eval_cfg' argument has been ignored.",
+                    type="warning",
+                )
+            else:
+                log_to_std_out(
+                    (
+                        e.args[0]
+                        + " As a result the '--eval_cfg' argument has been "
+                        + "ignored."
+                    ),
+                    type="warning",
+                )
+
+        # Read configuration values.
+        if not cfg_error:
+            # Load eval config.
+            with open(eval_cfg_file_path) as stream:
+                try:
+                    eval_cfg_params = yaml.safe_load(stream)
+                except yaml.YAMLError:
+                    log_to_std_out(
+                        "Something went wrong while trying to load the eval config "
+                        f"in '{eval_cfg_file_path}. As a result the --eval_cfg "
+                        "argument has been ignored.",
+                        type="warning",
+                    )
+
+            # Retrieve values from eval config.
+            log_to_std_out(
+                f"Eval parameters loaded from '{eval_cfg_file_path}'",
+                type="info",
+            )
+            if not eval_cfg_params:
+                log_to_std_out(
+                    "No eval parameters were found in your eval config. As a result "
+                    "the '--eval_cfg' flag has been ignored.",
+                    type="warning",
+                )
+            else:
+                # Ensure that the eval config contains a disturber key.
+                if "disturber" not in eval_cfg_params.keys():
+                    raise ValueError(
+                        "The eval config does not contain a 'disturber' key."
+                    )
+
+                # Remove the disturber key and extend the cmd line arguments with it.
+                disturber = eval_cfg_params.pop("disturber")
+                cmd_line_args.append(disturber)
+
+                # Append other cfg parameters to the input arguments.
+                # NOTE: Here we assume comma or space separated strings to be variants.
+                eval_cfg_params = {
+                    (key if key.startswith("--") else "--" + key): val
+                    for key, val in eval_cfg_params.items()
+                }
+                eval_cfg_params = list(
+                    flatten(
+                        [
+                            [str(key), _parse_hyperparameter_variants(val)]
+                            for key, val in eval_cfg_params.items()
+                        ]
+                    )
+                )
+
+                # Remove None values so that they are treated as on/off flags (see
+                # https://docs.python.org/3/library/argparse.html#core-functionality).
+                eval_cfg_params = [val for val in eval_cfg_params if val is not None]
+            cmd_line_args.extend(eval_cfg_params)
 
     return cmd_line_args
 
@@ -380,11 +525,12 @@ def run(input_args):
     valid_utils = ["plot", "test_policy", "eval_robustness"]
     valid_help = ["--help", "-h", "help"]
     valid_version = ["--version"]
-    valid_specials = ["--exp_cfg"]
+    valid_specials = ["--exp_cfg", "--eval_cfg"]
     valid_cmds = valid_algos + valid_utils + valid_help + valid_version + valid_specials
 
-    # Load hyperparameters from a experimental configuration file if supplied.
+    # Load hyperparameters from a experimental/eval configuration file if supplied.
     sys.argv = _parse_exp_cfg(sys.argv)
+    sys.argv = _parse_eval_cfg(sys.argv)
     cmd = sys.argv[1] if len(input_args) > 1 else "help"
 
     if cmd not in valid_cmds:
