@@ -87,13 +87,20 @@ class SoftActorCritic(nn.Module):
             output_activation=output_activation["critic"],
         )
 
-    def forward(self, obs, act):
+    def forward(self, obs, act, deterministic=False, with_logprob=True):
         """Performs a forward pass through all the networks (Actor, Q critic 1 and Q
         critic 2).
 
         Args:
             obs (torch.Tensor): The tensor of observations.
             act (torch.Tensor): The tensor of actions.
+            deterministic (bool, optional): Whether we want to use a deterministic
+                policy (used at test time). When true the mean action of the stochastic
+                policy is returned. If false the action is sampled from the stochastic
+                policy. Defaults to ``False``.
+            with_logprob (bool, optional): Whether we want to return the log probability
+                of an action. Defaults to ``True``.
+
         Returns:
             (tuple): tuple containing:
 
@@ -104,9 +111,11 @@ class SoftActorCritic(nn.Module):
 
         .. note::
             Useful for when you want to print out the full network graph using
-            tensorboard.
+            TensorBoard.
         """  # noqa: E501
-        pi_action, logp_pi = self.pi(obs)
+        pi_action, logp_pi = self.pi(
+            obs, deterministic=deterministic, with_logprob=with_logprob
+        )
         Q1 = self.Q1(obs, act)
         Q2 = self.Q2(obs, act)
         return pi_action, logp_pi, Q1, Q2
@@ -120,6 +129,7 @@ class SoftActorCritic(nn.Module):
                 policy (used at test time). When true the mean action of the stochastic
                 policy is returned. If ``False`` the action is sampled from the
                 stochastic policy. Defaults to ``False``.
+
         Returns:
             numpy.ndarray: The action from the current state given the current policy.
         """

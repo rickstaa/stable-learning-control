@@ -16,8 +16,9 @@ import os.path as osp
 import random
 import sys
 import time
+import warnings
 from copy import deepcopy
-from pathlib import Path
+from pathlib import Path, PurePath
 
 import gymnasium as gym
 import numpy as np
@@ -26,7 +27,6 @@ import torch.nn as nn
 from gymnasium.utils import seeding
 from torch.optim import Adam
 
-from stable_learning_control.common.helpers import get_env_id
 from stable_learning_control.algos.common.helpers import heuristic_target_entropy
 from stable_learning_control.algos.pytorch.common.buffers import ReplayBuffer
 from stable_learning_control.algos.pytorch.common.get_lr_scheduler import (
@@ -39,20 +39,16 @@ from stable_learning_control.algos.pytorch.common.helpers import (
 from stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic import (
     LyapunovActorCritic,
 )
+from stable_learning_control.common.helpers import friendly_err, get_env_id
 from stable_learning_control.utils.eval_utils import test_agent
 from stable_learning_control.utils.gym_utils import is_discrete_space, is_gym_env
-from stable_learning_control.utils.import_utils import lazy_importer
 from stable_learning_control.utils.log_utils.helpers import (
-    friendly_err,
     log_to_std_out,
     setup_logger_kwargs,
 )
 from stable_learning_control.utils.log_utils.logx import EpochLogger
 from stable_learning_control.utils.safer_eval_util import safer_eval
 from stable_learning_control.utils.serialization_utils import save_to_json
-
-# Import ray tuner if installed.
-tune = lazy_importer(module_name="ray.tune")
 
 # Script settings.
 SCALE_LAMBDA_MIN_MAX = (
@@ -944,11 +940,15 @@ def lac(
                 - replay_buffer (:class:`~stable_learning_control.algos.pytorch.common.buffers.ReplayBuffer`): The
                   replay buffer used during training.
     """  # noqa: E501
-    total_steps = steps_per_epoch * epochs
-
     validate_args(**locals())
 
+    # Retrieve hyperparameters while filtering out the logger_kwargs.
+    hyper_param_dict = {k: v for k, v in locals().items() if k not in ["logger_kwargs"]}
+
+    # Setup algorithm parameters.
+    total_steps = steps_per_epoch * epochs
     env = env_fn()
+    hyper_param_dict["env"] = get_env_id(env)  # Store env id in hyperparameter dict.
 
     # Validate gymnasium env.
     # NOTE: The current implementation only works with continuous spaces.
@@ -975,6 +975,7 @@ def lac(
     act_dim = env.action_space.shape
     rew_dim = 1
 
+    # Setup logger.
     logger_kwargs["quiet"] = (
         logger_kwargs["quiet"] if "quiet" in logger_kwargs.keys() else False
     )
@@ -996,11 +997,8 @@ def lac(
         if "use_tensorboard" in logger_kwargs.keys()
         else False
     )
+    use_wandb = logger_kwargs.get("use_wandb")
     logger = EpochLogger(**logger_kwargs)
-    hyper_paramet_dict = {
-        k: v for k, v in locals().items() if k not in ["logger"]
-    }  # Retrieve hyperparameters (Ignore logger object)
-    logger.save_config(hyper_paramet_dict)  # Write hyperparameters to logger.
 
     # Retrieve max episode length.
     if max_ep_len is None:
@@ -1019,6 +1017,11 @@ def lac(
             env.env._max_episode_steps = max_ep_len
             if num_test_episodes != 0:
                 test_env.env._max_episode_steps = max_ep_len
+    if hyper_param_dict["max_ep_len"] is None:  # Store in hyperparameter dict.
+        hyper_param_dict["max_ep_len"] = max_ep_len
+
+    # Save experiment config to logger.
+    logger.save_config(hyper_param_dict)
 
     # Get default actor critic if no 'actor_critic' was supplied
     actor_critic = LyapunovActorCritic if actor_critic is None else actor_critic
@@ -1113,6 +1116,25 @@ def lac(
     opt_schedulers.append(labda_opt_scheduler)
 
     logger.setup_pytorch_saver(policy)
+
+    # Log model to TensorBoard.
+    if use_tensorboard:
+        with warnings.catch_warnings():
+            # NOTE: Suppress TracerWarning because our policy is non-deterministic.
+            warnings.filterwarnings("ignore", category=torch.jit.TracerWarning)
+            logger.log_model_to_tb(
+                policy.ac,
+                input_to_model=(
+                    torch.as_tensor(
+                        env.observation_space.sample(), dtype=torch.float32
+                    ),
+                    torch.as_tensor(env.action_space.sample(), dtype=torch.float32),
+                ),
+            )
+
+    # Log model to Weight & Biases.
+    if use_wandb:
+        logger.watch_model_in_wandb(policy.ac)
 
     # Setup diagnostics tb_write dict and store initial learning rates.
     diag_tb_log_list = [
@@ -1223,15 +1245,6 @@ def lac(
                     lr_a_final, lr_c_final, lr_a_final, lr_a_final
                 )  # Make sure lr is bounded above the final lr.
 
-            # Log performance measure to ray tuning.
-            # NOTE: Only executed when the ray tuner invokes the script
-            if hasattr(tune, "session") and tune.session._session is not None:
-                mean_ep_ret = logger.get_stats("EpRet")
-                mean_ep_len = logger.get_stats("EpLen")
-                tune.report(
-                    mean_ep_ret=mean_ep_ret[0], epoch=epoch, mean_ep_len=mean_ep_len[0]
-                )
-
             # Log info about epoch.
             logger.log_tabular("Epoch", epoch)
             logger.log_tabular("TotalEnvInteracts", t)
@@ -1339,7 +1352,7 @@ if __name__ == "__main__":
         type=str,
         default="stable_gym:Oscillator-v1",
         help="the gymnasium env (default: stable_gym:Oscillator-v1)",
-    )  # NOTE: Ensure the environment is installed in the current python environment.
+    )  # NOTE: Environment found in https://rickstaa.dev/stable-gym.
     parser.add_argument(
         "--hid_a",
         type=int,
@@ -1567,8 +1580,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--quiet",
         "-q",
-        type=bool,
-        default=False,
+        action="store_true",
         help="suppress logging of diagnostics to stdout (default: False)",
     )
     parser.add_argument(
@@ -1594,23 +1606,47 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--save_checkpoints",
-        type=bool,
-        default=False,
+        action="store_true",
         help="use model checkpoints (default: False)",
     )
     parser.add_argument(
         "--use_tensorboard",
-        type=bool,
-        default=False,
-        help="use tensorboard (default: False)",
+        action="store_true",
+        help="use TensorBoard (default: False)",
     )
     parser.add_argument(
         "--tb_log_freq",
         type=str,
         default="low",
         help=(
-            "the tensorboard log frequency. Options are 'low' (Recommended: logs at "
+            "the TensorBoard log frequency. Options are 'low' (Recommended: logs at "
             "every epoch) and 'high' (logs at every SGD update batch). Default is 'low'"
+        ),
+    )
+    parser.add_argument(
+        "--use_wandb",
+        action="store_true",
+        help="use Weights & Biases (default: False)",
+    )
+    parser.add_argument(
+        "--wandb_job_type",
+        type=str,
+        default="train",
+        help="the Weights & Biases job type (default: train)",
+    )
+    parser.add_argument(
+        "--wandb_project",
+        type=str,
+        default="stable-learning-control",
+        help="the name of the wandb project (default: stable-learning-control)",
+    )
+    parser.add_argument(
+        "--wandb_group",
+        type=str,
+        default=None,
+        help=(
+            "the name of the Weights & Biases group you want to assign the run to "
+            "(defaults: None)"
         ),
     )
     args = parser.parse_args()
@@ -1637,6 +1673,10 @@ if __name__ == "__main__":
         save_checkpoints=args.save_checkpoints,
         use_tensorboard=args.use_tensorboard,
         tb_log_freq=args.tb_log_freq,
+        use_wandb=args.use_wandb,
+        wandb_job_type=args.wandb_job_type,
+        wandb_project=args.wandb_project,
+        wandb_group=args.wandb_group,
         quiet=args.quiet,
         verbose_fmt=args.verbose_fmt,
         verbose_vars=args.verbose_vars,
@@ -1647,6 +1687,8 @@ if __name__ == "__main__":
             f"../../../../../data/lac/{args.env.lower()}/runs/run_{int(time.time())}",
         )
     )
+    if args.use_wandb:  # Add the wandb run name to the logger kwargs.
+        logger_kwargs["wandb_run_name"] = PurePath(logger_kwargs["ouput_dir"]).parts[-1]
     torch.set_num_threads(torch.get_num_threads())
 
     lac(

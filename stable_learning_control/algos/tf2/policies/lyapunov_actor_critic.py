@@ -100,14 +100,22 @@ class LyapunovActorCritic(tf.keras.Model):
         )
 
     @tf.function
-    def call(self, inputs):
+    def call(self, inputs, deterministic=False, with_logprob=True):
         """Performs a forward pass through all the networks (Actor and L critic).
 
         Args:
             inputs (tuple): tuple containing:
 
-                - obs (tf.Tensor): The tensor of observations.
-                - act (tf.Tensor): The tensor of actions.
+                -   obs (tf.Tensor): The tensor of observations.
+                -   act (tf.Tensor): The tensor of actions.
+
+            deterministic (bool, optional): Whether we want to use a deterministic
+                policy (used at test time). When true the mean action of the stochastic
+                policy is returned. If false the action is sampled from the stochastic
+                policy. Defaults to ``False``.
+            with_logprob (bool, optional): Whether we want to return the log probability
+                of an action. Defaults to ``True``.
+
         Returns:
             (tuple): tuple containing:
 
@@ -117,10 +125,12 @@ class LyapunovActorCritic(tf.keras.Model):
 
         .. note::
             Useful for when you want to print out the full network graph using
-            tensorboard.
+            TensorBoard.
         """  # noqa: E501
         obs, act = inputs
-        pi_action, logp_pi = self.pi(obs)
+        pi_action, logp_pi = self.pi(
+            obs, deterministic=deterministic, with_logprob=with_logprob
+        )
         L = self.L([obs, act])
         return pi_action, logp_pi, L
 
@@ -134,6 +144,7 @@ class LyapunovActorCritic(tf.keras.Model):
                 policy (used at test time). When true the mean action of the stochastic
                 policy is returned. If ``False`` the action is sampled from the
                 stochastic policy. Defaults to ``False``.
+
         Returns:
             numpy.ndarray: The action from the current state given the current
             policy.

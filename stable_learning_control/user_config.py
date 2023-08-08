@@ -34,3 +34,22 @@ PRINT_CONFIG = False
 # Options are "table"  which supplies them as a table and "line" which prints them in
 # one line.
 DEFAULT_STD_OUT_TYPE = "line"
+
+# Weights & Biases default job type and project.
+DEFAULT_WANDB_JOB_TYPE = "train"
+DEFAULT_WANDB_PROJECT = "stable-learning-control"
+
+# TensorBoard parameters.
+TB_HPARAMS_FILTER = [
+    "epochs",
+    "num_of_test_episodes",
+    "seed",
+    "device",
+    "save_freq",
+    "start_policy",
+    "export",
+]  # Config keys to filter out when writing hyperparameters to TensorBoard.
+TB_HPARAMS_METRICS = [
+    "AverageEpRet",
+    "AverageTestEpRet",
+]  # The metrics to be tracked in TensorBoard.

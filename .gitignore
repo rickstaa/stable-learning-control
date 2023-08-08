@@ -3,6 +3,7 @@ pytest/
 *.pytest_cache/
 .coverage
 pytest-coverage.txt
+wandb/
 
 # cache
 __pycache__/

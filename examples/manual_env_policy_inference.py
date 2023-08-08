@@ -1,8 +1,8 @@
 """A small script which shows how to manually load a saved environment and policy when
-the CLI fails.
+the CLI fails. It uses the ``Oscillator-v1`` environment that is found in the
+:stable_gym:`stable_gym <>` package.
 """
 import gymnasium as gym
-import stable_gym  # Imports the in this example used environment  # noqa: F401
 
 from stable_learning_control.utils.test_policy import (
     load_policy_and_env,
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         # Create the environment.
         # NOTE: Here the 'FlattenObservation' wrapper is used to make sure the alg works
         # with dictionary based observation spaces.
-        env = gym.make("Oscillator-v1")
+        env = gym.make("stable_gym:Oscillator-v1")
         env = gym.wrappers.FlattenObservation(env)
 
         # Load the policy.

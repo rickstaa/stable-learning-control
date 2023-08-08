@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # Setup logger.
     if not args.data_dir:
         args.data_dir = args.fpath
-    output_dir = Path(args.data_dir).joinpath("eval")
+    output_dir = str(Path(args.data_dir).joinpath("eval"))
     logger = EpochLogger(
         verbose_fmt="table",
         output_dir=output_dir,
@@ -334,12 +334,12 @@ if __name__ == "__main__":
                 }
 
         # Print variant diagnostics.
-        logger.log_tabular("EpRet", with_min_and_max=True)
-        logger.log_tabular("EpLen", average_only=True)
-        logger.log_tabular("DeathRate")
         logger.log_tabular("Disturbance", "RandomActionNoise")
         logger.log_tabular("Disturbance_mean", mean[0])
         logger.log_tabular("Disturbance_std", std[0])
+        logger.log_tabular("EpRet", with_min_and_max=True)
+        logger.log_tabular("EpLen", average_only=True)
+        logger.log_tabular("DeathRate")
         logger.log("")
         logger.dump_tabular()
         logger.log("")
@@ -364,7 +364,7 @@ if __name__ == "__main__":
     # Save robustness evaluation dataframe and return it to the user.
     if args.save_result:
         logger.log("Saving robustness evaluation dataframe...", type="info")
-        results_path = logger.output_dir.joinpath("eval_results.csv")
+        results_path = Path(logger.output_dir).joinpath("eval_results.csv")
         logger.log(
             f"Saving robustness evaluation results to path: {results_path}", type="info"
         )
@@ -667,7 +667,7 @@ if __name__ == "__main__":
 
     # Save plots.
     if args.save_plots:
-        figs_path = logger.output_dir.joinpath("figures")
+        figs_path = Path(logger.output_dir).joinpath("figures")
         figs_extension = args.figs_fmt[1:] if args.startswith(".") else args
         os.makedirs(figs_path, exist_ok=True)
         logger.log("Saving plots...", type="info")
@@ -681,8 +681,7 @@ if __name__ == "__main__":
                 )
         if figs["cost"]:
             figs["cost"][0].savefig(
-                output_dir.joinpath(
-                    "figures",
+                figs_path.joinpath(
                     f"cost-random_action_noise.{figs_extension}",
                 ),
                 bbox_inches="tight",

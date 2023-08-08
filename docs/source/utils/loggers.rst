@@ -21,7 +21,8 @@ and max value over each epoch and across MPI workers.
 
     All SLC algorithm implementations use an EpochLogger.
 
-These loggers allow you to write these diagnostics to the ``stdout``, a ``csv/txt`` file and/or :tb:`Tensorboard <>`.
+These loggers allow you to write these diagnostics to the ``stdout``, a ``csv/txt`` file, :tb:`TensorBoard <>` and/or 
+:wandb:`Weights & Biases <>`.
 
 Examples
 --------
@@ -50,7 +51,7 @@ state. Then, when :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogg
 it computes the average, standard deviation, min, and max of ``Test`` over all of the values in the internal state.
 The internal state is wiped clean after the call to :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular`
 (to prevent leakage into the diagnostics at the next epoch). Finally, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular`
-is called to write the diagnostics to file, Tensorboard and/or stdout.
+is called to write the diagnostics to file, TensorBoard, Weights & Biases and/or stdout.
 
 Next, let's use the :torch:`Pytorch Classifier <tutorials/beginner/blitz/cifar10_tutorial.html>` tutorial to look at an entire training procedure with the logger embedded, to highlight configuration and model
 saving as well as diagnostic logging:
@@ -227,22 +228,28 @@ In this example, observe that
 * on line 13, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` class is imported.
 * On line 51, the :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger` object is initiated. We set the ``stdout`` format to the "tabular" format.
 * On line 52, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_config` is used to save the hyperparameter configuration to a JSON file.
-* On lines 80-87, 95-97, 137-140 and 159 we log information to the ``stdout``.
+* On lines 80-87, 95-97, 137-140 and 159 we log information to the ``stdout``. Additionally we can specify the ``use_wandb`` flag to log information to Weights & Biases.
 * On lines 107 :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver` is used to prepare the logger to save the key elements of the CNN model.
 * On line 141, diagnostics are saved to the logger's internal state via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`.
 * On line 147, the CNN model saved once per epoch via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state`.
 * On lines 60-65, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` and :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular` are
   used to write the epoch diagnostics to file. Note that the keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` are the same as the
-  keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`. We use the ``tb_write=True`` option to enable Tensorboard logging.
+  keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`. We use the ``tb_write=True`` option to enable TensorBoard logging.
 
 After this script has finished, the following files should be added to a ``/tmp/experiments/<TIMESTAMP>`` folder:
 
-* ``events.out.tfevents.*``: The tensorboard event file containing the logged diagnostics.
+* ``events.out.tfevents.*``: The TensorBoard event file containing the logged diagnostics (if TensorBoard logging is enabled).
 * ``progress.csv``: Contains the logged diagnostics.
 * ``config.json``: Contains the hyperparameter configuration.
 * ``vars.pkl``: Contains some additional saved variables used for easy loading.
+* ``wandb``: Contains the Weights & Biases logging files (if Weights & Biases logging is enabled).
+* ``pyt_save``: Contains the saved PyTorch model (if PyTorch backend is used).
+* ``tf_save``: Contains the saved TensorFlow model (if TensorFlow backend is used).
 
-You can then use the ``tensorboard --logdir=/tmp/experiments`` command to see the diagnostics in tensorboard.
+If you requested TensorBoard logging, you can use the ``tensorboard --logdir=/tmp/experiments`` command to see the diagnostics in TensorBoard. For Weights & Biases logging, you can use
+the ``wandb login`` command to log in to your Weights & Biases account. You can view your logged diagnostics on the `Weights & Biases website`_.
+
+.. _`Weights & Biases website`: https://wandb.ai
 
 Logging and TensorFlow
 ----------------------
@@ -264,7 +271,7 @@ Logging and MPI
 
     Several RL algorithms are easily parallelized using MPI to average gradients and/or
     other key quantities. The SLC loggers are designed to be well-behaved when using MPI:
-    things will only get written to stdout, file or Tensorboard from the process with rank
+    things will only get written to stdout, file or TensorBoard from the process with rank
     1. But information from other processes is preserved if you use the EpochLogger.
     2. Everything passed into EpochLogger via ``store``, regardless of which process
     3. it's stored in, gets used to compute average/std/min/max values for a diagnostic.

@@ -7,8 +7,9 @@ import importlib
 import inspect
 import os
 import sys
-from pathlib import Path
+from pathlib import Path, PurePath
 from textwrap import dedent
+import copy
 
 import gymnasium as gym
 import matplotlib.pyplot as plt
@@ -16,10 +17,46 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from stable_learning_control.common.helpers import convert_to_snake_case, get_env_id
-from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
+from stable_learning_control.common.helpers import (
+    convert_to_snake_case,
+    friendly_err,
+    get_env_id,
+)
+from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 from stable_learning_control.utils.log_utils.logx import EpochLogger
 from stable_learning_control.utils.test_policy import load_policy_and_env
+
+
+def convert_to_wandb_config(config):
+    """Transform the config to a format that looks better on Weights & Biases.
+
+    Args:
+        config (dict): The config that should be transformed.
+
+    Returns:
+        dict: The transformed config.
+    """
+    wandb_config = {}
+    for key, value in config.items():
+        if (
+            key
+            in [
+                "output_dir",
+                "use_wandb",
+                "wandb_job_type",
+                "wandb_project",
+                "wandb_group",
+                "wandb_run_name",
+            ]
+            or value is None
+        ):  # Filter keys.
+            continue
+        elif key == "env":  # Transform env object to env id.
+            value = get_env_id(value)
+        elif key in ["policy", "disturber"]:  # Transform policy object to policy id.
+            value = "{}.{}".format(value.__module__, value.__class__.__name__)
+        wandb_config[key] = value
+    return wandb_config
 
 
 def get_human_readable_disturber_label(disturber_label):
@@ -284,6 +321,11 @@ def run_disturbed_policy(
     deterministic=True,
     save_result=False,
     output_dir=None,
+    use_wandb=False,
+    wandb_job_type=None,
+    wandb_project=None,
+    wandb_group=None,
+    wandb_run_name=None,
 ):
     """Evaluates the disturbed policy inside a given gymnasium environment. This
     function loops to all the disturbances that are specified in the environment and
@@ -311,6 +353,17 @@ def run_disturbed_policy(
         output_dir (str, optional): A directory for saving the diagnostics to. If
             ``None``, defaults to a temp directory of the form
             ``/tmp/experiments/somerandomnumber``.
+        use_wandb (bool, optional): Whether to use Weights & Biases for logging.
+            Defaults to ``False``.
+        wandb_job_type (str, optional): The type of job you are running. Defaults
+            to ``None``.
+        wandb_project (str, optional): The name of the Weights & Biases
+            project. Defaults to ``None`` which means that the project name is
+            automatically generated.
+        wandb_group (str, optional): The name of the Weights & Biases group you want
+            to assign the run to. Defaults to ``None``.
+        wandb_run_name (str, optional): The name of the Weights & Biases run. Defaults
+            to ``None`` which means that the run name is automatically generated.
 
     Returns:
         :obj:`pandas.DataFrame`: Dataframe that contains information about all the
@@ -319,6 +372,8 @@ def run_disturbed_policy(
     Raises:
         AssertionError: Thrown when the environment or policy is not found.
     """
+    eval_args = copy.deepcopy(locals())
+
     # Retrieve disturber variants.
     disturber_variants = (
         retrieve_disturber_variants(disturber_config)
@@ -348,15 +403,19 @@ def run_disturbed_policy(
 
     # Setup logger.
     if output_dir is not None:
-        output_dir = Path(output_dir).joinpath(
-            "eval/{}".format(
-                convert_to_snake_case(disturber.__name__)
-                if disturber_variants
-                else "baseline"
+        output_dir = str(
+            Path(output_dir).joinpath(
+                "eval/{}".format(
+                    convert_to_snake_case(disturber.__name__)
+                    if disturber_variants
+                    else "baseline"
+                )
             )
         )
     logger = EpochLogger(
-        verbose_fmt="table", output_dir=output_dir, output_fname="eval_statistics.csv"
+        verbose_fmt="table",
+        output_dir=output_dir,
+        output_fname="eval_statistics.csv",
     )
 
     assert env is not None, friendly_err(
@@ -449,6 +508,7 @@ def run_disturbed_policy(
     ref_found, ref_error_found, supports_deterministic = True, True, True
     time_attribute = None
     time_step_attribute = None
+    disturbance_diagnostics = pd.DataFrame()
 
     # Check if environment has time attribute.
     if hasattr(env.unwrapped, "time") or hasattr(env.unwrapped, "t"):
@@ -645,9 +705,6 @@ def run_disturbed_policy(
                 time = []
 
         # Print variant diagnostics.
-        logger.log_tabular("EpRet", with_min_and_max=True)
-        logger.log_tabular("EpLen", average_only=True)
-        logger.log_tabular("DeathRate")
         logger.log_tabular(
             "Disturber",
             "baseline" if include_baseline and variant_idx == 0 else disturber.__name__,
@@ -669,7 +726,21 @@ def run_disturbed_policy(
                         f"Disturber_{var_name}",
                         np.nan if include_baseline and variant_idx == 0 else var_value,
                     )
+        logger.log_tabular("EpRet", with_min_and_max=True)
+        logger.log_tabular("EpLen", average_only=True)
+        logger.log_tabular("DeathRate")
         logger.log("")
+        disturbance_diagnostics = pd.concat(
+            [
+                disturbance_diagnostics,
+                pd.DataFrame(
+                    logger.log_current_row,
+                    index=[variant_idx],
+                ),
+            ],
+            axis=0,
+            ignore_index=True,
+        )  # Store variant diagnostics in dataframe.
         logger.dump_tabular()
         logger.log("")
 
@@ -712,14 +783,57 @@ def run_disturbed_policy(
         variant_df = pd.DataFrame()
 
     # Save robustness evaluation dataframe and return it to the user.
+    logger.log("Saving robustness evaluation dataframe...", type="info")
+    results_path = Path(logger.output_dir).joinpath("eval_results.csv")
     if save_result:
-        logger.log("Saving robustness evaluation dataframe...", type="info")
-        results_path = logger.output_dir.joinpath("eval_results.csv")
         logger.log(
             f"Saving robustness evaluation results to path: {results_path}", type="info"
         )
         variants_df.to_csv(results_path, index=False)
         logger.log("Robustness evaluation dataframe saved.", type="info")
+
+    # Log robustness evaluation results to Weights & Biases.
+    if use_wandb:
+        logger.log("Storing robustness evaluation results in Weights & Biases...")
+        import wandb
+
+        # Initialize Weights & Biases if not already initialized.
+        if wandb.run is None:
+            wandb.init(
+                project=wandb_project,
+                group=wandb_group,
+                job_type=wandb_job_type,
+                name=wandb_run_name,
+                config=convert_to_wandb_config(eval_args),
+            )
+
+        # Create disturbance diagnostics table and bar plots.
+        wandb.log({"disturbance_diagnostics": disturbance_diagnostics})
+        bar_plots = {}
+        for column_name in disturbance_diagnostics.columns:
+            if column_name == "Disturber":
+                continue
+            bar_plots[f"{column_name}_bar"] = wandb.plot.bar(
+                wandb.Table(
+                    data=disturbance_diagnostics[["Disturber", column_name]],
+                    columns=["Disturber", column_name],
+                ),
+                label="Disturber",
+                value=column_name,
+                title=f"{column_name} per disturbance",
+            )
+        wandb.log(bar_plots)
+
+        # Store robustness evaluation dataframe as artifact.
+        eval_results_artifact = wandb.Artifact(
+            name="robustness_evaluation_results",
+            type="dataframe",
+            description="Contains the results of the robustness evaluation runs.",
+        )
+        eval_results_artifact.add_file(results_path)
+        wandb.log_artifact(eval_results_artifact)
+        logger.log("Robustness evaluation results stored in Weights & Biases.")
+
     return variants_df
 
 
@@ -736,6 +850,11 @@ def plot_robustness_results(
     font_scale=1.5,
     figs_fmt="pdf",
     output_dir=None,
+    use_wandb=False,
+    wandb_job_type=None,
+    wandb_project=None,
+    wandb_group=None,
+    wandb_run_name=None,
 ):
     """Creates several useful plots out of a robustness evaluation dataframe that was
     collected in the :meth:`run_disturbed_policy` method.
@@ -767,6 +886,17 @@ def plot_robustness_results(
         output_dir (str, optional):The directory where you want to save the output
             figures to. If ``None``, defaults to a temp directory of the form
             ``/tmp/experiments/somerandomnumber``.
+        use_wandb (bool, optional): Whether to use Weights & Biases for logging.
+            Defaults to ``False``.
+        wandb_job_type (str, optional): The type of job you are running. Defaults
+            to ``None``.
+        wandb_project (str, optional): The name of the Weights & Biases
+            project. Defaults to ``None`` which means that the project name is
+            automatically generated.
+        wandb_group (str, optional): The name of the Weights & Biases group you want
+            to assign the run to. Defaults to ``None``.
+        wandb_run_name (str, optional): The name of the Weights & Biases run. Defaults
+            to ``None`` which means that the run name is automatically generated.
     """
     # Retrieve disturbances and disturber name from dataframe.
     dataframe["disturbance_label"] = add_disturbance_label_column(dataframe)
@@ -774,14 +904,19 @@ def plot_robustness_results(
 
     # Setup logger, x-axis variable and output directory.
     if output_dir is not None:
-        output_dir = Path(output_dir).joinpath(
-            "eval/{}".format(
-                convert_to_snake_case(disturber.__name__)
-                if disturber_name != "baseline"
-                else "baseline"
+        output_dir = str(
+            Path(output_dir).joinpath(
+                "eval/{}".format(
+                    convert_to_snake_case(disturber.__name__)
+                    if disturber_name != "baseline"
+                    else "baseline"
+                )
             )
         )
-    logger = EpochLogger(output_dir=output_dir, output_dir_exists_warning=False)
+    logger = EpochLogger(
+        output_dir=output_dir,
+        output_dir_exists_warning=False,
+    )
     x_axis_var = "time" if use_time else "step"
 
     # Create a dictionary to store all plots.
@@ -1261,36 +1396,84 @@ def plot_robustness_results(
                 type="warning",
             )
 
-    # Save plots.
-    if save_plots:
-        figs_path = logger.output_dir.joinpath("figures")
+    # Initialize Weights & Biases if requested and not already initialized.
+    if use_wandb:
+        import wandb
+
+        if wandb.run is None:
+            wandb.init(
+                project=wandb_project,
+                group=wandb_group,
+                job_type=wandb_job_type,
+                name=wandb_run_name,
+            )
+
+    # Store plots.
+    if save_plots or use_wandb:
+        figs_path = Path(logger.output_dir).joinpath("figures")
         figs_extension = figs_fmt[1:] if figs_fmt.startswith(".") else figs_fmt
         os.makedirs(figs_path, exist_ok=True)
         logger.log("Saving plots...", type="info")
-        logger.log(f"Saving figures to path: {figs_path}", type="info")
+        if save_plots:
+            logger.log(f"Saving figures to path: {figs_path}", type="info")
+        if use_wandb:
+            logger.log("Saving figures to Weights & Biases...", type="info")
+
+        # Store observation plots.
         if figs["observation"]:
             for idx, fig in enumerate(figs["observation"]):
                 if not use_subplots:
-                    fig_id = "{}-{}".format(
-                        convert_to_snake_case(disturber_name),
-                        dataframe["disturbance_label"].unique()[idx],
+                    fig_id = (
+                        "baseline"
+                        if convert_to_snake_case(disturber_name) == "baseline"
+                        else "{}-{}".format(
+                            convert_to_snake_case(disturber_name),
+                            dataframe["disturbance_label"].unique()[idx],
+                        )
                     )
                 else:
                     fig_id = "{}-subplots-fig_{}".format(
                         convert_to_snake_case(disturber_name), idx + 1
                     )
-                fig.savefig(
-                    figs_path.joinpath(f"observations-{fig_id}.{figs_extension}"),
+                fig_name = f"observations-{fig_id}"
+
+                # Save figures to disk.
+                if save_plots:
+                    fig.savefig(
+                        figs_path.joinpath(f"{fig_name}.{figs_extension}"),
+                        bbox_inches="tight",
+                    )
+
+                # Save figures to Weights & Biases.
+                if use_wandb:
+                    # IMPROVE: Can be replaced with wandb.log({fig_name: fig}) once
+                    # https://github.com/wandb/wandb/issues/3987 has been solved.
+                    wandb.log(
+                        {fig_name: wandb.Image(fig)},
+                    )
+
+        # Store cost plots.
+        if figs["cost"]:
+            fig_name = f"cost-{convert_to_snake_case(disturber_name)}"
+
+            # Save figures to disk.
+            if save_plots:
+                figs["cost"][0].savefig(
+                    figs_path.joinpath(
+                        f"{fig_name}.{figs_extension}",
+                    ),
                     bbox_inches="tight",
                 )
-        if figs["cost"]:
-            figs["cost"][0].savefig(
-                output_dir.joinpath(
-                    "figures",
-                    f"cost-{convert_to_snake_case(disturber_name)}.{figs_extension}",
-                ),
-                bbox_inches="tight",
-            )
+
+            # Save figures to Weights & Biases.
+            if use_wandb:
+                # IMPROVE: Can be replaced with wandb.log({fig_name: fig}) once
+                # https://github.com/wandb/wandb/issues/3987 has been solved.
+                wandb.log(
+                    {fig_name: wandb.Image(figs["cost"][0])},
+                )
+
+        # Store reference error plots.
         if figs["reference_error"]:
             for idx, fig in enumerate(figs["reference_error"]):
                 if not use_subplots:
@@ -1302,10 +1485,23 @@ def plot_robustness_results(
                     fig_id = "{}-subplots-fig_{}".format(
                         convert_to_snake_case(disturber_name), idx + 1
                     )
-                fig.savefig(
-                    figs_path.joinpath(f"reference_error-{fig_id}.{figs_extension}"),
-                    bbox_inches="tight",
-                )
+                fig_name = f"reference_error-{fig_id}"
+
+                # Save figures to disk.
+                if save_plots:
+                    fig.savefig(
+                        figs_path.joinpath(f"{fig_name}.{figs_extension}"),
+                        bbox_inches="tight",
+                    )
+
+                # Save figures to Weights & Biases.
+                if use_wandb:
+                    # IMPROVE: Can be replaced with wandb.log({fig_name: fig}) once
+                    # https://github.com/wandb/wandb/issues/3987 has been solved.
+                    wandb.log(
+                        {fig_name: wandb.Image(fig)},
+                    )
+
         logger.log("Plots saved.", type="info")
 
     # Wait for user to close plots before continuing.
@@ -1315,9 +1511,9 @@ def plot_robustness_results(
 if __name__ == "__main__":
     import argparse
 
-    # Print available disturbers if '--list-disturbers'/'--list' argument is supplied.
+    # Print available disturbers if '--list_disturbers'/'--list' argument is supplied.
     args = sys.argv[1:]
-    if "--list-disturbers" in args or "--list" in args:
+    if "--list_disturbers" in args or "--list" in args:
         print_available_disturbers()
         sys.exit()
 
@@ -1505,6 +1701,41 @@ if __name__ == "__main__":
         default=1.5,
         help="The font scale you want to use for the plot text (default: 1.5)",
     )
+    parser.add_argument(
+        "--use_wandb",
+        action="store_true",
+        help="use Weights & Biases logging (default: False)",
+    )
+    parser.add_argument(
+        "--wandb_job_type",
+        type=str,
+        default="eval",
+        help="the Weights & Biases job type (default: eval)",
+    )
+    parser.add_argument(
+        "--wandb_project",
+        type=str,
+        default="stable-learning-control",
+        help="the name of the wandb project (default: stable-learning-control)",
+    )
+    parser.add_argument(
+        "--wandb_group",
+        type=str,
+        default=None,
+        help=(
+            "the name of the Weights & Biases group you want to assign the run to "
+            "(defaults: None)"
+        ),
+    )
+    parser.add_argument(
+        "--wandb_run_name",
+        type=str,
+        default=None,
+        help=(
+            "the name of the Weights & Biases run (defaults: None, will be "
+            "automatically generated based on the policy directory and disturber"
+        ),
+    )
     args = parser.parse_args()
 
     # Load policy and environment.
@@ -1538,9 +1769,25 @@ if __name__ == "__main__":
             )
         )
 
-    # Retrieve output_dir.
-    if not args.data_dir:
+    # Set data directory to the fpath directory if not specified.
+    if args.data_dir is None:
         args.data_dir = args.fpath
+
+    # Create wandb run name if not specified.
+    wandb_run_name = (
+        (
+            "{}_{}".format(
+                PurePath(args.fpath).parts[-1],
+                convert_to_snake_case(args.disturber)
+                if args.disturber is not None
+                else "baseline",
+            )
+            if args.wandb_run_name is None
+            else args.wandb_run_name
+        )
+        if args.use_wandb
+        else None
+    )
 
     # Perform robustness evaluation and plot results.
     run_results_df = run_disturbed_policy(
@@ -1555,6 +1802,11 @@ if __name__ == "__main__":
         deterministic=args.deterministic,
         save_result=args.save_result,
         output_dir=args.data_dir,
+        use_wandb=args.use_wandb,
+        wandb_job_type=args.wandb_job_type,
+        wandb_project=args.wandb_project,
+        wandb_group=args.wandb_group,
+        wandb_run_name=wandb_run_name,
     )
     plot_robustness_results(
         run_results_df,
@@ -1569,4 +1821,9 @@ if __name__ == "__main__":
         font_scale=args.font_scale,
         figs_fmt=args.figs_fmt,
         output_dir=args.data_dir,
+        use_wandb=args.use_wandb,
+        wandb_job_type=args.wandb_job_type,
+        wandb_project=args.wandb_project,
+        wandb_group=args.wandb_group,
+        wandb_run_name=wandb_run_name,
     )

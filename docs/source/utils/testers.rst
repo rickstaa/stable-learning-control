@@ -125,7 +125,7 @@ is successfully saved alongside the agent, the robustness can be evaluated using
 
     :obj:`bool`. Do also render the evaluation episodes to the screen.
 
-.. option:: -d, --deterministic, default=True
+.. option:: -d, --deterministic, default=False
 
     :obj:`bool`. Another special case, which is only used for the :ref:`SAC <sac>` and :ref:`LAC <lac>` algorithms. The SLC implementation trains a stochastic
     policy, but is evaluated using the deterministic *mean* of the action distribution. ``test_policy`` will default to using the stochastic policy trained
@@ -169,7 +169,7 @@ is successfully saved alongside the agent, the robustness can be evaluated using
 
     :obj:`bool`. Whether you want to save the robustness evaluation data frame to disk. It can be useful for creating custom plots see :ref:`robust_custom_plots`.
 
-.. option:: --save_plots, default=True
+.. option:: --save_plots, default=False
 
     :obj:`bool`. Specifies whether you want to save the generated plots to disk.
 
@@ -180,6 +180,28 @@ is successfully saved alongside the agent, the robustness can be evaluated using
 .. option:: --font_scale, default=1.5
 
     :obj:`float`. The font scale you want to use for the plot text.
+
+.. option:: --use_wandb, default=False
+
+    :obj:`bool`. Whether you want log the results to Weights & Biases.
+
+.. option:: --wandb_job_type, default=eval
+
+    :obj:`str`. The job type you want to use for the Weights & Biases logging.
+
+.. option:: --wandb_project, default=stable-learning-control
+    
+        :obj:`str`. The name of the Weights & Biases project you want to log to.
+
+.. option:: --wandb_group, default=None
+
+    :obj:`str`. The name of the Weights & Biases group you want to log to.
+
+.. option:: --wandb_run_name, default=None
+
+    :obj:`str`. The name of the Weights & Biases run you want to log to. If not
+    specified, the run name will be automatically generated based on the policy
+    directory and disturber.
 
 .. seealso::
 

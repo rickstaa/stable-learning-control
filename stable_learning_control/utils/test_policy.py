@@ -10,10 +10,10 @@ from pathlib import Path
 import joblib
 import torch
 
-from stable_learning_control.common.helpers import get_env_id
+from stable_learning_control.common.helpers import get_env_id, friendly_err
 from stable_learning_control.common.exceptions import EnvLoadError, PolicyLoadError
 from stable_learning_control.utils.import_utils import import_tf
-from stable_learning_control.utils.log_utils.helpers import friendly_err, log_to_std_out
+from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 from stable_learning_control.utils.log_utils.logx import EpochLogger
 from stable_learning_control.utils.serialization_utils import load_from_json
 

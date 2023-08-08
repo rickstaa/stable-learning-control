@@ -100,6 +100,7 @@ class ReplayBuffer:
 
         Args:
             batch_size (int, optional): The batch size. Defaults to ``32``.
+
         Returns:
             dict: A batch of experiences.
         """

@@ -2,7 +2,7 @@
 import itertools
 import re
 import string
-from collections.abc import Iterable
+from collections.abc import Iterable, MutableMapping
 
 import numpy as np
 import torch
@@ -241,3 +241,40 @@ def convert_to_snake_case(input_str):
         r"\1_\2",
         re.sub("(.)([A-Z][a-z]+)", r"\1_\2", input_str),
     ).lower()
+
+
+def friendly_err(err_msg, prepend=True, append=True):
+    """Add whitespace line to error message to make it more readable.
+
+    Args:
+        err_msg (str): Error message.
+        prepend (bool, optional): whether to prepend empty whitespace line before the
+            string. Defaults to ``True``.
+        append (bool, optional): Whether to append empty whitespace line after the
+            string. Defaults to ``True``.
+
+    Returns:
+        str: Error message with extra whitespace line.
+    """
+    return ("\n\n" if prepend else "") + err_msg + ("\n\n" if append else "")
+
+
+def flatten_dict(d, parent_key="", sep="."):
+    """Flattens a nested dictionary.
+
+    Args:
+        d (dict): The input dictionary.
+        parent_key (str, optional): The parent key. Defaults to ``""``.
+        sep (str, optional): The separator. Defaults to ``"."``.
+
+    Returns:
+        dict: The flattened dictionary.
+    """
+    items = []
+    for k, v in d.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, MutableMapping):
+            items.extend(flatten_dict(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)

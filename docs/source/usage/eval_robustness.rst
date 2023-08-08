@@ -8,13 +8,11 @@ SLC ships with a handy utility for evaluating the policy's robustness. This is d
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run eval_robustness [path/to/output_directory] [disturber] [-h] [--list_disturbers]
-        [--disturber_config DISTURBER_CONFIG] [--data_dir DATA_DIR] [--itr ITR]
-        [--len LEN] [--episodes EPISODES] [--render] [--deterministic] [--disable_baseline]
-        [--observations [OBSERVATIONS [OBSERVATIONS ...]]] [--references [REFERENCES [REFERENCES ...]]]
-        [--reference_errors [REFERENCE_ERRORS [REFERENCE_ERRORS ...]]] [--absolute_reference_errors]
-        [--merge_reference_errors] [--use_subplots] [--use_time] [--save_result] [--save_plots]
-        [--figs_fmt FIGS_FMT] [--font_scale FONT_SCALE]
+    python -m stable_learning_control.run eval_robustness [path/to/output_directory] [disturber] [-h] [--list_disturbers] [--disturber_config DISTURBER_CONFIG] [--data_dir DATA_DIR] [--itr ITR] [--len LEN] [--episodes EPISODES] [--render] [--deterministic]
+        [--disable_baseline] [--observations [OBSERVATIONS [OBSERVATIONS ...]]] [--references [REFERENCES [REFERENCES ...]]]
+        [--reference_errors [REFERENCE_ERRORS [REFERENCE_ERRORS ...]]] [--absolute_reference_errors] [--merge_reference_errors] [--use_subplots] [--use_time] [--save_result]
+        [--save_plots] [--figs_fmt FIGS_FMT] [--font_scale FONT_SCALE] [--use_wandb] [--wandb_job_type WANDB_JOB_TYPE] [--wandb_project WANDB_PROJECT] [--wandb_group WANDB_GROUP]
+        [--wandb_run_name WANDB_RUN_NAME]
 
 The most important input arguments are:
 
@@ -36,6 +34,18 @@ The most important input arguments are:
 
     For more information about all the input arguments available for the ``eval_robustness`` tool you can use the ``--help`` flag or check the :ref:`robustness evaluation utility <eval_robustness>`
     documentation or :ref:`the API reference <autoapi>`.
+
+Robustness eval configuration file (yaml)
+-----------------------------------------
+
+The SLC CLI comes with a handy configuration file loader that can be used to load `YAML`_ configuration files.
+These configuration files provide a convenient way to store your robustness evaluation parameters such that results
+can be reproduced. You can supply the CLI with an experiment configuration file using the ``--eval_cfg`` flag. The
+configuration file format equals the format expected by the :ref:`--exp_cfg <exp_cfg>` flag of the :ref:`run experiments <running_experiments>` utility.
+
+.. option:: --eval_cfg
+
+    :obj:`path str`. Sets the path to the ``yml`` config file used for loading experiment hyperparameter.
 
 Available disturbers
 ====================
@@ -79,6 +89,11 @@ The robustness evaluation tool can save several files to disk that contain infor
 +-----------------------+--------------------------------------------------------------------+
 
 These files will be saved inside the ``eval`` directory inside the output directory.
+
+.. tip:: 
+    
+    You can also log these results to Weights & Biases by adding the and ``--use_wandb`` flag to the
+    CLI command (see :ref:`eval_robustness` for more information).
 
 Plots
 -----
@@ -156,6 +171,15 @@ by specifying the module containing your disturber and the disturber class name.
 .. parsed-literal::
 
     python -m stable_learning_control.run eval_robustness [path/to/output_directory] --disturber "my_module.MyDisturber"
+
+Special attributes
+------------------
+
+The SLC package looks for several attributes in the disturber class to get information about the disturber that can be used during the robustness evaluation. These attributes are:
+
+.. describe:: disturbance_label
+
+    :obj:`str`. Can be used to set the label of the disturber in the plots. If not present the :ref:`robustness evaluation utility <eval_robustness>` will generate a label based on the disturber configuration.
 
 Manual robustness evaluation
 ============================

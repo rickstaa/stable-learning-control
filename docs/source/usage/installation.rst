@@ -117,8 +117,11 @@ This command will install the SLC package with the :torch:`Pytorch <>` backend i
 
 .. important::
 
-    If you are using Conda you might have to install the `mpi4py`_ package inside using Conda instead of pip.
-    This can be done using the following command:
+    
+    If you are using Conda, you may come across issues while installing or utilizing the SLC package,
+    such as installation errors or script freezing. To effectively resolve these problems, it is
+    recommended to install the mpi4py_ package from within Conda instead of using pip. This can
+    be accomplished by executing the following command:
 
     .. code-block:: bash
 
