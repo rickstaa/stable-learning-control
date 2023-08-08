@@ -20,21 +20,26 @@ ALGOS = [
 @pytest.mark.parametrize("algo", ALGOS)
 @pytest.mark.parametrize("device", ["gpu"])
 class TestTorchAlgosGPU:
-    env = gym.make("Pendulum-v1")  # Used because it is a simple environment.
+    @pytest.fixture
+    def env(self):
+        """Create Pendulum environment."""
+        env = gym.make("Pendulum-v1")  # Used because it is a simple environment.
 
-    # Seed the environment.
-    env.np_random, seed = seeding.np_random(0)
-    env.action_space.seed(0)
-    env.observation_space.seed(0)
+        # Seed the environment.
+        env.np_random, _ = seeding.np_random(0)
+        env.action_space.seed(0)
+        env.observation_space.seed(0)
 
-    def test_reproducibility(self, algo, device, snapshot):
+        return env
+
+    def test_reproducibility(self, algo, device, snapshot, env):
         """Checks if the algorithm is still working as expected."""
         # Import the algorithm run function.
         run = getattr(importlib.import_module(algo), algo.split(".")[-1])
 
         # Run the algorithm.
         trained_policy, replay_buffer = run(
-            lambda: self.env,
+            lambda: env,
             seed=0,
             epochs=1,
             update_after=400,
@@ -48,5 +53,5 @@ class TestTorchAlgosGPU:
 
         # Test if the actions returned by the policy are the same.
         for _ in range(5):
-            action = trained_policy.get_action(self.env.observation_space.sample())
+            action = trained_policy.get_action(env.observation_space.sample())
             assert action == snapshot

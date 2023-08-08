@@ -77,17 +77,17 @@
   )
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].1
-  -0.3054710924625397
+  -0.17646123468875885
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].2
-  -0.5438500046730042
+  -0.7749449014663696
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].3
-  -0.5551561713218689
+  -0.4696856439113617
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].4
-  0.7831009030342102
+  0.8471362590789795
 # ---
 # name: TestTorchAlgos.test_reproducibility[stable_learning_control.algos.pytorch.sac.sac].5
-  -0.43937113881111145
+  -0.3496301770210266
 # ---
