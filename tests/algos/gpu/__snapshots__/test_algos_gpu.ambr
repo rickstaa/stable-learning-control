@@ -77,17 +77,17 @@
   )
 # ---
 # name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.algos.pytorch.sac.sac].1
-  -0.7098895311355591
+  -0.5978871583938599
 # ---
 # name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.algos.pytorch.sac.sac].2
-  -0.1639314442873001
+  -0.613029956817627
 # ---
 # name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.algos.pytorch.sac.sac].3
-  -0.7671857476234436
+  -0.7007529735565186
 # ---
 # name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.algos.pytorch.sac.sac].4
-  0.415353924036026
+  0.7336636781692505
 # ---
 # name: TestTorchAlgosGPU.test_reproducibility[gpu-stable_learning_control.algos.pytorch.sac.sac].5
-  -0.8201737403869629
+  -0.8068016171455383
 # ---
