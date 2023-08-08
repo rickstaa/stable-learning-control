@@ -994,6 +994,8 @@ def sac(
         os.environ["PYTHONHASHSEED"] = str(
             seed
         )  # Ensure python hashing is deterministic.
+        # torch.use_deterministic_algorithms(True)  # Disable for reproducibility.
+        # torch.backends.cudnn.benchmark = False  # Disable for reproducibility.
 
     policy = SAC(
         env,
