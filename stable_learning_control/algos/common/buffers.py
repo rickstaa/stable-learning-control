@@ -21,13 +21,12 @@ class ReplayBuffer:
         ptr (int): The current buffer index.
     """
 
-    def __init__(self, obs_dim, act_dim, rew_dim, size):
+    def __init__(self, obs_dim, act_dim, size):
         """Initialise the ReplayBuffer object.
 
         Args:
             obs_dim (tuple): The size of the observation space.
             act_dim (tuple): The size of the action space.
-            rew_dim (tuple): The size of the reward space.
             size (int): The replay buffer size.
         """
         # Preallocate memory for experience buffer (s, s', a, r, d)
@@ -41,9 +40,7 @@ class ReplayBuffer:
         self.act_buf = atleast_2d(
             np.zeros(combine_shapes(int(size), act_dim), dtype=np.float32).squeeze()
         )
-        self.rew_buf = np.zeros(
-            combine_shapes(int(size), rew_dim), dtype=np.float32
-        ).squeeze()
+        self.rew_buf = np.zeros(int(size), dtype=np.float32)
         self.done_buf = np.zeros(int(size), dtype=np.float32)
         self.ptr, self.size, self._max_size = 0, 0, int(size)
 
@@ -78,15 +75,15 @@ class ReplayBuffer:
             self.rew_buf[self.ptr] = rew
         except ValueError as e:
             error_msg = (
-                f"{e.args[0].capitalize()} please make sure you set the "
-                "ReplayBuffer 'rew_dim' equal to your environment 'reward_space'."
+                f"{e.args[0].capitalize()} please make sure your 'rew' ReplayBuffer "
+                "element is of dimension 1."
             )
             raise ValueError(error_msg)
         try:
             self.done_buf[self.ptr] = done
         except ValueError as e:
             error_msg = (
-                f"{e.args[0].capitalize()} please make sure your 'done' ReplayBuffer"
+                f"{e.args[0].capitalize()} please make sure your 'done' ReplayBuffer "
                 "element is of dimension 1."
             )
             raise ValueError(error_msg)
@@ -141,7 +138,6 @@ class TrajectoryBuffer:
         self,
         obs_dim,
         act_dim,
-        rew_dim,
         size,
         preempt=False,
         min_trajectory_size=3,
@@ -154,7 +150,6 @@ class TrajectoryBuffer:
         Args:
             obs_dim (tuple): The size of the observation space.
             act_dim (tuple): The size of the action space.
-            rew_dim (tuple): The size of the reward space.
             size (int): The replay buffer size.
             preempt (bool, optional): Whether the buffer can be retrieved before it is
                 full. Defaults to ``False``.
@@ -186,9 +181,7 @@ class TrajectoryBuffer:
         self.act_buf = atleast_2d(
             np.zeros(combine_shapes(size, act_dim), dtype=np.float32).squeeze()
         )
-        self.rew_buf = np.zeros(
-            combine_shapes(int(size), rew_dim), dtype=np.float32
-        ).squeeze()
+        self.rew_buf = np.zeros(int(size), dtype=np.float32)
         self.done_buf = np.zeros(int(size), dtype=np.float32)
 
         # Optional buffers.
@@ -245,8 +238,8 @@ class TrajectoryBuffer:
             self.rew_buf[self.ptr] = rew
         except ValueError as e:
             error_msg = (
-                f"{e.args[0].capitalize()} please make sure you set the "
-                "TrajectoryBuffer 'rew_dim' equal to your environment 'reward_space'."
+                f"{e.args[0].capitalize()} please make sure your 'rew' "
+                "TrajectoryBuffer element is of dimension 1."
             )
             raise ValueError(error_msg)
         try:

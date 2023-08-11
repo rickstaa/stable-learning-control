@@ -1037,7 +1037,6 @@ def lac(
     test_env = gym.wrappers.FlattenObservation(test_env)
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.shape
-    rew_dim = 1
 
     # Setup logger.
     logger_kwargs["quiet"] = (
@@ -1151,7 +1150,6 @@ def lac(
     replay_buffer = ReplayBuffer(
         obs_dim=obs_dim,
         act_dim=act_dim,
-        rew_dim=rew_dim,
         size=replay_size,
         device=policy.device,
     )

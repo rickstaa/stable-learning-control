@@ -7,12 +7,11 @@ from stable_learning_control.algos.pytorch.common.buffers import TrajectoryBuffe
 
 if __name__ == "__main__":
     # Create dummy environment.
-    env = gym.make("CartPole-v1")
+    env = gym.make("stable_gym:CartPoleCost-v1")
 
     # Dummy algorithm settings.
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
-    rew_dim = env.cost_range.shape[0]
     buffer_size = int(1e6)
     epochs = 10
     local_steps_per_epoch = 100
@@ -21,7 +20,6 @@ if __name__ == "__main__":
     buffer = TrajectoryBuffer(
         obs_dim=obs_dim,
         act_dim=act_dim,
-        rew_dim=rew_dim,
         size=buffer_size,
         preempt=True,
         incomplete=True,
