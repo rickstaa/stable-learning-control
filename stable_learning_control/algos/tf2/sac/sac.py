@@ -1,4 +1,4 @@
-"""Soft Actor-Critic algorithm
+"""Soft Actor-Critic (SAC) algorithm.
 
 This module contains the TensorFlow 2.x implementation of the SAC algorithm of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
@@ -24,7 +24,6 @@ from gymnasium.utils import seeding
 from tensorflow.keras.optimizers import Adam
 
 from stable_learning_control.algos.common.buffers import ReplayBuffer
-from stable_learning_control.common.helpers import get_env_id
 from stable_learning_control.algos.common.helpers import heuristic_target_entropy
 from stable_learning_control.algos.tf2.common.get_lr_scheduler import get_lr_scheduler
 from stable_learning_control.algos.tf2.common.helpers import (
@@ -33,7 +32,7 @@ from stable_learning_control.algos.tf2.common.helpers import (
     set_device,
 )
 from stable_learning_control.algos.tf2.policies.soft_actor_critic import SoftActorCritic
-from stable_learning_control.common.helpers import combine_shapes
+from stable_learning_control.common.helpers import combine_shapes, get_env_id
 from stable_learning_control.utils.eval_utils import test_agent
 from stable_learning_control.utils.gym_utils import is_discrete_space, is_gym_env
 from stable_learning_control.utils.log_utils.helpers import (
@@ -44,13 +43,12 @@ from stable_learning_control.utils.log_utils.logx import EpochLogger
 from stable_learning_control.utils.safer_eval_util import safer_eval
 from stable_learning_control.utils.serialization_utils import save_to_json
 
-
 # Script settings.
 SCALE_LAMBDA_MIN_MAX = (
     0.0,
     1.0,
-)  # Range of lambda lagrance multiplier.
-SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier.
+)  # Range of lambda Lagrance multiplier.
+SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha Lagrance multiplier.
 STD_OUT_LOG_VARS_DEFAULT = [
     "Epoch",
     "TotalEnvInteracts",
@@ -74,7 +72,7 @@ class SAC(tf.keras.Model):
     Attributes:
         ac (tf.Module): The (soft) actor critic module.
         ac_ (tf.Module): The (soft) target actor critic module.
-        log_alpha (tf.Variable): The temperature lagrance multiplier.
+        log_alpha (tf.Variable): The temperature Lagrance multiplier.
         target_entropy (int): The target entropy.
         device (str): The device the networks are placed on (``cpu`` or ``gpu``).
             Defaults to ``cpu``.
@@ -191,7 +189,6 @@ class SAC(tf.keras.Model):
         self._setup_kwargs = {
             k: v for k, v in locals().items() if k not in ["self", "__class__", "env"]
         }
-        self._was_build = False
 
         # Validate gymnasium env.
         # NOTE: The current implementation only works with continuous spaces.
@@ -348,7 +345,7 @@ class SAC(tf.keras.Model):
             q_pi_targ = tf.math.maximum(
                 q1_pi_targ,
                 q2_pi_targ,
-            )  # Use max clipping  to prevent overestimation bias.
+            )  # Use max clipping to prevent underestimation bias.
         else:
             q_pi_targ = tf.math.minimum(
                 q1_pi_targ, q2_pi_targ
@@ -361,7 +358,7 @@ class SAC(tf.keras.Model):
             q1 = self.ac.Q1([o, a])
             q2 = self.ac.Q2([o, a])
 
-            # Calculate Q-critic MSE loss against Bellman backup
+            # Calculate Q-critic MSE loss against Bellman backup.
             loss_q1 = 0.5 * tf.reduce_mean((q1 - q_backup) ** 2)  # See Haarnoja eq. 5
             loss_q2 = 0.5 * tf.reduce_mean((q2 - q_backup) ** 2)
             q_loss = loss_q1 + loss_q2
@@ -384,9 +381,13 @@ class SAC(tf.keras.Model):
             q1_pi = self.ac.Q1([o, pi])
             q2_pi = self.ac.Q2([o, pi])
             if self._opt_type.lower() == "minimize":
-                q_pi = tf.math.maximum(q1_pi, q2_pi)
+                q_pi = tf.math.maximum(
+                    q1_pi, q2_pi
+                )  # Use max clipping to prevent underestimation bias.
             else:
-                q_pi = tf.math.minimum(q1_pi, q2_pi)
+                q_pi = tf.math.minimum(
+                    q1_pi, q2_pi
+                )  # Use min clipping to prevent overestimation bias.
 
             # Calculate entropy-regularized policy loss
             if self._opt_type.lower() == "minimize":
@@ -473,7 +474,7 @@ class SAC(tf.keras.Model):
             path (str): The path where the model :attr:`state_dict` of the policy is
                 found.
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
-                the lagrance multipliers. By fault ``False``.
+                the Lagrance multipliers. By fault ``False``.
 
         Raises:
             Exception: Raises an exception if something goes wrong during loading.
@@ -501,16 +502,16 @@ class SAC(tf.keras.Model):
                 f"Something went wrong when trying to load model '{latest}'."
             ) from e
 
-        # Make sure learning rates (and lagrance multipliers) are not restored
+        # Make sure learning rates (and Lagrance multipliers) are not restored.
         self._lr_a.assign(lr_a)
         self._lr_alpha.assign(lr_alpha)
         self._lr_c.assign(lr_c)
         if not restore_lagrance_multipliers:
             self.log_alpha.assign(log_alpha_init)
-            log_to_std_out("Restoring lagrance multipliers.", type="info")
+            log_to_std_out("Restoring Lagrance multipliers.", type="info")
         else:
             log_to_std_out(
-                "Keeping lagrance multipliers at their initial value.", type="info"
+                "Keeping Lagrance multipliers at their initial value.", type="info"
             )
 
     def export(self, path):
@@ -536,34 +537,25 @@ class SAC(tf.keras.Model):
 
     def build(self):
         """Function that can be used to build the full model structure such that it can
-        be visualized using the `tf.keras.Model.summary()`.
+        be visualized using the `tf.keras.Model.summary()`. This is done by calling the
+        build method of the parent class with the correct input shape.
 
         .. note::
             This is done by calling the build methods of the submodules.
         """
-        obs_dummy = tf.random.uniform(
-            combine_shapes(1, self._obs_dim), dtype=tf.float32
-        )
-        act_dummy = tf.random.uniform(
-            combine_shapes(1, self._act_dim), dtype=tf.float32
-        )
-        self.ac([obs_dummy, act_dummy])
-        self.ac_targ([obs_dummy, act_dummy])
-        super().build(input_shape=combine_shapes(1, self._obs_dim))
-        self(obs_dummy)
-        self._was_build = True
+        super().build(combine_shapes(None, self._obs_dim))
 
     def summary(self):
         """Small wrapper around the :meth:`tf.keras.Model.summary()` method used to
         apply a custom format to the model summary.
         """
-        if not self._was_build:  # Ensure the model is build.
+        if not self.built:  # Ensure the model is built.
             self.build()
         super().summary()
 
     def full_summary(self):
         """Prints a full summary of all the layers of the TensorFlow model"""
-        if not self._was_build:  # Ensure the model is build.
+        if not self.built:  # Ensure the model is built.
             self.build()
         full_model_summary(self)
 
@@ -572,11 +564,11 @@ class SAC(tf.keras.Model):
 
         Args:
             lr_a (float, optional): The learning rate of the actor optimizer. Defaults
-                to None.
+                to ``None``.
             lr_c (float, optional): The learning rate of the (soft) Critic. Defaults
-                to None.
+                to ``None``.
             lr_alpha (float, optional): The learning rate of the temperature optimizer.
-                Defaults to None.
+                Defaults to ``None``.
         """
         if lr_a:
             self._pi_optimizer.lr.assign(lr_a)
@@ -589,24 +581,16 @@ class SAC(tf.keras.Model):
     @tf.function
     def _init_targets(self):
         """Updates the target network weights to the main network weights."""
-        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
-            pi_targ.assign(pi_main)
-        for c1_main, c1_targ in zip(self.ac.Q1.variables, self.ac_targ.Q1.variables):
-            c1_targ.assign(c1_main)
-        for c2_main, c2_targ in zip(self.ac.Q2.variables, self.ac_targ.Q2.variables):
-            c2_targ.assign(c2_main)
+        for ac_main, ac_targ in zip(self.ac.variables, self.ac_targ.variables):
+            ac_targ.assign(ac_main)
 
     @tf.function
     def _update_targets(self):
         """Updates the target networks based on a Exponential moving average
         (Polyak averaging).
         """
-        for pi_main, pi_targ in zip(self.ac.pi.variables, self.ac_targ.pi.variables):
-            pi_targ.assign(self._polyak * pi_targ + (1 - self._polyak) * pi_main)
-        for c1_main, c1_targ in zip(self.ac.Q1.variables, self.ac_targ.Q1.variables):
-            c1_targ.assign(self._polyak * c1_targ + (1 - self._polyak) * c1_main)
-        for c2_main, c2_targ in zip(self.ac.Q2.variables, self.ac_targ.Q2.variables):
-            c2_targ.assign(self._polyak * c2_targ + (1 - self._polyak) * c2_main)
+        for ac_main, ac_targ in zip(self.ac.variables, self.ac_targ.variables):
+            ac_targ.assign(self._polyak * ac_targ + (1 - self._polyak) * ac_main)
 
     @property
     def alpha(self):
@@ -708,7 +692,7 @@ def sac(
     start_policy=None,
     export=False,
 ):
-    """Trains the sac algorithm in a given environment.
+    """Trains the SAC algorithm in a given environment.
 
     Args:
         env_fn: A function which creates a copy of the environment.

@@ -93,6 +93,9 @@ class SquashedGaussianActor(tf.keras.Model):
             name=name + "/log_std",
         )
 
+        # Build the model to initialise the (trainable) variables.
+        self.build((None, obs_dim))
+
     @tf.function
     def call(self, obs, deterministic=False, with_logprob=True):
         """Perform forward pass through the network.
@@ -124,7 +127,7 @@ class SquashedGaussianActor(tf.keras.Model):
 
         # Pre-squash distribution and sample
         if deterministic:
-            pi_action = mu  # determinestic action used at test time.
+            pi_action = mu  # deterministic action used at test time.
         else:
             # Sample from the normal distribution and calculate the action.
             batch_size = tf.shape(input=obs)[0]

@@ -1,6 +1,4 @@
-"""
-Lyapunov actor critic policy
-============================
+"""Lyapunov (soft) actor critic policy.
 
 This module contains a TensorFlow 2.x implementation of the Lyapunov Actor Critic policy
 of `Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_.
@@ -99,6 +97,13 @@ class LyapunovActorCritic(tf.keras.Model):
             activation=activation["critic"],
         )
 
+        # Perform one forward pass to initialise the networks.
+        # NOTE: Done because TF doesn't support multiple positional arguments when using
+        # the tf.function decorator, and autograph doesn't support list unpacking.
+        obs_dummy = tf.random.uniform((1, obs_dim), dtype=tf.float32)
+        act_dummy = tf.random.uniform((1, act_dim), dtype=tf.float32)
+        self([obs_dummy, act_dummy])
+
     @tf.function
     def call(self, inputs, deterministic=False, with_logprob=True):
         """Performs a forward pass through all the networks (Actor and L critic).
@@ -146,8 +151,7 @@ class LyapunovActorCritic(tf.keras.Model):
                 stochastic policy. Defaults to ``False``.
 
         Returns:
-            numpy.ndarray: The action from the current state given the current
-            policy.
+            numpy.ndarray: The action from the current state given the current policy.
         """
         # Make sure the batch dimension is present (Required by tf.keras.layers.Dense)
         if obs.shape.ndims == 1:
