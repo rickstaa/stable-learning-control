@@ -17,7 +17,6 @@ Stable Agents
 -------------
 
 .. important::
-
    As explained in the :ref:`installation section <gym_envs_install>` of the documentation,
    although the ``opt_type`` algorithm variable can be used to train on standard
    :gymnasium:`gymnasium <>` environments, the stable RL agents require a positive definite
@@ -31,6 +30,7 @@ The SLC package currently contains the following theoretically stable RL algorit
    :maxdepth: 1
 
    algorithms/lac
+   algorithms/latc
 
 Unstable Agents
 ---------------

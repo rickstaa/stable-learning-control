@@ -72,6 +72,7 @@ latex_packages = r"""
 \usepackage{amsmath}
 \usepackage{cancel}
 \usepackage{physics}
+\usepackage{bm}
 """
 latex_macros = r"""
 \newcommand{\E}{{\mathrm E}}

@@ -10,6 +10,7 @@ import os.path as osp
 # Default neural network backend for each algo (Must be either 'tf2' or 'pytorch').
 DEFAULT_BACKEND = {
     "lac": "pytorch",
+    "latc": "pytorch",
     "sac": "pytorch",
 }
 

@@ -1,7 +1,9 @@
-"""Lyapunov (soft) actor critic policy.
+"""Lyapunov (soft) actor twin critic policy.
 
-This module contains a Pytorch implementation of the Lyapunov Actor Critic policy of
-`Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_.
+This module contains a modified Pytorch implementation of the Lyapunov Actor-Critic
+policy of `Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_. Like the original SAC
+algorithm, this LAC variant uses two critics instead of one to mitigate a possible
+underestimation bias, while the original LAC only uses one critic.
 """
 import torch
 import torch.nn as nn
@@ -21,14 +23,16 @@ OUTPUT_ACTIVATION_DEFAULT = {
 }
 
 
-class LyapunovActorCritic(nn.Module):
-    """Lyapunov (soft) Actor-Critic network.
+class LyapunovActorTwinCritic(nn.Module):
+    """Lyapunov (soft) Actor-(twin Critic) network.
 
     Attributes:
         self.pi (:class:`~stable_learning_control.algos.pytorch.policies.actors.squashed_gaussian_actor.SquashedGaussianActor`):
             The squashed gaussian policy network (actor).
         self.L (:obj:`~stable_learning_control.algos.pytorch.policies.critics.L_critic.LCritic`):
-            The soft L-network (critic).
+            The first soft L-network (critic).
+        self.L2 (:obj:`~stable_learning_control.algos.pytorch.policies.critics.L_critic.LCritic`):
+            The second soft L-network (critic).
     """  # noqa: E501
 
     def __init__(
@@ -39,7 +43,7 @@ class LyapunovActorCritic(nn.Module):
         activation=ACTIVATION_DEFAULT,
         output_activation=OUTPUT_ACTIVATION_DEFAULT,
     ):
-        """Initialise the LyapunovActorCritic object.
+        """Initialise the LyapunovActorTwinCritic object.
 
         Args:
             observation_space (:obj:`gym.space.box.Box`): A gymnasium observation space.
@@ -55,7 +59,7 @@ class LyapunovActorCritic(nn.Module):
 
         .. note::
             It is currently not possible to set the critic output activation function
-            when using the LyapunovActorCritic. This is since it by design requires the
+            when using the LyapunovActorTwinCritic. This is since it by design requires the
             critic output activation to by of type :meth:`torch.square`.
         """  # noqa: E501
         super().__init__()
@@ -74,7 +78,7 @@ class LyapunovActorCritic(nn.Module):
             log_to_std_out(
                 (
                     "The critic output activation function was ignored since it can "
-                    "not be set using the LyapunovActorCritic architecture. This is "
+                    "not be set using the LyapunovActorTwinCritic architecture. This is "
                     "since it, by design, uses the 'torch.square' output activation "
                     "function."
                 ),
@@ -95,9 +99,15 @@ class LyapunovActorCritic(nn.Module):
             hidden_sizes=hidden_sizes["critic"],
             activation=activation["critic"],
         )
+        self.L2 = LCritic(
+            obs_dim=obs_dim,
+            act_dim=act_dim,
+            hidden_sizes=hidden_sizes["critic"],
+            activation=activation["critic"],
+        )
 
     def forward(self, obs, act, deterministic=False, with_logprob=True):
-        """Performs a forward pass through all the networks (Actor and L critic).
+        """Performs a forward pass through all the networks (Actor and both L critics).
 
         Args:
             obs (torch.Tensor): The tensor of observations.
@@ -114,7 +124,8 @@ class LyapunovActorCritic(nn.Module):
 
                 - pi_action (:obj:`torch.Tensor`): The actions given by the policy.
                 - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.
-                - L (:obj:`torch.Tensor`): Critic L values.
+                - L (:obj:`torch.Tensor`): First critic L values.
+                - L2 (:obj:`torch.Tensor`): Second critic L values.
 
         .. note::
             Useful for when you want to print out the full network graph using
@@ -124,7 +135,8 @@ class LyapunovActorCritic(nn.Module):
             obs, deterministic=deterministic, with_logprob=with_logprob
         )
         L = self.L(obs, act)
-        return pi_action, logp_pi, L
+        L2 = self.L2(obs, act)
+        return pi_action, logp_pi, L, L2
 
     def act(self, obs, deterministic=False):
         """Returns the action from the current state given the current policy.

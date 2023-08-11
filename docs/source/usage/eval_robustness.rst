@@ -31,7 +31,6 @@ The most important input arguments are:
     :class:`~stable_learning_control.disturbers.ObservationRandomNoiseDisturber` disturber).
 
 .. note::
-
     For more information about all the input arguments available for the ``eval_robustness`` tool you can use the ``--help`` flag or check the :ref:`robustness evaluation utility <eval_robustness>`
     documentation or :ref:`the API reference <autoapi>`.
 
@@ -91,7 +90,6 @@ The robustness evaluation tool can save several files to disk that contain infor
 These files will be saved inside the ``eval`` directory inside the output directory.
 
 .. tip:: 
-    
     You can also log these results to Weights & Biases by adding the and ``--use_wandb`` flag to the
     CLI command (see :ref:`eval_robustness` for more information).
 

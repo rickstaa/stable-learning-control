@@ -19,7 +19,6 @@ ready-to-use compatible environments can be found in the  :stable-gym:`stable-gy
 :ros-gazebo-gym:`Ros Gazebo Gym <>` packages.
 
 .. note::
-
    This framework was built upon the `SpinningUp`_ educational resource. By doing this, we 
    hope to make it easier for new researchers to start with our Algorithms. If you are new
    to RL, check out the SpinningUp documentation and play with it before diving into our

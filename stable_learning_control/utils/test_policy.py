@@ -265,7 +265,7 @@ def run_policy(
     Args:
         env (:obj:`gym.env`): The gymnasium environment.
         policy (Union[tf.keras.Model, torch.nn.Module]): The policy.
-        max_ep_len (int, optional): The maximum episode length. Defaults to None.
+        max_ep_len (int, optional): The maximum episode length. Defaults to ``None``.
         num_episodes (int, optional): Number of episodes you want to perform in the
             environment. Defaults to 100.
         deterministic (bool, optional): Whether you want the action from the policy to

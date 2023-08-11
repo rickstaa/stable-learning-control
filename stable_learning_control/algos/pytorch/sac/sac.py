@@ -1,4 +1,4 @@
-"""Soft Actor-Critic algorithm
+"""Soft Actor-Critic (SAC) algorithm.
 
 This module contains the Pytorch implementation of the SAC algorithm of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
@@ -55,8 +55,8 @@ from stable_learning_control.utils.serialization_utils import save_to_json
 SCALE_LAMBDA_MIN_MAX = (
     0.0,
     1.0,
-)  # Range of lambda lagrance multiplier.
-SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier.
+)  # Range of lambda Lagrance multiplier.
+SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha Lagrance multiplier.
 STD_OUT_LOG_VARS_DEFAULT = [
     "Epoch",
     "TotalEnvInteracts",
@@ -78,7 +78,7 @@ class SAC(nn.Module):
     Attributes:
         ac (torch.nn.Module): The soft actor critic module.
         ac_ (torch.nn.Module): The target soft actor critic module.
-        log_alpha (torch.Tensor): The temperature lagrance multiplier.
+        log_alpha (torch.Tensor): The temperature Lagrance multiplier.
         target_entropy (int): The target entropy.
         device (str): The device the networks are placed on (``cpu`` or ``gpu``).
             Defaults to ``cpu``.
@@ -357,7 +357,7 @@ class SAC(nn.Module):
         q1 = self.ac.Q1(o, a)
         q2 = self.ac.Q2(o, a)
 
-        # Calculate Q-critic MSE loss against Bellman backup
+        # Calculate Q-critic MSE loss against Bellman backup.
         loss_q1 = 0.5 * ((q1 - q_backup) ** 2).mean()  # See Haarnoja eq. 5
         loss_q2 = 0.5 * ((q2 - q_backup) ** 2).mean()
         q_loss = loss_q1 + loss_q2
@@ -387,9 +387,13 @@ class SAC(nn.Module):
         q1_pi = self.ac.Q1(o, pi)
         q2_pi = self.ac.Q2(o, pi)
         if self._opt_type.lower() == "minimize":
-            q_pi = torch.max(q1_pi, q2_pi)
+            q_pi = torch.max(
+                q1_pi, q2_pi
+            )  # Use max clipping to prevent underestimation bias.
         else:
-            q_pi = torch.min(q1_pi, q2_pi)
+            q_pi = torch.min(
+                q1_pi, q2_pi
+            )  # Use min clipping to prevent overestimation bias.
 
         # Calculate entropy-regularized policy loss
         if self._opt_type.lower() == "minimize":
@@ -474,7 +478,7 @@ class SAC(nn.Module):
             path (str): The path where the model :attr:`state_dict` of the policy is
                 found.
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
-                the lagrance multipliers. By fault ``False``.
+                the Lagrance multipliers. By fault ``False``.
 
         Raises:
             Exception: Raises an exception if something goes wrong during loading.
@@ -546,7 +550,7 @@ class SAC(nn.Module):
             state_dict (dict): a dict containing parameters and
                 persistent buffers.
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
-                the lagrance multipliers. By fault ``True``.
+                the Lagrance multipliers. By fault ``True``.
         """
         if (
             "alg_name" in self.state_dict()
@@ -578,14 +582,14 @@ class SAC(nn.Module):
             )
         if not restore_lagrance_multipliers:
             log_to_std_out(
-                "Keeping lagrance multipliers at their initial value.", type="info"
+                "Keeping Lagrance multipliers at their initial value.", type="info"
             )
             try:
                 del state_dict["log_alpha"]
             except KeyError:
                 pass
         else:
-            log_to_std_out("Restoring lagrance multipliers.", type="info")
+            log_to_std_out("Restoring Lagrance multipliers.", type="info")
 
         try:
             super().load_state_dict(state_dict, strict=False)
@@ -610,11 +614,11 @@ class SAC(nn.Module):
 
         Args:
             lr_a_final (float, optional): The lower bound for the actor learning rate.
-                Defaults to None.
+                Defaults to ``None``.
             lr_c_final (float, optional): The lower bound for the critic learning rate.
-                Defaults to None.
+                Defaults to ``None``.
             lr_alpha_final (float, optional): The lower bound for the alpha Lagrance
-                multiplier learning rate. Defaults to None.
+                multiplier learning rate. Defaults to ``None``.
         """
         if lr_a_final is not None:
             if self._pi_optimizer.param_groups[0]["lr"] < lr_a_final:
@@ -643,11 +647,11 @@ class SAC(nn.Module):
 
         Args:
             lr_a (float, optional): The learning rate of the actor optimizer. Defaults
-                to None.
+                to ``None``.
             lr_c (float, optional): The learning rate of the (soft) Critic. Defaults
-                to None.
+                to ``None``.
             lr_alpha (float, optional): The learning rate of the temperature optimizer.
-                Defaults to None.
+                Defaults to ``None``.
         """
         if lr_a:
             self._pi_optimizer.param_groups[0]["lr"] = lr_a
@@ -755,7 +759,7 @@ def sac(
     start_policy=None,
     export=False,
 ):
-    """Trains the sac algorithm in a given environment.
+    """Trains the SAC algorithm in a given environment.
 
     Args:
         env_fn: A function which creates a copy of the environment.

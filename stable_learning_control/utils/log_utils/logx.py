@@ -668,7 +668,7 @@ class Logger:
             state_dict (dict): Dictionary containing essential elements to
                 describe the current state of training.
             itr (Union[int, None]): Current iteration of training (e.g. epoch). Defaults
-                to None
+                to ``None``.
         """
         if proc_id() == 0:
             # Save training state (environment, ...)
@@ -730,7 +730,7 @@ class Logger:
 
         Args:
             itr (Union[int, None]): Current iteration of training (e.g. epoch). Defaults
-                to None
+                to ``None``.
         """
         if proc_id() == 0:
             save_fail_warning = (
@@ -802,7 +802,7 @@ class Logger:
 
         Args:
             itr (Union[int, None]): Current iteration of training (e.g. epoch). Defaults
-                to None
+                to ``None``.
         """
         if proc_id() == 0:
             save_fail_warning = (

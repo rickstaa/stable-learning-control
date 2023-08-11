@@ -7,7 +7,6 @@ Soft Actor-Critic
 .. contents:: Table of Contents
 
 .. important::
-
     The SAC algorithm has no stability guarantees. Please use the :ref:`LAC <lac>` algorithm if
     you require stability guarantees.
 
@@ -88,7 +87,6 @@ Algorithm: TensorFlow Version
 ---------------------------------
 
 .. attention::
-
     The TensorFlow version is still experimental. It is not guaranteed to work, and it is not
     guaranteed to be up-to-date with the PyTorch version.
 

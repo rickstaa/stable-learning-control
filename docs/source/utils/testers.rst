@@ -45,7 +45,6 @@ is successfully saved alongside the agent, it's a cinch to watch the trained age
     different training points (eg watch at iteration 50, 100, 150, etc.). The default value of this flag means "use the latest snapshot."
 
     .. important::
-
         This option only works if snapshots were saved while training the agent (i.e. the ``--save_checkpoints`` flag was set). For more information on
         storing these snapshots see :ref:`alg_flags`.
 
@@ -57,7 +56,6 @@ is successfully saved alongside the agent, it's a cinch to watch the trained age
     for any other algorithms.
 
 .. seealso::
-
     If you receive an "Environment not found" error, see :ref:`manual_policy_testing`.
 
 .. _eval_robustness:
@@ -108,7 +106,6 @@ is successfully saved alongside the agent, the robustness can be evaluated using
     different points in training (e.g. at iteration 50, 100, 150, etc.). The default value of ``-1`` means "use the latest snapshot."
 
     .. important::
-
         This option only works if snapshots were saved while training the agent (i.e. the ``--save_checkpoints`` flag was set). For more information on
         storing these snapshots, see :ref:`alg_flags`.
 
@@ -204,5 +201,4 @@ is successfully saved alongside the agent, the robustness can be evaluated using
     directory and disturber.
 
 .. seealso::
-
     If you receive an "Environment not found" error, see :ref:`manual_policy_testing`.

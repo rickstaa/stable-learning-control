@@ -80,19 +80,30 @@ def get_unique_list(input_list, trim=True):
         return list({item for item in input_list})
 
 
-def combine_shapes(*args):
+def combine_shapes(*args, remove_none=False):
     """Combines multiple tuples/ints/floats into one tuple.
 
     Args:
-        *args (Union[tuple,int,float]): Input arguments to combine
+        *args (Union[tuple,int,float]): Input arguments to combine.
+        remove_none (bool, optional): Remove ``None`` values from the resulting tuple.
 
     Returns:
         Tuple: A tuple in which al the input arguments are combined.
     """
-    return tuple(
+    combined_tuple = tuple(
         itertools.chain(
-            *[[item] if isinstance(item, (int, float)) else list(item) for item in args]
+            *[
+                [item]
+                if (isinstance(item, (int, float)) or item is None)
+                else list(item)
+                for item in args
+            ]
         )
+    )
+    return (
+        combined_tuple
+        if not remove_none
+        else tuple([item for item in combined_tuple if item is not None])
     )
 
 

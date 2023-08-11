@@ -1,4 +1,4 @@
-"""Lyapunov Actor-Critic algorithm
+"""Lyapunov (soft) Actor-Critic (LAC) algorithm.
 
 This module contains a pytorch implementation of the LAC algorithm of
 `Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_.
@@ -11,6 +11,7 @@ This module contains a pytorch implementation of the LAC algorithm of
 """
 import argparse
 import glob
+import itertools
 import os
 import os.path as osp
 import random
@@ -39,6 +40,9 @@ from stable_learning_control.algos.pytorch.common.helpers import (
 from stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic import (
     LyapunovActorCritic,
 )
+from stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic import (
+    LyapunovActorTwinCritic,
+)
 from stable_learning_control.common.helpers import friendly_err, get_env_id
 from stable_learning_control.utils.eval_utils import test_agent
 from stable_learning_control.utils.gym_utils import is_discrete_space, is_gym_env
@@ -54,8 +58,8 @@ from stable_learning_control.utils.serialization_utils import save_to_json
 SCALE_LAMBDA_MIN_MAX = (
     0.0,
     1.0,
-)  # Range of lambda lagrance multiplier.
-SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha lagrance multiplier.
+)  # Range of lambda Lagrance multiplier.
+SCALE_ALPHA_MIN_MAX = (0.0, np.inf)  # Range of alpha Lagrance multiplier.
 STD_OUT_LOG_VARS_DEFAULT = [
     "Epoch",
     "TotalEnvInteracts",
@@ -78,8 +82,8 @@ class LAC(nn.Module):
     Attributes:
         ac (torch.nn.Module): The (lyapunov) actor critic module.
         ac_ (torch.nn.Module): The (lyapunov) target actor critic module.
-        log_alpha (torch.Tensor): The temperature lagrance multiplier.
-        log_labda (torch.Tensor): The Lyapunov lagrance multiplier.
+        log_alpha (torch.Tensor): The temperature Lagrance multiplier.
+        log_labda (torch.Tensor): The Lyapunov Lagrance multiplier.
         target_entropy (int): The target entropy.
         device (str): The device the networks are placed on (``cpu`` or ``gpu``).
             Defaults to ``cpu``.
@@ -164,7 +168,7 @@ class LAC(nn.Module):
                 ``0.99``.
             alpha3 (float, optional): The Lyapunov constraint error boundary. Defaults
                 to ``0.2``.
-            labda (float, optional): The Lyapunov lagrance multiplier. Defaults to
+            labda (float, optional): The Lyapunov Lagrance multiplier. Defaults to
                 ``0.99``.
             gamma (float, optional): Discount factor. (Always between 0 and 1.).
                 Defaults to ``0.99``.
@@ -192,6 +196,11 @@ class LAC(nn.Module):
                 Defaults to ``1e-4``.
             device (str, optional): The device the networks are placed on (``cpu``
                 or ``gpu``). Defaults to ``cpu``.
+
+        .. attention::
+            This class will behave differently when the ``actor_critic`` argument
+            is set to the :class:`~stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic`.
+            For more information see the :ref:`LATC <latc>` documentation.
         """  # noqa: E501
         super().__init__()
         self._setup_kwargs = {
@@ -253,6 +262,7 @@ class LAC(nn.Module):
             self._target_entropy = heuristic_target_entropy(env.action_space)
         else:
             self._target_entropy = target_entropy
+        self._use_twin_critic = False
 
         # Create variables for the Lagrance multipliers.
         # NOTE: Clip at 1e-37 to prevent log_alpha/log_lambda from becoming -np.inf
@@ -294,6 +304,17 @@ class LAC(nn.Module):
         self._log_labda_optimizer = Adam([self.log_labda], lr=self._lr_lag)
         self._c_optimizer = Adam(self.ac.L.parameters(), lr=self._lr_c)
         self._c_params = lambda: self.ac.L.parameters()
+
+        # ==== LATC code ===============================
+        # NOTE: Added here to reduce code duplication.
+        # Ensure parameters of both critics are used by the critic optimizer.
+        if isinstance(self.ac, LyapunovActorTwinCritic):
+            self._use_twin_critic = True
+            self._c_params = lambda: itertools.chain(
+                *[gen() for gen in [self.ac.L.parameters, self.ac.L2.parameters]]
+            )  # Chain parameters of the two Q-critics
+            self._c_optimizer = Adam(self._c_params(), lr=self._lr_c)
+        # ==============================================
 
     def forward(self, s, deterministic=False):
         """Wrapper around the :meth:`get_action` method that enables users to also
@@ -356,12 +377,30 @@ class LAC(nn.Module):
                 o_
             )  # NOTE: Target actions come from *current* *target* policy
             l_pi_targ = self.ac_targ.L(o_, pi_targ_)
+
+            # ==== LATC code ===============================
+            # Retrieve second target Lyapunov value.
+            # NOTE: Added here to reduce code duplication.
+            if self._use_twin_critic:
+                l_pi_targ2 = self.ac_targ.L2(o_, pi_targ_)
+                l_pi_targ = torch.max(
+                    l_pi_targ, l_pi_targ2
+                )  # Use max clipping to prevent underestimation bias.
+            # ==============================================
+
             l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate.
 
         # Get current Lyapunov value.
         l1 = self.ac.L(o, a)
 
-        # Calculate Lyapunov *CRITIC* error
+        # ==== LATC code ===============================
+        # NOTE: Added here to reduce code duplication.
+        # Retrieve second Lyapunov value.
+        if self._use_twin_critic:
+            l2 = self.ac.L2(o, a)
+        # ==============================================
+
+        # Calculate L-critic MSE loss against Bellman backup.
         # NOTE: The 0.5 multiplication factor was added to make the derivation
         # cleaner and can be safely removed without influencing the minimization. We
         # kept it here for consistency.
@@ -370,10 +409,25 @@ class LAC(nn.Module):
         # Torchscript is used.
         l_error = 0.5 * ((l1 - l_backup) ** 2).mean()  # See Han eq. 7
 
+        # ==== LATC code ===============================
+        # NOTE: Added here to reduce code duplication.
+        # Add second Lyapunov *CRITIC error*.
+        if self._use_twin_critic:
+            l_error += 0.5 * ((l2 - l_backup) ** 2).mean()
+        # ==============================================
+
         l_error.backward()
         self._c_optimizer.step()
 
         l_info = dict(LVals=l1.cpu().detach().numpy())
+
+        # ==== LATC code ===============================
+        # NOTE: Added here to reduce code duplication.
+        # Add second Lyapunov value to info dict.
+        if self._use_twin_critic:
+            l_info.update({"LVals2": l2.cpu().detach().numpy()})
+        # ==============================================
+
         diagnostics.update({**l_info, "ErrorL": l_error.cpu().detach().numpy()})
         ################################################
         # Optimize Gaussian actor ######################
@@ -391,6 +445,16 @@ class LAC(nn.Module):
         # Get target lyapunov value.
         pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
         lya_l_ = self.ac.L(o_, pi_)
+
+        # ==== LATC code ===============================
+        # NOTE: Added here to reduce code duplication.
+        # Retrieve second target Lyapunov value.
+        if self._use_twin_critic:
+            lya_l2_ = self.ac.L2(o_, pi_)
+            lya_l_ = torch.max(
+                lya_l_, lya_l2_
+            )  # Use max clipping to prevent underestimation bias.
+        # ==============================================
 
         # Compute Lyapunov Actor error.
         l_delta = torch.mean(lya_l_ - l1.detach() + self._alpha3 * r)  # See Han eq. 11
@@ -495,7 +559,7 @@ class LAC(nn.Module):
             path (str): The path where the model :attr:`state_dict` of the policy is
                 found.
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
-                the lagrance multipliers. By fault ``False``.
+                the Lagrance multipliers. By fault ``False``.
 
         Raises:
             Exception: Raises an exception if something goes wrong during loading.
@@ -567,7 +631,7 @@ class LAC(nn.Module):
             state_dict (dict): a dict containing parameters and
                 persistent buffers.
             restore_lagrance_multipliers (bool, optional): Whether you want to restore
-                the lagrance multipliers. By fault ``True``.
+                the Lagrance multipliers. By fault ``True``.
         """
         if (
             "alg_name" in self.state_dict()
@@ -599,14 +663,14 @@ class LAC(nn.Module):
             )
         if not restore_lagrance_multipliers:
             log_to_std_out(
-                "Keeping lagrance multipliers at their initial value.", type="info"
+                "Keeping Lagrance multipliers at their initial value.", type="info"
             )
             try:
                 del state_dict["log_alpha"], state_dict["log_labda"]
             except KeyError:
                 pass
         else:
-            log_to_std_out("Restoring lagrance multipliers.", type="info")
+            log_to_std_out("Restoring Lagrance multipliers.", type="info")
 
         try:
             super().load_state_dict(state_dict, strict=False)
@@ -633,13 +697,13 @@ class LAC(nn.Module):
 
         Args:
             lr_a_final (float, optional): The lower bound for the actor learning rate.
-                Defaults to None.
+                Defaults to ``None``.
             lr_c_final (float, optional): The lower bound for the critic learning rate.
-                Defaults to None.
+                Defaults to ``None``.
             lr_alpha_final (float, optional): The lower bound for the alpha Lagrance
-                multiplier learning rate. Defaults to None.
+                multiplier learning rate. Defaults to ``None``.
             lr_labda_final (float, optional): The lower bound for the labda Lagrance
-                multiplier learning rate. Defaults to None.
+                multiplier learning rate. Defaults to ``None``.
         """
         if lr_a_final is not None:
             if self._pi_optimizer.param_groups[0]["lr"] < lr_a_final:
@@ -671,13 +735,13 @@ class LAC(nn.Module):
 
         Args:
             lr_a (float, optional): The learning rate of the actor optimizer. Defaults
-                to None.
+                to ``None``.
             lr_c (float, optional): The learning rate of the (Lyapunov) Critic. Defaults
-                to None.
+                to ``None``.
             lr_alpha (float, optional): The learning rate of the temperature optimizer.
-                Defaults to None.
+                Defaults to ``None``.
             lr_labda (float, optional): The learning rate of the Lyapunov Lagrance
-                multiplier optimizer. Defaults to None.
+                multiplier optimizer. Defaults to ``None``.
         """
         if lr_a:
             self._pi_optimizer.param_groups[0]["lr"] = lr_a
@@ -806,7 +870,7 @@ def lac(
     start_policy=None,
     export=False,
 ):
-    """Trains the lac algorithm in a given environment.
+    """Trains the LAC algorithm in a given environment.
 
     Args:
         env_fn: A function which creates a copy of the environment.
@@ -884,7 +948,7 @@ def lac(
             ``0.99``.
         alpha3 (float, optional): The Lyapunov constraint error boundary. Defaults
             to ``0.2``.
-        labda (float, optional): The Lyapunov lagrance multiplier. Defaults to
+        labda (float, optional): The Lyapunov Lagrance multiplier. Defaults to
             ``0.99``.
         gamma (float, optional): Discount factor. (Always between 0 and 1.).
             Defaults to ``0.99``.
@@ -1092,9 +1156,19 @@ def lac(
         device=policy.device,
     )
 
-    # Count variables and print network structure.
+    # Count policy variables and initialize param count log string.
     var_counts = tuple(count_vars(module) for module in [policy.ac.pi, policy.ac.L])
-    logger.log("Number of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info")
+    param_count_log_str = "Number of parameters: \t pi: %d, \t L: %d" % var_counts
+
+    # ==== LATC code ===============================
+    # NOTE: Added here to reduce code duplication.
+    # Extend param count log string.
+    if isinstance(policy.ac, LyapunovActorTwinCritic):
+        param_count_log_str += ", \t L2: %d" % count_vars(policy.ac.L2)
+    # ===============================================
+
+    # Print network structure.
+    logger.log(param_count_log_str, type="info")
     logger.log("Network structure:\n", type="info")
     logger.log(policy.ac, end="\n\n")
 
@@ -1478,7 +1552,7 @@ if __name__ == "__main__":
         "--labda",
         type=float,
         default=0.99,
-        help="the Lyapunov lagrance multiplier (default: 0.99)",
+        help="the Lyapunov Lagrance multiplier (default: 0.99)",
     )
     parser.add_argument(
         "--gamma", type=float, default=0.99, help="discount factor (default: 0.99)"
@@ -1486,7 +1560,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--polyak",
         type=float,
-        default=0.995,
+        # default=0.995,
+        default=0.0,
         help="the interpolation factor in polyak averaging (default: 0.995)",
     )
     parser.add_argument(

@@ -154,7 +154,6 @@ is successfully saved alongside the agent, you can watch the trained agent act i
     python -m stable_learning_control.run test_policy [path/to/output_directory]
 
 .. seealso::
-
     For more information on using this utility, see the :ref:`test_policy` documentation or the code :ref:`the API reference <autoapi>`.
 
 .. _manual_policy_testing:
@@ -318,7 +317,6 @@ Deploy PyTorch Algorithms
 -------------------------
 
 .. attention::
-
     PyTorch provides multiple ways to deploy trained models to hardware (see the :torch:`PyTorch serving documentation <blog/model-serving-in-pyorch>`). 
     Unfortunately, at the time of writing, these methods currently do not support the agents used in the SLC package. For more information, see
     `this issue`_.

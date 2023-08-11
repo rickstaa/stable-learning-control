@@ -25,7 +25,6 @@ environment with various values for actor and critic learning rates using the :r
 .. _`CartPoleCost-v0`: https://rickstaa.dev/stable-gym/envs/classic_control/cartpole_cost.html
 
 .. tip:: 
-    
     You can enable logging of TensorBoard and Weights & Biases by adding the ``--use_tensorboard`` and ``--use_wandb`` flags to the
     above command. These tools will allow you to track the performance of your experiments and compare the results of
     different hyperparameter combinations. For more information on how to use these logging utilities, see :ref:`loggers`.

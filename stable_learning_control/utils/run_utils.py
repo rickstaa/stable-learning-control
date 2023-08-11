@@ -63,7 +63,7 @@ def call_experiment(
             'auto', which will set up as many procs as there are cpus on
             the machine.
         data_dir (str): Used in configuring the logger, to decide where
-            to store experiment results. Note: if left as None, data_dir will
+            to store experiment results. Note: if left as ``None``, data_dir will
             default to ``DEFAULT_DATA_DIR`` from
             :mod:`stable_learning_control.user_config`.
         datestamp (bool): Whether a datestamp should be added to the experiment name.
@@ -487,7 +487,7 @@ class ExperimentGrid:
                 'auto', which will set up as many procs as there are cpus on
                 the machine.
             data_dir (str): Used in configuring the logger, to decide where
-                to store experiment results. Note: if left as None, data_dir will
+                to store experiment results. Note: if left as ``None``, data_dir will
                 default to ``DEFAULT_DATA_DIR`` from
                 :mod:`stable_learning_control.user_config`.
             datestamp (bool): Whether a datestamp should be added to the experiment

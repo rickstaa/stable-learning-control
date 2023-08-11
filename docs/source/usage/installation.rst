@@ -28,7 +28,6 @@ For mac this command can be used:
     brew install openmpi
 
 .. note::
-
     The `Microsoft MPI`_ package can be used for Windows. 
 
 .. attention::
@@ -95,7 +94,6 @@ this environment. The SLC has two versions you can install:
       of the RL algorithms.
 
 .. note::
-
     We choose PyTorch as the default backend as it is easier to work with than TensorFlow. However, at the
     time of writing, it is slightly slower than the TensorFlow backend. This is caused because the agents
     used in the SLC package use components not yet supported by :torch:`TorchScript <docs/stable/jit.html>`
@@ -116,8 +114,6 @@ you can install the SLC package using the following bash command:
 This command will install the SLC package with the :torch:`Pytorch <>` backend in your Conda environment.
 
 .. important::
-
-    
     If you are using Conda, you may come across issues while installing or utilizing the SLC package,
     such as installation errors or script freezing. To effectively resolve these problems, it is
     recommended to install the mpi4py_ package from within Conda instead of using pip. This can
@@ -133,7 +129,6 @@ Install the TensorFlow version
 ------------------------------
 
 .. attention::
-
     As stated above, the Pytorch version was used during our experiments. As a result, the
     TensorFlow version is less well-tested than the Pytorch version and has limited support.
     It should therefore be considered experimental, as no guarantees can be given about the
@@ -147,7 +142,6 @@ package with the the following command:
     pip install -e .[tf2]
 
 .. warning::
-
     If you want to use the GPU version of TensorFlow, you must ensure you performed all
     the steps described in the `TensorFlow installation guide`_. It is also essential to
     know that depending on the version of TensorFlow and PyTorch you use, you might have
