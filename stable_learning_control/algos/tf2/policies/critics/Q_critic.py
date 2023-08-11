@@ -49,6 +49,9 @@ class QCritic(tf.keras.Model):
             name=name,
         )
 
+        # Build the model to initialise the (trainable) variables.
+        self.build((None, obs_dim + act_dim))
+
     @tf.function
     def call(self, inputs):
         """Perform forward pass through the network.

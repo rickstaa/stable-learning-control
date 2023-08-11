@@ -1,6 +1,4 @@
-"""
-Soft actor critic policy
-========================
+"""Soft actor critic policy.
 
 This module contains a TensorFlow 2.x implementation of the Soft Actor Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
@@ -91,6 +89,13 @@ class SoftActorCritic(tf.keras.Model):
             output_activation=output_activation["critic"],
             name="q_critic_2",
         )
+
+        # Perform one forward pass to initialise the networks.
+        # NOTE: Done because TF doesn't support multiple positional arguments when using
+        # the tf.function decorator, and autograph doesn't support list unpacking.
+        obs_dummy = tf.random.uniform((1, obs_dim), dtype=tf.float32)
+        act_dummy = tf.random.uniform((1, act_dim), dtype=tf.float32)
+        self([obs_dummy, act_dummy])
 
     @tf.function
     def call(self, inputs, deterministic=False, with_logprob=True):
