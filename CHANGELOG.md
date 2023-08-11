@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.3.0](https://github.com/rickstaa/stable-learning-control/compare/v4.2.0...v4.3.0) (2023-08-11)
+
+
+### Features
+
+* add torch reproducibility code ([#320](https://github.com/rickstaa/stable-learning-control/issues/320)) ([89ef5a2](https://github.com/rickstaa/stable-learning-control/commit/89ef5a2fb4cd5804b189147e5691db3151a7f368))
+* **latc:** add LATC algorithm ([#323](https://github.com/rickstaa/stable-learning-control/issues/323)) ([d74c64f](https://github.com/rickstaa/stable-learning-control/commit/d74c64f76b8aa1d10b199efcd9ea329f79bad547))
+
+
+### Bug Fixes
+
+* **tf2:** fix critical tf2 gradient update bug ([#322](https://github.com/rickstaa/stable-learning-control/issues/322)) ([dfc239b](https://github.com/rickstaa/stable-learning-control/commit/dfc239b53f4b3de084354a5411ff99b0207d6cbf))
+
 ## [4.2.0](https://github.com/rickstaa/stable-learning-control/compare/v4.1.0...v4.2.0) (2023-08-08)
 
 
