@@ -10,7 +10,6 @@ hyperparameters of a running trial. It was based on the `tutorial`_ provided by 
 Ray team.
 
 .. note::
-
     This example also contains a :cont:`USE_WANDB` flag that allows you to log the
     results of the hyperparameter search to `Weights & Biases`_ (WandB). For more
     information on how to use WandB, see the `Weights & Biases documentation`_.

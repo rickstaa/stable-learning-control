@@ -60,7 +60,7 @@ SUBSTITUTIONS = {
 MPI_COMPATIBLE_ALGOS = []
 
 # Algo names (used in a few places).
-BASE_ALGO_NAMES = ["sac", "lac"]
+BASE_ALGO_NAMES = ["sac", "lac", "latc"]
 
 
 def _parse_hyperparameter_variants(exp_val):
@@ -96,7 +96,6 @@ def _parse_exp_cfg(cmd_line_args):
             that were specified in a experimental cfg file.
 
     .. note::
-
         This function assumes comma/space separated strings (i.e. ``5, 3, 2`` or
         ``5 3 2``)) to be hyperparmeter variants.
     """
@@ -213,7 +212,6 @@ def _parse_eval_cfg(cmd_line_args):
             that were specified in a eval cfg file.
 
     .. note::
-
         This function assumes comma/space separated strings (i.e. ``5, 3, 2`` or
         ``5 3 2``)) to be hyperparmeter variants.
     """

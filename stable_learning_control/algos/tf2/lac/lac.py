@@ -35,6 +35,9 @@ from stable_learning_control.algos.tf2.common.helpers import (
 from stable_learning_control.algos.tf2.policies.lyapunov_actor_critic import (
     LyapunovActorCritic,
 )
+from stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic import (
+    LyapunovActorTwinCritic,
+)
 from stable_learning_control.common.helpers import combine_shapes, get_env_id
 from stable_learning_control.utils.eval_utils import test_agent
 from stable_learning_control.utils.gym_utils import is_discrete_space, is_gym_env
@@ -191,6 +194,11 @@ class LAC(tf.keras.Model):
                 Defaults to ``1e-4``.
             device (str, optional): The device the networks are placed on (``cpu``
                 or ``gpu``). Defaults to ``cpu``.
+
+        .. attention::
+            This class will behave differently when the ``actor_critic`` argument
+            is set to the :class:`~stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic`.
+            For more information see the :ref:`LATC <latc>` documentation.
         """  # noqa: E501
         self._device = set_device(
             device
@@ -255,6 +263,7 @@ class LAC(tf.keras.Model):
             self._target_entropy = heuristic_target_entropy(env.action_space)
         else:
             self._target_entropy = target_entropy
+        self._use_twin_critic = False
 
         # Create variables for the Lagrance multipliers.
         # NOTE: Clip at 1e-37 to prevent log_alpha/log_lambda from becoming -np.inf
@@ -290,6 +299,17 @@ class LAC(tf.keras.Model):
         self._log_labda_optimizer = Adam(learning_rate=self._lr_lag)
         self._c_params = self.ac.L.trainable_variables
         self._c_optimizer = Adam(learning_rate=self._lr_c)
+
+        # ==== LATC code ===============================
+        # NOTE: Added here to reduce code duplication.
+        # Ensure parameters of both critics are used by the critic optimizer.
+        if isinstance(self.ac, LyapunovActorTwinCritic):
+            self._use_twin_critic = True
+            self._c_params = (
+                self.ac.L.trainable_variables + self.ac.L2.trainable_variables
+            )  # Chain parameters of the two Q-critics
+            self._c_optimizer = Adam(learning_rate=self._lr_c)
+        # ==============================================
 
     @tf.function
     def call(self, s, deterministic=False):
@@ -357,6 +377,17 @@ class LAC(tf.keras.Model):
             o_
         )  # NOTE: Target actions come from *current* *target* policy.
         l_pi_targ = self.ac_targ.L([o_, pi_targ_])
+
+        # ==== LATC code ===============================
+        # Retrieve second target Lyapunov value.
+        # NOTE: Added here to reduce code duplication.
+        if self._use_twin_critic:
+            l_pi_targ2 = self.ac_targ.L2([o_, pi_targ_])
+            l_pi_targ = tf.math.maximum(
+                l_pi_targ, l_pi_targ2
+            )  # Use max clipping to prevent underestimation bias.
+        # ==============================================
+
         l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate.
 
         # Compute Lyapunov Critic error gradients.
@@ -364,16 +395,38 @@ class LAC(tf.keras.Model):
             # Get current Lyapunov value.
             l1 = self.ac.L([o, a])
 
+            # ==== LATC code ===============================
+            # NOTE: Added here to reduce code duplication.
+            # Retrieve second Lyapunov value.
+            if self._use_twin_critic:
+                l2 = self.ac.L2([o, a])
+            # ==============================================
+
             # Calculate L-critic MSE loss against Bellman backup.
             # NOTE: The 0.5 multiplication factor was added to make the derivation
             # cleaner and can be safely removed without influencing the
             # minimization. We kept it here for consistency.
             l_error = 0.5 * tf.reduce_mean((l1 - l_backup) ** 2)  # See Han eq. 7
 
+            # ==== LATC code ===============================
+            # NOTE: Added here to reduce code duplication.
+            # Add second Lyapunov *CRITIC error*.
+            if self._use_twin_critic:
+                l_error += 0.5 * tf.reduce_mean((l2 - l_backup) ** 2)
+            # ==============================================
+
         c_grads = l_tape.gradient(l_error, self._c_params)
         self._c_optimizer.apply_gradients(zip(c_grads, self._c_params))
 
         l_info = dict(LVals=l1)
+
+        # ==== LATC code ===============================
+        # NOTE: Added here to reduce code duplication.
+        # Add second Lyapunov value to info dict.
+        if self._use_twin_critic:
+            l_info.update({"LVals2": l2})
+        # ==============================================
+
         diagnostics.update({**l_info, "ErrorL": l_error})
         ################################################
         # Optimize Gaussian actor ######################
@@ -386,6 +439,16 @@ class LAC(tf.keras.Model):
             # Get target lyapunov value.
             pi_, _ = self.ac.pi(o_)  # NOTE: Target actions come from *current* policy
             lya_l_ = self.ac.L([o_, pi_])
+
+            # ==== LATC code ===============================
+            # NOTE: Added here to reduce code duplication.
+            # Retrieve second target Lyapunov value.
+            if self._use_twin_critic:
+                lya_l2_ = self.ac.L2([o_, pi_])
+                lya_l_ = tf.math.maximum(
+                    lya_l_, lya_l2_
+                )  # Use max clipping to prevent underestimation bias.
+            # ==============================================
 
             # Compute Lyapunov Actor error.
             l_delta = tf.reduce_mean(
@@ -1054,7 +1117,17 @@ def lac(
 
     # Count variables and print network structure.
     var_counts = tuple(count_vars(module) for module in [policy.ac.pi, policy.ac.L])
-    logger.log("Number of parameters: \t pi: %d, \t L: %d\n" % var_counts, type="info")
+    param_count_log_str = "Number of parameters: \t pi: %d, \t L: %d" % var_counts
+
+    # ==== LATC code ===============================
+    # NOTE: Added here to reduce code duplication.
+    # Extend param count log string.
+    if isinstance(policy.ac, LyapunovActorTwinCritic):
+        param_count_log_str += ", \t L2: %d" % count_vars(policy.ac.L2)
+    # ===============================================
+
+    # Print network structure.
+    logger.log(param_count_log_str, type="info")
     logger.log("Network structure:\n", type="info")
     policy.full_summary()
 

@@ -11,3 +11,6 @@ from stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic import
 from stable_learning_control.algos.pytorch.policies.soft_actor_critic import (
     SoftActorCritic,
 )
+from stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic import (
+    LyapunovActorTwinCritic,
+)

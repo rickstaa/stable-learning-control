@@ -106,7 +106,6 @@ the runner will look in ``stable_learning_control/user_config.py`` for which ver
 default to that algorithm.
 
 .. attention::
-
     The TensorFlow version is still experimental. It is not guaranteed to work, and it is not
     guaranteed to be up-to-date with the PyTorch version.
 
@@ -334,7 +333,6 @@ The CLI also contains several (shortcut) flags that can be used to change the be
     :obj:`list`. A list of variables you want to log to the stdout when ``quiet`` is ``False``. The default :obj:`None` means that all variables are logged.
 
 .. important::
-
     The verbose_vars list should be supplied as a list that can be evaluated in Python (e.g. 
     ``--verbose_vars ["Lr_a", "Lr_c"]``).
 
@@ -360,7 +358,6 @@ by `Haarnoja et al., 2019`_.
 
 
 .. important::
-
     Please note that if you want to run multiple hyperparameter variants, for example, multiple seeds or
     learning rates, you have to use comma/space-separated strings in your configuration file:
 

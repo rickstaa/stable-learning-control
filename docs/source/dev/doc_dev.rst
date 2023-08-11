@@ -34,12 +34,10 @@ the ``docs/build/html`` directory. If the documentation is successfully created,
 ``make linkcheck`` command to check for broken links.
 
 .. attention::
-
     Ensure you are in the Conda environment where you installed the :slc:`stable_learning_control <>`
     package with its dependencies.
 
 .. note::
-
     Sometimes the ``make linkcheck`` command doesn't show the results on the stdout. You can also find the results
     in the ``docs/build/linkcheck`` folder. 
 

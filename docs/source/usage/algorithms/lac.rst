@@ -1,13 +1,12 @@
 .. _lac:
 
-=====================
-Lyapunov Actor-Critic
-=====================
+===========================
+Lyapunov Actor-Critic (LAC)
+===========================
 
 .. contents:: Table of Contents
 
 .. seealso::
-
     This document assumes you are familiar with the `Soft Actor-Critic (SAC)`_ algorithm.
     It is not meant to be a comprehensive guide but mainly depicts the difference between
     the :ref:`SAC <sac>` and `Lyapunov Actor-Critic (LAC)`_ algorithms. For more information,
@@ -21,7 +20,6 @@ Lyapunov Actor-Critic
 
 
 .. important::
-
     The LAC algorithm only guarantees stability in **mean cost** when trained on environments 
     with a positive definite cost function (i.e. environments in which the cost is minimized).
     The ``opt_type`` argument can be set to ``maximize`` when training in environments where
@@ -120,9 +118,14 @@ Where :math:`L_{target}` is the approximation target received from the `infinite
 and :math:`\mathcal{D}` the set of collected transition pairs.
 
 .. note::
-
     As explained by `Han et al., 2020`_ the sum of cost over a finite time horizon can also be used as the
     approximation target. This version still needs to be implemented in the SLC framework.
+
+.. seealso:: 
+    The SLC package also contains a LAC implementation using a double Q-Critic (i.e., :ref:`Lyapunov Twin Critic <latc>`).
+    For more information about this version, see the :ref:`LAC Twin Critic <latc>` documentation. This version can be used
+    by specifying the ``latc`` algorithm in the CLI, by supplying the :meth:`~stable_learning_control.algos.pytorch.lac.lac.lac` function with the ``actor_critic=LyapunovActorTwinCritic``
+    argument or by directly calling the :meth:`~stable_learning_control.algos.pytorch.lac.latc.latc` function.
 
 .. _`mean-squared Bellman error (MSBE) minimisation`: https://spinningup.openai.com/en/latest/algorithms/ddpg.html?highlight=msbe#the-q-learning-side-of-ddpg
 .. _`infinite-horizon discounted return value function`: https://spinningup.openai.com/en/latest/spinningup/rl_intro.html#value-functions
@@ -197,7 +200,6 @@ For more information on the LAC algorithm, please check out the original paper o
 
 .. _`Han et al., 2020`: https://arxiv.org/abs/2004.14288
 
-
 Pseudocode
 ----------
 
@@ -221,9 +223,6 @@ Pseudocode
         \UNTIL{eq. 11 of Han et al., 2020 is satisfied}
     \end{algorithmic}
     \end{algorithm}
-
-.. _`11 of Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
-.. _`eq. (7) and (14) from Han et al., 2020`: https://arxiv.org/pdf/2004.14288.pdf
 
 Implementation
 ==============
@@ -251,7 +250,6 @@ Algorithm: TensorFlow Version
 -----------------------------
 
 .. attention::
-
     The TensorFlow version is still experimental. It is not guaranteed to work, and it is not
     guaranteed to be up-to-date with the PyTorch version.
 
@@ -260,7 +258,7 @@ Algorithm: TensorFlow Version
 Saved Model Contents: TensorFlow Version
 ----------------------------------------
 
-The TensorFlow version of the SAC algorithm is implemented by subclassing the :class:`tf.nn.Model` class. As a result, both the
+The TensorFlow version of the LAC algorithm is implemented by subclassing the :class:`tf.nn.Model` class. As a result, both the
 full model and the current model weights are saved. The complete model can be found in the ``saved_model.pb`` file, while the current
 weights checkpoints are found in the ``tf_safe/weights_checkpoint*`` file. For an example of using these two methods, see :ref:`saving_and_loading`
 or the :tensorflow:`TensorFlow documentation <tutorials/keras/save_and_load>`.
