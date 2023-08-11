@@ -762,8 +762,8 @@ def sac(
     """Trains the SAC algorithm in a given environment.
 
     Args:
-        env_fn: A function which creates a copy of the environment.
-            The environment must satisfy the gymnasium API.
+        env_fn: A function which creates a copy of the environment. The environment
+            must satisfy the gymnasium API.
         actor_critic (torch.nn.Module, optional): The constructor method for a
             Torch Module with an ``act`` method, a ``pi`` module and several
             ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should

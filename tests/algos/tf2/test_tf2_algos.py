@@ -13,6 +13,7 @@ from gymnasium.utils import seeding
 
 ALGOS = [
     "stable_learning_control.algos.tf2.lac.lac",
+    "stable_learning_control.algos.tf2.latc.latc",
     "stable_learning_control.algos.tf2.sac.sac",
 ]
 
