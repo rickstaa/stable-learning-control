@@ -1495,6 +1495,15 @@ if __name__ == "__main__":
             "(defaults: None)"
         ),
     )
+    parser.add_argument(
+        "--wandb_run_name",
+        type=str,
+        default=None,
+        help=(
+            "the name of the Weights & Biases run (defaults: None, which will be "
+            "set to the experiment name)"
+        ),
+    )
     args = parser.parse_args()
 
     # Setup actor critic arguments.
@@ -1524,6 +1533,7 @@ if __name__ == "__main__":
         wandb_job_type=args.wandb_job_type,
         wandb_project=args.wandb_project,
         wandb_group=args.wandb_group,
+        wandb_run_name=args.wandb_run_name,
         quiet=args.quiet,
         verbose_fmt=args.verbose_fmt,
         verbose_vars=args.verbose_vars,

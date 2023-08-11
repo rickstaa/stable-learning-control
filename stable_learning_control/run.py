@@ -49,6 +49,7 @@ SUBSTITUTIONS = {
     "wandb_job_type": "logger_kwargs:wandb_job_type",
     "wandb_proj": "logger_kwargs:wandb_project",
     "wandb_group": "logger_kwargs:wandb_group",
+    "wandb_run_name": "logger_kwargs:wandb_run_name",
     "save_cps": "logger_kwargs:save_checkpoints",
     "tb_log_freq": "logger_kwargs:tb_log_freq",
     "quiet": "logger_kwargs:quiet",
