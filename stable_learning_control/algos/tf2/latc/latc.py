@@ -55,8 +55,47 @@ STD_OUT_LOG_VARS_DEFAULT = [
 # tf.config.run_functions_eagerly(True)  # NOTE: Uncomment for debugging.
 
 
-def latc(actor_critic=None, *args, **kwargs):
+def latc(env_fn, actor_critic=None, *args, **kwargs):
     """Trains the LATC algorithm in a given environment.
+
+    Args:
+        env_fn: A function which creates a copy of the environment. The environment
+            must satisfy the gymnasium API.
+        actor_critic (tf.Module, optional): The constructor method for a
+            TensorFlow Module with an ``act`` method, a ``pi`` module and several ``Q``
+            or ``L`` modules. The ``act`` method and ``pi`` module should accept batches
+            of observations as inputs, and the ``Q*`` and
+            ``L`` modules should accept a batch of observations and a batch of actions
+            as inputs. When called, these modules should return:
+
+            ===========  ================  ======================================
+            Call         Output Shape      Description
+            ===========  ================  ======================================
+            ``act``      (batch, act_dim)   | Numpy array of actions for each
+                                            | observation.
+            ``Q*/L``     (batch,)           | Tensor containing one current estimate
+                                            | of ``Q*/L`` for the provided
+                                            | observations and actions. (Critical:
+                                            | make sure to flatten this!)
+            ===========  ================  ======================================
+
+            Calling ``pi`` should return:
+
+            ===========  ================  ======================================
+            Symbol       Shape             Description
+            ===========  ================  ======================================
+            ``a``        (batch, act_dim)   | Tensor containing actions from policy
+                                            | given observations.
+            ``logp_pi``  (batch,)           | Tensor containing log probabilities of
+                                            | actions in ``a``. Importantly:
+                                            | gradients should be able to flow back
+                                            | into ``a``.
+            ===========  ================  ======================================
+
+            Defaults to
+            :class:`~stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic`
+        *args: The positional arguments to pass to the :meth:`~stable_learning_control.algos.tf2.lac.lac.lac` method.
+        **kwargs: The keyword arguments to pass to the :meth:`~stable_learning_control.algos.tf2.lac.lac.lac` method.
 
     .. note::
         Wraps the :func:`~stable_learning_control.algos.tf2.lac.lac.lac` function so
@@ -67,7 +106,7 @@ def latc(actor_critic=None, *args, **kwargs):
     actor_critic = LyapunovActorTwinCritic if actor_critic is None else actor_critic
 
     # Call lac algorithm.
-    return lac(actor_critic=actor_critic, *args, **kwargs)
+    return lac(env_fn, actor_critic=actor_critic, *args, **kwargs)
 
 
 if __name__ == "__main__":
