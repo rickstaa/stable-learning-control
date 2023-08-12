@@ -117,9 +117,14 @@ Where :math:`L_{target}` is the approximation target received from the `infinite
 
 and :math:`\mathcal{D}` the set of collected transition pairs.
 
-.. note::
+.. important::
     As explained by `Han et al., 2020`_ the sum of cost over a finite time horizon can also be used as the
-    approximation target. This version still needs to be implemented in the SLC framework.
+    approximation target (see `Han et al., 2020` eq (9)):
+
+    .. math::
+        L_{target}(s,a) = \sum_{t}^{t+N} \mathbb{E}_{c_{t}}
+    
+    To use this Lyapunov candidate, supply the LAC algorithm with the ``horizon_length=N`` argument, where ``N`` is the length of the time horizon you want to use.
 
 .. seealso:: 
     The SLC package also contains a LAC implementation using a double Q-Critic (i.e., :ref:`Lyapunov Twin Critic <latc>`).

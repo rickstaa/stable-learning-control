@@ -9,7 +9,7 @@ from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 
 
 class ReplayBuffer:
-    """A simple FIFO experience replay buffer.
+    """A simple first-in-first-out (FIFO) experience replay buffer.
 
     Attributes:
         obs_buf (numpy.ndarray): Buffer containing the current state.
@@ -112,8 +112,127 @@ class ReplayBuffer:
         return batch
 
 
+class FiniteHorizonReplayBuffer(ReplayBuffer):
+    """A first-in-first-out (FIFO) experience replay buffer that also stores the
+    expected cumulative finite-horizon reward.
+
+    .. note::
+        The expected cumulative finite-horizon reward is calculated using the following
+        formula:
+
+        .. math::
+            L_{target}(s,a) = \\sum_{t}^{t+N} \\mathbb{E}_{c_{t}}
+
+    Attributes:
+        horizon_length (int): The length of the finite-horizon.
+        horizon_rew_buf (numpy.ndarray): Buffer containing the expected cumulative
+            finite-horizon reward.
+    """
+
+    def __init__(self, obs_dim, act_dim, size, horizon_length):
+        """Initialise the FiniteHorizonReplayBuffer object.
+
+        Args:
+            obs_dim (tuple): The size of the observation space.
+            act_dim (tuple): The size of the action space.
+            size (int): The replay buffer size.
+            horizon_length (int): The length of the finite-horizon.
+        """
+        super().__init__(obs_dim, act_dim, size)
+
+        # Throw error if horizon size is larger than buffer size.
+        if horizon_length > size:
+            raise ValueError(
+                f"Horizon size ({horizon_length}) cannot be larger than buffer size "
+                f"({size})."
+            )
+
+        self.horizon_length = horizon_length
+        self._path_start_ptr = 0
+        self._path_length = 0
+
+        # Preallocate memory for expected cumulative finite-horizon reward buffer.
+        self.horizon_rew_buf = np.zeros(int(size), dtype=np.float32)
+
+    def store(self, obs, act, rew, next_obs, done, truncated):
+        """Add experience tuple to buffer and calculate expected cumulative finite
+        horizon reward if the episode is done or truncated.
+
+        Args:
+            obs (numpy.ndarray): Start state (observation).
+            act (numpy.ndarray): Action.
+            rew (:obj:`numpy.float64`): Reward.
+            next_obs (numpy.ndarray): Next state (observation)
+            done (bool): Boolean specifying whether the terminal state was reached.
+            truncated (bool): Boolean specifying whether the episode was truncated.
+        """
+        super().store(obs, act, rew, next_obs, done)
+        self._path_length += 1
+
+        # Throw error if path length is larger than horizon size.
+        if self._path_length > self._max_size:
+            raise ValueError(
+                f"Path length ({self._path_length}) cannot be larger than buffer "
+                f"size ({self._max_size})."
+            )
+
+        # Compute the expected cumulative finite-horizon reward if done or truncated.
+        if done or truncated:
+            if self.ptr < self._path_start_ptr:
+                path_ptrs = np.concatenate(
+                    [
+                        np.arange(self._path_start_ptr, self._max_size),
+                        np.arange(0, self.ptr % self._max_size),
+                    ]
+                )
+            else:
+                path_ptrs = np.arange(self._path_start_ptr, self.ptr)
+
+            path_rew = self.rew_buf[path_ptrs]
+
+            # Calculate the expected cumulative finite-horizon reward.
+            path_rew = np.pad(path_rew, (0, self.horizon_length), mode="edge")
+            horizon_rew = [
+                np.sum(path_rew[i : i + self.horizon_length + 1])
+                for i in range(len(path_rew) - self.horizon_length)
+            ]
+
+            # Store the expected cumulative finite-horizon reward.
+            self.horizon_rew_buf[path_ptrs] = horizon_rew
+
+            # Increase path variables.
+            self._path_length = 0
+            self._path_start_ptr = (
+                self.ptr
+            )  # NOTE: Ptr was already increased by super().store().
+
+    def sample_batch(self, batch_size=32):
+        """Retrieve a batch of experiences and their expected cumulative finite-horizon
+        reward from buffer.
+
+        Args:
+            batch_size (int, optional): The batch size. Defaults to ``32``.
+
+        Returns:
+            dict: A batch of experiences.
+        """
+        idxs = np.random.randint(0, self.size, size=batch_size)
+        batch = dict(
+            obs=self.obs_buf[idxs],
+            obs_next=self.obs_next_buf[idxs],
+            act=self.act_buf[idxs],
+            rew=self.rew_buf[idxs],
+            horizon_rew=self.horizon_rew_buf[idxs],
+            done=self.done_buf[idxs],
+        )
+        return batch
+
+
+# NOTE: It was created for a new monte-carlo algorithm we had in mind but currently not
+# used.
 class TrajectoryBuffer:
-    """A simple FIFO trajectory buffer.
+    """A simple FIFO trajectory buffer. It can store trajectories of varying lengths
+    for Monte Carlo or TD-N learning algorithms.
 
     Attributes:
         obs_buf (numpy.ndarray): Buffer containing the current state.
@@ -355,7 +474,7 @@ class TrajectoryBuffer:
             if not self._min_traj_size_warn:
                 log_to_std_out(
                     (
-                        "Trajectories shorter than {self._min_traj_size} have been "
+                        f"Trajectories shorter than {self._min_traj_size} have been "
                         "removed from the buffer."
                     ),
                     type="warning",
