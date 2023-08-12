@@ -1,3 +1,3 @@
 # Sandbox folder
 
-This folder stores some quick test that are used during development.
+This folder stores some quick test scripts that can be used during development.
