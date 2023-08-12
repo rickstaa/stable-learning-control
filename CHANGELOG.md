@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/rickstaa/stable-learning-control/compare/v4.3.0...v5.0.0) (2023-08-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **buffers:** the `ReplayBuffer` and `TrajectoryBuffer` classes don't take a `rew_dim` argument anymore.
+
+### Features
+
+* **lac:** add finite-horizon Lyapunov Candidate ([#328](https://github.com/rickstaa/stable-learning-control/issues/328)) ([ed2c85d](https://github.com/rickstaa/stable-learning-control/commit/ed2c85dcb9653aa8253e40870842dbefc5b33cb4))
+* **wandb:** add 'wandb_run_name' argument ([#325](https://github.com/rickstaa/stable-learning-control/issues/325)) ([e0a0b9d](https://github.com/rickstaa/stable-learning-control/commit/e0a0b9d43277bec384f3d82d6d80d38a0d20ba5c))
+
+
+### Code Refactoring
+
+* **buffers:** remove unused 'rew_dim' argument ([#327](https://github.com/rickstaa/stable-learning-control/issues/327)) ([a69a7f6](https://github.com/rickstaa/stable-learning-control/commit/a69a7f6f3c8c24b1874d6039ed2f798b2c931c0d))
+
 ## [4.3.0](https://github.com/rickstaa/stable-learning-control/compare/v4.2.0...v4.3.0) (2023-08-11)
 
 
