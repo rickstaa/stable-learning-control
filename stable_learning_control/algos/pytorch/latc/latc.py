@@ -305,6 +305,15 @@ if __name__ == "__main__":
         help="replay buffer size (default: 1e6)",
     )
     parser.add_argument(
+        "--horizon_length",
+        type=int,
+        default=0,
+        help=(
+            "length of the finite-horizon used for the Lyapunov Critic target ( "
+            "Default: 0, meaning the infinite-horizon bellman backup is used)."
+        ),
+    )
+    parser.add_argument(
         "--seed", "-s", type=int, default=0, help="the random seed (default: 0)"
     )
     parser.add_argument(
@@ -492,6 +501,7 @@ if __name__ == "__main__":
         lr_decay_ref=args.lr_decay_ref,
         batch_size=args.batch_size,
         replay_size=args.replay_size,
+        horizon_length=args.horizon_length,
         seed=args.seed,
         save_freq=args.save_freq,
         device=args.device,

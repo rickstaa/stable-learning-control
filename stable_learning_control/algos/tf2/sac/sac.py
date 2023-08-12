@@ -818,9 +818,9 @@ def sac(
     Returns:
         (tuple): tuple containing:
 
-                - policy (:class:`SAC`): The trained actor-critic policy.
-                - replay_buffer (:class:`~stable_learning_control.algos.common.buffers.ReplayBuffer`): The
-                  replay buffer used during training.
+            -   policy (:class:`SAC`): The trained actor-critic policy.
+            -   replay_buffer (union[:class:`~stable_learning_control.algos.common.buffers.ReplayBuffer`, :class:`~stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer`]):
+                The replay buffer used during training.
     """  # noqa: E501
     validate_args(**locals())
 

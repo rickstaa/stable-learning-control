@@ -29,7 +29,10 @@ from gymnasium.utils import seeding
 from torch.optim import Adam
 
 from stable_learning_control.algos.common.helpers import heuristic_target_entropy
-from stable_learning_control.algos.pytorch.common.buffers import ReplayBuffer
+from stable_learning_control.algos.pytorch.common.buffers import (
+    FiniteHorizonReplayBuffer,
+    ReplayBuffer,
+)
 from stable_learning_control.algos.pytorch.common.get_lr_scheduler import (
     get_lr_scheduler,
 )
@@ -359,6 +362,10 @@ class LAC(nn.Module):
             data["obs_next"],
             data["done"],
         )
+
+        # Check if expected cumulative finite-horizon reward is supplied.
+        if "horizon_rew" in data.keys():
+            v = data["horizon_rew"]
         ################################################
         # Optimize (Lyapunov/Q) critic #################
         ################################################
@@ -388,7 +395,12 @@ class LAC(nn.Module):
                 )  # Use max clipping to prevent underestimation bias.
             # ==============================================
 
-            l_backup = r + self._gamma * (1 - d) * l_pi_targ  # The Lyapunov candidate.
+            # Calculate Lyapunov target.
+            # NOTE: Calculation depends on the chosen Lyapunov candidate.
+            if "horizon_rew" in data.keys():  # Finite-horizon candidate (Han eq. 9).
+                l_backup = v
+            else:  # Infinite-horizon bellman backup (Han eq. 8).
+                l_backup = r + self._gamma * (1 - d) * l_pi_targ
 
         # Get current Lyapunov value.
         l1 = self.ac.L(o, a)
@@ -863,6 +875,7 @@ def lac(
     lr_decay_ref="epoch",
     batch_size=256,
     replay_size=int(1e6),
+    horizon_length=0,
     seed=None,
     device="cpu",
     logger_kwargs=dict(),
@@ -986,6 +999,9 @@ def lac(
         batch_size (int, optional): Minibatch size for SGD. Defaults to ``256``.
         replay_size (int, optional): Maximum length of replay buffer. Defaults to
             ``1e6``.
+        horizon_length (int, optional): The length of the finite-horizon used for the
+            Lyapunov Critic target. Defaults to ``0`` meaning the infinite-horizon
+            bellman backup is used.
         seed (int): Seed for random number generators. Defaults to ``None``.
         device (str, optional): The device the networks are placed on (``cpu``
             or ``gpu``). Defaults to ``cpu``.
@@ -1000,9 +1016,9 @@ def lac(
     Returns:
         (tuple): tuple containing:
 
-                - policy (:class:`LAC`): The trained actor-critic policy.
-                - replay_buffer (:class:`~stable_learning_control.algos.pytorch.common.buffers.ReplayBuffer`): The
-                  replay buffer used during training.
+            -   policy (:class:`LAC`): The trained actor-critic policy.
+            -   replay_buffer (union[:class:`~stable_learning_control.algos.pytorch.common.buffers.ReplayBuffer`, :class:`~stable_learning_control.algos.pytorch.common.buffers.FiniteHorizonReplayBuffer`]):
+                The replay buffer used during training.
     """  # noqa: E501
     validate_args(**locals())
 
@@ -1147,12 +1163,22 @@ def lac(
             )
             sys.exit(0)
 
-    replay_buffer = ReplayBuffer(
-        obs_dim=obs_dim,
-        act_dim=act_dim,
-        size=replay_size,
-        device=policy.device,
-    )
+    # Initialize replay buffer.
+    if horizon_length != 0:  # Finite-horizon.
+        replay_buffer = FiniteHorizonReplayBuffer(
+            obs_dim=obs_dim,
+            act_dim=act_dim,
+            size=replay_size,
+            device=policy.device,
+            horizon_length=horizon_length,
+        )
+    else:  # Infinite-horizon.
+        replay_buffer = ReplayBuffer(
+            obs_dim=obs_dim,
+            act_dim=act_dim,
+            size=replay_size,
+            device=policy.device,
+        )
 
     # Count policy variables and initialize param count log string.
     var_counts = tuple(count_vars(module) for module in [policy.ac.pi, policy.ac.L])
@@ -1269,7 +1295,11 @@ def lac(
         ep_ret += r
         ep_len += 1
 
-        replay_buffer.store(o, a, r, o_, d)
+        # Store experience in replay buffer.
+        if isinstance(replay_buffer, FiniteHorizonReplayBuffer):
+            replay_buffer.store(o, a, r, o_, d, truncated)
+        else:
+            replay_buffer.store(o, a, r, o_, d)
 
         # Make sure to update most recent observation!
         o = o_
@@ -1620,6 +1650,15 @@ if __name__ == "__main__":
         help="replay buffer size (default: 1e6)",
     )
     parser.add_argument(
+        "--horizon_length",
+        type=int,
+        default=0,
+        help=(
+            "length of the finite-horizon used for the Lyapunov Critic target ( "
+            "Default: 0, meaning the infinite-horizon bellman backup is used)."
+        ),
+    )
+    parser.add_argument(
         "--seed", "-s", type=int, default=0, help="the random seed (default: 0)"
     )
     parser.add_argument(
@@ -1807,6 +1846,7 @@ if __name__ == "__main__":
         lr_decay_ref=args.lr_decay_ref,
         batch_size=args.batch_size,
         replay_size=args.replay_size,
+        horizon_length=args.horizon_length,
         seed=args.seed,
         save_freq=args.save_freq,
         device=args.device,
