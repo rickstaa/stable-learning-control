@@ -466,8 +466,8 @@ can be done by adding the following lines to your environment file:
 
 .. code-block:: python
 
-    import gym
-    from gym.envs.registration import register
+    import gymnasium as gym
+    from gymnasium.envs.registration import register
 
     register(
         id='CustomEnv-v0',
@@ -499,7 +499,7 @@ to set up specialized custom experiments, for example:
 
     from stable_learning_control.control import sac_tf2 as sac
     import tensorflow as tf
-    import gym
+    import gymnasium as gym
 
     env_fn = lambda : gym.make('LunarLander-v2')
 

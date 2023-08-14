@@ -182,7 +182,7 @@ or :ref:`load_tf2_policy` documentation below to load the policy in a Python scr
 
 .. code-block::
 
-    >>> import gym
+    >>> import gymnasium as gym
     >>> from stable_learning_control.utils.test_policy import load_pytorch_policy, run_policy
     >>> import your_env
     >>> env = gym.make('<YOUR_ENV_NAME>')
