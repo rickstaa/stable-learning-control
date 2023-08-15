@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.1](https://github.com/rickstaa/stable-learning-control/compare/v5.0.0...v5.0.1) (2023-08-14)
+
+
+### Documentation
+
+* improve documentation and package.json ([#331](https://github.com/rickstaa/stable-learning-control/issues/331)) ([e9fb90e](https://github.com/rickstaa/stable-learning-control/commit/e9fb90e2088401336a066684b26ecb81beb2d43e))
+* update sandbox description ([#329](https://github.com/rickstaa/stable-learning-control/issues/329)) ([f60cc3b](https://github.com/rickstaa/stable-learning-control/commit/f60cc3b1f76fa78cc5efc81621f977f86bade5cb))
+
 ## [5.0.0](https://github.com/rickstaa/stable-learning-control/compare/v4.3.0...v5.0.0) (2023-08-12)
 
 
