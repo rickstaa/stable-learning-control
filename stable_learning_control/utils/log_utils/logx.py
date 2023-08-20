@@ -603,6 +603,7 @@ class Logger:
                 load_path = load_path[0]
             else:
                 load_path = env_path
+
         # try to load environment from save.
         # NOTE: Sometimes this will fail because the environment could not be pickled.
         try:
