@@ -87,9 +87,9 @@ class Logger:
             output_dir (str, optional): A directory for saving results to. If
                 ``None``, defaults to a temp directory of the form
                 ``/tmp/experiments/somerandomnumber``.
-            output_fname (str, optional): Name for the (tab/comma) separated-value
+            output_fname (str, optional): Name for the (comma/tab) separated-value
                 file containing metrics logged throughout a training run. Defaults to
-                to ``progress.csv``.
+                to ``progress.csv`` which uses commas as separators.
             exp_name (str, optional): Experiment name. If you run multiple training
                 runs and give them all the same ``exp_name``, the plotter
                 will know to group them. (Use case: if you run the same
