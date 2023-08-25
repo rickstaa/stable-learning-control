@@ -48,3 +48,6 @@ if __name__ == "__main__":
                 print("Environment terminated or truncated. Resetting.")
                 o, _ = env.reset()
                 ep_ret, ep_len, t = 0, 0, 0
+
+    print("Done")
+    env.close()

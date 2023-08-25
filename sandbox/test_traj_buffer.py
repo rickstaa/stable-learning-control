@@ -53,3 +53,6 @@ if __name__ == "__main__":
 
         # Print data.
         print(f"Epoch {epoch}:")
+
+    print("Done")
+    env.close()

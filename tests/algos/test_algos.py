@@ -30,7 +30,8 @@ class TestTorchAlgos:
         env.action_space.seed(0)
         env.observation_space.seed(0)
 
-        return env
+        yield env
+        env.close()
 
     def test_reproducibility(self, algo, snapshot, env):
         """Checks if the algorithm is still working as expected."""

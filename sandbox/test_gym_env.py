@@ -48,4 +48,6 @@ if __name__ == "__main__":
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, loc=2, fancybox=False, shadow=False)
     plt.show()
+
     print("Done")
+    env.close()
