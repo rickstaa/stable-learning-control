@@ -32,7 +32,8 @@ class TestTF2AlgosGPU:
         env.action_space.seed(0)
         env.observation_space.seed(0)
 
-        return env
+        yield env
+        env.close()
 
     def test_reproducibility(self, algo, device, snapshot, env):
         """Checks if the algorithm is still working as expected."""

@@ -12,7 +12,7 @@ from stable_learning_control.utils.test_policy import (
 )
 
 AGENT_TYPE = "torch"  # The type of agent that was trained. Options: 'tf2' and 'torch'.
-AGENT_FOLDER = "/home/ricks/Development/stable-learning-control/data/2022-02-24_staa_lac_panda_reach/2022-02-24_09-12-19-staa_lac_panda_reach_s25"  # noqa: E501
+AGENT_FOLDER = "/home/ricks/development/work/stable-learning-control/data/cmd_lac_pytorch/cmd_lac_pytorch_s0"  # noqa: E501
 
 if __name__ == "__main__":
     # NOTE: STEP 1a: Try to load the policy and environment
@@ -45,3 +45,5 @@ if __name__ == "__main__":
             "'AGENT_FOLDER' and try again. If the problem persists please open a issue "
             "on https://github.com/rickstaa/stable-learning-control/issues."
         )
+
+    env.close()

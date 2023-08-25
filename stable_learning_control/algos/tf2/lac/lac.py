@@ -1368,6 +1368,8 @@ def lac(
         type="info",
     )
 
+    # Close environment and return policy and replay buffer.
+    env.close()
     return policy, replay_buffer
 
 
