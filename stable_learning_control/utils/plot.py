@@ -114,7 +114,9 @@ def get_datasets(logdir, condition=None):
             units[condition1] += 1
 
             try:
-                exp_data = pd.read_table(osp.join(root, data_file[0]))
+                exp_data = pd.read_table(
+                    osp.join(root, data_file[0]), sep=None, engine="python"
+                )
             except Exception:
                 print("Could not read from %s" % osp.join(root, data_file[0]))
                 continue
