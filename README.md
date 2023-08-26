@@ -20,6 +20,9 @@ Please see the [docs](https://rickstaa.github.io/stable-learning-control/) for i
 
 We use [husky](https://github.com/typicode/husky) pre-commit hooks and github actions to enforce high code quality. Please check the [contributing guidelines](CONTRIBUTING.md) before contributing to this repository.
 
+> [!NOTE]\
+> We used [husky](https://github.com/typicode/husky) instead of [pre-commit](https://pre-commit.com/), which is more commonly used with Python projects. This was done because only some tools we wanted to use were possible to integrate the Please feel free to open a [PR](https://github.com/rickstaa/stable-learning-control/pulls) if you want to switch to pre-commit if this is no longer the case.
+
 ## References
 
 *   [Han et al. 2020](https://arxiv.org/abs/2004.14288) - Used as a basis for the Lyapunov actor-critic architecture.
