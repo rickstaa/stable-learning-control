@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.2](https://github.com/rickstaa/stable-learning-control/compare/v5.0.1...v5.0.2) (2023-08-28)
+
+
+### Bug Fixes
+
+* correctly close gymnasium environments ([#340](https://github.com/rickstaa/stable-learning-control/issues/340)) ([a179176](https://github.com/rickstaa/stable-learning-control/commit/a1791761737c0f83220461b036c55e0acbc68cf5))
+* fix plot dataframe loading ([#338](https://github.com/rickstaa/stable-learning-control/issues/338)) ([90e16e9](https://github.com/rickstaa/stable-learning-control/commit/90e16e9385df8f1eac4a3626aebaa56ebd6e7b61))
+
+
+### Documentation
+
+* add pre-commit note ([#341](https://github.com/rickstaa/stable-learning-control/issues/341)) ([9853d05](https://github.com/rickstaa/stable-learning-control/commit/9853d05a8d5395eab900837a44a38d0e183ead77))
+
 ## [5.0.1](https://github.com/rickstaa/stable-learning-control/compare/v5.0.0...v5.0.1) (2023-08-14)
 
 
