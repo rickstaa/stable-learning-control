@@ -25,8 +25,8 @@ from gymnasium.utils import seeding
 from tensorflow.keras.optimizers import Adam
 
 from stable_learning_control.algos.common.buffers import (
-    ReplayBuffer,
     FiniteHorizonReplayBuffer,
+    ReplayBuffer,
 )
 from stable_learning_control.algos.common.helpers import heuristic_target_entropy
 from stable_learning_control.algos.tf2.common.get_lr_scheduler import get_lr_scheduler

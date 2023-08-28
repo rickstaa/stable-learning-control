@@ -24,18 +24,17 @@ bias, while the original LAC only uses one critic. For more information, see
 """  # noqa: E501
 import argparse
 import os.path as osp
-import torch
-import gymnasium as gym
 import time
 
-from stable_learning_control.utils.safer_eval_util import safer_eval
+import gymnasium as gym
+import torch
+
 from stable_learning_control.algos.pytorch.lac.lac import lac
 from stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic import (
     LyapunovActorTwinCritic,
 )
-from stable_learning_control.utils.log_utils.helpers import (
-    setup_logger_kwargs,
-)
+from stable_learning_control.utils.log_utils.helpers import setup_logger_kwargs
+from stable_learning_control.utils.safer_eval_util import safer_eval
 
 # Script settings.
 STD_OUT_LOG_VARS_DEFAULT = [

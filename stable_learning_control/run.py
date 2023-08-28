@@ -1,20 +1,20 @@
 """Responsible for creating the CLI for the stable_learning_control package. It can
 be used to start the training of an algorithm, or run any of the other utilities.
 """
+import inspect
 import os
 import os.path as osp
 import subprocess
 import sys
 from copy import deepcopy
 from textwrap import dedent
-import inspect
 
 import ruamel.yaml as yaml
 
 from stable_learning_control.common.helpers import (
     flatten,
-    get_unique_list,
     friendly_err,
+    get_unique_list,
 )
 from stable_learning_control.user_config import DEFAULT_BACKEND
 from stable_learning_control.utils.gym_utils import validate_gym_env
