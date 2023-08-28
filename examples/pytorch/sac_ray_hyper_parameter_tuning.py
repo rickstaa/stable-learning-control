@@ -31,7 +31,7 @@ For more information on how to use this package, see the `Ray tuning documentati
 import os.path as osp
 
 import gymnasium as gym
-from ray import tune, air
+from ray import air, tune
 from ray.tune.schedulers import ASHAScheduler
 from ray.tune.search.hyperopt import HyperOptSearch
 

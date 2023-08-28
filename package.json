@@ -33,6 +33,7 @@
   "scripts": {
     "prepare": "husky install",
     "sort": "sort-package-json",
+    "sort:py": "isort .",
     "test": "pytest --cov=stable_learning_control --cov-report=term-missing --ignore=tests/algos/tf2",
     "test:update:snapshots": "pytest --snapshot-update --cov=stable_learning_control --cov-report=term-missing --ignore=tests/algos/tf2",
     "test:tf2": "pytest --cov=stable_learning_control --cov-report=term-missing tests/algos/tf2 --ignore=tests/algos/tf2/gpu",

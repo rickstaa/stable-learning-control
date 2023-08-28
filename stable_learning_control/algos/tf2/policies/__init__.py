@@ -8,7 +8,7 @@ from stable_learning_control.algos.tf2.policies.critics.Q_critic import QCritic
 from stable_learning_control.algos.tf2.policies.lyapunov_actor_critic import (
     LyapunovActorCritic,
 )
-from stable_learning_control.algos.tf2.policies.soft_actor_critic import SoftActorCritic
 from stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic import (
     LyapunovActorTwinCritic,
 )
+from stable_learning_control.algos.tf2.policies.soft_actor_critic import SoftActorCritic

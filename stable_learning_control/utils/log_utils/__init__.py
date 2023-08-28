@@ -6,8 +6,8 @@
 """
 from stable_learning_control.utils.log_utils.helpers import (
     colorize,
+    dict_to_mdtable,
     log_to_std_out,
     setup_logger_kwargs,
-    dict_to_mdtable,
 )
 from stable_learning_control.utils.log_utils.logx import EpochLogger
