@@ -2,7 +2,6 @@
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-
 import sys
 from datetime import datetime
 from importlib.metadata import version
@@ -25,7 +24,6 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
 project = "stable-learning-control"
 copyright = f"{datetime.now().year}, Rick Staa"
 author = "Rick Staa"
