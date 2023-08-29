@@ -7,7 +7,8 @@
 Welcome to Stable Learning Control documentation
 ================================================
 
-.. figure:: ./images/safe_panda.jpg
+.. image:: /images/safe_panda.jpg
+   :alt: Stable Learning Control
 
 Welcome to the :slc:`Stable Learning Control <>` (SLC) framework! This framework contains
 a collection of robust Reinforcement Learning (RL) control algorithms designed to ensure stability.
