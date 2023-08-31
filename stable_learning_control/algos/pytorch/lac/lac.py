@@ -87,9 +87,6 @@ class LAC(nn.Module):
         ac_ (torch.nn.Module): The (lyapunov) target actor critic module.
         log_alpha (torch.Tensor): The temperature Lagrance multiplier.
         log_labda (torch.Tensor): The Lyapunov Lagrance multiplier.
-        target_entropy (int): The target entropy.
-        device (str): The device the networks are placed on (``cpu`` or ``gpu``).
-            Defaults to ``cpu``.
     """
 
     def __init__(

@@ -91,7 +91,7 @@ def full_model_summary(model):
     """Prints a full summary of all the layers of a TensorFlow model.
 
     Args:
-        layer (:tf:`keras.layers`): The model to print the full summary of.
+        layer (:mod:`~tensorflow.keras.layers`): The model to print the full summary of.
     """
     if hasattr(model, "layers"):
         model.summary()

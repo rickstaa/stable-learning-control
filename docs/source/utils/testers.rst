@@ -138,11 +138,11 @@ is successfully saved alongside the agent, the robustness can be evaluated using
 
     *:obj:`list of ints`*. The observations you want to show in the observations/reference plots. The default value of :obj:`None` means all observations will be shown.
 
-.. options:: --refs, --references, default=None
+.. option:: --refs, --references, default=None
 
     *:obj:`list of ints`*. The references you want to show in the observations/reference plots. The default value of :obj:`None` means all references will be shown.
 
-.. options:: --ref_errs, --reference_errors, default=None
+.. option:: --ref_errs, --reference_errors, default=None
 
     *:obj:`list of ints`*. The reference errors you want to show in the reference error plots. The default value of :obj:`None` means all reference errors will be shown.
 

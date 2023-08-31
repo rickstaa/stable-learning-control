@@ -75,8 +75,8 @@ dev = [
 ]
 docs = [
     "stable_learning_control[tf2,tuning]",
-    "sphinx>=6.2.1",
-    "sphinx_rtd_theme>=1.2.2",
+    "sphinx>=7.1.2",
+    "sphinx_rtd_theme>=1.3.0",
     "myst-parser>=1.0.0",
     "sphinx-autoapi>=2.1.1"
 ]

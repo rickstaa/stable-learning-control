@@ -35,16 +35,18 @@ The most important input arguments are:
     documentation or :ref:`the API reference <autoapi>`.
 
 Robustness eval configuration file (yaml)
------------------------------------------
+=========================================
 
-The SLC CLI comes with a handy configuration file loader that can be used to load `YAML`_ configuration files.
-These configuration files provide a convenient way to store your robustness evaluation parameters such that results
-can be reproduced. You can supply the CLI with an experiment configuration file using the ``--eval_cfg`` flag. The
-configuration file format equals the format expected by the :ref:`--exp_cfg <exp_cfg>` flag of the :ref:`run experiments <running_experiments>` utility.
+The SLC CLI comes with a handy configuration file loader that can be used to load `YAML`_ configuration files. These configuration files provide a convenient
+way to store your robustness evaluation parameters such that results can be reproduced. You can supply the CLI with an experiment configuration file using
+the ``--eval_cfg`` flag. The configuration file format equals the format expected by the :ref:`--exp_cfg <exp_cfg>` flag of the 
+:ref:`run experiments <running_experiments>` utility.
 
 .. option:: --eval_cfg
 
     :obj:`path str`. Sets the path to the ``yml`` config file used for loading experiment hyperparameter.
+
+.. _YAML: https://yaml.org/
 
 Available disturbers
 ====================
@@ -182,5 +184,5 @@ The SLC package looks for several attributes in the disturber class to get infor
 Manual robustness evaluation
 ============================
 
-A script version of the eval robustness tool can be found in the ``examples`` folder (i.e. :slc:`eval_robustness.py <blob/main/examples/eval_robustness.py>`). This script can be used
+A script version of the eval robustness tool can be found in the ``examples`` folder (i.e. :slc:`eval_robustness.py <tree/main/examples/eval_robustness.py>`). This script can be used
 when you want to perform some quick tests without implementing a disturber class.

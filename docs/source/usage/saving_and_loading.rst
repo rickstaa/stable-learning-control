@@ -195,7 +195,7 @@ or :ref:`load_tf2_policy` documentation below to load the policy in a Python scr
 
 If you want to load a Tensorflow agent, please replace the :meth:`~stable_learning_control.utils.test_policy.load_pytorch_policy` with
 :meth:`~stable_learning_control.utils.test_policy.load_tf_policy`. An example script for manually loading policies can be found in the
-``examples`` folder (i.e. :slc:`manual_env_policy_inference.py <blob/main/examples/manual_env_policy_inference.py>`).
+``examples`` folder (i.e. :slc:`manual_env_policy_inference.py <tree/main/examples/manual_env_policy_inference.py>`).
 
 .. _load_pytorch_policy:
 

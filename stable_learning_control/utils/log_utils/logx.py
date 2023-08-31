@@ -2,7 +2,7 @@
 
 .. note::
     This module extends the logx module of
-    `the SpinningUp repository <https://github.com/openai/spinningup/blob/master/spinup/utils/logx.py>`_
+    `the SpinningUp repository <https://github.com/openai/spinningup/tree/master/spinup/utils/logx.py>`_
     so that it:
     
     - Also logs in line format (besides tabular format).
