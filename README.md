@@ -1,6 +1,6 @@
 # Stable Learning Control
 
-[![Stable Learning Control CI](https://github.com/rickstaa/stable-learning-control/actions/workflows/stable_learning_control.yml/badge.svg)](https://github.com/rickstaa/stable-learning-control/actions/workflows/stable_learning_control.yml)
+[![Stable Learning Control](https://github.com/rickstaa/stable-learning-control/actions/workflows/stable_learning_control.yml/badge.svg)](https://github.com/rickstaa/stable-learning-control/actions/workflows/stable_learning_control.yml)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rickstaa/stable-learning-control)](https://github.com/rickstaa/stable-learning-control/releases)
 [![Python 3](https://img.shields.io/badge/Python->=3.8-brightgreen)](https://www.python.org/)
 [![codecov](https://codecov.io/gh/rickstaa/stable-learning-control/branch/main/graph/badge.svg?token=4SAME74CJ7)](https://codecov.io/gh/rickstaa/stable-learning-control)
