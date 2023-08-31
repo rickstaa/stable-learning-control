@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.5](https://github.com/rickstaa/stable-learning-control/compare/v5.0.4...v5.0.5) (2023-08-31)
+
+
+### Documentation
+
+* add ros-gazebo-gym positive reward comment ([#349](https://github.com/rickstaa/stable-learning-control/issues/349)) ([9f5c434](https://github.com/rickstaa/stable-learning-control/commit/9f5c4340732911138249bc0de57edce31472bff9))
+
 ## [5.0.4](https://github.com/rickstaa/stable-learning-control/compare/v5.0.3...v5.0.4) (2023-08-31)
 
 
