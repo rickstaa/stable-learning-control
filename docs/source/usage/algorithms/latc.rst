@@ -15,7 +15,7 @@ Lyapunov Actor-Twin Critic (LATC)
 .. important::
     Like the LAC algorithm, this LATC algorithm only guarantees stability in **mean cost** when trained on
     environments with a positive definite cost function (i.e. environments in which the cost is minimised).
-    The ``opt_type`` argument can be set to ``maximise `` when training in environments where the reward is
+    The ``opt_type`` argument can be set to ``maximise`` when training in environments where the reward is
     maximised. However, because the `Lyapunov's stability conditions`_ are not satisfied, the LAC algorithm
     no longer guarantees stability in **mean** cost.
 

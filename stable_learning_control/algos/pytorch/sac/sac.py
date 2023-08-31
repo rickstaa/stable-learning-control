@@ -79,9 +79,6 @@ class SAC(nn.Module):
         ac (torch.nn.Module): The soft actor critic module.
         ac_ (torch.nn.Module): The target soft actor critic module.
         log_alpha (torch.Tensor): The temperature Lagrance multiplier.
-        target_entropy (int): The target entropy.
-        device (str): The device the networks are placed on (``cpu`` or ``gpu``).
-            Defaults to ``cpu``.
     """
 
     def __init__(

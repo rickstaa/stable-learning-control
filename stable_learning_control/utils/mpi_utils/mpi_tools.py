@@ -15,7 +15,7 @@ def mpi_fork(n, bind_to_core=False):
     Taken almost without modification from the Baselines function of the
     `same name`_.
 
-    .. _`same name`: https://github.com/openai/baselines/blob/master/baselines/common/mpi_fork.py
+    .. _`same name`: https://github.com/openai/baselines/tree/master/baselines/common/mpi_fork.py
 
     Args:
         n (int): Number of process to split into.

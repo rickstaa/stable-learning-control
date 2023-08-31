@@ -9,8 +9,8 @@ bias, while the original LAC only uses one critic. For more information, see
 
 .. note::
     Code Conventions:
-        -   We use a `_` suffix to distinguish the next state from the current state.
-        -   We use a `targ` suffix to distinguish actions/values coming from the target
+        -   We use a ``_`` suffix to distinguish the next state from the current state.
+        -   We use a ``targ`` suffix to distinguish actions/values coming from the target
             network.
 
 .. attention::

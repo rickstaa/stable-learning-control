@@ -55,7 +55,7 @@ class MpiAdamOptimizer(object):
     For documentation on method arguments, see the TensorFlow docs page for
     the base :class:`~tf.keras.optimizers.AdamOptimizer`.
 
-    .. _`MpiAdamOptimizer`: https://github.com/openai/baselines/blob/master/baselines/common/mpi_adam_optimizer.py
+    .. _`MpiAdamOptimizer`: https://github.com/openai/baselines/tree/master/baselines/common/mpi_adam_optimizer.py
     """  # noqa: E501
 
     def __init__(self, **kwargs):

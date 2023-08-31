@@ -37,7 +37,7 @@ ExperimentGrid utility
 
 SLC ships with a tool called ExperimentGrid for making hyperparameter ablations easier. This is based on (but simpler than) `the rllab tool`_ called VariantGenerator.
 
-.. _`the rllab tool`: https://github.com/rll/rllab/blob/master/rllab/misc/instrument.py#L173
+.. _`the rllab tool`: https://github.com/rll/rllab/tree/master/rllab/misc/instrument.py#L173
 
 .. autoclass:: stable_learning_control.utils.run_utils.ExperimentGrid
     :members:

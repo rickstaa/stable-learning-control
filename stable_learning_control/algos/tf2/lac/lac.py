@@ -84,9 +84,6 @@ class LAC(tf.keras.Model):
         ac_ (tf.Module): The (lyapunov) target actor critic module.
         log_alpha (tf.Variable): The temperature Lagrance multiplier.
         log_labda (tf.Variable): The Lyapunov Lagrance multiplier.
-        target_entropy (int): The target entropy.
-        device (str): The device the networks are placed on (``cpu`` or ``gpu``).
-            Defaults to ``cpu``.
     """
 
     def __init__(

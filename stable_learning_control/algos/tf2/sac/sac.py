@@ -73,9 +73,6 @@ class SAC(tf.keras.Model):
         ac (tf.Module): The (soft) actor critic module.
         ac_ (tf.Module): The (soft) target actor critic module.
         log_alpha (tf.Variable): The temperature Lagrance multiplier.
-        target_entropy (int): The target entropy.
-        device (str): The device the networks are placed on (``cpu`` or ``gpu``).
-            Defaults to ``cpu``.
     """
 
     def __init__(
