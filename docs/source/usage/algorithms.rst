@@ -22,7 +22,8 @@ Stable Agents
    :gymnasium:`gymnasium <>` environments, the stable RL agents require a positive definite
    cost function to guarantee stability (and robustness). Several custom environments with
    positive definite cost functions can be found in the :stable-gym:`stable-gym <>` and
-   :ros-gazebo-gym:`ros-gazebo-gym <>` packages.
+   :ros-gazebo-gym:`ros-gazebo-gym <>` packages. When using the latter, make sure to set
+   ``positive_reward`` to ``True``.
 
 The SLC package currently contains the following theoretically stable RL algorithms:
 
