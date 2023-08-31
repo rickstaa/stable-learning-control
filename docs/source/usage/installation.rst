@@ -174,7 +174,7 @@ environments which are compatible with the stable algorithms:
 * :stable-gym:`stable-gym <>`: Several gymnasium environments with cost functions compatible with (stable) 
   RL agents (i.e. positive definite). 
 * :ros-gazebo-gym:`ros-gazebo-gym packages <>`: A framework for training RL algorithms on ROS Gazebo 
-  robots that can use positive definite cost functions.
+  robots that can return positive definite cost functions (i.e. when ``positive_reward`` is set to ``True``).
 
 Please refer to the documentation of these packages for more information on installing
 these environments. After you install these environments or any custom environment, you
