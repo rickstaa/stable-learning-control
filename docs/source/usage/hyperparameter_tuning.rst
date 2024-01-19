@@ -15,14 +15,14 @@ You can utilize this utility in two ways: by supplying the :ref:`CLI <runner>` w
 (refer to :ref:`Running Experiments <running_experiments>`), or by directly employing the 
 :class:`~stable_learning_control.utils.run_utils.ExperimentGrid` class (see :ref:`running_multiple_experiments`). These 
 methods facilitate running numerous experiments with distinct hyperparameter combinations, enabling a hyperparameter grid search
-to identify the optimal parameter setting for your task. For instance, to execute the LAC algorithm on the `CartPoleCost-v0`_
+to identify the optimal parameter setting for your task. For instance, to execute the LAC algorithm on the `CartPoleCost-v1`_
 environment with various values for actor and critic learning rates using the :ref:`CLI <runner>`, employ the following command:
 
 .. code-block:: bash
 
-    python -m stable_learning_control.examples.pytorch.run lac --env CartPoleCost-v0 --lr_a 0.001 0.01 0.1 --lr_c 0.001 0.01 0.1
+    python -m stable_learning_control.run lac --env CartPoleCost-v1 --lr_a 0.001 0.01 0.1 --lr_c 0.001 0.01 0.1
 
-.. _`CartPoleCost-v0`: https://rickstaa.dev/stable-gym/envs/classic_control/cartpole_cost.html
+.. _`CartPoleCost-v1`: https://rickstaa.dev/stable-gym/envs/classic_control/cartpole_cost.html
 
 .. tip:: 
     You can enable logging of TensorBoard and Weights & Biases by adding the ``--use_tensorboard`` and ``--use_wandb`` flags to the

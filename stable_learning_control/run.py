@@ -574,7 +574,7 @@ def run(input_args):
             FYI: When running an algorithm, any keyword argument to the
             algorithm function can be used as a flag, eg
 
-            \tpython -m stable_learning_control.run sac --env HalfCheetah-v2 --clip_ratio 0.1
+            \tpython -m stable_learning_control.run sac --env HalfCheetah-v4 --clip_ratio 0.1
 
             If you need a quick refresher on valid kwargs, get the docstring
             with

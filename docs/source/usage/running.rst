@@ -14,6 +14,19 @@ or through function calls in scripts.
 Launching from the Command Line
 ===============================
 
+.. important::
+
+    **Important Note:** To run the examples in this section, you need to install the `Gymnasium Mujoco environments`_ package, including all its necessary dependencies. To do so, execute the following command:
+
+    .. code-block:: bash
+
+        pip install stable-learning-control[mujoco]
+
+    For more detailed information about the `Gymnasium Mujoco environments`_ package, please consult the documentation available `here <here_mujoco_>`_.
+
+.. _`Gymnasium Mujoco environments`: https://gymnasium.farama.org/environments/mujoco/
+.. _`here_mujoco`: https://gymnasium.farama.org/environments/mujoco/
+
 SLC ships with a convenient :ref:`command line interface (CLI) <runner>` that lets you
 quickly launch any algorithm (with any choices of hyperparameters) from the command line.
 It also serves as a thin wrapper over the utilities for watching/evaluating the trained
@@ -31,7 +44,7 @@ eg:
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run sac --env Walker2d-v2 --exp_name walker
+    python -m stable_learning_control.run sac --env Walker2d-v4 --exp_name walker
 
 .. admonition:: You Should Know
 
@@ -46,11 +59,11 @@ eg:
 
     .. parsed-literal::
 
-        python -m stable_learning_control.run sac --exp_name sac_ant --env Ant-v2 --clip_ratio 0.1 0.2
+        python -m stable_learning_control.run sac --exp_name sac_ant --env Ant-v4 --clip_ratio 0.1 0.2
             --hid[h] [32,32] [64,32] --act torch.nn.Tanh --seed 0 10 20 --dt
             --data_dir path/to/data
 
-    runs SAC in the ``Ant-v2`` gymnasium environment, with various settings controlled by the flags.
+    runs SAC in the ``Ant-v4`` gymnasium environment, with various settings controlled by the flags.
 
     By default, the PyTorch version will run. You can, however, substitute ``sac`` with
     ``sac_tf2`` for the TensorFlow version.
@@ -133,7 +146,7 @@ to see a readout of the docstring.
 
     .. parsed-literal::
 
-        python -m stable_learning_control.run SAC --env Walker2d-v2 --exp_name walker --act torch.nn.ReLU
+        python -m stable_learning_control.run SAC --env Walker2d-v4 --exp_name walker --act torch.nn.ReLU
 
     sets ``torch.nn.ReLU`` as the activation function. (TensorFlow equivalent: run ``sac_tf`` with ``--act tf.nn.relu``.)
 
@@ -166,7 +179,7 @@ For example, to launch otherwise-equivalent runs with different random seeds (0,
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run sac --env Walker2d-v2 --exp_name walker --seed 0 10 20
+    python -m stable_learning_control.run sac --env Walker2d-v4 --exp_name walker --seed 0 10 20
 
 Experiments don't launch in parallel because they soak up enough resources that executing several
 simultaneously wouldn't get a speedup.
@@ -196,10 +209,10 @@ Environment Flags
 
     :obj:`object`. Additional keyword arguments you want to pass to the gym environment. If 
     you, for example, want to change the forward reward weight and healthy reward of the
-    `Walker2d-v2`_ environment, you can do so by passing ``--env_kwargs "{'forward_reward_weight': 0.5, 'healthy_reward': 0.5}"``
+    `Walker2d-v4`_ environment, you can do so by passing ``--env_kwargs "{'forward_reward_weight': 0.5, 'healthy_reward': 0.5}"``
     to the run command.
 
-.. _`Walker2d-v2`: https://mgoulao.github.io/gym-docs/environments/mujoco/walker2d/
+.. _`Walker2d-v4`: https://gymnasium.farama.org/environments/mujoco/walker2d/
 
 .. _alg_flags:
 
@@ -411,7 +424,7 @@ For example, consider:
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run sac_tf --env Hopper-v2 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
+    python -m stable_learning_control.run sac_tf --env Hopper-v4 --hid[h] [300] [128,128] --act tf.nn.tanh tf.nn.relu
 
 Here, the ``--hid`` flag is given a **user-supplied shorthand**, ``h``. The user does not provide the ``--act``
 flag with a shorthand, so one will be constructed for it automatically.
@@ -470,7 +483,7 @@ can be done by adding the following lines to your environment file:
     from gymnasium.envs.registration import register
 
     register(
-        id='CustomEnv-v0',
+        id='CustomEnv-v1',
         entry_point='path.to.your.env:CustomEnv',
     )
 
@@ -480,7 +493,7 @@ the file ``custom_env_module.py``, you can run the SLC package with your environ
 
 .. parsed-literal::
 
-    python -m stable_learning_control.run sac --env custom_env_module:CustomEnv-v0
+    python -m stable_learning_control.run sac --env custom_env_module:CustomEnv-v1
 
 Launching from Scripts
 ======================
