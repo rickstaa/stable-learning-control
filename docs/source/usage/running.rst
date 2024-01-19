@@ -63,7 +63,7 @@ eg:
             --hid[h] [32,32] [64,32] --act torch.nn.Tanh --seed 0 10 20 --dt
             --data_dir path/to/data
 
-    runs SAC in the ``Ant-v4`` gymnasium environment, with various settings controlled by the flags.
+    runs the SAC algorithm in the ``Ant-v4`` gymnasium environment, with various settings controlled by the flags.
 
     By default, the PyTorch version will run. You can, however, substitute ``sac`` with
     ``sac_tf2`` for the TensorFlow version.
@@ -146,7 +146,7 @@ to see a readout of the docstring.
 
     .. parsed-literal::
 
-        python -m stable_learning_control.run SAC --env Walker2d-v4 --exp_name walker --act torch.nn.ReLU
+        python -m stable_learning_control.run sac --env Walker2d-v4 --exp_name walker --act torch.nn.ReLU
 
     sets ``torch.nn.ReLU`` as the activation function. (TensorFlow equivalent: run ``sac_tf`` with ``--act tf.nn.relu``.)
 
