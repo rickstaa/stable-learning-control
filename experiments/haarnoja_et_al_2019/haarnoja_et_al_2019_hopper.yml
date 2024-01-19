@@ -1,6 +1,6 @@
 alg_name: sac
 exp_name: sac_hopper_haarnoja_2019_exp
-env_name: "Hopper-v2"
+env_name: "Hopper-v4"
 opt_type: "maximize"
 ac_kwargs:
   hidden_sizes:

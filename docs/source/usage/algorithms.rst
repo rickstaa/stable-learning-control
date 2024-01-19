@@ -4,14 +4,11 @@
 Available Agents
 ================
 
-The SLC package contains several stable RL algorithms together with their unstable baselines.
-All these algorithms are implemented with `MLP`_ (non-recurrent) actor-critics, making them
-suitable for fully-observed, non-image-based RL environments, e.g., the `gymnasium Mujoco`_
-environments. They are implemented in a modular way, allowing for easy extension to other
-types of environments and/or neural network architectures.
+The SLC package includes a collection of robust RL algorithms accompanied by their less stable baselines. These algorithms are designed with non-recurrent `MLP`_ actor-critic models, making them well-suited for fully observable RL environments that do not rely on image data, such as the `gymnasium Mujoco`_ and `stable-gym`_ environments. The implementation follows a modular approach, allowing for seamless adaptation to different types of environments and neural network architectures.
 
 .. _`MLP`: https://en.wikipedia.org/wiki/Multilayer_perceptron
 .. _`gymnasium Mujoco`: https://gymnasium.farama.org/environments/mujoco/
+.. _`stable-gym`: https://rickstaa.dev/stable-gym/
 
 Stable Agents
 -------------

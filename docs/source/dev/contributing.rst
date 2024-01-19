@@ -1,6 +1,6 @@
-========================
-Contribute to stable-gym
-========================
+=====================================
+Contribute to stable-learning-control
+=====================================
 
 .. contents:: Table of Contents
 

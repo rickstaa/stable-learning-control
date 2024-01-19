@@ -80,6 +80,9 @@ docs = [
     "myst-parser>=1.0.0",
     "sphinx-autoapi>=2.1.1"
 ]
+mujoco = [
+    "gymnasium[mujoco]>=0.29.1",
+]
 
 [project.urls]
 repository = "https://github.com/rickstaa/stable-learning-control"

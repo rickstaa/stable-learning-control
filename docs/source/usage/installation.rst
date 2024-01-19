@@ -185,7 +185,7 @@ the :ref:`LAC <lac>` algorithm on the `CartPoleCost-v1`_ environment of the
 
 .. code-block:: bash
 
-    python -m stable_learning_control.run lac --env_name stable_gym:CartPole-v0
+    python -m stable_learning_control.run lac --env_name stable_gym:CartPole-v1
 
 .. _`Han et al. 2020`: https://arxiv.org/abs/2004.14288
 .. _`CartPoleCost-v1`: https://rickstaa.dev/stable-gym/envs/classic_control/cartpole_cost.html
