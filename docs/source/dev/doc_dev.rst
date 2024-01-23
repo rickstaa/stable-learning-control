@@ -19,7 +19,7 @@ To install the `LATEX`_ system dependencies, you can use the following command:
 
 .. code-block:: bash
 
-    sudo apt-get install texlive-latex-extra texlive-science
+    sudo apt-get install texlive texlive-latex-extra texlive-science
 
 .. _LATEX: https://www.tug.org/texlive/
 .. _sphinx: https://www.sphinx-doc.org/en/master
