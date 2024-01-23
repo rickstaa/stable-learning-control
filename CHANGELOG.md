@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/rickstaa/stable-learning-control/compare/v5.0.5...v5.1.0) (2024-01-23)
+
+
+### Features
+
+* add docker container ([#379](https://github.com/rickstaa/stable-learning-control/issues/379)) ([972079f](https://github.com/rickstaa/stable-learning-control/commit/972079faf2d87937905c94ff01c766a0c0b2b2cd))
+
+
+### Documentation
+
+* fix documentation ([#377](https://github.com/rickstaa/stable-learning-control/issues/377)) ([c3b47c5](https://github.com/rickstaa/stable-learning-control/commit/c3b47c51ce6770858e6f33a1b0de7bf5c9161c06))
+* fix SAC alg run command ([#380](https://github.com/rickstaa/stable-learning-control/issues/380)) ([cf0a7a3](https://github.com/rickstaa/stable-learning-control/commit/cf0a7a3eceb4434bba32be653f70a0d3e331ef47))
+
 ## [5.0.5](https://github.com/rickstaa/stable-learning-control/compare/v5.0.4...v5.0.5) (2023-08-31)
 
 
