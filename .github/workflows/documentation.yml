@@ -19,7 +19,13 @@ jobs:
           cache: "pip"
           cache-dependency-path: pyproject.toml
       - name: Install system dependencies
-        run: sudo apt-get update; sudo apt-get install libopenmpi-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libopenmpi-dev \
+            texlive \
+            texlive-latex-extra \
+            texlive-science
       - name: Install dependencies
         run: |
           pip install .[docs]
