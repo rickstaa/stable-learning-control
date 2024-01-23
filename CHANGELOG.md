@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.1](https://github.com/rickstaa/stable-learning-control/compare/v5.1.0...v5.1.1) (2024-01-23)
+
+
+### Documentation
+
+* fix documentation latex formulas ([#383](https://github.com/rickstaa/stable-learning-control/issues/383)) ([#385](https://github.com/rickstaa/stable-learning-control/issues/385)) ([582568b](https://github.com/rickstaa/stable-learning-control/commit/582568b29e9747d174ebe5204c101c3602c924de))
+
 ## [5.1.0](https://github.com/rickstaa/stable-learning-control/compare/v5.0.5...v5.1.0) (2024-01-23)
 
 
