@@ -81,7 +81,7 @@ docs = [
     "sphinx-autoapi>=2.1.1"
 ]
 mujoco = [
-    "gymnasium[mujoco]>=0.29.1",
+    "gymnasium[mujoco]>=0.28.1",
 ]
 
 [project.urls]
