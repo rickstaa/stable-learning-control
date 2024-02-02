@@ -595,6 +595,7 @@ class SAC(tf.keras.Model):
         prevent it from becoming nan when :attr:`log_alpha` becomes ``-inf``. For
         :attr:`alpha` no upper bound is used.
         """
+        # NOTE: Clamping isn't needed when alpha max is np.inf due to the exponential.
         return tf.clip_by_value(tf.exp(self.log_alpha), *SCALE_ALPHA_MIN_MAX)
 
     @alpha.setter
@@ -1034,7 +1035,7 @@ def sac(
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards,
         # use the learned policy.
-        if t > start_steps:
+        if t > start_steps or start_steps == 0:
             a = policy.get_action(o)
         else:
             a = tf.convert_to_tensor(env.action_space.sample(), dtype=tf.float32)

@@ -768,6 +768,7 @@ class LAC(nn.Module):
         prevent it from becoming nan when :attr:`log_alpha` becomes ``-inf``. For
         :attr:`alpha` no upper bound is used.
         """
+        # NOTE: Clamping isn't needed when alpha max is np.inf due to the exponential.
         return torch.clamp(self.log_alpha.exp(), *SCALE_ALPHA_MIN_MAX)
 
     @alpha.setter
@@ -1282,7 +1283,7 @@ def lac(
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards,
         # use the learned policy.
-        if t > start_steps:
+        if t > start_steps or start_steps == 0:
             a = policy.get_action(o)
         else:
             a = env.action_space.sample()
