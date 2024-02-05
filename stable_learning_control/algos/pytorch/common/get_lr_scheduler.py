@@ -51,7 +51,7 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
         decaying_lr_type (str): The learning rate decay type that is used
             (options are: ``linear`` and ``exponential`` and ``constant``).
         lr_start (float): Initial learning rate.
-        lr_end (float): Final learning rate.
+        lr_final (float): Final learning rate.
         steps (int, optional): Number of steps/epochs used in the training.  This
             includes the starting step.
 
