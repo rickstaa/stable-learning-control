@@ -1,6 +1,7 @@
 """Responsible for creating the CLI for the stable_learning_control package. It can
 be used to start the training of an algorithm, or run any of the other utilities.
 """
+
 import inspect
 import os
 import os.path as osp
@@ -9,7 +10,7 @@ import sys
 from copy import deepcopy
 from textwrap import dedent
 
-import ruamel.yaml as yaml
+from ruamel.yaml import YAML, YAMLError
 
 from stable_learning_control.common.helpers import (
     flatten,
@@ -148,8 +149,8 @@ def _parse_exp_cfg(cmd_line_args):
             # Load exp config.
             with open(exp_cfg_file_path) as stream:
                 try:
-                    exp_cfg_params = yaml.safe_load(stream)
-                except yaml.YAMLError:
+                    exp_cfg_params = YAML(typ="safe").load(stream)
+                except YAMLError:
                     log_to_std_out(
                         "Something went wrong while trying to load the experiment  "
                         f"config in '{exp_cfg_file_path}. As a result the --exp_cfg "
@@ -274,8 +275,8 @@ def _parse_eval_cfg(cmd_line_args):
             # Load eval config.
             with open(eval_cfg_file_path) as stream:
                 try:
-                    eval_cfg_params = yaml.safe_load(stream)
-                except yaml.YAMLError:
+                    eval_cfg_params = YAML(typ="safe").load(stream)
+                except YAMLError:
                     log_to_std_out(
                         "Something went wrong while trying to load the eval config "
                         f"in '{eval_cfg_file_path}. As a result the --eval_cfg "
