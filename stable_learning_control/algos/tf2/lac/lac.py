@@ -951,7 +951,7 @@ def lac(
             -   policy (:class:`LAC`): The trained actor-critic policy.
             -   replay_buffer (union[:class:`~stable_learning_control.algos.common.buffers.ReplayBuffer`, :class:`~stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer`]):
                 The replay buffer used during training.
-        """  # noqa: E501, D301
+    """  # noqa: E501, D301
     validate_args(**locals())
 
     # Retrieve hyperparameters while filtering out the logger_kwargs.
