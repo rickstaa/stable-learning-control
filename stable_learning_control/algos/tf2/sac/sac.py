@@ -9,6 +9,7 @@ This module contains the TensorFlow 2.x implementation of the SAC algorithm of
         - We use a `targ` suffix to distinguish actions/values coming from the target
           network.
 """
+
 import argparse
 import os
 import os.path as osp
@@ -177,7 +178,7 @@ class SAC(tf.keras.Model):
                 Defaults to ``1e-4``.
             device (str, optional): The device the networks are placed on (``cpu``
                 or ``gpu``). Defaults to ``cpu``.
-        """  # noqa: E501
+        """  # noqa: E501, D301
         self._device = set_device(
             device
         )  # NOTE: Needs to be called before super().__init__() call.
@@ -545,7 +546,7 @@ class SAC(tf.keras.Model):
     def summary(self):
         """Small wrapper around the :meth:`tf.keras.Model.summary()` method used to
         apply a custom format to the model summary.
-        """
+        """  # noqa: D402
         if not self.built:  # Ensure the model is built.
             self.build()
         super().summary()
@@ -819,7 +820,7 @@ def sac(
             -   policy (:class:`SAC`): The trained actor-critic policy.
             -   replay_buffer (union[:class:`~stable_learning_control.algos.common.buffers.ReplayBuffer`, :class:`~stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer`]):
                 The replay buffer used during training.
-    """  # noqa: E501
+    """  # noqa: E501, D301
     validate_args(**locals())
 
     # Retrieve hyperparameters while filtering out the logger_kwargs.
@@ -1057,6 +1058,8 @@ def sac(
             ep_ret, ep_len = 0, 0
 
         # Update handling.
+        # NOTE: Improved compared to Han et al. 2020. Previously, updates were based on
+        # memory size, which only changed at terminal states.
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
             # Step based learning rate decay.
             if lr_decay_ref.lower() == "step":

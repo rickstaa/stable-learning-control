@@ -23,6 +23,7 @@ bias, while the original LAC only uses one critic. For more information, see
     :meth:`~stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic.update`
     method is modified such that the two critics.
 """  # noqa: E501
+
 import argparse
 import os.path as osp
 import time
@@ -122,14 +123,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--hid_a",
         type=int,
-        default=64,
-        help="hidden layer size of the actor (default: 64)",
+        default=256,
+        help="hidden layer size of the actor (default: 256)",
     )
     parser.add_argument(
         "--hid_c",
         type=int,
-        default=128,
-        help="hidden layer size of the lyapunov critic (default: 128)",
+        default=256,
+        help="hidden layer size of the lyapunov critic (default: 256)",
     )
     parser.add_argument(
         "--l_a",

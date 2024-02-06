@@ -5,6 +5,7 @@ policy of `Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_. Like the origin
 algorithm, this LAC variant uses two critics instead of one to mitigate a possible
 underestimation bias, while the original LAC only uses one critic.
 """
+
 import torch
 import torch.nn as nn
 
@@ -16,7 +17,7 @@ from stable_learning_control.algos.pytorch.policies.critics.L_critic import LCri
 from stable_learning_control.common.helpers import strict_dict_update
 from stable_learning_control.utils.log_utils.helpers import log_to_std_out
 
-HIDDEN_SIZES_DEFAULT = {"actor": (64, 64), "critic": (128, 128)}
+HIDDEN_SIZES_DEFAULT = {"actor": (256, 256), "critic": (256, 256)}
 ACTIVATION_DEFAULT = {"actor": nn.ReLU, "critic": nn.ReLU}
 OUTPUT_ACTIVATION_DEFAULT = {
     "actor": nn.ReLU,

@@ -9,6 +9,7 @@ This module contains a pytorch implementation of the LAC algorithm of
         - We use a `targ` suffix to distinguish actions/values coming from the target
           network.
 """
+
 import argparse
 import glob
 import itertools
@@ -94,7 +95,7 @@ class LAC(nn.Module):
         env,
         actor_critic=None,
         ac_kwargs=dict(
-            hidden_sizes={"actor": [64] * 2, "critic": [128] * 2},
+            hidden_sizes={"actor": [256] * 2, "critic": [256] * 2},
             activation=nn.ReLU,
             output_activation={"actor": nn.ReLU},
         ),
@@ -156,8 +157,8 @@ class LAC(nn.Module):
                 =======================  ============================================
                 Kwarg                    Value
                 =======================  ============================================
-                ``hidden_sizes_actor``    ``64 x 2``
-                ``hidden_sizes_critic``   ``128 x 2``
+                ``hidden_sizes_actor``    ``256 x 2``
+                ``hidden_sizes_critic``   ``256 x 2``
                 ``activation``            :class:`torch.nn.ReLU`
                 ``output_activation``     :class:`torch.nn.ReLU`
                 =======================  ============================================
@@ -171,7 +172,8 @@ class LAC(nn.Module):
             labda (float, optional): The Lyapunov Lagrance multiplier. Defaults to
                 ``0.99``.
             gamma (float, optional): Discount factor. (Always between 0 and 1.).
-                Defaults to ``0.99``.
+                Defaults to ``0.99`` per Haarnoja et al. 2018, not ``0.995`` as in
+                Han et al. 2020.
             polyak (float, optional): Interpolation factor in polyak averaging for
                 target networks. Target networks are updated towards main networks
                 according to:
@@ -201,7 +203,7 @@ class LAC(nn.Module):
             This class will behave differently when the ``actor_critic`` argument
             is set to the :class:`~stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic`.
             For more information see the :ref:`LATC <latc>` documentation.
-        """  # noqa: E501
+        """  # noqa: E501, D301
         super().__init__()
         self._setup_kwargs = {
             k: v for k, v in locals().items() if k not in ["self", "__class__", "env"]
@@ -693,9 +695,9 @@ class LAC(nn.Module):
         saves the current class name. This is used to enable easy loading of the model.
         """
         state_dict = super().state_dict()
-        state_dict[
-            "alg_name"
-        ] = self.__class__.__name__  # Save algorithm name state dict.
+        state_dict["alg_name"] = (
+            self.__class__.__name__
+        )  # Save algorithm name state dict.
         return state_dict
 
     def bound_lr(
@@ -845,7 +847,7 @@ def lac(
     env_fn,
     actor_critic=None,
     ac_kwargs=dict(
-        hidden_sizes={"actor": [64] * 2, "critic": [128] * 2},
+        hidden_sizes={"actor": [256] * 2, "critic": [256] * 2},
         activation=nn.ReLU,
         output_activation=nn.ReLU,
     ),
@@ -925,8 +927,8 @@ def lac(
             =======================  ============================================
             Kwarg                    Value
             =======================  ============================================
-            ``hidden_sizes_actor``    ``64 x 2``
-            ``hidden_sizes_critic``   ``128 x 2``
+            ``hidden_sizes_actor``    ``256 x 2``
+            ``hidden_sizes_critic``   ``256 x 2``
             ``activation``            :class:`torch.nn.ReLU`
             ``output_activation``     :class:`torch.nn.ReLU`
             =======================  ============================================
@@ -1017,7 +1019,7 @@ def lac(
             -   policy (:class:`LAC`): The trained actor-critic policy.
             -   replay_buffer (union[:class:`~stable_learning_control.algos.pytorch.common.buffers.ReplayBuffer`, :class:`~stable_learning_control.algos.pytorch.common.buffers.FiniteHorizonReplayBuffer`]):
                 The replay buffer used during training.
-    """  # noqa: E501
+    """  # noqa: E501, D301
     validate_args(**locals())
 
     # Retrieve hyperparameters while filtering out the logger_kwargs.
@@ -1309,6 +1311,8 @@ def lac(
             ep_ret, ep_len = 0, 0
 
         # Update handling.
+        # NOTE: Improved compared to Han et al. 2020. Previously, updates were based on
+        # memory size, which only changed at terminal states.
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
             # Step based learning rate decay.
             if lr_decay_ref.lower() == "step":
@@ -1465,14 +1469,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--hid_a",
         type=int,
-        default=64,
-        help="hidden layer size of the actor (default: 64)",
+        default=256,
+        help="hidden layer size of the actor (default: 256)",
     )
     parser.add_argument(
         "--hid_c",
         type=int,
-        default=128,
-        help="hidden layer size of the lyapunov critic (default: 128)",
+        default=256,
+        help="hidden layer size of the lyapunov critic (default: 256)",
     )
     parser.add_argument(
         "--l_a",
