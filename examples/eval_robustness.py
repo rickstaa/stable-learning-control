@@ -1,6 +1,7 @@
 """Script version of the eval robustness tool. This can be used to manually evaluate the
 disturbance if you don't want to implement a disturber.
 """
+
 import os
 from pathlib import Path
 
@@ -470,14 +471,16 @@ if __name__ == "__main__":
 
             # Replace observations and references with short names.
             obs_disturbance_df["observation"] = obs_disturbance_df["observation"].apply(
-                lambda x: "observation"
-                if x == "observation"
-                else x.replace("observation_", "obs_")
+                lambda x: (
+                    "observation"
+                    if x == "observation"
+                    else x.replace("observation_", "obs_")
+                )
             )
             refs_disturbance_df["reference"] = refs_disturbance_df["reference"].apply(
-                lambda x: "reference"
-                if x == "reference"
-                else x.replace("reference_", "ref_")
+                lambda x: (
+                    "reference" if x == "reference" else x.replace("reference_", "ref_")
+                )
             )
 
             # Initialize plot.
@@ -610,9 +613,11 @@ if __name__ == "__main__":
             ref_errors_disturbance_df["reference_error"] = ref_errors_disturbance_df[
                 "reference_error"
             ].apply(
-                lambda x: "reference_error"
-                if x == "reference_error"
-                else x.replace("reference_error_", "ref_error_")
+                lambda x: (
+                    "reference_error"
+                    if x == "reference_error"
+                    else x.replace("reference_error_", "ref_error_")
+                )
             )
 
             # Initialize plot.
@@ -620,9 +625,11 @@ if __name__ == "__main__":
 
             # Create plot title.
             plot_title = "Mean {} ".format(
-                "reference errors"
-                if len(available_ref_errors) > 1
-                else "reference error",
+                (
+                    "reference errors"
+                    if len(available_ref_errors) > 1
+                    else "reference error"
+                ),
             )
             plot_title += (
                 "under 'RandomActionNoise' disturber with mean {} and std {}.".format(

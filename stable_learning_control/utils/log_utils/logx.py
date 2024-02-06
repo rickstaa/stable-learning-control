@@ -10,6 +10,7 @@
     - Logs to TensorBoard (besides logging to a file).
     - Logs to Weights & Biases (besides logging to a file).
 """  # noqa
+
 import atexit
 import copy
 import glob
@@ -413,9 +414,11 @@ class Logger:
                         [
                             "%s:%s"
                             % (
-                                "Steps"
-                                if key == "TotalEnvInteracts"
-                                else key.replace("Average", "Avg"),
+                                (
+                                    "Steps"
+                                    if key == "TotalEnvInteracts"
+                                    else key.replace("Average", "Avg")
+                                ),
                                 val,
                             )
                             for key, val in zip(print_keys, print_vals)
@@ -840,9 +843,9 @@ class Logger:
                     "alg_name": self._pytorch_saver_elements.__class__.__name__,
                 }
                 if hasattr(self._pytorch_saver_elements, "_setup_kwargs"):
-                    save_info[
-                        "setup_kwargs"
-                    ] = self._pytorch_saver_elements._setup_kwargs
+                    save_info["setup_kwargs"] = (
+                        self._pytorch_saver_elements._setup_kwargs
+                    )
                 self.save_to_json(
                     save_info,
                     output_filename="save_info.json",

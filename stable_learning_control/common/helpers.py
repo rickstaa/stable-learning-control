@@ -1,4 +1,5 @@
 """Contains several helper functions that are used throughout the SLC package."""
+
 import itertools
 import re
 import string
@@ -37,13 +38,10 @@ def convert_to_tuple(input_var):
     Returns:
         tuple: A tuple.
     """
-
     return (
         input_var
         if isinstance(input_var, tuple)
-        else tuple(input_var)
-        if isinstance(input_var, list)
-        else (input_var,)
+        else tuple(input_var) if isinstance(input_var, list) else (input_var,)
     )
 
 
@@ -93,9 +91,11 @@ def combine_shapes(*args, remove_none=False):
     combined_tuple = tuple(
         itertools.chain(
             *[
-                [item]
-                if (isinstance(item, (int, float)) or item is None)
-                else list(item)
+                (
+                    [item]
+                    if (isinstance(item, (int, float)) or item is None)
+                    else list(item)
+                )
                 for item in args
             ]
         )

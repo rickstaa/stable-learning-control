@@ -2,6 +2,7 @@
 a gymnasium environment with a impulse applied at a certain time step (i.e.
 ``magnitude`` and ``time``).
 """
+
 import gymnasium as gym
 import numpy as np
 

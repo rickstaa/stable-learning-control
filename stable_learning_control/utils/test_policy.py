@@ -1,6 +1,7 @@
 """A set of functions that can be used to see a algorithm perform in the environment
 it was trained on.
 """
+
 import glob
 import os
 import os.path as osp
@@ -87,9 +88,11 @@ def _retrieve_model_folder(fpath):
                 "seems to be corrupted. It contains multiple '{}' folders. Please "
                 "check your model path (fpath) and try again.".format(
                     fpath,
-                    "tf2_save"
-                    if any(["tf2_save" in item for item in data_folders])
-                    else "torch_save",
+                    (
+                        "tf2_save"
+                        if any(["tf2_save" in item for item in data_folders])
+                        else "torch_save"
+                    ),
                 )
             )
         )
@@ -232,7 +235,6 @@ def load_pytorch_policy(fpath, env, itr="last"):
     Returns:
         torch.nn.Module: The policy.
     """
-
     fpath, _ = _retrieve_model_folder(fpath)
     if itr != "last":
         fpath = _retrieve_iter_folder(fpath, itr)

@@ -1,5 +1,6 @@
 """Script used for performing some quick tests on the FiniteHorizonReplayBuffer class.
 """
+
 import gymnasium as gym
 
 # from stable_learning_control.common.buffers import TrajectoryBuffer

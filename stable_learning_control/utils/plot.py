@@ -4,6 +4,7 @@
     This module was based on
     `Spinning Up repository <https://github.com/openai/spinningup/tree/master/spinup/utils/plot.py>`__.
 """  # noqa
+
 import json
 import os
 import os.path as osp

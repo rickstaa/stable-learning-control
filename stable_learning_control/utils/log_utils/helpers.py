@@ -1,4 +1,5 @@
 """Several logging related helper functions."""
+
 import os.path as osp
 import time
 

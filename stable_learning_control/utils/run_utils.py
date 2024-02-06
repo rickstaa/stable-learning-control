@@ -5,6 +5,7 @@ experiments.
     This module was based on
     `spinningup repository <https://github.com/openai/spinningup/tree/master/spinup/utils/run_utils.py>`__.
 """  # noqa
+
 import base64
 import json
 import os
@@ -282,7 +283,7 @@ class ExperimentGrid:
         """
         valid_chars = "%s%s" % (string.ascii_letters, string.digits)
 
-        def shear(x):
+        def shear(x):  # noqa: DC102
             return "".join(z for z in x[:3] if z in valid_chars)
 
         sh = "-".join([shear(x) for x in key.split(":")])
@@ -332,11 +333,11 @@ class ExperimentGrid:
         """
 
         def get_val(v, k):
-            # Utility method for getting the correct value out of a variant
-            # given as a nested dict. Assumes that a parameter name, k,
-            # describes a path into the nested dict, such that k='a:b:c'
-            # corresponds to value=variant['a']['b']['c']. Uses recursion
-            # to get this.
+            """Utility method for getting the correct value out of a variant given as a
+            nested dict. Assumes that a parameter name, k, describes a path into the
+            nested dict, such that k='a:b:c' corresponds to
+            value=variant['a']['b']['c']. Uses recursion to get this.
+            """
             if k in v:
                 return v[k]
             else:
@@ -431,9 +432,7 @@ class ExperimentGrid:
         flat_variants = self._variants(self.keys, self.vals)
 
         def unflatten_var(var):
-            """
-            Build the full nested dict version of var, based on key names.
-            """
+            """Build the full nested dict version of var, based on key names."""
             new_var = dict()
             unflatten_set = set()
 

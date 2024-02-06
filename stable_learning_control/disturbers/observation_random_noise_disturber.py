@@ -2,6 +2,7 @@
 a gymnasium environment with normally distributed random noise (i.e. ``mean`` and
 ``std``).
 """
+
 import gymnasium as gym
 
 

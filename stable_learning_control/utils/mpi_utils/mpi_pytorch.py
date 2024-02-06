@@ -4,6 +4,7 @@
     This module is not yet used in any of the current algorithms, but is kept here for
     future reference.
 """
+
 import numpy as np
 import torch
 

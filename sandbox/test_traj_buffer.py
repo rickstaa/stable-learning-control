@@ -2,6 +2,7 @@
 buffer was created for a new monte-carlo algorithm we had in mind. The buffer is
 designed to store trajectories of variable length.
 """
+
 import gymnasium as gym
 
 # from stable_learning_control.common.buffers import TrajectoryBuffer

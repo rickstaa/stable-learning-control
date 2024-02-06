@@ -6,6 +6,7 @@
     you want to add a new disturber, you only have to ensure that it is a Python class
     that inherits from the :class:`gym.Wrapper` class.
 """
+
 from stable_learning_control.disturbers.action_impulse_disturber import (
     ActionImpulseDisturber,
 )
