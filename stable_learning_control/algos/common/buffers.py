@@ -1,6 +1,7 @@
 """This module contains several replay buffers that are used in multiple Pytorch and
 TensorFlow algorithms.
 """
+
 import numpy as np
 
 from stable_learning_control.algos.common.helpers import discount_cumsum
@@ -113,7 +114,7 @@ class ReplayBuffer:
 
 
 class FiniteHorizonReplayBuffer(ReplayBuffer):
-    """A first-in-first-out (FIFO) experience replay buffer that also stores the
+    r"""A first-in-first-out (FIFO) experience replay buffer that also stores the
     expected cumulative finite-horizon reward.
 
     .. note::
@@ -121,7 +122,7 @@ class FiniteHorizonReplayBuffer(ReplayBuffer):
         formula:
 
         .. math::
-            L_{target}(s,a) = \\sum_{t}^{t+N} \\mathbb{E}_{c_{t}}
+            L_{target}(s,a) = \sum_{t}^{t+N} \mathbb{E}_{c_{t}}
 
     Attributes:
         horizon_length (int): The length of the finite-horizon.
@@ -193,8 +194,8 @@ class FiniteHorizonReplayBuffer(ReplayBuffer):
             # Calculate the expected cumulative finite-horizon reward.
             path_rew = np.pad(path_rew, (0, self.horizon_length), mode="edge")
             horizon_rew = [
-                np.sum(path_rew[i : i + self.horizon_length + 1])
-                for i in range(len(path_rew) - self.horizon_length)
+                np.sum(path_rew[i : i + self.horizon_length])
+                for i in range(len(path_ptrs))
             ]
 
             # Store the expected cumulative finite-horizon reward.
@@ -413,7 +414,6 @@ class TrajectoryBuffer:
             the reward-to-go calculation to account for timesteps beyond the arbitrary
             episode horizon (or epoch cutoff).
         """
-
         # Calculate the advantage and rewards-to-go if buffer contains vals
         if self._contains_vals:
             # Get the current trajectory.
