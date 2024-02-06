@@ -28,6 +28,7 @@ For more information on how to use this package, see the `Ray tuning documentati
 .. _`Weights & Biases`: https://wandb.ai/site
 .. _`Weights & Biases documentation`: https://docs.wandb.ai/
 """  # noqa: E501
+
 import os.path as osp
 
 import gymnasium as gym
@@ -49,7 +50,6 @@ def train_lac(config):
     Args:
         config (dict): The Ray tuning configuration dictionary.
     """
-
     # Unpack trainable arguments.
     env_name = config.pop("env_name")
 

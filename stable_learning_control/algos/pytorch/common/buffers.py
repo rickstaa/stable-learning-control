@@ -1,5 +1,5 @@
-"""Contains several replay buffers used in the Pytorch algorithms.
-"""
+"""Contains several replay buffers used in the Pytorch algorithms."""
+
 import torch
 
 from stable_learning_control.algos.common.buffers import (

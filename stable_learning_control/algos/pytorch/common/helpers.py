@@ -1,5 +1,5 @@
-"""Contains several Pytorch helper functions.
-"""
+"""Contains several Pytorch helper functions."""
+
 import numpy as np
 import torch
 import torch.nn as nn

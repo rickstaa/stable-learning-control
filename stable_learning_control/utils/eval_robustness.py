@@ -2,6 +2,7 @@
 algorithm. See the :ref:`Robustness Evaluation Documentation <robustness_eval>` for
 more information.
 """
+
 import ast
 import copy
 import importlib
@@ -72,18 +73,22 @@ def add_disturbance_label_column(dataframe):
     # Create disturbance label.
     if "disturber" in dataframe.columns:
         disturbance_label_df = dataframe.apply(
-            lambda row: "_".join(
-                [
-                    "{key}_{value}".format(
-                        key=key.split("_")[1],
-                        value=round(value, 2) if isinstance(value, float) else value,
-                    )
-                    for key, value in row.items()
-                    if key.startswith("disturber_")
-                ]
-            )
-            if row["disturber"] != "baseline"
-            else "baseline",
+            lambda row: (
+                "_".join(
+                    [
+                        "{key}_{value}".format(
+                            key=key.split("_")[1],
+                            value=(
+                                round(value, 2) if isinstance(value, float) else value
+                            ),
+                        )
+                        for key, value in row.items()
+                        if key.startswith("disturber_")
+                    ]
+                )
+                if row["disturber"] != "baseline"
+                else "baseline"
+            ),
             axis=1,
         )
 
@@ -491,11 +496,11 @@ def run_disturbed_policy(
         time_step_attribute = (
             "dt"
             if hasattr(env.unwrapped, "dt")
-            else "tau"
-            if hasattr(env.unwrapped, "tau")
-            else "timestep"
-            if hasattr(env.unwrapped, "timestep")
-            else "time_step"
+            else (
+                "tau"
+                if hasattr(env.unwrapped, "tau")
+                else "timestep" if hasattr(env.unwrapped, "timestep") else "time_step"
+            )
         )
     if time_attribute is None and time_step_attribute is None:
         logger.log(
@@ -686,9 +691,11 @@ def run_disturbed_policy(
                     for i, var_value_i in enumerate(var_value):
                         logger.log_tabular(
                             f"Disturber_{var_name}_{i+1}",
-                            np.nan
-                            if include_baseline and variant_idx == 0
-                            else var_value_i,
+                            (
+                                np.nan
+                                if include_baseline and variant_idx == 0
+                                else var_value_i
+                            ),
                         )
                 else:
                     logger.log_tabular(
@@ -728,9 +735,11 @@ def run_disturbed_policy(
                         variant_df.insert(
                             len(variant_df.columns),
                             f"disturber_{var_name}_{i+1}",
-                            np.nan
-                            if include_baseline and variant_idx == 0
-                            else var_value_i,
+                            (
+                                np.nan
+                                if include_baseline and variant_idx == 0
+                                else var_value_i
+                            ),
                         )
                 else:
                     variant_df.insert(
@@ -1108,14 +1117,16 @@ def plot_robustness_results(
 
             # Replace observations and references with short names.
             obs_disturbance_df["observation"] = obs_disturbance_df["observation"].apply(
-                lambda x: "observation"
-                if x == "observation"
-                else x.replace("observation_", "obs_")
+                lambda x: (
+                    "observation"
+                    if x == "observation"
+                    else x.replace("observation_", "obs_")
+                )
             )
             refs_disturbance_df["reference"] = refs_disturbance_df["reference"].apply(
-                lambda x: "reference"
-                if x == "reference"
-                else x.replace("reference_", "ref_")
+                lambda x: (
+                    "reference" if x == "reference" else x.replace("reference_", "ref_")
+                )
             )
 
             # Initialize plot/subplots and title.
@@ -1279,9 +1290,11 @@ def plot_robustness_results(
             ref_errors_disturbance_df["reference_error"] = ref_errors_disturbance_df[
                 "reference_error"
             ].apply(
-                lambda x: "reference_error"
-                if x == "reference_error"
-                else x.replace("reference_error_", "ref_error_")
+                lambda x: (
+                    "reference_error"
+                    if x == "reference_error"
+                    else x.replace("reference_error_", "ref_error_")
+                )
             )
 
             # Initialize plot/subplots and title.
@@ -1306,9 +1319,11 @@ def plot_robustness_results(
 
                 # Create plot title.
                 plot_title = "Mean {} ".format(
-                    "reference errors"
-                    if len(available_ref_errors) > 1
-                    else "reference error",
+                    (
+                        "reference errors"
+                        if len(available_ref_errors) > 1
+                        else "reference error"
+                    ),
                 )
                 if disturbance == "baseline":
                     plot_title += "baseline conditions"
@@ -1747,9 +1762,11 @@ if __name__ == "__main__":
         (
             "{}_{}".format(
                 PurePath(args.fpath).parts[-1],
-                convert_to_snake_case(args.disturber)
-                if args.disturber is not None
-                else "baseline",
+                (
+                    convert_to_snake_case(args.disturber)
+                    if args.disturber is not None
+                    else "baseline"
+                ),
             )
             if args.wandb_run_name is None
             else args.wandb_run_name

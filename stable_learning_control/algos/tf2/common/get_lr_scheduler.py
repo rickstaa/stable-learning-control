@@ -1,4 +1,5 @@
 """Module used for creating TensorFlow learning rate schedulers."""
+
 import numpy as np
 
 from stable_learning_control.utils.import_utils import import_tf

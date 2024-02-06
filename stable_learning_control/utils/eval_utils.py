@@ -1,5 +1,4 @@
-"""Helper functions that can be used for evaluating the performance of trained agents.
-"""
+"""Helper functions for evaluating the performance of trained agents."""
 
 
 def test_agent(policy, env, num_episodes):

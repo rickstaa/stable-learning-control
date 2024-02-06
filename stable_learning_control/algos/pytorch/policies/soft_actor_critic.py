@@ -5,6 +5,7 @@ Soft actor critic policy
 This module contains a Pytorch implementation of the Soft Actor Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
+
 import torch
 import torch.nn as nn
 

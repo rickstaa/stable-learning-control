@@ -1,5 +1,5 @@
-"""Several TensorFlow helper functions.
-"""
+"""Several TensorFlow helper functions."""
+
 import numpy as np
 import tensorflow as tf
 

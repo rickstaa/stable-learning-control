@@ -2,6 +2,7 @@
 example, we use the ``Oscillator-v1`` environment in the :stable_gym:`stable_gym <>`
 package.
 """
+
 import gymnasium as gym
 import matplotlib.pyplot as plt
 import numpy as np

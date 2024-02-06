@@ -2,6 +2,7 @@
 the CLI fails. It uses the ``Oscillator-v1`` environment that is found in the
 :stable_gym:`stable_gym <>` package.
 """
+
 import gymnasium as gym
 
 from stable_learning_control.utils.test_policy import (

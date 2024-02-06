@@ -4,6 +4,7 @@ For more information on Bijectors see
 `the TensorFlow documentation <https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector>`_ and
 `this stackoverflow question <https://stackoverflow.com/questions/56425301/what-is-bijectors-in-layman-terms-in-tensorflow-probability>`_.
 """  # noqa: E501
+
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -12,7 +13,8 @@ from tensorflow import nn
 
 class SquashBijector(tfp.bijectors.Bijector):
     """A squash bijector used to keeps track of the distribution properties when the
-    distribution is transformed using the tanh squash function."""
+    distribution is transformed using the tanh squash function.
+    """
 
     def __init__(self, validate_args=False, name="tanh"):
         """Initiate squashed bijector object.

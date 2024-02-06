@@ -1,6 +1,7 @@
 """Contains functions that can be used to import modules and classes while repressing
 the :class`ImportError` when a module is not found.
 """
+
 import importlib
 import sys
 

@@ -1,4 +1,5 @@
 """Contains functions used for creating Pytorch learning rate schedulers."""
+
 from decimal import Decimal
 
 import numpy as np
@@ -22,7 +23,7 @@ def get_exponential_decay_rate(lr_start, lr_final, steps):
 
 
 def calc_linear_decay_rate(lr_init, lr_final, steps):
-    """Returns the linear decay factor (G) needed to achieve a given final learning
+    r"""Returns the linear decay factor (G) needed to achieve a given final learning
     rate at a certain step. This decay factor can for example be used with a
     :class:`torch.optim.lr_scheduler.LambdaLR` scheduler. Keep in mind that this
     function assumes the following formula for the learning rate decay.

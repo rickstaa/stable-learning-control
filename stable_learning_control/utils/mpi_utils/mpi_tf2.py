@@ -4,6 +4,7 @@
     This module is not yet translated to TF2. It is not used by any of the current
     algorithms, but is kept here for future reference.
 """
+
 # import numpy as np
 # import tensorflow as tf
 
@@ -11,13 +12,13 @@
 # from spinup.utils.mpi_tools import broadcast
 
 
-def flat_concat(xs):
+def flat_concat(xs):  # noqa: DC102, D103
     raise NotImplementedError("The mpi_tf2 tools have not yet been implemented.")
     # NOTE: Old tf1 code
     # return tf.concat([tf.reshape(x, (-1,)) for x in xs], axis=0)
 
 
-def assign_params_from_flat(x, params):
+def assign_params_from_flat(x, params):  # noqa: DC102, D103
     raise NotImplementedError("The mpi_tf2 tools have not yet been implemented.")
     # NOTE: Old tf1 code
     # flat_size = lambda p: int(
@@ -28,7 +29,7 @@ def assign_params_from_flat(x, params):
     # return tf.group([tf.assign(p, p_new) for p, p_new in zip(params, new_params)])
 
 
-def sync_params(params):
+def sync_params(params):  # noqa: DC102, D103
     raise NotImplementedError("The mpi_tf2 tools have not yet been implemented.")
     # NOTE: Old tf1 code
     # get_params = flat_concat(params)
@@ -58,7 +59,7 @@ class MpiAdamOptimizer(object):
     .. _`MpiAdamOptimizer`: https://github.com/openai/baselines/tree/master/baselines/common/mpi_adam_optimizer.py
     """  # noqa: E501
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # noqa: D107, DC104
         raise NotImplementedError("The mpi_tf2 tools have not yet been implemented.")
         # NOTE: Old tf1 code
         # self.comm = MPI.COMM_WORLD

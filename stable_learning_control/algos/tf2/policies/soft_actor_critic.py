@@ -3,6 +3,7 @@
 This module contains a TensorFlow 2.x implementation of the Soft Actor Critic policy of
 `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
 """
+
 import tensorflow as tf
 from tensorflow import nn
 

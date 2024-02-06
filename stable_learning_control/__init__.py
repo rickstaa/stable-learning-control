@@ -1,4 +1,5 @@
 """Module that Initialises the stable_learning_control package."""
+
 # Put algorithms in main namespace.
 from stable_learning_control.algos.pytorch.lac.lac import lac as lac_pytorch
 from stable_learning_control.algos.pytorch.latc.latc import latc as latc_pytorch

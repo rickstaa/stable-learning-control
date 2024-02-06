@@ -5,6 +5,7 @@ This is done by comparing the current output of the algorithm with a previously 
 snapshot. We do this so that we can be sure that the algorithm still gives a
 deterministic result when seeded after a change in the code.
 """
+
 import importlib
 
 import gymnasium as gym  # noqa: F401
