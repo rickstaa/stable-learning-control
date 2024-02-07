@@ -34,5 +34,7 @@ lr_decay_ref: "step"
 batch_size: 256
 replay_size: "int(1e6)"
 horizon_length: 5
-seed: 0 48104 567 3658 23 17728 90478 753044 443 102132
+seed: 2345 48104 567 3658 234  # NOTE: Using 5 seeds for tuning.
 save_freq: 10
+use_wandb: True
+wandb_group: "han2020_reproduction"
