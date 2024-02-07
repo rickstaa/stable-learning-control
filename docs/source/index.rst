@@ -35,6 +35,7 @@ ready-to-use compatible environments can be found in the  :stable-gym:`stable-gy
    :caption: Usage
 
    usage/installation
+   usage/docker
    usage/algorithms
    usage/running
    usage/hyperparameter_tuning
