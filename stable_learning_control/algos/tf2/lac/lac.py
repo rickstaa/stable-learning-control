@@ -1226,6 +1226,11 @@ def lac(
         # NOTE: Improved compared to Han et al. 2020. Previously, updates were based on
         # memory size, which only changed at terminal states.
         if (t + 1) >= update_after and ((t + 1) - update_after) % update_every == 0:
+            for _ in range(steps_per_update):
+                batch = replay_buffer.sample_batch(batch_size)
+                update_diagnostics = policy.update(data=batch)
+                logger.store(**update_diagnostics)  # Log diagnostics.
+
             # Step based learning rate decay.
             if lr_decay_ref.lower() == "step":
                 lr_a_now = max(
@@ -1238,10 +1243,6 @@ def lac(
                     lr_a=lr_a_now, lr_c=lr_c_now, lr_alpha=lr_a_now, lr_labda=lr_a_now
                 )
 
-            for _ in range(steps_per_update):
-                batch = replay_buffer.sample_batch(batch_size)
-                update_diagnostics = policy.update(data=batch)
-                logger.store(**update_diagnostics)  # Log diagnostics.
             # SGD batch tb logging.
             if use_tensorboard and not tb_low_log_freq:
                 logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
