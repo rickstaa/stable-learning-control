@@ -30,7 +30,6 @@ WORKDIR /stable-learning-control
 RUN conda install mpi4py
 
 # Install slc package
-# RUN pip install -e .
 RUN pip install -e .[mujoco]
 
 # Install the stable-gym package
