@@ -36,6 +36,13 @@ Ensure to substitute ``/path/to/experiments`` and ``/path/to/data`` with the pre
 .. note::
     You can also use relative paths to mount directories. However, please ensure to prefix them with the relative path prefix ``./``. If this prefix is not used, Docker will interpret the path as a volume name and create a `Docker volume`_ with that name, which will then be mounted to the container.
 
+.. tip:: 
+    By default, the' root' user owns the ``data`` folder created within the Docker container. Suppose you want to access the data from the host machine. In that case, you can change the ownership of the ``data`` folder to your user by running the following command:
+
+    .. code-block:: bash
+
+        sudo chown -R $USER:$USER /path/to/data
+
 .. _Docker volume: https://docs.docker.com/storage/volumes/
 
 Visualizing Experiments
