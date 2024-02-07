@@ -20,7 +20,7 @@ SHELL ["conda", "run", "-n", "slc", "/bin/bash", "-c"]
 COPY . /stable-learning-control
 
 # Clone stable-gym package
-RUN git clone https://github.com/rickstaa/stable-gym.git
+RUN git clone -b han2020 https://github.com/rickstaa/stable-gym.git
 
 # Set the working directory
 WORKDIR /stable-learning-control
