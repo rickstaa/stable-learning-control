@@ -245,7 +245,7 @@ In this example, observe that
 
 * On line 6, we import the algorithm we want to load.
 * On line 12-14, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the correct hyperparameters.
-* on line 15, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to restore the environment used during the experiment. This saves us time in setting up the environment.
+* on line 15, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_env` method to restore the environment used during the experiment. This saves us time in setting up the environment.
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
 
@@ -297,7 +297,7 @@ In this example, observe that
 * On line 12-14, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method
   to restore the hyperparameters that were used during the experiment. This saves us time in setting up the correct
   hyperparameters.
-* on line 15, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_config` method to
+* on line 15, we use the :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.load_env` method to
   restore the environment used during the experiment. This saves us time in setting up the environment.
 * on line 17, we import the model weights.
 * on line 18-19, we load the saved weights onto the algorithm.
