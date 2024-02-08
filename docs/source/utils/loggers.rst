@@ -232,7 +232,7 @@ In this example, observe that
 * On lines 107 :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.setup_pytorch_saver` is used to prepare the logger to save the key elements of the CNN model.
 * On line 141, diagnostics are saved to the logger's internal state via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`.
 * On line 147, the CNN model saved once per epoch via :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.save_state`.
-* On lines 60-65, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` and :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular` are
+* On lines 150-157, :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` and :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.dump_tabular` are
   used to write the epoch diagnostics to file. Note that the keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.log_tabular` are the same as the
   keys passed into :meth:`~stable_learning_control.utils.log_utils.logx.EpochLogger.store`. We use the ``tb_write=True`` option to enable TensorBoard logging.
 

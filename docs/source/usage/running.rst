@@ -533,7 +533,7 @@ Consider the example in ``stable_learning_control/examples/pytorch/sac_exp_grid_
 .. literalinclude:: /../../examples/pytorch/sac_exp_grid_search.py
    :language: python
    :linenos:
-   :lines: 16-
+   :lines: 17-
    :emphasize-lines: 22-28, 31
 
 After making the ExperimentGrid object, parameters are added to it with

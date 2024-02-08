@@ -48,14 +48,14 @@ Consider the example in ``stable_learning_control/examples/pytorch/sac_ray_hyper
    :language: python
    :linenos:
    :lines: 32-
-   :emphasize-lines: 12, 15-30, 38-49, 56, 59-66, 70-95, 98
+   :emphasize-lines: 12, 15-29, 38-48, 55, 58-65, 69-94, 97
 
-In this example, a boolean on line ``12`` can enable Weights & Biases logging. On lines ``15-30``, we first create a small wrapper
-function that ensures that the Ray Tuner serves the hyperparameters in the SLC algorithm's format. Following lines ``38-49`` setup
-a Weights & Biases callback if the ``USE_WANDB`` constant is set to ``True``. On line ``56``, we then set the starting point for
-several hyperparameters used in the hyperparameter search. Next, we define the hyperparameter search space on lines ``59-66`` 
-while we initialise the Ray Tuner instance on lines ``70-95``. Lastly, we start the hyperparameter search by calling the
-Tuners ``fit`` method on line ``98``.
+In this example, a boolean on line ``12`` can enable Weights & Biases logging. On lines ``15-29``, we first create a small wrapper
+function that ensures that the Ray Tuner serves the hyperparameters in the SLC algorithm's format. Following lines ``38-48`` setup
+a Weights & Biases callback if the ``USE_WANDB`` constant is set to ``True``. On line ``55``, we then set the starting point for
+several hyperparameters used in the hyperparameter search. Next, we define the hyperparameter search space on lines ``58-65`` 
+while we initialise the Ray Tuner instance on lines ``69-94``. Lastly, we start the hyperparameter search by calling the
+Tuners ``fit`` method on line ``97``.
 
 When running the script, the Ray tuner will search for the best hyperparameter combination. While doing so will print
 the results to the ``stdout``, a TensorBoard logging file and the Weights & Biases portal. You can check the TensorBoard logs using the
