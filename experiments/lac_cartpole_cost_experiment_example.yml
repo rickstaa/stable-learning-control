@@ -34,5 +34,4 @@ replay_size: "int(1e6)"
 seed: 0 234 567 # NOTE: Use comma/space separated string for hyperparameter variants
 device: "cpu"
 save_freq: 1
-start_policy:
 export: False

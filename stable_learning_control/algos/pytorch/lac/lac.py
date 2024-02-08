@@ -1155,10 +1155,11 @@ def lac(
             policy.restore(start_policy)
             logger.log("Model successfully restored.", type="info")
         except Exception as e:
+            err_str = e.args[0].lower().rstrip(".")
             logger.log(
-                "Shutting down training since {}.".format(
-                    e.args[0].lower().rstrip(".")
-                ),
+                f"Training process has been terminated. Unable to restore the "
+                f"'start_policy' from '{start_policy}'. Please ensure the "
+                f"'start_policy' is correct and try again. Error details: {err_str}.",
                 type="error",
             )
             sys.exit(0)
