@@ -69,7 +69,7 @@ Please note that this command lowers the security of your system by allowing loc
 Running Other Utilities
 -----------------------
 
-The SLC package includes additional utilities such as :ref:`plotting <plotting>` and :ref:`robustness evaluations <robustness_eval>` tools. These can be run in a Docker container similar to the experiments. For example:
+The SLC package includes additional utilities such as :ref:`plotting <plotting>`, :ref:`policy testing <policy_test>` and :ref:`robustness evaluation <robustness_eval>` tools. These can be run in a Docker container similar to the experiments. For example:
 
 .. code-block:: bash
 

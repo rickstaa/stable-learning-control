@@ -143,6 +143,8 @@ You can change the default results directory by modifying ``DEFAULT_DATA_DIR`` i
 Loading and Running Trained Policies
 ====================================
 
+.. _policy_test:
+
 If Environment Saves Successfully
 ---------------------------------
 
