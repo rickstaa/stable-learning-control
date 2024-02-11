@@ -22,11 +22,12 @@ def get_exponential_decay_rate(lr_start, lr_final, steps):
     return gamma
 
 
-def calc_linear_decay_rate(lr_init, lr_final, steps):
-    r"""Returns the linear decay factor (G) needed to achieve a given final learning
-    rate at a certain step. This decay factor can for example be used with a
-    :class:`torch.optim.lr_scheduler.LambdaLR` scheduler. Keep in mind that this
-    function assumes the following formula for the learning rate decay.
+def get_linear_decay_rate(lr_init, lr_final, steps):
+    r"""Returns a linear decay factor (G) that enables a learning rate to transition
+    from an initial value (`lr_init`) at step 0 to a final value (`lr_final`) at a
+    specified step (N). This decay factor is compatible with the
+    :class:`torch.optim.lr_scheduler.LambdaLR` scheduler. The decay factor is calculated
+    using the following formula:
 
     .. math::
         lr_{terminal} = lr_{init} * (1.0 - G \cdot step)
@@ -34,10 +35,11 @@ def calc_linear_decay_rate(lr_init, lr_final, steps):
     Args:
         lr_init (float): The initial learning rate.
         lr_final (float): The final learning rate you want to achieve.
-        steps (int): The step/epoch at which you want to achieve this learning rate.
+        steps (int): The number of steps/epochs over which the learning rate should
+            decay. This is equal to epochs - 1.
 
     Returns:
-        decimal.Decimal: Linear learning rate decay factor (G)
+        decimal.Decimal: Linear learning rate decay factor (G).
     """  # noqa: W605
     return -(
         ((Decimal(lr_final) / Decimal(lr_init)) - Decimal(1.0)) / Decimal(max(steps, 1))
@@ -53,7 +55,7 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
             (options are: ``linear`` and ``exponential`` and ``constant``).
         lr_start (float): Initial learning rate.
         lr_final (float): Final learning rate.
-        steps (int, optional): Number of steps/epochs used in the training.  This
+        steps (int, optional): Number of steps/epochs used in the training. This
             includes the starting step.
 
     Returns:
@@ -83,7 +85,7 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
                 return np.longdouble(
                     Decimal(1.0)
                     - (
-                        calc_linear_decay_rate(lr_start, lr_final, (steps - 1.0))
+                        get_linear_decay_rate(lr_start, lr_final, (steps - 1.0))
                         * Decimal(step)
                     )
                 )
@@ -96,3 +98,51 @@ def get_lr_scheduler(optimizer, decaying_lr_type, lr_start, lr_final, steps):
         return torch.optim.lr_scheduler.LambdaLR(
             optimizer, lr_lambda=lambda step: np.longdouble(1.0)
         )  # Return a constant function.
+
+
+def estimate_step_learning_rate(
+    lr_scheduler, lr_start, lr_final, update_after, total_steps, step
+):
+    """Estimates the learning rate at a given step.
+
+    This function estimates the learning rate for a specific training step. It differs
+    from the `get_last_lr` method of the learning rate scheduler, which returns the
+    learning rate at the last scheduler step, not necessarily the current training step.
+
+    Args:
+        lr_scheduler (torch.optim.lr_scheduler): The learning rate scheduler.
+        lr_start (float): The initial learning rate.
+        update_after (int): The step number after which the learning rate should start
+            decreasing.
+        lr_final (float): The final learning rate.
+        total_steps (int): The total number of steps/epochs in the training process. 
+            Excludes the initial step.
+        step (int): The current step number. Excludes the initial step.
+
+    Returns:
+        float: The learning rate at the given step.
+    """
+    if step < update_after:
+        return lr_start
+    else:
+        adjusted_step = step - update_after
+        adjusted_total_steps = total_steps - update_after
+        if isinstance(lr_scheduler, torch.optim.lr_scheduler.LambdaLR):
+            decay_rate = get_linear_decay_rate(lr_start, lr_final, adjusted_total_steps)
+            lr = float(
+                Decimal(lr_start) * (Decimal(1.0) - decay_rate * Decimal(adjusted_step))
+            )
+        elif isinstance(lr_scheduler, torch.optim.lr_scheduler.ExponentialLR):
+            decay_rate = get_exponential_decay_rate(
+                lr_start, lr_final, adjusted_total_steps
+            )
+            lr = float(
+                Decimal(lr_start) * (Decimal(decay_rate) ** Decimal(adjusted_step))
+            )
+        else:
+            supported_schedulers = ["LambdaLR", "ExponentialLR"]
+            raise ValueError(
+                f"The learning rate scheduler is not supported for this function. "
+                f"Supported schedulers are: {', '.join(supported_schedulers)}"
+            )
+        return max(lr, lr_final)
