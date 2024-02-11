@@ -33,6 +33,7 @@ from stable_learning_control.algos.common.helpers import heuristic_target_entrop
 from stable_learning_control.algos.pytorch.common.buffers import ReplayBuffer
 from stable_learning_control.algos.pytorch.common.get_lr_scheduler import (
     get_lr_scheduler,
+    estimate_step_learning_rate,
 )
 from stable_learning_control.algos.pytorch.common.helpers import (
     count_vars,
@@ -979,7 +980,7 @@ def sac(
     actor_critic = SoftActorCritic if actor_critic is None else actor_critic
 
     # Ensure the environment is correctly seeded.
-    # NOTE: Done here since we donote:n't want to seed on every env.reset() call.
+    # NOTE: Done here since we don't want to seed on every env.reset() call.
     if seed is not None:
         env.np_random, _ = seeding.np_random(seed)
         env.action_space.seed(seed)
@@ -1048,21 +1049,44 @@ def sac(
     logger.log("Network structure:\n", type="info")
     logger.log(policy.ac, end="\n\n")
 
-    # Create learning rate schedulers.
-    opt_schedulers = []
-    lr_decay_ref_var = total_steps if lr_decay_ref.lower() == "steps" else epochs
-    pi_opt_scheduler = get_lr_scheduler(
-        policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var
-    )
-    opt_schedulers.append(pi_opt_scheduler)
-    alpha_opt_scheduler = get_lr_scheduler(
-        policy._log_alpha_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_ref_var
-    )
-    opt_schedulers.append(alpha_opt_scheduler)
-    c_opt_scheduler = get_lr_scheduler(
-        policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, lr_decay_ref_var
-    )
-    opt_schedulers.append(c_opt_scheduler)
+    # Parse learning rate decay type.
+    valid_lr_decay_options = ["step", "epoch"]
+    lr_decay_ref = lr_decay_ref.lower()
+    if lr_decay_ref not in valid_lr_decay_options:
+        options = [f"'{option}'" for option in valid_lr_decay_options]
+        logger.log(
+            f"The learning rate decay reference variable was set to '{lr_decay_ref}', "
+            "which is not a valid option. Valid options are "
+            f"{', '.join(options)}. The learning rate decay reference "
+            "variable has been set to 'epoch'.",
+            type="warning",
+        )
+        lr_decay_ref = "epoch"
+
+    # Calculate the number of learning rate scheduler steps.
+    if lr_decay_ref == "step":
+        # NOTE: Decay applied at policy update to improve performance.
+        lr_decay_steps = (total_steps - update_after) / update_every
+    else:
+        lr_decay_steps = epochs
+
+    # Setup learning rate schedulers.
+    # NOTE: +1 since we start at the initial learning rate.
+    opt_schedulers = {
+        "pi": get_lr_scheduler(
+            policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_steps + 1
+        ),
+        "c": get_lr_scheduler(
+            policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, lr_decay_steps + 1
+        ),
+        "alpha": get_lr_scheduler(
+            policy._log_alpha_optimizer,
+            lr_decay_type,
+            lr_a,
+            lr_a_final,
+            lr_decay_steps + 1,
+        ),
+    }
 
     logger.setup_pytorch_saver(policy)
 
@@ -1088,6 +1112,7 @@ def sac(
     # Setup diagnostics tb_write dict and store initial learning rates.
     diag_tb_log_list = ["LossQ", "LossPi", "Alpha", "LossAlpha", "Entropy"]
     if use_tensorboard:
+        # NOTE: TensorBoard counts from 0.
         logger.log_to_tb(
             "Lr_a",
             policy._pi_optimizer.param_groups[0]["lr"],
@@ -1146,8 +1171,8 @@ def sac(
                 logger.store(**update_diagnostics)  # Log diagnostics.
 
             # Step based learning rate decay.
-            if lr_decay_ref.lower() == "step":
-                for scheduler in opt_schedulers:
+            if lr_decay_ref == "step":
+                for scheduler in opt_schedulers.values():
                     scheduler.step()
                 policy.bound_lr(
                     lr_a_final, lr_c_final, lr_a_final
@@ -1155,7 +1180,9 @@ def sac(
 
             # SGD batch tb logging.
             if use_tensorboard and not tb_low_log_freq:
-                logger.log_to_tb(keys=diag_tb_log_list, global_step=t)
+                logger.log_to_tb(
+                    keys=diag_tb_log_list, global_step=t
+                )  # NOTE: TensorBoard counts from 0.
 
         # End of epoch handling (Save model, test performance and log data)
         if (t + 1) % steps_per_epoch == 0:
@@ -1174,17 +1201,41 @@ def sac(
                     extend=True,
                 )
 
-            # Epoch based learning rate decay.
-            if lr_decay_ref.lower() != "step":
-                for scheduler in opt_schedulers:
-                    scheduler.step()
-                policy.bound_lr(
-                    lr_a_final, lr_c_final, lr_a_final
-                )  # Make sure lr is bounded above the final lr.
+            # Retrieve current learning rates.
+            if lr_decay_ref == "step":
+                # NOTE: Estimate since 'step' decay is applied at policy update.
+                lr_actor = estimate_step_learning_rate(
+                    opt_schedulers["pi"],
+                    lr_a,
+                    lr_a_final,
+                    update_after,
+                    total_steps,
+                    t + 1,
+                )
+                lr_critic = estimate_step_learning_rate(
+                    opt_schedulers["c"],
+                    lr_c,
+                    lr_c_final,
+                    update_after,
+                    total_steps,
+                    t + 1,
+                )
+                lr_alpha = estimate_step_learning_rate(
+                    opt_schedulers["alpha"],
+                    lr_a,
+                    lr_a_final,
+                    update_after,
+                    total_steps,
+                    t + 1,
+                )
+            else:
+                lr_actor = policy._pi_optimizer.param_groups[0]["lr"]
+                lr_critic = policy._c_optimizer.param_groups[0]["lr"]
+                lr_alpha = policy._log_alpha_optimizer.param_groups[0]["lr"]
 
             # Log info about epoch.
             logger.log_tabular("Epoch", epoch)
-            logger.log_tabular("TotalEnvInteracts", t)
+            logger.log_tabular("TotalEnvInteracts", t + 1)
             logger.log_tabular(
                 "EpRet",
                 with_min_and_max=True,
@@ -1204,19 +1255,19 @@ def sac(
                 )
             logger.log_tabular(
                 "Lr_a",
-                policy._pi_optimizer.param_groups[0]["lr"],
+                lr_actor,
                 tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             logger.log_tabular(
                 "Lr_c",
-                policy._c_optimizer.param_groups[0]["lr"],
+                lr_critic,
                 tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
             logger.log_tabular(
                 "Lr_alpha",
-                policy._log_alpha_optimizer.param_groups[0]["lr"],
+                lr_alpha,
                 tb_write=use_tensorboard,
                 tb_prefix="LearningRates",
             )
@@ -1250,7 +1301,15 @@ def sac(
                 tb_write=(use_tensorboard and tb_low_log_freq),
             )
             logger.log_tabular("Time", time.time() - start_time)
-            logger.dump_tabular(global_step=t)
+            logger.dump_tabular(global_step=t)  # NOTE: TensorBoard counts from 0.
+
+            # Epoch based learning rate decay.
+            if lr_decay_ref != "step":
+                for scheduler in opt_schedulers.values():
+                    scheduler.step()
+                policy.bound_lr(
+                    lr_a_final, lr_c_final, lr_a_final
+                )  # Make sure lr is bounded above the final lr.
 
     # Export model to 'TorchScript'
     if export:
