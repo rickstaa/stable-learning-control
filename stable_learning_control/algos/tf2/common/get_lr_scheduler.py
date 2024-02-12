@@ -11,8 +11,8 @@ def get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps):
     """Creates a learning rate scheduler.
 
     Args:
-        decaying_lr_type (str): The learning rate decay type that is used (
-        options are: ``linear`` and ``exponential`` and ``constant``).
+        decaying_lr_type (str): The learning rate decay type that is used (options are:
+            ``linear`` and ``exponential`` and ``constant``).
         lr_start (float): Initial learning rate.
         lr_final (float): Final learning rate.
         steps (int, optional): Number of steps/epochs used in the training. This
