@@ -321,8 +321,8 @@ if __name__ == "__main__":
         type=str,
         default="cpu",
         help=(
-            "The device the networks are placed on: 'cpu' or 'gpu' (options: "
-            "default: cpu)"
+            "The device the networks are placed on. Options: 'cpu', 'gpu', 'gpu:0', "
+            "'gpu:1', etc. Defaults to 'cpu'."
         ),
     )
     parser.add_argument(

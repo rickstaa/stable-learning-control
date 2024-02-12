@@ -115,7 +115,7 @@ def estimate_step_learning_rate(
         update_after (int): The step number after which the learning rate should start
             decreasing.
         lr_final (float): The final learning rate.
-        total_steps (int): The total number of steps/epochs in the training process. 
+        total_steps (int): The total number of steps/epochs in the training process.
             Excludes the initial step.
         step (int): The current step number. Excludes the initial step.
 

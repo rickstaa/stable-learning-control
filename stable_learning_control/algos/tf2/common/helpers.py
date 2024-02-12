@@ -12,16 +12,39 @@ def set_device(device_type="cpu"):
     """Sets the computational device given a device type.
 
     Args:
-        device_type (str): The device type (options: ``cpu`` and
-            ``gpu``). Defaults to ``cpu``.
+        device_type (str): The device type (options: ``cpu``, ``gpu``, ``gpu:0``,
+            ``gpu:1``, etc.). Defaults to ``cpu``.
 
     Returns:
         str: The type of device that is used.
     """
-    if device_type.lower() == "cpu":
+    device_type = device_type.lower()
+    if "gpu" in device_type:
+        if not tf.config.list_physical_devices("GPU"):
+            log_to_std_out(
+                "GPU computing was enabled but the GPU can not be reached. "
+                "Reverting back to using CPU.",
+                "yellow",
+                type="warning",
+            )
+            device_type = "cpu"
+        else:
+            device_id = int(device_type.split(":")[1]) if ":" in device_type else 0
+            gpus = tf.config.experimental.list_physical_devices("GPU")
+            if device_id < len(gpus):
+                tf.config.experimental.set_visible_devices(gpus[device_id], "GPU")
+            else:
+                log_to_std_out(
+                    f"GPU with ID {device_id} not found. Reverting back to the first "
+                    "available GPU.",
+                    "yellow",
+                    type="warning",
+                )
+                tf.config.experimental.set_visible_devices(gpus[0], "GPU")
+    else:
         tf.config.set_visible_devices([], "GPU")  # Force disable GPU.
     log_to_std_out(f"TensorFlow is using the {device_type.upper()}.", type="info")
-    return device_type.lower()
+    return device_type
 
 
 def mlp(sizes, activation, output_activation=None, name=""):
