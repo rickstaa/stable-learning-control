@@ -889,6 +889,7 @@ def sac(
             -   replay_buffer (union[:class:`~stable_learning_control.algos.common.buffers.ReplayBuffer`, :class:`~stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer`]):
                 The replay buffer used during training.
     """  # noqa: E501, D301
+    update_after = max(1, update_after)  # You can not update before the first step.
     validate_args(**locals())
 
     # Retrieve hyperparameters while filtering out the logger_kwargs.
