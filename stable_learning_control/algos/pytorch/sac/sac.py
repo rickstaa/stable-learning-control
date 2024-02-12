@@ -182,8 +182,8 @@ class SAC(nn.Module):
                 ``1e-4``.
             lr_c (float, optional): Learning rate used for the (Soft) critic.
                 Defaults to ``1e-4``.
-            device (str, optional): The device the networks are placed on (``cpu``
-                or ``gpu``). Defaults to ``cpu``.
+            device (str, optional): The device the networks are placed on (options:
+                ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.). Defaults to ``cpu``.
         """  # noqa: E501, D301
         super().__init__()
         self._setup_kwargs = {
@@ -696,8 +696,8 @@ class SAC(nn.Module):
 
     @property
     def device(self):
-        """The device the networks are placed on (``cpu`` or ``gpu``). Defaults to
-        ``cpu``.
+        """The device the networks are placed on (options: ``cpu``, ``gpu``, ``gpu:0``,
+        ``gpu:1``, etc.).
         """
         return self._device
 
@@ -872,8 +872,8 @@ def sac(
         replay_size (int, optional): Maximum length of replay buffer. Defaults to
             ``1e6``.
         seed (int): Seed for random number generators. Defaults to ``None``.
-        device (str, optional): The device the networks are placed on (``cpu``
-            or ``gpu``). Defaults to ``cpu``.
+        device (str, optional): The device the networks are placed on (options: ``cpu``,
+            ``gpu``, ``gpu:0``, ``gpu:1``, etc.). Defaults to ``cpu``.
         logger_kwargs (dict, optional): Keyword args for EpochLogger.
         save_freq (int, optional): How often (in terms of gap between epochs) to save
             the current policy and value function.
@@ -1524,8 +1524,8 @@ if __name__ == "__main__":
         type=str,
         default="cpu",
         help=(
-            "The device the networks are placed on: 'cpu' or 'gpu' (options: "
-            "default: cpu)"
+            "The device the networks are placed on. Options: 'cpu', 'gpu', 'gpu:0', "
+            "'gpu:1', etc. Defaults to 'cpu'."
         ),
     )
     parser.add_argument(

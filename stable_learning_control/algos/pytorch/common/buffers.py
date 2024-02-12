@@ -20,7 +20,8 @@ class ReplayBuffer(CommonReplayBuffer):
     sure a :obj:`torch.tensor` is returned when sampling.
 
     Attributes:
-        device (str): The device the experiences are placed on (CPU or GPU).
+        device (str): The device the experiences are placed on (options: ``cpu``,
+            ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
     """
 
     def __init__(self, device="cpu", *args, **kwargs):
@@ -28,7 +29,8 @@ class ReplayBuffer(CommonReplayBuffer):
 
         Args:
             device (str, optional): The computational device to put the sampled
-                experiences on.
+                experiences on (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``,
+                etc.). Defaults to ``cpu``.
             *args: All args to pass to the :class:`ReplayBuffer` parent class.
             **kwargs: All kwargs to pass to the class:`ReplayBuffer` parent class.
         """
@@ -60,7 +62,8 @@ class FiniteHorizonReplayBuffer(CommonFiniteHorizonReplayBuffer):
     sure a :obj:`torch.tensor` is returned when sampling.
 
     Attributes:
-        device (str): The device the experiences are placed on (CPU or GPU).
+        device (str): The device the experiences are placed on (options: ``cpu``,
+            ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
     """
 
     def __init__(self, device="cpu", *args, **kwargs):
@@ -68,7 +71,8 @@ class FiniteHorizonReplayBuffer(CommonFiniteHorizonReplayBuffer):
 
         Args:
             device (str, optional): The computational device to put the sampled
-                experiences on.
+                experiences on (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``,
+                etc.). Defaults to ``cpu``.
             *args: All args to pass to the :class:`FiniteHorizonReplayBuffer` parent
                 class.
             **kwargs: All kwargs to pass to the class:`FiniteHorizonReplayBuffer` parent
@@ -102,7 +106,8 @@ class TrajectoryBuffer(CommonTrajectoryBuffer):
     makes sure a :obj:`torch.tensor` is returned when sampling.
 
     Attributes:
-        device (str): The device the experiences are placed on (CPU or GPU).
+        device (str): The device the experiences are placed on (options: ``cpu``,
+            ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
     """
 
     def __init__(self, device="cpu", *args, **kwargs):
@@ -110,7 +115,8 @@ class TrajectoryBuffer(CommonTrajectoryBuffer):
 
         Args:
             device (str, optional): The computational device to put the sampled
-                experiences on.
+                experiences on (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
+                Defaults to ``cpu``.
             *args: All args to pass to the :class:`TrajectoryBuffer` parent class.
             **kwargs: All kwargs to pass to the :class:`TrajectoryBuffer` parent class.
         """

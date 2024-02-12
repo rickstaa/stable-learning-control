@@ -12,30 +12,40 @@ def retrieve_device(device_type="cpu"):
     """Retrieves the available computational device given a device type.
 
     Args:
-        device_type (str): The device type (options: ``cpu`` and
-            ``gpu``). Defaults to ``cpu``.
+        device_type (str): The device type (options: ``cpu``, ``gpu``, ``gpu:0``,
+            ``gpu:1``, etc.). Defaults to ``cpu``.
 
     Returns:
         :obj:`torch.device`: The Pytorch device object.
     """
-    device_type = (
-        "cpu" if device_type.lower() not in ["gpu", "cpu"] else device_type.lower()
-    )
-    if torch.cuda.is_available() and device_type == "gpu":
-        device = torch.device("cuda")
-    elif not torch.cuda.is_available() and device_type == "gpu":
-        log_to_std_out(
-            (
+    device_type = device_type.lower()
+    if "gpu" in device_type:
+        if not torch.cuda.is_available():
+            log_to_std_out(
                 "GPU computing was enabled but the GPU can not be reached. "
                 "Reverting back to using CPU.",
                 "yellow",
-            ),
-            type="warning",
-        )
-        device = torch.device("cpu")
+                type="warning",
+            )
+            device = torch.device("cpu")
+        else:
+            device_id = int(device_type.split(":")[1]) if ":" in device_type else 0
+            if device_id < torch.cuda.device_count():
+                device = torch.device(f"cuda:{device_id}")
+            else:
+                log_to_std_out(
+                    f"GPU with ID {device_id} not found. Reverting back to the first "
+                    "available GPU.",
+                    "yellow",
+                    type="warning",
+                )
+                device = torch.device("cuda:0")
     else:
         device = torch.device("cpu")
-    log_to_std_out(f"Torch is using the {device_type.upper()}.", type="info")
+    log_to_std_out(
+        f"Torch is using the {device}.",
+        type="info",
+    )
     return device
 
 
@@ -147,7 +157,8 @@ def np_to_torch(input_object, dtype=None, device=None):
         dtype (type, optional): The type you want to use for storing the data in the
             tensor. Defaults to ``None`` (i.e. torch default will be used).
         device (str, optional): The computational device on which the tensors should be
-            stored. Defaults to ``None`` (i.e. torch default device will be used).
+            stored. (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.). Defaults
+            to ``None`` (i.e. torch default device will be used).
 
     Returns:
         object: The output python object in which numpy arrays have been converted to
