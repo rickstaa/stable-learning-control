@@ -454,7 +454,7 @@ if __name__ == "__main__":
     # Setup output dir for logger and return output kwargs.
     logger_kwargs = setup_logger_kwargs(
         args.exp_name,
-        args.seed,
+        seed=args.seed,
         save_checkpoints=args.save_checkpoints,
         use_tensorboard=args.use_tensorboard,
         tb_log_freq=args.tb_log_freq,
