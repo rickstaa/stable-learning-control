@@ -87,9 +87,8 @@ def call_experiment(
     # Set up logger output directory.
     if "logger_kwargs" not in kwargs:
         kwargs["logger_kwargs"] = setup_logger_kwargs(
-            exp_name, seed, data_dir, datestamp
+            exp_name, seed=seed, data_dir=data_dir, datestamp=datestamp
         )
-
     else:
         print("Note: Call experiment is not handling logger_kwargs.\n")
         kwargs["logger_kwargs"] = setup_logger_kwargs(

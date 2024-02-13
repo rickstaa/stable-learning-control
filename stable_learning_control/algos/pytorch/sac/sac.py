@@ -1657,15 +1657,15 @@ if __name__ == "__main__":
     # Setup output dir for logger and return output kwargs.
     logger_kwargs = setup_logger_kwargs(
         args.exp_name,
-        args.seed,
+        seed=args.seed,
         save_checkpoints=args.save_checkpoints,
         use_tensorboard=args.use_tensorboard,
+        tb_log_freq=args.tb_log_freq,
         use_wandb=args.use_wandb,
         wandb_job_type=args.wandb_job_type,
         wandb_project=args.wandb_project,
         wandb_group=args.wandb_group,
         wandb_run_name=args.wandb_run_name,
-        tb_log_freq=args.tb_log_freq,
         quiet=args.quiet,
         verbose_fmt=args.verbose_fmt,
         verbose_vars=args.verbose_vars,
