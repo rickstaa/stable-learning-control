@@ -20,7 +20,7 @@ update_after: 1000
 steps_per_update: 80
 num_test_episodes: 10
 alpha: 2.0
-alpha3: 0.1 0.2 0.4 0.5 0.7 0.8 0.9 1.0 # 0.3 0.6  # NOTE: Tuning alpha3.
+alpha3: 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0  # NOTE: Tuning alpha3.
 labda: 0.99  # NOTE: Decreased from 1.0 to 0.99 for stability.
 # gamma: 0.995   # NOTE: Not used for finite horizon tasks.
 polyak: 0.995
