@@ -968,7 +968,9 @@ def sac(
     # Calculate the number of learning rate scheduler steps.
     if lr_decay_ref == "step":
         # NOTE: Decay applied at policy update to improve performance.
-        lr_decay_steps = (total_steps - update_after) / update_every
+        lr_decay_steps = (
+            total_steps - update_after
+        ) / update_every + 1  # NOTE: +1 since we start at the initial learning rate.
     else:
         lr_decay_steps = epochs
 
@@ -976,16 +978,6 @@ def sac(
     # NOTE: Alpha currently uses the same scheduler as the actor.
     lr_a_scheduler = get_lr_scheduler(lr_decay_type, lr_a, lr_a_final, lr_decay_steps)
     lr_c_scheduler = get_lr_scheduler(lr_decay_type, lr_c, lr_c_final, lr_decay_steps)
-
-    # Create step based learning rate schedulers.
-    # NOTE: Used to estimate the learning rate at each step.
-    if lr_decay_ref == "step":
-        lr_a_step_scheduler = get_lr_scheduler(
-            lr_decay_type, lr_a, lr_a_final, lr_decay_steps + 1
-        )
-        lr_c_step_scheduler = get_lr_scheduler(
-            lr_decay_type, lr_c, lr_c_final, lr_decay_steps + 1
-        )
 
     # Restore policy if supplied.
     if start_policy is not None:
@@ -1138,9 +1130,9 @@ def sac(
             # Retrieve current learning rates.
             if lr_decay_ref == "step":
                 progress = max((t + 1) - update_after, 0) / update_every
-                lr_actor = lr_a_step_scheduler(progress)
-                lr_critic = lr_c_step_scheduler(progress)
-                lr_alpha = lr_a_step_scheduler(progress)
+                lr_actor = lr_a_scheduler(progress)
+                lr_critic = lr_c_scheduler(progress)
+                lr_alpha = lr_a_scheduler(progress)
             else:
                 lr_actor = policy._pi_optimizer.lr.numpy()
                 lr_critic = policy._c_optimizer.lr.numpy()
