@@ -724,8 +724,8 @@ class LAC(nn.Module):
             if self._c_optimizer.param_groups[0]["lr"] < lr_c_final:
                 self._c_optimizer.param_groups[0]["lr"] = lr_c_final
         if lr_alpha_final is not None:
-            if self._log_alpha_optimizer.param_groups[0]["lr"] < lr_a_final:
-                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_a_final
+            if self._log_alpha_optimizer.param_groups[0]["lr"] < lr_alpha_final:
+                self._log_alpha_optimizer.param_groups[0]["lr"] = lr_alpha_final
         if lr_labda_final is not None:
             if self._log_labda_optimizer.param_groups[0]["lr"] < lr_labda_final:
                 self._log_labda_optimizer.param_groups[0]["lr"] = lr_labda_final
@@ -1216,32 +1216,33 @@ def lac(
     # Calculate the number of learning rate scheduler steps.
     if lr_decay_ref == "step":
         # NOTE: Decay applied at policy update to improve performance.
-        lr_decay_steps = (total_steps - update_after) / update_every
+        lr_decay_steps = (
+            total_steps - update_after
+        ) / update_every + 1  # NOTE: +1 since we start at the initial learning rate.
     else:
         lr_decay_steps = epochs
 
     # Setup learning rate schedulers.
-    # NOTE: +1 since we start at the initial learning rate.
     opt_schedulers = {
         "pi": get_lr_scheduler(
-            policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_steps + 1
+            policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_steps
         ),
         "c": get_lr_scheduler(
-            policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, lr_decay_steps + 1
+            policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, lr_decay_steps
         ),
         "alpha": get_lr_scheduler(
             policy._log_alpha_optimizer,
             lr_decay_type,
             lr_a,
             lr_a_final,
-            lr_decay_steps + 1,
+            lr_decay_steps,
         ),
         "lambda": get_lr_scheduler(
             policy._log_labda_optimizer,
             lr_decay_type,
             lr_a,
             lr_a_final,
-            lr_decay_steps + 1,
+            lr_decay_steps,
         ),
     }
 
