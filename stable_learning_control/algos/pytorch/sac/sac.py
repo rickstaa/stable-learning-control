@@ -72,6 +72,10 @@ STD_OUT_LOG_VARS_DEFAULT = [
     "AverageLossPi",
     "AverageEntropy",
 ]
+VALID_DECAY_TYPES = ["linear", "exponential", "constant"]
+VALID_DECAY_REFERENCES = ["step", "epoch"]
+DEFAULT_DECAY_TYPE = "linear"
+DEFAULT_DECAY_REFERENCE = "epoch"
 
 
 class SAC(nn.Module):
@@ -100,6 +104,7 @@ class SAC(nn.Module):
         adaptive_temperature=True,
         lr_a=1e-4,
         lr_c=3e-4,
+        lr_alpha=1e-4,
         device="cpu",
     ):
         """Initialise the SAC algorithm.
@@ -182,6 +187,8 @@ class SAC(nn.Module):
                 ``1e-4``.
             lr_c (float, optional): Learning rate used for the (Soft) critic.
                 Defaults to ``1e-4``.
+            lr_alpha (float, optional): Learning rate used for the entropy temperature.
+                Defaults to ``1e-4``.
             device (str, optional): The device the networks are placed on (options:
                 ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.). Defaults to ``cpu``.
         """  # noqa: E501, D301
@@ -237,7 +244,7 @@ class SAC(nn.Module):
         self._gamma = gamma
         self._lr_a = lr_a
         if self._adaptive_temperature:
-            self._lr_alpha = lr_a
+            self._lr_alpha = lr_alpha
         self._lr_c = lr_c
         if not isinstance(target_entropy, (float, int)):
             self._target_entropy = heuristic_target_entropy(env.action_space)
@@ -746,10 +753,15 @@ def sac(
     adaptive_temperature=True,
     lr_a=1e-4,
     lr_c=3e-4,
+    lr_alpha=1e-4,
     lr_a_final=1e-10,
     lr_c_final=1e-10,
-    lr_decay_type="linear",
-    lr_decay_ref="epoch",
+    lr_alpha_final=1e-10,
+    lr_decay_type=DEFAULT_DECAY_TYPE,
+    lr_a_decay_type=DEFAULT_DECAY_TYPE,
+    lr_c_decay_type=DEFAULT_DECAY_TYPE,
+    lr_alpha_decay_type=DEFAULT_DECAY_TYPE,
+    lr_decay_ref=DEFAULT_DECAY_REFERENCE,
     batch_size=256,
     replay_size=int(1e6),
     seed=None,
@@ -859,13 +871,26 @@ def sac(
             ``1e-4``.
         lr_c (float, optional): Learning rate used for the (soft) critic. Defaults to
             ``1e-4``.
+        lr_alpha (float, optional): Learning rate used for the entropy temperature.
+            Defaults to ``1e-4``.
         lr_a_final(float, optional): The final actor learning rate that is achieved
             at the end of the training. Defaults to ``1e-10``.
         lr_c_final(float, optional): The final critic learning rate that is achieved
             at the end of the training. Defaults to ``1e-10``.
-        lr_decay_type (str, optional): The learning rate decay type that is used (
-            options are: ``linear`` and ``exponential`` and ``constant``). Defaults to
-            ``linear``.
+        lr_alpha_final(float, optional): The final alpha learning rate that is
+            achieved at the end of the training. Defaults to ``1e-10``.
+        lr_decay_type (str, optional): The learning rate decay type that is used (options
+            are: ``linear`` and ``exponential`` and ``constant``). Defaults to
+            ``linear``. Can be overridden by the specific learning rate decay types.
+        lr_a_decay_type (str, optional): The learning rate decay type that is used for
+            the actor learning rate (options are: ``linear`` and ``exponential`` and
+            ``constant``). If not specified, the general learning rate decay type is used.
+        lr_c_decay_type (str, optional): The learning rate decay type that is used for
+            the critic learning rate (options are: ``linear`` and ``exponential`` and
+            ``constant``). If not specified, the general learning rate decay type is used.
+        lr_alpha_decay_type (str, optional): The learning rate decay type that is used
+            for the alpha learning rate (options are: ``linear`` and ``exponential``
+            and ``constant``). If not specified, the general learning rate decay type is used.
         lr_decay_ref (str, optional): The reference variable that is used for decaying
             the learning rate (options: ``epoch`` and ``step``). Defaults to ``epoch``.
         batch_size (int, optional): Minibatch size for SGD. Defaults to ``256``.
@@ -1002,18 +1027,19 @@ def sac(
         # torch.backends.cudnn.benchmark = False  # Disable for reproducibility.
 
     policy = SAC(
-        env,
-        actor_critic,
-        ac_kwargs,
-        opt_type,
-        alpha,
-        gamma,
-        polyak,
-        target_entropy,
-        adaptive_temperature,
-        lr_a,
-        lr_c,
-        device,
+        env=env,
+        actor_critic=actor_critic,
+        ac_kwargs=ac_kwargs,
+        opt_type=opt_type,
+        alpha=alpha,
+        gamma=gamma,
+        polyak=polyak,
+        target_entropy=target_entropy,
+        adaptive_temperature=adaptive_temperature,
+        lr_a=lr_a,
+        lr_c=lr_c,
+        lr_alpha=lr_alpha,
+        device=device,
     )
 
     # Restore policy if supplied.
@@ -1050,19 +1076,48 @@ def sac(
     logger.log("Network structure:\n", type="info")
     logger.log(policy.ac, end="\n\n")
 
-    # Parse learning rate decay type.
-    valid_lr_decay_options = ["step", "epoch"]
+    # Parse learning rate decay reference.
     lr_decay_ref = lr_decay_ref.lower()
-    if lr_decay_ref not in valid_lr_decay_options:
-        options = [f"'{option}'" for option in valid_lr_decay_options]
+    if lr_decay_ref not in VALID_DECAY_REFERENCES:
+        options = [f"'{option}'" for option in VALID_DECAY_REFERENCES]
         logger.log(
             f"The learning rate decay reference variable was set to '{lr_decay_ref}', "
             "which is not a valid option. Valid options are "
             f"{', '.join(options)}. The learning rate decay reference "
-            "variable has been set to 'epoch'.",
+            f"variable has been set to '{DEFAULT_DECAY_REFERENCE}'.",
             type="warning",
         )
-        lr_decay_ref = "epoch"
+        lr_decay_ref = DEFAULT_DECAY_REFERENCE
+
+    # Parse learning rate decay types.
+    lr_decay_type = lr_decay_type.lower()
+    if lr_decay_type not in VALID_DECAY_TYPES:
+        options = [f"'{option}'" for option in VALID_DECAY_TYPES]
+        logger.log(
+            f"The learning rate decay type was set to '{lr_decay_type}', which is not "
+            "a valid option. Valid options are "
+            f"{', '.join(options)}. The learning rate decay type has been set to "
+            f"'{DEFAULT_DECAY_TYPE}'.",
+            type="warning",
+        )
+        lr_decay_type = DEFAULT_DECAY_TYPE
+    decay_types = {
+        "actor": lr_a_decay_type.lower() if lr_a_decay_type else None,
+        "critic": lr_c_decay_type.lower() if lr_c_decay_type else None,
+        "alpha": lr_alpha_decay_type.lower() if lr_alpha_decay_type else None,
+    }
+    for name, decay_type in decay_types.items():
+        if decay_type is None:
+            decay_types[name] = lr_decay_type
+        else:
+            if decay_type not in VALID_DECAY_TYPES:
+                logger.log(
+                    f"Invalid {name} learning rate decay type: '{decay_type}'. Using "
+                    f"global learning rate decay type: '{lr_decay_type}' instead.",
+                    type="warning",
+                )
+                decay_types[name] = lr_decay_type
+    lr_a_decay_type, lr_c_decay_type, lr_alpha_decay_type = decay_types.values()
 
     # Calculate the number of learning rate scheduler steps.
     if lr_decay_ref == "step":
@@ -1074,15 +1129,28 @@ def sac(
         lr_decay_steps = epochs
 
     # Setup learning rate schedulers.
+    lr_a_init, lr_c_init, lr_alpha_init = lr_a, lr_c, lr_alpha
     opt_schedulers = {
         "pi": get_lr_scheduler(
-            policy._pi_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_steps
+            policy._pi_optimizer,
+            lr_a_decay_type,
+            lr_a_init,
+            lr_a_final,
+            lr_decay_steps,
         ),
         "c": get_lr_scheduler(
-            policy._c_optimizer, lr_decay_type, lr_c, lr_c_final, lr_decay_steps
+            policy._c_optimizer,
+            lr_c_decay_type,
+            lr_c_init,
+            lr_c_final,
+            lr_decay_steps,
         ),
         "alpha": get_lr_scheduler(
-            policy._log_alpha_optimizer, lr_decay_type, lr_a, lr_a_final, lr_decay_steps
+            policy._log_alpha_optimizer,
+            lr_alpha_decay_type,
+            lr_alpha_init,
+            lr_alpha_final,
+            lr_decay_steps,
         ),
     }
 
@@ -1173,7 +1241,7 @@ def sac(
                 for scheduler in opt_schedulers.values():
                     scheduler.step()
                 policy.bound_lr(
-                    lr_a_final, lr_c_final, lr_a_final
+                    lr_a_final, lr_c_final, lr_alpha_final
                 )  # Make sure lr is bounded above the final lr.
 
             # SGD batch tb logging.
@@ -1204,7 +1272,7 @@ def sac(
                 # NOTE: Estimate since 'step' decay is applied at policy update.
                 lr_actor = estimate_step_learning_rate(
                     opt_schedulers["pi"],
-                    lr_a,
+                    lr_a_init,
                     lr_a_final,
                     update_after,
                     total_steps,
@@ -1212,7 +1280,7 @@ def sac(
                 )
                 lr_critic = estimate_step_learning_rate(
                     opt_schedulers["c"],
-                    lr_c,
+                    lr_c_init,
                     lr_c_final,
                     update_after,
                     total_steps,
@@ -1220,8 +1288,8 @@ def sac(
                 )
                 lr_alpha = estimate_step_learning_rate(
                     opt_schedulers["alpha"],
-                    lr_a,
-                    lr_a_final,
+                    lr_alpha_init,
+                    lr_alpha_final,
                     update_after,
                     total_steps,
                     t + 1,
@@ -1306,7 +1374,7 @@ def sac(
                 for scheduler in opt_schedulers.values():
                     scheduler.step()
                 policy.bound_lr(
-                    lr_a_final, lr_c_final, lr_a_final
+                    lr_a_final, lr_c_final, lr_alpha_final
                 )  # Make sure lr is bounded above the final lr.
 
     # Export model to 'TorchScript'
@@ -1476,6 +1544,12 @@ if __name__ == "__main__":
         "--lr_c", type=float, default=3e-4, help="critic learning rate (default: 1e-4)"
     )
     parser.add_argument(
+        "--lr_alpha",
+        type=float,
+        default=1e-4,
+        help="entropy temperature learning rate (default: 1e-4)",
+    )
+    parser.add_argument(
         "--lr_a_final",
         type=float,
         default=1e-10,
@@ -1488,10 +1562,44 @@ if __name__ == "__main__":
         help="the finalcritic learning rate (default: 1e-10)",
     )
     parser.add_argument(
+        "--lr_alpha_final",
+        type=float,
+        default=1e-10,
+        help="the final entropy temperature learning rate (default: 1e-10)",
+    )
+    parser.add_argument(
         "--lr_decay_type",
         type=str,
         default="linear",
         help="the learning rate decay type (default: linear)",
+    )
+    parser.add_argument(
+        "--lr_a_decay_type",
+        type=str,
+        default=None,
+        help=(
+            "the learning rate decay type that is used for the actor learning rate. "
+            "If not specified, the general learning rate decay type is used."
+        ),
+    )
+    parser.add_argument(
+        "--lr_c_decay_type",
+        type=str,
+        default=None,
+        help=(
+            "the learning rate decay type that is used for the critic learning rate. "
+            "If not specified, the general learning rate decay type is used."
+        ),
+    )
+    parser.add_argument(
+        "--lr_alpha_decay_type",
+        type=str,
+        default=None,
+        help=(
+            "the learning rate decay type that is used for the entropy temperature "
+            "learning rate. If not specified, the general learning rate decay type is "
+            "used."
+        ),
     )
     parser.add_argument(
         "--lr_decay_ref",
@@ -1695,9 +1803,14 @@ if __name__ == "__main__":
         adaptive_temperature=args.adaptive_temperature,
         lr_a=args.lr_a,
         lr_c=args.lr_c,
+        lr_alpha=args.lr_alpha,
         lr_a_final=args.lr_a_final,
         lr_c_final=args.lr_c_final,
+        lr_alpha_final=args.lr_a_final,
         lr_decay_type=args.lr_decay_type,
+        lr_a_decay_type=args.lr_a_decay_type,
+        lr_c_decay_type=args.lr_c_decay_type,
+        lr_alpha_decay_type=args.lr_alpha_decay_type,
         lr_decay_ref=args.lr_decay_ref,
         batch_size=args.batch_size,
         replay_size=args.replay_size,
