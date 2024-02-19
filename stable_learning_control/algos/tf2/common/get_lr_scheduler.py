@@ -16,7 +16,7 @@ def get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps):
         lr_start (float): Initial learning rate.
         lr_final (float): Final learning rate.
         steps (int, optional): Number of steps/epochs used in the training. This
-            includes the starting step.
+            includes the starting step/epoch.
 
     Returns:
         tensorflow.keras.optimizers.schedules.LearningRateSchedule: A learning rate
