@@ -50,7 +50,7 @@ def get_linear_decay_rate(lr_init, lr_final, steps):
         lr_init (float): The initial learning rate.
         lr_final (float): The final learning rate you want to achieve.
         steps (int): The number of steps/epochs over which the learning rate should
-            decay. This is equal to epochs - 1.
+            decay. This is equal to epochs -1.
 
     Returns:
         decimal.Decimal: Linear learning rate decay factor (G).
