@@ -188,8 +188,10 @@ class LAC(nn.Module):
                 .. math:: \\theta_{\\text{targ}} \\leftarrow
                     \\rho \\theta_{\\text{targ}} + (1-\\rho) \\theta
 
-                where :math:`\\rho` is polyak. (Always between 0 and 1, usually
-                close to 1.). Defaults to ``0.995``.
+                where :math:`\\rho` is polyak (Always between 0 and 1, usually close to
+                1.). In some papers :math:`\\rho` is defined as (1 - :math:`\\tau`)
+                where :math:`\\tau` is the soft replacement factor. Defaults to
+                ``0.995``.
             target_entropy (float, optional): Initial target entropy used while learning
                 the entropy temperature (alpha). Defaults to the
                 maximum information (bits) contained in action space. This can be
@@ -991,8 +993,9 @@ def lac(
             .. math:: \\theta_{\\text{targ}} \\leftarrow
                 \\rho \\theta_{\\text{targ}} + (1-\\rho) \\theta
 
-            where :math:`\\rho` is polyak. (Always between 0 and 1, usually
-            close to 1.). Defaults to ``0.995``.
+            where :math:`\\rho` is polyak (Always between 0 and 1, usually close to 1.).
+            In some papers :math:`\\rho` is defined as (1 - :math:`\\tau`) where
+            :math:`\\tau` is the soft replacement factor. Defaults to ``0.995``.
         target_entropy (float, optional): Initial target entropy used while learning
             the entropy temperature (alpha). Defaults to the
             maximum information (bits) contained in action space. This can be
