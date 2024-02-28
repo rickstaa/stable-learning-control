@@ -29,10 +29,10 @@ lr_a: "1e-4"
 lr_c: "3e-4"
 lr_alpha: "1e-4"
 lr_labda: "3e-4"
-lr_a_final: "1e-10"  # NOTE: Not in Han et al. 2020, but aligned with original code.
-lr_c_final: "1e-10"  # NOTE: Not in Han et al. 2020, but aligned with original code.
-lr_alpha_final: "1e-10"  # NOTE: Not in Han et al. 2020, but aligned with original code.
-lr_labda_final: "1e-10"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_a_final: "1e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_c_final: "3e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_alpha_final: "1e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_labda_final: "3e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
 lr_a_decay_type: "linear"
 lr_c_decay_type: "linear"
 lr_alpha_decay_type: "linear"
