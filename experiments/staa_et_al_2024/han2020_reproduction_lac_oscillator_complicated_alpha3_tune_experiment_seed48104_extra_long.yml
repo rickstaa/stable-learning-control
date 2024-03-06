@@ -1,5 +1,5 @@
 alg_name: lac
-exp_name: han2020_reproduction_lac_oscillator_complicated_alpha3_tune_exp
+exp_name: han2020_reproduction_lac_oscillator_complicated_alpha3_tune_exp_extra_long
 env_name: "stable_gym:OscillatorComplicated-v1"
 ac_kwargs:
   hidden_sizes:
