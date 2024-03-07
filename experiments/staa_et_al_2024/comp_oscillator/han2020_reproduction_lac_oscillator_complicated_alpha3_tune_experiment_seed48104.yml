@@ -12,7 +12,7 @@ ac_kwargs:
     actor: "nn.ReLU"
 opt_type: "minimize"
 max_ep_len: 400
-epochs: 49
+epochs: 98
 steps_per_epoch: 2048
 start_steps: 0
 update_every: 100
