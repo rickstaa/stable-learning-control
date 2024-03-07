@@ -12,7 +12,7 @@ ac_kwargs:
     actor: "nn.ReLU"
 opt_type: "minimize"
 max_ep_len: 400
-epochs: 49
+epochs: 98
 steps_per_epoch: 2048
 start_steps: 0
 update_every: 100
@@ -41,7 +41,7 @@ lr_decay_ref: "step"
 batch_size: 256
 replay_size: "int(1e6)"
 horizon_length: 5
-seed: 858762 # 388389  # NOTE: Using 5 seeds for tuning.
+seed: 26000 # 49672 858762 388389  # NOTE: Using 5 seeds for tuning.
 save_freq: 10
 use_wandb: True
 wandb_group: "han2020_reproduction_extra_seeds"
