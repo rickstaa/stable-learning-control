@@ -1,0 +1,48 @@
+alg_name: lac
+exp_name: han2020_reproduction_lac_fetch_reach_alpha3_tune_exp_small_actor
+env_name: "stable_gym:FetchReachCost-v1"
+ac_kwargs:
+  hidden_sizes:
+    actor: [64, 64]
+    critic: [64, 64, 16]
+  activation:
+    actor: "nn.ReLU"
+    critic: "nn.ReLU"
+  output_activation:
+    actor: "nn.ReLU"
+opt_type: "minimize"
+max_ep_len: 200
+epochs: 147
+steps_per_epoch: 2048
+start_steps: 0
+update_every: 100
+update_after: 1000
+steps_per_update: 80
+num_test_episodes: 10
+alpha: 2.0
+alpha3: 0.1 0.3 1.0  # NOTE: Tuning alpha3.alpha3.
+labda: 0.99  # NOTE: Decreased from 1.0 to 0.99 for stability.
+# gamma: 0.995   # NOTE: Not used for finite horizon tasks.
+polyak: 0.995
+adaptive_temperature: True 
+lr_a: "1e-4"
+lr_c: "3e-4"
+lr_alpha: "1e-4"
+lr_labda: "3e-4"
+lr_a_final: "3.3333333e-10"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_c_final: "1e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_alpha_final: "3.3333333e-10"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_labda_final: "1e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_a_decay_type: "linear"
+lr_c_decay_type: "linear"
+lr_alpha_decay_type: "linear"
+lr_labda_decay_type: "constant"
+lr_decay_ref: "step"
+batch_size: 256
+replay_size: "int(1e6)"
+horizon_length: 5
+seed: 78456 # 48104 567 3658 234  # NOTE: Using 5 seeds for tuning.
+save_freq: 10
+use_wandb: True
+wandb_group: "han2020_reproduction_small_actor"
+device: "gpu:1"
