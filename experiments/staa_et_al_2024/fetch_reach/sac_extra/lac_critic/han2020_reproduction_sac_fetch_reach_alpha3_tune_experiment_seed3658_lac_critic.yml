@@ -1,10 +1,10 @@
 alg_name: sac
-exp_name: han2020_reproduction_sac_fetch_reach_alpha3_tune_infinite_horizon_exp
+exp_name: han2020_reproduction_sac_fetch_reach_alpha3_tune_exp_lac_critic
 env_name: "stable_gym:FetchReachCost-v1"
 ac_kwargs:
   hidden_sizes:
     actor: [256, 256]  # NOTE: Using [256, 256] for consistency with the article.
-    critic: [256, 256] # NOTE: Use [256, 256] for consistency with the codebase.
+    critic: [64, 64, 16]
   activation:
     actor: "nn.ReLU"
     critic: "nn.ReLU"
@@ -35,8 +35,8 @@ lr_alpha_decay_type: "linear"
 lr_decay_ref: "step"
 batch_size: 256
 replay_size: "int(1e6)"
-seed: 48104 # 567 3658 234  # NOTE: Using 5 seeds for tuning.
+seed: 3658 # 234  # NOTE: Using 5 seeds for tuning.
 save_freq: 10
 use_wandb: True
-wandb_group: "han2020_reproduction_sac"
+wandb_group: "han2020_reproduction_sac_lac_critic"
 device: "gpu:1"
