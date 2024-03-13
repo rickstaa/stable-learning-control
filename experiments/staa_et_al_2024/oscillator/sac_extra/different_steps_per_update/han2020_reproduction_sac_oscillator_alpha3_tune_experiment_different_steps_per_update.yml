@@ -1,0 +1,42 @@
+alg_name: sac
+exp_name: han2020_reproduction_sac_oscillator_alpha3_tune_exp_bigger_steps_per_update
+env_name: "stable_gym:Oscillator-v1"
+ac_kwargs:
+  hidden_sizes:
+    actor: [256, 256]  # NOTE: Using [256, 256] for consistency with the article.
+    critic: [256, 256] # NOTE: Use [256, 256] for consistency with the codebase.
+  activation:
+    actor: "nn.ReLU"
+    critic: "nn.ReLU"
+  output_activation:
+    actor: "nn.ReLU"
+opt_type: "minimize"
+max_ep_len: 400
+epochs: 49
+steps_per_epoch: 2048
+start_steps: 0
+update_every: 100
+update_after: 1000
+steps_per_update: 80
+num_test_episodes: 10
+alpha: 1.0 # NOTE: Decreased to 1.0 for consistency with the codebase.
+gamma: 0.995
+polyak: 0.995
+adaptive_temperature: True 
+lr_a: "1e-4"
+lr_c: "3e-4"
+lr_alpha: "1e-4"
+lr_a_final: "1e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_c_final: "3e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_alpha_final: "1e-9"  # NOTE: Not in Han et al. 2020, but aligned with original code.
+lr_a_decay_type: "linear"
+lr_c_decay_type: "linear"
+lr_alpha_decay_type: "linear"
+lr_decay_ref: "step"
+batch_size: 256
+replay_size: "int(1e6)"
+seed: 78456 48104 567 3658 234  # NOTE: Using 5 seeds for tuning.
+save_freq: 10
+use_wandb: True
+wandb_group: "han2020_reproduction_sac_different_steps_per_update_bigger_steps_per_update"
+device: "gpu:1"
