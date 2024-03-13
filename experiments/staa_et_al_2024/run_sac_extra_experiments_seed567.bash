@@ -1,0 +1,4 @@
+bash run_sac_cart_pole_extra_experiments_seed567.bash
+bash run_sac_comp_oscillator_extra_experiments_seed567.bash
+bash run_sac_fetch_reach_extra_experiments_seed567.bash
+bash run_sac_oscillator_extra_experiments_seed567.bash
