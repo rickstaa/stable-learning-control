@@ -97,7 +97,7 @@ def calculate_condition_performance_statistics(
         num_epochs (int, optional): Number of epochs to consider. Defaults to 10.
 
     Returns:
-        pd.DataFrame: DataFrame with the mean, std and max of the metric for each
+        pd.DataFrame: DataFrame with the mean, std, min and max of the metric for each
             condition.
     """
     # Filter the data to include only the last N epochs for each seed.
@@ -113,13 +113,14 @@ def calculate_condition_performance_statistics(
     # Calculate mean, max and std across seeds for each condition.
     condition_means_stds = (
         seed_means_stds.groupby("Condition1")["mean"]
-        .agg(["mean", "std", "max"])
+        .agg(["mean", "std", "min", "max"])
         .reset_index()
     )
     condition_means_stds.columns = [
         "Condition",
         "Mean of Seed Means",
         "Std of Seed Means",
+        "Min of Seed Means",
         "Max of Seed Means",
     ]
     return condition_means_stds
