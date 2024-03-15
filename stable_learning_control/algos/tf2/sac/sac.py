@@ -1023,9 +1023,7 @@ def sac(
                     type="warning",
                 )
                 decay_types[name] = lr_decay_type
-    lr_a_decay_type, lr_c_decay_type, lr_alpha_decay_type = (
-        decay_types.values()
-    )
+    lr_a_decay_type, lr_c_decay_type, lr_alpha_decay_type = decay_types.values()
 
     # Calculate the number of learning rate scheduler steps.
     if lr_decay_ref == "step":

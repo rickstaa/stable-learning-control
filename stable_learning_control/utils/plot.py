@@ -76,7 +76,9 @@ def plot_data(
     if isinstance(data, list):
         data = pd.concat(data, ignore_index=True)
     sns.set(style=style, font_scale=font_scale)
-    sns.lineplot(data=data, x=xaxis, y=value, hue=condition, errorbar=errorbar, **kwargs)
+    sns.lineplot(
+        data=data, x=xaxis, y=value, hue=condition, errorbar=errorbar, **kwargs
+    )
     plt.legend(loc="best").set_draggable(True)
 
     xscale = np.max(np.asarray(data[xaxis])) > 5e3

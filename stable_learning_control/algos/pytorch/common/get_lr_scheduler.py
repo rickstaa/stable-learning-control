@@ -149,9 +149,7 @@ def estimate_step_learning_rate(
         decay_rate = get_exponential_decay_rate(
             lr_start, lr_final, adjusted_total_steps
         )
-        lr = float(
-            Decimal(lr_start) * (Decimal(decay_rate) ** Decimal(adjusted_step))
-        )
+        lr = float(Decimal(lr_start) * (Decimal(decay_rate) ** Decimal(adjusted_step)))
     else:
         supported_schedulers = ["LambdaLR", "ExponentialLR"]
         raise ValueError(
