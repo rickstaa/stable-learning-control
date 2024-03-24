@@ -2,6 +2,115 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/rickstaa/stable-learning-control/compare/v5.1.1...v6.0.0) (2024-03-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **buffers:** the `ReplayBuffer` and `TrajectoryBuffer` classes don't take a `rew_dim` argument anymore.
+* **package:** The package should now be used as `stable_learning_control` instead of `bayesian_learning_control`.
+* This package now depends on Gymnasium instead of Gym. Furthermore, it also requires Gymnasium>=26 (see https://gymnasium.farama.org/content/migration-guide/) for more information.
+* The `simzoo` package is no longer included and has to be installed separately through the [stable-gym](https://github.com/rickstaa/stable-gym) repository.
+
+### Features
+
+* add docker container ([#379](https://github.com/rickstaa/stable-learning-control/issues/379)) ([972079f](https://github.com/rickstaa/stable-learning-control/commit/972079faf2d87937905c94ff01c766a0c0b2b2cd))
+* add hyperparameter variant support for exp config files ([6ea47f0](https://github.com/rickstaa/stable-learning-control/commit/6ea47f0c330e2ea57c98e50165c160ffa43ff53e))
+* add small policy test script ([c701d69](https://github.com/rickstaa/stable-learning-control/commit/c701d69c507d735380cbb619037fca4f9a43e8c2))
+* add support for dictionary type observation spaces ([e3bf761](https://github.com/rickstaa/stable-learning-control/commit/e3bf76194875576ce6b623a97987696eb7105c0c))
+* add torch reproducibility code ([#320](https://github.com/rickstaa/stable-learning-control/issues/320)) ([89ef5a2](https://github.com/rickstaa/stable-learning-control/commit/89ef5a2fb4cd5804b189147e5691db3151a7f368))
+* enable GPU device selection ([#406](https://github.com/rickstaa/stable-learning-control/issues/406)) ([73c1374](https://github.com/rickstaa/stable-learning-control/commit/73c1374d9b5cb48487e36cb7bb4f99b1c51c5c3b))
+* **exp_cfg:** fix 'start_policy' empty config bug ([e7f3cf9](https://github.com/rickstaa/stable-learning-control/commit/e7f3cf9caaaec690eb934cca85e76b9e201f07fd))
+* **exp:** add lambda lr check experiments ([fedfa16](https://github.com/rickstaa/stable-learning-control/commit/fedfa163bf2ff5241664ce008ebc8bc9caab826d))
+* **exp:** add min statistics to rstaa2024 data analysis ([16ff564](https://github.com/rickstaa/stable-learning-control/commit/16ff56433977b11a5bb92e29796c08cf2fc187a9))
+* **exp:** add rstaa 2024 data analysis script ([f0df0a4](https://github.com/rickstaa/stable-learning-control/commit/f0df0a4720bba5625274f5963fa715ea0f200ba0))
+* **exp:** rename CompOscillator lambda experiment ([ec7103c](https://github.com/rickstaa/stable-learning-control/commit/ec7103c3c656aea14d86433157e79040754edd21))
+* improve 'eval_robustness' utility ([#313](https://github.com/rickstaa/stable-learning-control/issues/313)) ([3985867](https://github.com/rickstaa/stable-learning-control/commit/3985867fb1d452a343c7abcccda7ae37c74286dd))
+* improve hyperparmeter tuning, logger and add W&B logging ([#314](https://github.com/rickstaa/stable-learning-control/issues/314)) ([74afd65](https://github.com/rickstaa/stable-learning-control/commit/74afd658bcd22579221b5f51c9e5d074f1929857))
+* **lac:** add finite-horizon Lyapunov Candidate ([#328](https://github.com/rickstaa/stable-learning-control/issues/328)) ([ed2c85d](https://github.com/rickstaa/stable-learning-control/commit/ed2c85dcb9653aa8253e40870842dbefc5b33cb4))
+* **lac:** implement Han et al. 2020 hyperparameters ([#399](https://github.com/rickstaa/stable-learning-control/issues/399)) ([574b651](https://github.com/rickstaa/stable-learning-control/commit/574b6516cc599920a44286e917f730b405b6dbe9))
+* **latc:** add LATC algorithm ([#323](https://github.com/rickstaa/stable-learning-control/issues/323)) ([d74c64f](https://github.com/rickstaa/stable-learning-control/commit/d74c64f76b8aa1d10b199efcd9ea329f79bad547))
+* **package:** renames the package to `stable-learning-control` ([#257](https://github.com/rickstaa/stable-learning-control/issues/257)) ([1133d0a](https://github.com/rickstaa/stable-learning-control/commit/1133d0a2c9294a85cda592ed46627a4aba7157bc))
+* **plot:** improve plotter arguments ([#425](https://github.com/rickstaa/stable-learning-control/issues/425)) ([c7202a2](https://github.com/rickstaa/stable-learning-control/commit/c7202a2d3913b50833325bf180e2a4a18c79c91f))
+* **pytorch:** add alpha/lambda learning rate customization ([#412](https://github.com/rickstaa/stable-learning-control/issues/412)) ([6feb749](https://github.com/rickstaa/stable-learning-control/commit/6feb749dfcbb9926c69f48f00640434b057ce962))
+* replace OpenAi gym with Gymnasium ([#255](https://github.com/rickstaa/stable-learning-control/issues/255)) ([9873a03](https://github.com/rickstaa/stable-learning-control/commit/9873a0311511c6e9e08ea0957bb008e8a7e6f109))
+* **tf2:** add alpha/lambda learning rate customization ([#416](https://github.com/rickstaa/stable-learning-control/issues/416)) ([712e94b](https://github.com/rickstaa/stable-learning-control/commit/712e94b4f9b59db46137acdd413596de2ed0a629))
+* **wandb:** add 'wandb_run_name' argument ([#325](https://github.com/rickstaa/stable-learning-control/issues/325)) ([e0a0b9d](https://github.com/rickstaa/stable-learning-control/commit/e0a0b9d43277bec384f3d82d6d80d38a0d20ba5c))
+
+
+### Bug Fixes
+
+* Address flake8 and black formatting issues ([#395](https://github.com/rickstaa/stable-learning-control/issues/395)) ([517ee30](https://github.com/rickstaa/stable-learning-control/commit/517ee307afd605bcbb5c92a4e49c348666a8cb77))
+* correct finite horizon buffer calculation ([#398](https://github.com/rickstaa/stable-learning-control/issues/398)) ([779201c](https://github.com/rickstaa/stable-learning-control/commit/779201c03e35e5125aaca975b6790f034f912c3c))
+* correctly close gymnasium environments ([#340](https://github.com/rickstaa/stable-learning-control/issues/340)) ([a179176](https://github.com/rickstaa/stable-learning-control/commit/a1791761737c0f83220461b036c55e0acbc68cf5))
+* ensure 'test_policy' works with gymnasium&gt;=0.28.1 ([#276](https://github.com/rickstaa/stable-learning-control/issues/276)) ([80fe370](https://github.com/rickstaa/stable-learning-control/commit/80fe370a6132e1663fd2dadb4d8397a5adea1b3b))
+* fix 'test_policy' episode length bug ([#292](https://github.com/rickstaa/stable-learning-control/issues/292)) ([6d34f74](https://github.com/rickstaa/stable-learning-control/commit/6d34f74f8a18104ad92644aa624cee2c57135aad))
+* fix 'test_policy' rendering ([#291](https://github.com/rickstaa/stable-learning-control/issues/291)) ([48443ca](https://github.com/rickstaa/stable-learning-control/commit/48443ca1b15854b00f67272ab88a2766624d5530))
+* fix environment validation ([#280](https://github.com/rickstaa/stable-learning-control/issues/280)) ([a8a0346](https://github.com/rickstaa/stable-learning-control/commit/a8a0346c9e2f4bf583a15dea11bdac00b7f9db4d))
+* fix plot dataframe loading ([#338](https://github.com/rickstaa/stable-learning-control/issues/338)) ([90e16e9](https://github.com/rickstaa/stable-learning-control/commit/90e16e9385df8f1eac4a3626aebaa56ebd6e7b61))
+* fix several env/policy load bugs ([dddd4d8](https://github.com/rickstaa/stable-learning-control/commit/dddd4d8343301e322c82285b777a259bb6221cb0))
+* fix several policy loading problems ([51a664e](https://github.com/rickstaa/stable-learning-control/commit/51a664e3d18a3b1c315d943f328be66ed5ab683a))
+* improve tensorflow lazy import ([#272](https://github.com/rickstaa/stable-learning-control/issues/272)) ([75192a4](https://github.com/rickstaa/stable-learning-control/commit/75192a4bb456f7bbb0391fb1e63e4622054d2e33))
+* **pytorch:** correct epoch-based learning rate decay behavior ([#410](https://github.com/rickstaa/stable-learning-control/issues/410)) ([a8df90f](https://github.com/rickstaa/stable-learning-control/commit/a8df90f1b0dafb7f01c76767e21bbb3075bfeff3))
+* **pytorch:** correct step-based learning rate decay ([#405](https://github.com/rickstaa/stable-learning-control/issues/405)) ([7d7ac76](https://github.com/rickstaa/stable-learning-control/commit/7d7ac76b561d82d9ebbcc926476d5db4862f711e))
+* **pytorch:** ensure correct application of constant learning rate ([#411](https://github.com/rickstaa/stable-learning-control/issues/411)) ([2b3693e](https://github.com/rickstaa/stable-learning-control/commit/2b3693e0baa3d2656a42c859de3e4d2e922d4374))
+* **pytorch:** fix learning rate decay defaults ([#414](https://github.com/rickstaa/stable-learning-control/issues/414)) ([27964fe](https://github.com/rickstaa/stable-learning-control/commit/27964fe46b18175c70ed16186e16683c4eeb1afb))
+* **pytorch:** resolve critical action rescaling bug ([#403](https://github.com/rickstaa/stable-learning-control/issues/403)) ([71d4f64](https://github.com/rickstaa/stable-learning-control/commit/71d4f643bdceb0e7ca26e158ea035327823c1557))
+* remove 'simzoo' submodule ([#246](https://github.com/rickstaa/stable-learning-control/issues/246)) ([0122aae](https://github.com/rickstaa/stable-learning-control/commit/0122aaeb79d6c62da48591199e3a4026043c628b))
+* Resolve ruamel safe_load deprecation issue ([#396](https://github.com/rickstaa/stable-learning-control/issues/396)) ([cfcf81c](https://github.com/rickstaa/stable-learning-control/commit/cfcf81cf01b4b3a89edd746990594552255cd42f))
+* **run:** resolve issue with data_dir input argument ([#409](https://github.com/rickstaa/stable-learning-control/issues/409)) ([8d93610](https://github.com/rickstaa/stable-learning-control/commit/8d936101a280c068dfcf61c1d7919453ce1a0b3c))
+* **tf2:** correct off-by-one error in learning rate decay calculation ([#415](https://github.com/rickstaa/stable-learning-control/issues/415)) ([6ab5001](https://github.com/rickstaa/stable-learning-control/commit/6ab5001c588a97ec4379aed3c224d785964448c1))
+* **tf2:** correct step-based learning rate decay ([#407](https://github.com/rickstaa/stable-learning-control/issues/407)) ([642a193](https://github.com/rickstaa/stable-learning-control/commit/642a19330d70e53cba845c9e10916b76332beec8))
+* **tf2:** fix critical tf2 gradient update bug ([#322](https://github.com/rickstaa/stable-learning-control/issues/322)) ([dfc239b](https://github.com/rickstaa/stable-learning-control/commit/dfc239b53f4b3de084354a5411ff99b0207d6cbf))
+* **torch:** handle 'update_after' set to zero ([#408](https://github.com/rickstaa/stable-learning-control/issues/408)) ([7999590](https://github.com/rickstaa/stable-learning-control/commit/7999590da2f65579343fd26600ef6ab60b5fe171))
+* **wandb:** fix wandb config format and run name ([#317](https://github.com/rickstaa/stable-learning-control/issues/317)) ([ca048de](https://github.com/rickstaa/stable-learning-control/commit/ca048deff30e33f102d48006abbc1a6153754c6a))
+
+
+### Documentation
+
+* add docker ownership admonition ([58a8e70](https://github.com/rickstaa/stable-learning-control/commit/58a8e702d218970c9294d54f5ef7e9f526b3d94c))
+* add policy test utility to docker page ([5d39316](https://github.com/rickstaa/stable-learning-control/commit/5d3931619e24558277b378f7aabb2bbf2bb3a025))
+* add pre-commit note ([#341](https://github.com/rickstaa/stable-learning-control/issues/341)) ([9853d05](https://github.com/rickstaa/stable-learning-control/commit/9853d05a8d5395eab900837a44a38d0e183ead77))
+* add ros-gazebo-gym positive reward comment ([#349](https://github.com/rickstaa/stable-learning-control/issues/349)) ([9f5c434](https://github.com/rickstaa/stable-learning-control/commit/9f5c4340732911138249bc0de57edce31472bff9))
+* add snapshots comment to CONTRIBUTING ([c2031b2](https://github.com/rickstaa/stable-learning-control/commit/c2031b23eb0b510dbb464a2453f1524f47e08099))
+* add zenodo reference information ([#300](https://github.com/rickstaa/stable-learning-control/issues/300)) ([7180fb3](https://github.com/rickstaa/stable-learning-control/commit/7180fb37f3027338873ad487c0fbeaaaeec114e5))
+* **contributing:** updates the contributing documentation ([bac8787](https://github.com/rickstaa/stable-learning-control/commit/bac8787b5edd34fcf5d1f418ee9811db49340db5))
+* fix broken external links ([51317c0](https://github.com/rickstaa/stable-learning-control/commit/51317c0acda779d12ed2096cbda6f65e83e22874))
+* fix contribution links ([#245](https://github.com/rickstaa/stable-learning-control/issues/245)) ([cccc5a7](https://github.com/rickstaa/stable-learning-control/commit/cccc5a7d4bc6239d90b60c1b66e0b53e89e49987))
+* fix doc code highlights ([#404](https://github.com/rickstaa/stable-learning-control/issues/404)) ([99126f7](https://github.com/rickstaa/stable-learning-control/commit/99126f7d58c4d68f6cf56d95e38e566b85101ad5))
+* fix documentation ([#377](https://github.com/rickstaa/stable-learning-control/issues/377)) ([c3b47c5](https://github.com/rickstaa/stable-learning-control/commit/c3b47c51ce6770858e6f33a1b0de7bf5c9161c06))
+* fix documentation latex formulas ([#383](https://github.com/rickstaa/stable-learning-control/issues/383)) ([#385](https://github.com/rickstaa/stable-learning-control/issues/385)) ([582568b](https://github.com/rickstaa/stable-learning-control/commit/582568b29e9747d174ebe5204c101c3602c924de))
+* fix incorrect package naming ([#282](https://github.com/rickstaa/stable-learning-control/issues/282)) ([5337841](https://github.com/rickstaa/stable-learning-control/commit/533784112dac20adbd649d0b2a81ccbbf41119de))
+* fix incorrect run command ([43df73f](https://github.com/rickstaa/stable-learning-control/commit/43df73f24d0ae4ae21b868b5c4bca336e5017db2))
+* fix links ([#268](https://github.com/rickstaa/stable-learning-control/issues/268)) ([21c5bcf](https://github.com/rickstaa/stable-learning-control/commit/21c5bcf8823daf88d130654297383cd2a4ad14f2))
+* fix SAC alg run command ([#380](https://github.com/rickstaa/stable-learning-control/issues/380)) ([cf0a7a3](https://github.com/rickstaa/stable-learning-control/commit/cf0a7a3eceb4434bba32be653f70a0d3e331ef47))
+* fix typos ([30df6cb](https://github.com/rickstaa/stable-learning-control/commit/30df6cb7fca0269f9cc336d69d56193bfb40c541))
+* improve code API documentation ([#306](https://github.com/rickstaa/stable-learning-control/issues/306)) ([16d5e26](https://github.com/rickstaa/stable-learning-control/commit/16d5e260b212f6fea29d2e80d14e96474c7001f0))
+* improve docs ([#344](https://github.com/rickstaa/stable-learning-control/issues/344)) ([908fd78](https://github.com/rickstaa/stable-learning-control/commit/908fd78886676d55a7e2f760b62bb280e915f124))
+* improve documentation and package.json ([#331](https://github.com/rickstaa/stable-learning-control/issues/331)) ([e9fb90e](https://github.com/rickstaa/stable-learning-control/commit/e9fb90e2088401336a066684b26ecb81beb2d43e))
+* improve documentation defaults ([be99008](https://github.com/rickstaa/stable-learning-control/commit/be990083f951c8cb12ee30948d12cb3db2864913))
+* improve documentation urls and syntax ([#346](https://github.com/rickstaa/stable-learning-control/issues/346)) ([22037cb](https://github.com/rickstaa/stable-learning-control/commit/22037cbb27eed57ca8ee196df242a422c2643e38))
+* improve package description ([#260](https://github.com/rickstaa/stable-learning-control/issues/260)) ([eabfef3](https://github.com/rickstaa/stable-learning-control/commit/eabfef3bdb3ba26de988de4ebce383024f8865df))
+* improve polyak description ([#417](https://github.com/rickstaa/stable-learning-control/issues/417)) ([2404a4e](https://github.com/rickstaa/stable-learning-control/commit/2404a4e78946cc222bbabae630ec40af3f63953d))
+* improve the documentation ([#265](https://github.com/rickstaa/stable-learning-control/issues/265)) ([829eb05](https://github.com/rickstaa/stable-learning-control/commit/829eb05cb8043d2612a2225045c5686259570e61))
+* incorporate Docker usage instructions ([#401](https://github.com/rickstaa/stable-learning-control/issues/401)) ([2ba8031](https://github.com/rickstaa/stable-learning-control/commit/2ba80311798002d5278a0ed421cdf19737170d7b))
+* **sphinx:** fixes documentation errors ([38f2da0](https://github.com/rickstaa/stable-learning-control/commit/38f2da0a041026c374db5f50be1eac12fad32a20))
+* **sphinx:** updates documentation installation instructions ([ddadeb6](https://github.com/rickstaa/stable-learning-control/commit/ddadeb626f9e69c532370553d9e3f0b444a3f832))
+* update admonitions to new GFM specs ([ae7d3bc](https://github.com/rickstaa/stable-learning-control/commit/ae7d3bc652ee399c648cab8fca7fc68d707da6d0))
+* update contribution note ([#316](https://github.com/rickstaa/stable-learning-control/issues/316)) ([44a35af](https://github.com/rickstaa/stable-learning-control/commit/44a35af889331a1b1077a5d8035ec78ef084b368))
+* update docs make file ([6eeb56e](https://github.com/rickstaa/stable-learning-control/commit/6eeb56e52ff7cb7086b46f6af91a035bebe9c959))
+* update documentation ([7ceee46](https://github.com/rickstaa/stable-learning-control/commit/7ceee46453e201ff3dc106ca5f879a8a90cc8ad7))
+* update documentation and docstrings ([5548505](https://github.com/rickstaa/stable-learning-control/commit/55485055df074f12918d59add178a353d1ca895f))
+* update numpy intersphinx link ([581333d](https://github.com/rickstaa/stable-learning-control/commit/581333d40d8df3836b0f51277b141194273c5c47))
+* update sandbox description ([#329](https://github.com/rickstaa/stable-learning-control/issues/329)) ([f60cc3b](https://github.com/rickstaa/stable-learning-control/commit/f60cc3b1f76fa78cc5efc81621f977f86bade5cb))
+* updates code guidelines documentation ([4f96a46](https://github.com/rickstaa/stable-learning-control/commit/4f96a460a5a85972de1b38538a526945eda1dd5f))
+* updates docs ci readme badge ([074b369](https://github.com/rickstaa/stable-learning-control/commit/074b3697f10256997a6a6bb1a62a41212c8ba239))
+
+
+### Code Refactoring
+
+* **buffers:** remove unused 'rew_dim' argument ([#327](https://github.com/rickstaa/stable-learning-control/issues/327)) ([a69a7f6](https://github.com/rickstaa/stable-learning-control/commit/a69a7f6f3c8c24b1874d6039ed2f798b2c931c0d))
+
 ## [5.1.1](https://github.com/rickstaa/stable-learning-control/compare/v5.1.0...v5.1.1) (2024-01-23)
 
 
