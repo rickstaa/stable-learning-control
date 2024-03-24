@@ -1,0 +1,22 @@
+:py:mod:`stable_learning_control.common`
+========================================
+
+.. py:module:: stable_learning_control.common
+
+.. autoapi-nested-parse::
+
+   Contains several helper functions and classes that are used throughout the SLC
+   package.
+
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   exceptions/index.rst
+   helpers/index.rst
+
+
