@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.1](https://github.com/rickstaa/stable-learning-control/compare/v6.0.0...v6.0.1) (2024-09-03)
+
+
+### Bug Fixes
+
+* fix broken pyproject.toml ([27b6fdf](https://github.com/rickstaa/stable-learning-control/commit/27b6fdfed6407a46192d2304027b307750c18ba6))
+
 ## [6.0.0](https://github.com/rickstaa/stable-learning-control/compare/v5.1.1...v6.0.0) (2024-03-15)
 
 
