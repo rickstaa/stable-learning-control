@@ -4,7 +4,8 @@ env_name: "stable_gym:CartPoleCost-v1"
 ac_kwargs:
   hidden_sizes:
     actor: [256, 256]  # NOTE: Using [256, 256] for consistency with the article.
-    critic: [64, 64, 16]
+    # critic: [64, 64, 16]
+    critic: [256, 256, 16]
   activation:
     actor: "nn.ReLU"
     critic: "nn.ReLU"

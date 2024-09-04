@@ -1,7 +1,6 @@
 """This script is used to perform the data analysis of the alpha3 tuning experiments of
 my master thesis.
 """
-
 # import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -195,7 +194,7 @@ if __name__ == "__main__":
         print("Creating {} plot...".format(env_name.replace("_", " ").title()))
 
         # Retrieve data directories and add legend column.
-        if not Path(DATA_DIR).exists():
+        if not Path(DATA_DIR).resolve().exists():
             raise FileNotFoundError(f"The data directory {DATA_DIR} does not exist.")
         all_data_folders = sorted(
             [str(f) for f in Path(DATA_DIR).iterdir() if f.is_dir()]
