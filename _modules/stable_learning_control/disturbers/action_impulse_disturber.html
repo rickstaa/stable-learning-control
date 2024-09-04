@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.disturbers.action_impulse_disturber &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.disturbers.action_impulse_disturber</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for stable_learning_control.disturbers.action_impulse_disturber</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains a small gymnasium wrapper that can be used to disturb the action of</span>
+<span class="sd">a gymnasium environment with a impulse applied at a certain time step (i.e.</span>
+<span class="sd">``magnitude`` and ``time``).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">stable_learning_control.common.helpers</span> <span class="kn">import</span> <span class="n">friendly_err</span>
+<span class="kn">from</span> <span class="nn">stable_learning_control.utils.log_utils.helpers</span> <span class="kn">import</span> <span class="n">log_to_std_out</span>
+
+
+<div class="viewcode-block" id="get_time_attribute"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.get_time_attribute">[docs]</a><span class="k">def</span> <span class="nf">get_time_attribute</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the time attribute of the environment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        env (gym.Env): The gymnasium environment.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The time attribute of the environment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;time&quot;</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;t&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_time_step_attribute"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.get_time_step_attribute">[docs]</a><span class="k">def</span> <span class="nf">get_time_step_attribute</span><span class="p">(</span><span class="n">env</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the time step attribute of the environment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        env (gym.Env): The gymnasium environment.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The time step attribute of the environment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;time_step&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;dt&quot;</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;time_step&quot;</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;timestep&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;timestep&quot;</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="s2">&quot;tau&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;tau&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ActionImpulseDisturber"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber">[docs]</a><span class="k">class</span> <span class="nc">ActionImpulseDisturber</span><span class="p">(</span><span class="n">gym</span><span class="o">.</span><span class="n">ActionWrapper</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A gymnasium wrapper that can be used to disturb the action of a gymnasium</span>
+<span class="sd">    environment with a impulse applied at a certain time step.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        impulse_magnitude (float): The magnitude of the impulse.</span>
+<span class="sd">        impulse_time (float): The time (s) at which to apply the impulse.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ActionImpulseDisturber.time_warning"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber.time_warning">[docs]</a>    <span class="n">time_warning</span> <span class="o">=</span> <span class="kc">False</span></div>
+<div class="viewcode-block" id="ActionImpulseDisturber.time_step_warning"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber.time_step_warning">[docs]</a>    <span class="n">time_step_warning</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">magnitude</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise the ActionImpulseDisturber object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            env (gym.Env): The gymnasium environment.</span>
+<span class="sd">            magnitude (float): The impulse magnitude to apply.</span>
+<span class="sd">            time (float): The time (s) at which to apply the impulse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ActionImpulseDisturber._track_time"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber._track_time">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_track_time</span> <span class="o">=</span> <span class="kc">False</span></div>
+<div class="viewcode-block" id="ActionImpulseDisturber._time_step_attr"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber._time_step_attr">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span> <span class="o">=</span> <span class="kc">None</span></div>
+<div class="viewcode-block" id="ActionImpulseDisturber._time_attr"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber._time_attr">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ActionImpulseDisturber.magnitude"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber.magnitude">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">=</span> <span class="n">magnitude</span></div>
+<div class="viewcode-block" id="ActionImpulseDisturber.impulse_time"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber.impulse_time">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">impulse_time</span> <span class="o">=</span> <span class="n">time</span></div>
+
+        <span class="c1"># Check if the environment contains the time and or time step attributes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span> <span class="o">=</span> <span class="n">get_time_attribute</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span> <span class="o">=</span> <span class="n">get_time_step_attribute</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ActionImpulseDisturber</span><span class="o">.</span><span class="n">time_warning</span><span class="p">:</span>
+                <span class="n">log_to_std_out</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;The environment does not contain a &#39;time&#39; or &#39;t&#39; attribute. &quot;</span>
+                        <span class="s2">&quot;As a result, the time will be tracked within the &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; disturber.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">ActionImpulseDisturber</span><span class="o">.</span><span class="n">time_warning</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_track_time</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span> <span class="o">=</span> <span class="s2">&quot;t&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ActionImpulseDisturber</span><span class="o">.</span><span class="n">time_step_warning</span><span class="p">:</span>
+                    <span class="n">log_to_std_out</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="s2">&quot;The environment does not contain a &#39;dt&#39;, &#39;time_step&#39;, &quot;</span>
+                            <span class="s2">&quot;&#39;timestep&#39;, or &#39;tau&#39; attribute. As a result, the time &quot;</span>
+                            <span class="s2">&quot;step will be assumed to be &#39;1&#39;.&quot;</span>
+                        <span class="p">),</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">ActionImpulseDisturber</span><span class="o">.</span><span class="n">time_step_warning</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span> <span class="o">=</span> <span class="s2">&quot;dt&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Throw warning if the time_step is not within the environment&#39;s time.</span>
+<div class="viewcode-block" id="ActionImpulseDisturber.max_episode_steps"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/action_impulse_disturber/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber.max_episode_steps">[docs]</a>        <span class="n">max_episode_steps</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">env</span><span class="p">,</span> <span class="s2">&quot;_max_episode_steps&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">max_episode_steps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">impulse_time</span> <span class="o">&gt;</span> <span class="n">max_episode_steps</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="n">friendly_err</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; disturber&#39;s time step &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">impulse_time</span><span class="si">}</span><span class="s2">) is larger than the &quot;</span>
+                            <span class="s2">&quot;environment&#39;s maximum episode steps &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">max_episode_steps</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">,</span>
+                            <span class="n">prepend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">log_to_std_out</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="s2">&quot;The environment does not contain a &#39;dt&#39;, &#39;time_step&#39;, &quot;</span>
+                            <span class="s2">&quot;&#39;timestep&#39;, or &#39;tau&#39; attribute. As a result, the maximum &quot;</span>
+                            <span class="s2">&quot;episode time could not be determined. Please ensure that &quot;</span>
+                            <span class="s2">&quot;the time step is less than the maximum episode time.&quot;</span>
+                        <span class="p">),</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">impulse_time_step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">impulse_time</span>
+                    <span class="o">/</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">impulse_time_step</span> <span class="o">&gt;=</span> <span class="n">max_episode_steps</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="n">friendly_err</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; disturber&#39;s time step &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">impulse_time_step</span><span class="si">}</span><span class="s2">) is larger than the environment&#39;s &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;maximum episode steps (</span><span class="si">{</span><span class="n">max_episode_steps</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">,</span>
+                            <span class="n">prepend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+<div class="viewcode-block" id="ActionImpulseDisturber.track_time"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber.track_time">[docs]</a>    <span class="k">def</span> <span class="nf">track_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Track the time of the environment.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_track_time</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">+=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ActionImpulseDisturber.action"><a class="viewcode-back" href="../../../autoapi/stable_learning_control/disturbers/index.html#stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a impulse to the action.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action (np.ndarray): The action.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The action with added impulse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_time</span><span class="p">()</span>
+
+        <span class="c1"># If time is greater than the the impulse time</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">impulse_time</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_attr</span><span class="p">)</span>
+            <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">impulse_time</span> <span class="o">+</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">unwrapped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_step_attr</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">action</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="k">return</span> <span class="n">action</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

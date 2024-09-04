@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiment Outputs &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plotting Results" href="plotting.html" />
+    <link rel="prev" title="Hyperparameter Tuning" href="hyperparameter_tuning.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Experiment Outputs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#algorithm-outputs">Algorithm Outputs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch-save-directory-info">PyTorch Save Directory Info</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tensorflow-save-directory-info">TensorFlow Save Directory Info</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#save-directory-location">Save Directory Location</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-and-running-trained-policies">Loading and Running Trained Policies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#if-environment-saves-successfully">If Environment Saves Successfully</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-not-found-error">Environment Not Found Error</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#load-pytorch-policy">Load Pytorch Policy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#load-tensorflow-policy">Load TensorFlow Policy</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#using-trained-value-functions">Using Trained Value Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#deploy-the-saved-result-onto-hardware">Deploy the saved result onto hardware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#deploy-pytorch-algorithms">Deploy PyTorch Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deploy-tensorflow-algorithms">Deploy TensorFlow Algorithms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Experiment Outputs</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/usage/saving_and_loading.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="experiment-outputs">
+<span id="saving-and-loading"></span><h1><a class="toc-backref" href="#id3" role="doc-backlink">Experiment Outputs</a><a class="headerlink" href="#experiment-outputs" title="Permalink to this heading"></a></h1>
+<nav class="contents" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#experiment-outputs" id="id3">Experiment Outputs</a></p>
+<ul>
+<li><p><a class="reference internal" href="#algorithm-outputs" id="id4">Algorithm Outputs</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pytorch-save-directory-info" id="id5">PyTorch Save Directory Info</a></p></li>
+<li><p><a class="reference internal" href="#tensorflow-save-directory-info" id="id6">TensorFlow Save Directory Info</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#save-directory-location" id="id7">Save Directory Location</a></p></li>
+<li><p><a class="reference internal" href="#loading-and-running-trained-policies" id="id8">Loading and Running Trained Policies</a></p>
+<ul>
+<li><p><a class="reference internal" href="#if-environment-saves-successfully" id="id9">If Environment Saves Successfully</a></p></li>
+<li><p><a class="reference internal" href="#environment-not-found-error" id="id10">Environment Not Found Error</a></p>
+<ul>
+<li><p><a class="reference internal" href="#load-pytorch-policy" id="id11">Load Pytorch Policy</a></p></li>
+<li><p><a class="reference internal" href="#load-tensorflow-policy" id="id12">Load TensorFlow Policy</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#using-trained-value-functions" id="id13">Using Trained Value Functions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#deploy-the-saved-result-onto-hardware" id="id14">Deploy the saved result onto hardware</a></p>
+<ul>
+<li><p><a class="reference internal" href="#deploy-pytorch-algorithms" id="id15">Deploy PyTorch Algorithms</a></p></li>
+<li><p><a class="reference internal" href="#deploy-tensorflow-algorithms" id="id16">Deploy TensorFlow Algorithms</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>In this section, we’ll cover</p>
+<ul class="simple">
+<li><p>what outputs come from SLC algorithm implementations,</p></li>
+<li><p>what formats they’re stored in and how they’re organised,</p></li>
+<li><p>where they are stored and how you can change that,</p></li>
+<li><p>and how to load and run trained policies.</p></li>
+</ul>
+<section id="algorithm-outputs">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Algorithm Outputs</a><a class="headerlink" href="#algorithm-outputs" title="Permalink to this heading"></a></h2>
+<p>Each algorithm is set up to save a training run’s hyperparameter configuration, learning progress, trained agent
+and value functions, and a copy of the environment if possible (to make it easy to load up the agent and environment
+simultaneously). The output directory contains the following:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td colspan="2"><p><strong>Output Directory Structure</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch_save/</span></code></p></td>
+<td><div class="line-block">
+<div class="line"><strong>PyTorch implementations only.</strong> A directory containing</div>
+<div class="line">everything needed to restore the trained agent and value</div>
+<div class="line">functions (<a class="reference internal" href="#details-for-pytorch-saves-below">Details for PyTorch saves below</a>).</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tf2_save/</span></code></p></td>
+<td><div class="line-block">
+<div class="line"><strong>TensorFlow implementations only.</strong> A directory containing</div>
+<div class="line">everything needed to restore the trained agent and value</div>
+<div class="line">functions (<a class="reference internal" href="#details-for-tensorflow-saves-below">Details for TensorFlow saves below</a>).</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">config.json</span></code></p></td>
+<td><div class="line-block">
+<div class="line">A <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> containing an as-complete-as-possible</div>
+<div class="line">description of the args and kwargs you used to launch the</div>
+<div class="line">training function. If you passed in something which can’t</div>
+<div class="line">be serialised to JSON, it should get handled gracefully by</div>
+<div class="line">the logger, and the config file will represent it with a</div>
+<div class="line">string. Note: this is meant for record-keeping only.</div>
+<div class="line">Launching an experiment from a config file is not currently</div>
+<div class="line">supported.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">progress.(csv/txt)</span></code></p></td>
+<td><div class="line-block">
+<div class="line">A (comma/tab) separated value file containing records of the</div>
+<div class="line">metrics recorded by the logger throughout training. eg,</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">Epoch</span></code>,   <code class="docutils literal notranslate"><span class="pre">AverageEpRet</span></code>, etc.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vars.pkl</span></code></p></td>
+<td><div class="line-block">
+<div class="line">A pickle file containing anything about the algorithm state</div>
+<div class="line">which should get stored. Currently, all algorithms only use</div>
+<div class="line">this to save a copy of the environment.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition-you-should-know admonition">
+<p class="admonition-title">You Should Know</p>
+<p>Sometimes environment-saving fails because the environment can’t be pickled, and <code class="docutils literal notranslate"><span class="pre">vars.pkl</span></code> is empty. This is known
+to be a problem for gymnasium Box2D environments in older versions of gymnasium, which can’t be saved in this manner.</p>
+</div>
+<div class="admonition-you-should-know admonition">
+<p class="admonition-title">You Should Know</p>
+<p>The only file in here that you should ever have to use “by hand” is the <code class="docutils literal notranslate"><span class="pre">config.json</span></code> file. Our agent testing utility
+will load things from the <code class="docutils literal notranslate"><span class="pre">tf2_save/</span></code> or <code class="docutils literal notranslate"><span class="pre">torch_save/</span></code> directory, and our plotter interprets the contents of <code class="docutils literal notranslate"><span class="pre">progress.txt</span></code>,
+which are the correct tools for interfacing with these outputs. But there is no tooling for <code class="docutils literal notranslate"><span class="pre">config.json</span></code>–it’s just
+there as a reference for the hyperparameters used when you ran the experiment.</p>
+</div>
+<section id="pytorch-save-directory-info">
+<span id="checkpoints"></span><h3><a class="toc-backref" href="#id5" role="doc-backlink">PyTorch Save Directory Info</a><a class="headerlink" href="#pytorch-save-directory-info" title="Permalink to this heading"></a></h3>
+<p id="details-for-pytorch-saves-below">The <code class="docutils literal notranslate"><span class="pre">torch_save</span></code> directory contains:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td colspan="2"><p><strong>Pyt_Save Directory Structure</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">checkpoints/</span></code></p></td>
+<td><div class="line-block">
+<div class="line">Folder that when the <code class="docutils literal notranslate"><span class="pre">save_checkpoints</span></code> cmd line argument</div>
+<div class="line">is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> contains the state of both the env and</div>
+<div class="line">model at multiple <code class="docutils literal notranslate"><span class="pre">checkpoints</span></code> during training.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">model_state.pt</span></code></p></td>
+<td><div class="line-block">
+<div class="line">This file contains the <code class="xref py py-obj docutils literal notranslate"><span class="pre">state_dict</span></code> that contains the</div>
+<div class="line">saved model weights. These weights can be used to restore</div>
+<div class="line">the trained agent’s state on an initiated instance of the</div>
+<div class="line">respective Algorithm Class.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">save_info.json</span></code></p></td>
+<td><div class="line-block">
+<div class="line">A file used by the SLC package to ease model</div>
+<div class="line">loading. This file is not meant for the user.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tensorflow-save-directory-info">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">TensorFlow Save Directory Info</a><a class="headerlink" href="#tensorflow-save-directory-info" title="Permalink to this heading"></a></h3>
+<p id="details-for-tensorflow-saves-below">The <code class="docutils literal notranslate"><span class="pre">tf2_save</span></code> directory contains:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td colspan="2"><p><strong>TF2_Save Directory Structure</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">checkpoints/</span></code></p></td>
+<td><div class="line-block">
+<div class="line">Folder that when the <code class="docutils literal notranslate"><span class="pre">save_checkpoints</span></code> cmd line argument is set</div>
+<div class="line">to <code class="docutils literal notranslate"><span class="pre">True</span></code> contains the state of both the env and model at</div>
+<div class="line">multiple <code class="docutils literal notranslate"><span class="pre">checkpoints</span></code> during training.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">variables/</span></code></p></td>
+<td><div class="line-block">
+<div class="line">A directory containing outputs from the TensorFlow Saver. See the</div>
+<div class="line"><a class="reference external" href="https://www.tensorflow.org/tutorials/keras/save_and_load">TensorFlow save and load documentation</a> for more info.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">checkpoint</span></code></p></td>
+<td><div class="line-block">
+<div class="line">A checkpoint summary file that stores information about the saved</div>
+<div class="line">checkpoints.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">weights_checkpoint.*</span></code></p></td>
+<td><div class="line-block">
+<div class="line">Two checkpoint data files ending with the <code class="docutils literal notranslate"><span class="pre">.data*</span></code> and</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">.index</span></code> file extensions. These are the actual files that are</div>
+<div class="line">used by the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/train/Checkpoint" title="(in TensorFlow v2.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tf.train.Checkpoint</span></code></a> method to restore the</div>
+<div class="line">model.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">save_info.json</span></code></p></td>
+<td><div class="line-block">
+<div class="line">A file used by the SLC package to ease model loading this file is</div>
+<div class="line">not meant for the user.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">saved_model.json</span></code></p></td>
+<td><div class="line-block">
+<div class="line">The full TensorFlow program saved in the <a class="reference external" href="https://www.tensorflow.org/guide/saved_model">SavedModel</a> format.</div>
+<div class="line">this file can be used to deploy your model to hardware. See the</div>
+<div class="line"><a class="reference internal" href="#hardware"><span class="std std-ref">hardware deployment documentation</span></a> for more info.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="save-directory-location">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Save Directory Location</a><a class="headerlink" href="#save-directory-location" title="Permalink to this heading"></a></h2>
+<p>Experiment results will, by default, be saved in the same directory as the SLC package,
+in a folder called <code class="docutils literal notranslate"><span class="pre">data</span></code>:</p>
+<pre class="literal-block">stable_learning_control/
+    <strong>data/</strong>
+        ...
+    docs/
+        ...
+    stable_learning_control/
+        ...
+    LICENSE
+    setup.py</pre>
+<p>You can change the default results directory by modifying <code class="docutils literal notranslate"><span class="pre">DEFAULT_DATA_DIR</span></code> in <code class="docutils literal notranslate"><span class="pre">stable_learning_control/user_config.py</span></code>.</p>
+</section>
+<section id="loading-and-running-trained-policies">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Loading and Running Trained Policies</a><a class="headerlink" href="#loading-and-running-trained-policies" title="Permalink to this heading"></a></h2>
+<section id="if-environment-saves-successfully">
+<span id="policy-test"></span><h3><a class="toc-backref" href="#id9" role="doc-backlink">If Environment Saves Successfully</a><a class="headerlink" href="#if-environment-saves-successfully" title="Permalink to this heading"></a></h3>
+<p>SLC ships with an evaluation utility that can be used to check a trained policy’s performance. In cases where the environment
+is successfully saved alongside the agent, you can watch the trained agent act in the environment using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">stable_learning_control</span><span class="o">.</span><span class="n">run</span> <span class="n">test_policy</span> <span class="p">[</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">output_directory</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For more information on using this utility, see the <a class="reference internal" href="../utils/testers.html#test-policy"><span class="std std-ref">Policy eval utility</span></a> documentation or the code <span class="xref std std-ref">the API reference</span>.</p>
+</div>
+</section>
+<section id="environment-not-found-error">
+<span id="manual-policy-testing"></span><h3><a class="toc-backref" href="#id10" role="doc-backlink">Environment Not Found Error</a><a class="headerlink" href="#environment-not-found-error" title="Permalink to this heading"></a></h3>
+<p>If the environment wasn’t saved successfully, you could expect <code class="docutils literal notranslate"><span class="pre">test_policy.py</span></code> to crash with something that looks like</p>
+<pre class="literal-block">Traceback (most recent call last):
+  File &quot;stable_learning_control/utils/test_policy.py&quot;, line 153, in &lt;module&gt;
+    run_policy(env, get_action, args.len, args.episodes, not(args.norender))
+  File &quot;stable_learning_control/utils/test_policy.py&quot;, line 114, in run_policy
+    &quot;and we can't run the agent in it. :( nn Check out the documentation &quot; +
+AssertionError: Environment not found!
+
+It looks like the environment wasn't saved, and we can't run the agent in it. :(
+
+Check out the documentation page on the Test Policy utility for how to handle this situation.</pre>
+<p>In this case, watching your agent perform is slightly more painful but possible if you can
+recreate your environment easily. You can try the code below in IPython or use the steps in the <a class="reference internal" href="#load-pytorch-policy"><span class="std std-ref">Load Pytorch Policy</span></a>
+or <a class="reference internal" href="#load-tf2-policy"><span class="std std-ref">Load TensorFlow Policy</span></a> documentation below to load the policy in a Python script.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gymnasium</span> <span class="k">as</span> <span class="nn">gym</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">stable_learning_control.utils.test_policy</span> <span class="kn">import</span> <span class="n">load_pytorch_policy</span><span class="p">,</span> <span class="n">run_policy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">your_env</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;&lt;YOUR_ENV_NAME&gt;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">policy</span> <span class="o">=</span> <span class="n">load_pytorch_policy</span><span class="p">(</span><span class="s2">&quot;/path/to/output_directory&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_policy</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+<span class="go">Logging data to /tmp/experiments/1536150702/progress.txt</span>
+<span class="go">Episode 0    EpRet -163.830      EpLen 93</span>
+<span class="go">Episode 1    EpRet -346.164      EpLen 99</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>If you want to load a Tensorflow agent, please replace the <a class="reference internal" href="../autoapi/stable_learning_control/utils/test_policy/index.html#stable_learning_control.utils.test_policy.load_pytorch_policy" title="stable_learning_control.utils.test_policy.load_pytorch_policy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_pytorch_policy()</span></code></a> with
+<a class="reference internal" href="../autoapi/stable_learning_control/utils/test_policy/index.html#stable_learning_control.utils.test_policy.load_tf_policy" title="stable_learning_control.utils.test_policy.load_tf_policy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_tf_policy()</span></code></a>. An example script for manually loading policies can be found in the
+<code class="docutils literal notranslate"><span class="pre">examples</span></code> folder (i.e. <a class="reference external" href="https://github.com/rickstaa/stable-learning-control/tree/main/examples/manual_env_policy_inference.py">manual_env_policy_inference.py</a>).</p>
+<section id="load-pytorch-policy">
+<span id="id1"></span><h4><a class="toc-backref" href="#id11" role="doc-backlink">Load Pytorch Policy</a><a class="headerlink" href="#load-pytorch-policy" title="Permalink to this heading"></a></h4>
+<p>Pytorch Policies can be loaded using the <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.load.html#torch.load" title="(in PyTorch v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.load</span></code></a> method. For more information on how to load PyTorch models, see
+the <a class="reference external" href="https://pytorch.org/tutorials/beginner/saving_loading_models.html">PyTorch documentation</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="linenos"> 2</span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">stable_learning_control.utils.log_utils.logx</span> <span class="kn">import</span> <span class="n">EpochLogger</span>
+<span class="linenos"> 5</span>
+<span class="hll"><span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">stable_learning_control.algos.pytorch</span> <span class="kn">import</span> <span class="n">LAC</span>
+</span><span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="n">MODEL_LOAD_FOLDER</span> <span class="o">=</span> <span class="s2">&quot;./data/lac/oscillator-v1/runs/run_1614680001&quot;</span>
+<span class="linenos"> 9</span><span class="n">MODEL_PATH</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MODEL_LOAD_FOLDER</span><span class="p">,</span> <span class="s2">&quot;torch_save/model_state.pt&quot;</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="c1"># Restore the model.</span>
+<span class="hll"><span class="linenos">12</span><span class="n">config</span> <span class="o">=</span> <span class="n">EpochLogger</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos">13</span>    <span class="n">MODEL_LOAD_FOLDER</span>
+</span><span class="hll"><span class="linenos">14</span><span class="p">)</span>  <span class="c1"># Retrieve the experiment configuration.</span>
+</span><span class="hll"><span class="linenos">15</span><span class="n">env</span> <span class="o">=</span> <span class="n">EpochLogger</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">MODEL_LOAD_FOLDER</span><span class="p">)</span>
+</span><span class="linenos">16</span><span class="n">model</span> <span class="o">=</span> <span class="n">LAC</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span> <span class="n">ac_kwargs</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ac_kwargs&quot;</span><span class="p">])</span>
+<span class="hll"><span class="linenos">17</span><span class="n">restored_model_state_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">MODEL_PATH</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">18</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos">19</span>    <span class="n">restored_model_state_dict</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">20</span><span class="p">)</span>
+</span><span class="linenos">21</span>
+<span class="linenos">22</span><span class="c1"># Create dummy observations and retrieve the best action.</span>
+<span class="linenos">23</span><span class="n">obs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="linenos">24</span><span class="n">a</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+<span class="linenos">25</span><span class="n">L_value</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ac</span><span class="o">.</span><span class="n">L</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="c1"># Print results.</span>
+<span class="linenos">28</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The LAC agent thinks it is a good idea to take action </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">29</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;It assigns a Lyapunov Value of </span><span class="si">{</span><span class="n">L_value</span><span class="si">}</span><span class="s2"> to this action.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, observe that</p>
+<ul class="simple">
+<li><p>On line 6, we import the algorithm we want to load.</p></li>
+<li><p>On line 12-14, we use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code> method to restore the hyperparameters that were used during the experiment. This saves us time in setting up the correct hyperparameters.</p></li>
+<li><p>on line 15, we use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_env()</span></code> method to restore the environment used during the experiment. This saves us time in setting up the environment.</p></li>
+<li><p>on line 17, we import the model weights.</p></li>
+<li><p>on line 18-19, we load the saved weights onto the algorithm.</p></li>
+</ul>
+<p>Additionally, each algorithm also contains a <a class="reference internal" href="../autoapi/stable_learning_control/algos/pytorch/lac/index.html#stable_learning_control.algos.pytorch.lac.LAC.restore" title="stable_learning_control.algos.pytorch.lac.LAC.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a> method, which serves as a
+wrapper around the <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.load.html#torch.load" title="(in PyTorch v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.load</span></code></a> and  <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.load_state_dict" title="(in PyTorch v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module.load_state_dict</span></code></a> methods.</p>
+</section>
+<section id="load-tensorflow-policy">
+<span id="load-tf2-policy"></span><h4><a class="toc-backref" href="#id12" role="doc-backlink">Load TensorFlow Policy</a><a class="headerlink" href="#load-tensorflow-policy" title="Permalink to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="linenos"> 2</span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">stable_learning_control.utils.log_utils.logx</span> <span class="kn">import</span> <span class="n">EpochLogger</span>
+<span class="linenos"> 5</span>
+<span class="hll"><span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">stable_learning_control.algos.tf2</span> <span class="kn">import</span> <span class="n">LAC</span>
+</span><span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="n">MODEL_LOAD_FOLDER</span> <span class="o">=</span> <span class="s2">&quot;./data/lac/oscillator-v1/runs/run_1614673367&quot;</span>
+<span class="linenos"> 9</span><span class="n">MODEL_PATH</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">MODEL_LOAD_FOLDER</span><span class="p">,</span> <span class="s2">&quot;tf2_save&quot;</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="c1"># Restore the model.</span>
+<span class="hll"><span class="linenos">12</span><span class="n">config</span> <span class="o">=</span> <span class="n">EpochLogger</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos">13</span>    <span class="n">MODEL_LOAD_FOLDER</span>
+</span><span class="hll"><span class="linenos">14</span><span class="p">)</span>  <span class="c1"># Retrieve the experiment configuration.</span>
+</span><span class="hll"><span class="linenos">15</span><span class="n">env</span> <span class="o">=</span> <span class="n">EpochLogger</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">MODEL_LOAD_FOLDER</span><span class="p">)</span>
+</span><span class="linenos">16</span><span class="n">model</span> <span class="o">=</span> <span class="n">LAC</span><span class="p">(</span><span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span> <span class="n">ac_kwargs</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ac_kwargs&quot;</span><span class="p">])</span>
+<span class="hll"><span class="linenos">17</span><span class="n">weights_checkpoint</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">latest_checkpoint</span><span class="p">(</span><span class="n">MODEL_PATH</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">18</span><span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span>
+</span><span class="hll"><span class="linenos">19</span>    <span class="n">weights_checkpoint</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">20</span><span class="p">)</span>
+</span><span class="linenos">21</span>
+<span class="linenos">22</span><span class="c1"># Create dummy observations and retrieve the best action.</span>
+<span class="linenos">23</span><span class="n">obs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="linenos">24</span><span class="n">a</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+<span class="linenos">25</span><span class="n">L_value</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">ac</span><span class="o">.</span><span class="n">L</span><span class="p">([</span><span class="n">obs</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)])</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="c1"># Print results.</span>
+<span class="linenos">28</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The LAC agent thinks it is a good idea to take action </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">29</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;It assigns a Lyapunov Value of </span><span class="si">{</span><span class="n">L_value</span><span class="si">}</span><span class="s2"> to this action.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, observe that</p>
+<ul class="simple">
+<li><p>On line 6, we import the algorithm we want to load.</p></li>
+<li><p>On line 12-14, we use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code> method
+to restore the hyperparameters that were used during the experiment. This saves us time in setting up the correct
+hyperparameters.</p></li>
+<li><p>on line 15, we use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_env()</span></code> method to
+restore the environment used during the experiment. This saves us time in setting up the environment.</p></li>
+<li><p>on line 17, we import the model weights.</p></li>
+<li><p>on line 18-19, we load the saved weights onto the algorithm.</p></li>
+</ul>
+<p>Additionally, each algorithm also contains a <a class="reference internal" href="../autoapi/stable_learning_control/algos/tf2/lac/index.html#stable_learning_control.algos.tf2.lac.LAC.restore" title="stable_learning_control.algos.tf2.lac.LAC.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a> method
+which serves as a wrapper around the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/train/latest_checkpoint" title="(in TensorFlow v2.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tf.train.latest_checkpoint</span></code></a> and  <code class="xref py py-obj docutils literal notranslate"><span class="pre">tf.keras.Model.load_weights</span></code> methods.</p>
+</section>
+</section>
+<section id="using-trained-value-functions">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Using Trained Value Functions</a><a class="headerlink" href="#using-trained-value-functions" title="Permalink to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">test_policy.py</span></code> tool doesn’t help you look at trained value functions; if you want to use those, you must load the policy manually. Please see the <a class="reference internal" href="#manual-policy-testing"><span class="std std-ref">Environment Not Found Error</span></a> documentation for an example of how to do this.</p>
+</section>
+</section>
+<section id="deploy-the-saved-result-onto-hardware">
+<span id="hardware"></span><h2><a class="toc-backref" href="#id14" role="doc-backlink">Deploy the saved result onto hardware</a><a class="headerlink" href="#deploy-the-saved-result-onto-hardware" title="Permalink to this heading"></a></h2>
+<section id="deploy-pytorch-algorithms">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Deploy PyTorch Algorithms</a><a class="headerlink" href="#deploy-pytorch-algorithms" title="Permalink to this heading"></a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>PyTorch provides multiple ways to deploy trained models to hardware (see the <a class="reference external" href="https://pytorch.org/blog/model-serving-in-pyorch">PyTorch serving documentation</a>).
+Unfortunately, at the time of writing, these methods currently do not support the agents used in the SLC package. For more information, see
+<a class="reference external" href="https://github.com/pytorch/pytorch/issues/29843">this issue</a>.</p>
+</div>
+</section>
+<section id="deploy-tensorflow-algorithms">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Deploy TensorFlow Algorithms</a><a class="headerlink" href="#deploy-tensorflow-algorithms" title="Permalink to this heading"></a></h3>
+<p>As stated above, the TensorFlow version of the algorithm also saves the entire model in the <a class="reference external" href="https://www.tensorflow.org/guide/saved_model">SavedModel format</a> this format is handy for sharing or deploying
+with <a class="reference external" href="https://www.tensorflow.org/lite">TFLite</a>, <a class="reference external" href="https://www.tensorflow.org/js/">TensorFlow.js</a>, <a class="reference external" href="https://www.tensorflow.org/tfx/tutorials/serving/rest_simple">TensorFlow Serving</a>, or <a class="reference external" href="https://www.tensorflow.org/hub">TensorFlow Hub</a>. If you want to deploy your trained model onto hardware, you first have to make sure
+you set the <code class="docutils literal notranslate"><span class="pre">--export</span></code> cmd-line argument to <code class="docutils literal notranslate"><span class="pre">True</span></code> when training the algorithm. This will cause the complete TensorFlow program, including trained parameters
+(i.e, tf.Variables) and computation, to be saved in the <code class="docutils literal notranslate"><span class="pre">tf2_save/saved_model.pb</span></code> file. This <a class="reference external" href="https://www.tensorflow.org/guide/saved_model">SavedModel</a> can be loaded onto the hardware using
+the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/saved_model/load" title="(in TensorFlow v2.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tf.saved_model.load</span></code></a> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">stable_learning_control.utils.log_utils.logx</span> <span class="kn">import</span> <span class="n">EpochLogger</span>
+
+<span class="n">model_path</span> <span class="o">=</span> <span class="s2">&quot;./data/lac/oscillator-v1/runs/run_1614673367/tf2_save&quot;</span>
+
+<span class="c1"># Load model and environment.</span>
+<span class="n">loaded_model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">saved_model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+<span class="n">loaded_env</span> <span class="o">=</span> <span class="n">EpochLogger</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+
+<span class="c1"># Get action for dummy observation.</span>
+<span class="n">obs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">loaded_env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">loaded_model</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The model thinks it is a good idea to take action: </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information on deploying TensorFlow models, see <a class="reference external" href="https://www.tensorflow.org/guide/saved_model">the TensorFlow documentation</a>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hyperparameter_tuning.html" class="btn btn-neutral float-left" title="Hyperparameter Tuning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plotting.html" class="btn btn-neutral float-right" title="Plotting Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

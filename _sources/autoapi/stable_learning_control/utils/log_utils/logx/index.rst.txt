@@ -1,0 +1,918 @@
+stable_learning_control.utils.log_utils.logx
+============================================
+
+.. py:module:: stable_learning_control.utils.log_utils.logx
+
+.. autoapi-nested-parse::
+
+   Contains a multi-purpose logger that can be used to log data and save trained models.
+
+   .. note::
+       This module extends the logx module of
+       `the SpinningUp repository <https://github.com/openai/spinningup/tree/master/spinup/utils/logx.py>`_
+       so that it:
+
+       - Also logs in line format (besides tabular format).
+       - Logs to a file with a .csv extension (besides .txt).
+       - Logs to TensorBoard (besides logging to a file).
+       - Logs to Weights & Biases (besides logging to a file).
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.log_utils.logx.ray
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.log_utils.logx.Logger
+   stable_learning_control.utils.log_utils.logx.EpochLogger
+
+
+Module Contents
+---------------
+
+.. py:data:: ray
+
+.. py:class:: Logger(output_dir=None, output_fname='progress.csv', exp_name=None, quiet=False, verbose_fmt=DEFAULT_STD_OUT_TYPE, verbose_vars=[], save_checkpoints=False, backend='torch', output_dir_exists_warning=True, use_wandb=False, wandb_job_type=None, wandb_project=None, wandb_group=None, wandb_run_name=None)
+
+   A general-purpose logger.
+
+   Makes it easy to save diagnostics, hyperparameter configurations, the
+   state of a training run, and the trained model.
+
+   Initialise a Logger.
+
+   :param output_dir: A directory for saving results to. If
+                      ``None``, defaults to a temp directory of the form
+                      ``/tmp/experiments/somerandomnumber``.
+   :type output_dir: str, optional
+   :param output_fname: Name for the (comma/tab) separated-value
+                        file containing metrics logged throughout a training run. Defaults to
+                        to ``progress.csv`` which uses commas as separators.
+   :type output_fname: str, optional
+   :param exp_name: Experiment name. If you run multiple training
+                    runs and give them all the same ``exp_name``, the plotter
+                    will know to group them. (Use case: if you run the same
+                    hyperparameter configuration with multiple random seeds, you
+                    should give them all the same ``exp_name``.)
+   :type exp_name: str, optional
+   :param quiet: Whether you want to suppress logging of the
+                 diagnostics to the stdout. Defaults to ``False``.
+   :type quiet: bool, optional
+   :param verbose_fmt: The format in which the diagnostics are
+                       displayed to the terminal. Options are ``tab`` which supplies them as a
+                       table and ``line`` which prints them in one line. Default is set in the
+                       :mod:`~stable_learning_control.user_config` file.
+   :type verbose_fmt: str, optional
+   :param verbose_vars: A list of variables you want to log to the
+                        stdout. By default all variables are logged.
+   :type verbose_vars: list, optional
+   :param save_checkpoints: Save checkpoints during training.
+                            Defaults to ``False``.
+   :type save_checkpoints: bool, optional
+   :param backend: The backend you want to use for writing to
+                   TensorBoard. Options are: ``tf2`` or ``torch``. Defaults to ``torch``.
+   :type backend: str, optional
+   :param output_dir_exists_warning: Whether to print a warning
+                                     when the output directory already exists. Defaults to ``True``.
+   :type output_dir_exists_warning: bool, optional
+   :param use_wandb: Whether to use Weights & Biases for logging.
+                     Defaults to ``False``.
+   :type use_wandb: bool, optional
+   :param wandb_job_type: The Weights & Biases job type. Defaults to
+                          ``None``.
+   :type wandb_job_type: str, optional
+   :param wandb_project: The name of the Weights & Biases
+                         project. Defaults to ``None`` which means that the project name is
+                         automatically generated.
+   :type wandb_project: str, optional
+   :param wandb_group: The name of the Weights & Biases group you want
+                       to assign the run to. Defaults to ``None``.
+   :type wandb_group: str, optional
+   :param wandb_run_name: The name of the Weights & Biases run.
+                          Defaults to ``None`` which means that the run name is automatically
+                          generated.
+   :type wandb_run_name: str, optional
+
+   .. attribute:: tb_writer
+
+      A TensorBoard
+      writer. This is only created when you log a variable to TensorBoard or
+      set the :attr:`Logger.use_tensorboard` variable to ``True``.
+
+      :type: torch.utils.tensorboard.writer.SummaryWriter
+
+   .. attribute:: output_dir
+
+      The directory in which the log data and models are saved.
+
+      :type: str
+
+   .. attribute:: output_file
+
+      The name of the file in which the progress data is saved.
+
+      :type: str
+
+   .. attribute:: exp_name
+
+      Experiment name.
+
+      :type: str
+
+   .. attribute:: wandb
+
+      A Weights & Biases object. This is only created when you set
+      the :attr:`Logger.use_wandb` variable to ``True``.
+
+      :type: wandb
+
+
+   .. py:attribute:: exp_name
+
+
+   .. py:attribute:: _first_row
+      :value: True
+
+
+
+   .. py:attribute:: _log_headers
+      :value: []
+
+
+
+   .. py:attribute:: _log_current_row
+
+
+   .. py:attribute:: _last_metrics
+      :value: None
+
+
+
+   .. py:attribute:: _save_checkpoints
+
+
+   .. py:attribute:: _checkpoint
+      :value: 0
+
+
+
+   .. py:attribute:: _save_info_saved
+      :value: False
+
+
+
+   .. py:attribute:: _use_tensorboard
+      :value: None
+
+
+
+   .. py:attribute:: _tf
+      :value: None
+
+
+
+   .. py:attribute:: wandb
+      :value: None
+
+
+
+   .. py:attribute:: _config
+      :value: None
+
+
+
+   .. py:attribute:: _config_file_path
+      :value: None
+
+
+
+   .. py:attribute:: _output_file_path
+      :value: None
+
+
+
+   .. py:attribute:: _state_path
+      :value: None
+
+
+
+   .. py:attribute:: _state_checkpoints_dir_path
+      :value: None
+
+
+
+   .. py:attribute:: _save_info_path
+      :value: None
+
+
+
+   .. py:attribute:: _model_path
+      :value: None
+
+
+
+   .. py:attribute:: _model_checkpoints_dir_path
+      :value: None
+
+
+
+   .. py:attribute:: _use_tf_backend
+
+
+   .. py:attribute:: tb_writer
+      :value: None
+
+
+
+   .. py:attribute:: _tabular_to_tb_dict
+
+
+   .. py:attribute:: _step_count_dict
+
+
+   .. py:method:: log(msg, color='', bold=False, highlight=False, type=None, *args, **kwargs)
+
+      Print a colorized message to ``stdout``.
+
+      :param msg: Message you want to log.
+      :type msg: str
+      :param color: Color you want the message to have. Defaults to
+                    ``""``.
+      :type color: str, optional
+      :param bold: Whether you want the text to be bold text has to be
+                   bold.
+      :type bold: bool, optional
+      :param highlight: Whether you want to highlight the text.
+                        Defaults to ``False``.
+      :type highlight: bool, optional
+      :param type: The log message type. Options are: ``info``,
+                   ``warning`` and ``error``. Defaults to ``None``.
+      :type type: str, optional
+      :param \*args: All args to pass to the print function.
+      :param \*\*kwargs: All kwargs to pass to the print function.
+
+
+
+   .. py:method:: log_to_tb(key, val, tb_prefix=None, tb_alias=None, global_step=None)
+
+      Log a value to TensorBoard.
+
+      :param key: The name of the diagnostic.
+      :type key: str
+      :param val: A value for the diagnostic.
+      :type val: object
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+
+   .. py:method:: log_tabular(key, val, tb_write=False, tb_prefix=None, tb_alias=None)
+
+      Log a value of some diagnostic.
+
+      Call this only once for each diagnostic quantity, each iteration.
+      After using :meth:`log_tabular` to store values for each diagnostic,
+      make sure to call :meth:`dump_tabular` to write them out to file,
+      TensorBoard and ``stdout`` (otherwise they will not get saved anywhere).
+
+      :param key: The name of the diagnostic. If you are logging a
+                  diagnostic whose state has previously been saved with
+                  :meth:`EpochLogger.store`, the key here has to match the key you used
+                  there.
+      :type key: str
+      :param val: A value for the diagnostic. If you have previously saved
+                  values for this key via :meth:`EpochLogger.store`, do *not* provide a
+                  ``val`` here.
+      :type val: object
+      :param tb_write: Boolean specifying whether you also want to write
+                       the value to the TensorBoard logfile. Defaults to ``False``.
+      :type tb_write: bool, optional
+      :param tb_metrics: List containing the metrics
+                         you want to write to TensorBoard. Options are [``avg``, ``std``,
+                         ``min``, ``max``].`` Defaults to ``avg``.
+      :type tb_metrics: Union[list[str], str], optional
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+
+
+
+   .. py:method:: dump_tabular(global_step=None)
+
+      Write all of the diagnostics from the current iteration.
+
+      Writes both to ``stdout``, TensorBoard and to the output file.
+
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+
+   .. py:method:: get_logdir(*args, **kwargs)
+
+      Get Logger and TensorBoard SummaryWriter logdirs.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+      :returns:
+
+                dict containing:
+
+                    - output_dir(:obj:`str`): Logger output directory.
+                    - tb_output_dir(:obj:`str`): TensorBoard writer output directory.
+      :rtype: (dict)
+
+
+
+   .. py:method:: save_config(config)
+
+      Log an experiment configuration.
+
+      Call this once at the top of your experiment, passing in all important
+      config vars as a dict. This will serialize the config to JSON, while
+      handling anything which can't be serialized in a graceful way (writing
+      as informative a string as possible). The resulting JSON will be saved
+      to the output directory, made available to TensorBoard and Weights & Biases and
+      printed to stdout.
+
+      .. rubric:: Example
+
+      .. code-block:: python
+
+          logger = EpochLogger(**logger_kwargs)
+          logger.save_config(locals())
+
+      :param config: Configuration Python object you want to save.
+      :type config: object
+
+
+
+   .. py:method:: load_config(config_path)
+      :classmethod:
+
+
+      Loads an experiment configuration.
+
+      :param config_path: Folder that contains the config files you want to load.
+      :type config_path: str
+
+      :returns: Object containing the loaded configuration.
+      :rtype: (object)
+
+
+
+   .. py:method:: load_env(env_path)
+      :classmethod:
+
+
+      Loads a pickled environment.
+
+      :param config_path: Folder that contains the pickled environment.
+      :type config_path: str
+
+      :returns: The gymnasium environment.
+      :rtype: (:obj:`gym.env`)
+
+
+
+   .. py:method:: save_to_json(input_object, output_filename, output_path=None)
+
+      Save python object to Json file. This method will serialize the object to
+      JSON, while handling anything which can't be serialized in a graceful way
+      (writing as informative a string as possible).
+
+      :param input_object: The input object you want to save.
+      :type input_object: object
+      :param output_filename: The output filename.
+      :type output_filename: str
+      :param output_path: The output path. By default the
+                          :attr:`Logger.output_dir`  is used.
+      :type output_path: str
+
+
+
+   .. py:method:: load_from_json(path)
+
+      Load data from json file.
+
+      :param path: The path of the json file you want to load.
+      :type path: str
+
+      :returns: The Json load object.
+      :rtype: (object)
+
+
+
+   .. py:method:: save_state(state_dict, itr=None)
+
+      Saves the state of an experiment.
+
+      .. important::
+          To be clear: this is about saving *state*, not logging diagnostics.
+          All diagnostic logging is separate from this function. This function
+          will save whatever is in ``state_dict``---usually just a copy of the
+          environment---and the most recent parameters for the model you
+          previously set up saving for with :meth:`setup_tf_saver` or
+          :meth:`setup_pytorch_saver`.
+
+      Call with any frequency you prefer. If you only want to maintain a
+      single state and overwrite it at each call with the most recent
+      version, leave ``itr=None``. If you want to keep all of the states you
+      save, provide unique (increasing) values for 'itr'.
+
+      :param state_dict: Dictionary containing essential elements to
+                         describe the current state of training.
+      :type state_dict: dict
+      :param itr: Current iteration of training (e.g. epoch). Defaults
+                  to ``None``.
+      :type itr: Union[int, None]
+
+
+
+   .. py:method:: setup_tf_saver(what_to_save)
+
+      Set up easy model saving for a single Tensorlow model.
+
+      :param what_to_save: Any Tensorflow model or serializable object
+                           containing TensorFlow models.
+      :type what_to_save: object
+
+
+
+   .. py:method:: setup_pytorch_saver(what_to_save)
+
+      Set up easy model saving for a single PyTorch model.
+
+      :param what_to_save: Any PyTorch model or serializable object containing
+                           PyTorch models.
+      :type what_to_save: object
+
+
+
+   .. py:method:: _tf_save(itr=None)
+
+      Saves the PyTorch model/models using their ``state_dict``.
+
+      :param itr: Current iteration of training (e.g. epoch). Defaults
+                  to ``None``.
+      :type itr: Union[int, None]
+
+
+
+   .. py:method:: _pytorch_save(itr=None)
+
+      Saves the PyTorch model/models using their ``state_dict``.
+
+      :param itr: Current iteration of training (e.g. epoch). Defaults
+                  to ``None``.
+      :type itr: Union[int, None]
+
+
+
+   .. py:method:: _write_to_tb(var_name, data, global_step=None)
+
+      Writes data to TensorBoard log file.
+
+      It currently works with scalars, histograms and images. For other data types
+      please use :attr:`Logger.tb_writer`. directly.
+
+      :param var_name: Data identifier.
+      :type var_name: str
+      :param data: Data you
+                   want to write.
+      :type data: Union[int, float, numpy.ndarray, torch.Tensor, tf.Tensor]
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+
+   .. py:property:: use_tensorboard
+      Variable specifying whether the logger uses TensorBoard. A TensorBoard writer
+      is created on the :attr:`Logger.tb_writer` attribute when
+      :attr:`~Logger.use_tensorboard` is set to ``True``
+
+
+   .. py:property:: log_current_row
+      Return the current row of the logger.
+
+
+   .. py:property:: _global_step
+      Retrieve the current estimated global step count.
+
+
+   .. py:property:: _wandb_config
+      Transform the config to a format that looks better on Weights & Biases.
+
+
+   .. py:method:: watch_model_in_wandb(model)
+
+      Watch model parameters in Weights & Biases.
+
+      :param model: Model to watch on Weights & Biases.
+      :type model: torch.nn.Module
+
+
+
+   .. py:method:: _log_wandb_artifacts()
+
+      Log all stored artifacts to Weights & Biases.
+
+
+
+   .. py:property:: _tb_config
+      Modify the config to a format that looks better on Tensorboard.
+
+
+   .. py:property:: _tb_hparams
+      Transform the config to a format that is accepted as hyper parameters by
+      TensorBoard.
+
+
+   .. py:method:: _log_tb_hparams()
+
+      Log hyper parameters together with final metrics to TensorBoard.
+
+
+
+   .. py:method:: log_model_to_tb(model, input_to_model=None, *args, **kwargs)
+
+      Add model to tb summary.
+
+      Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_graph`
+      or :obj:`tf.summary.graph` (depending on the backend) method while first making
+      sure a SummaryWriter object exits.
+
+      :param model: Model to add to the summary.
+      :type model: union[torch.nn.Module, tf.keras.Model]
+      :param input_to_model: Input tensor to the model.
+      :type input_to_model: union[torch.Tensor, tf.Tensor]
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+
+
+   .. py:method:: add_tb_scalar(*args, **kwargs)
+
+      Add scalar to tb summary.
+
+      Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_scalar`
+      or :obj:`tf.summary.scalar` (depending on the backend) method while first making
+      sure a SummaryWriter object exits. These methods can be used to add a scalar
+      to the summary.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+
+
+   .. py:method:: tb_scalar(*args, **kwargs)
+
+      Wrapper for making the :meth:`add_tb_scalar` method available directly under
+      the ``scalar`` alias.
+
+      :param \*args: All args to pass to the :meth:`add_tb_scalar` method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`add_tb_scalar` method.
+
+
+
+   .. py:method:: add_tb_histogram(*args, **kwargs)
+
+      Add histogram to tb summary.
+
+      Wrapper that calls the
+      :obj:`torch.utils.tensorboard.SummaryWriter.add_histogram` or
+      :obj:`tf.summary.histogram` (depending on the backend) method while first making
+      sure a SummaryWriter object exits. These methods can be used to add a histogram
+      to the summary.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+
+
+   .. py:method:: tb_histogram(*args, **kwargs)
+
+      Wrapper for making the :meth:`add_tb_histogram` method available directly
+      under the ``tb_histogram`` alias.
+
+      :param \*args: All args to pass to the :meth:`add_tb_histogram` method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`add_tb_histogram` method.
+
+
+
+   .. py:method:: add_tb_image(*args, **kwargs)
+
+      Add image to tb summary.
+
+      Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_image`
+      or :obj:`tf.summary.image` (depending on the backend) method while first making
+      sure a SummaryWriter object exits. These methods can be used to add a image
+      to the summary.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+
+
+   .. py:method:: tb_image(*args, **kwargs)
+
+      Wrapper for making the :meth:`add_tb_image` method available directly under
+      the ``tb_image`` alias.
+
+      :param \*args: All args to pass to the :meth:`add_tb_image` method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`add_tb_image` method.
+
+
+
+   .. py:method:: add_tb_text(*args, **kwargs)
+
+      Add text to tb summary.
+
+      Wrapper that calls the
+      :obj:`torch.utils.tensorboard.SummaryWriter.add_text` or
+      :obj:`tf.summary.add_text` (depending on the backend) method while first making
+      sure a SummaryWriter object exits. These methods can be used to add text
+      to the summary.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+
+
+   .. py:method:: tb_text(*args, **kwargs)
+
+      Wrapper for making the :meth:`add_tb_text` method available directly under
+      the ``text`` alias.
+
+      :param \*args: All args to pass to the :meth:`add_tb_text` method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`add_tb_text` method.
+
+
+
+   .. py:method:: add_tb_graph(*args, **kwargs)
+
+      Add graph to tb summary.
+
+      Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_graph`
+      or :obj:`tf.summary.add_graph` (depending on the backend) method while first
+      making sure a SummaryWriter object exits. These methods can be used to add a
+      graph to the summary.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+
+
+   .. py:method:: tb_graph(*args, **kwargs)
+
+      Wrapper for making the :meth:`add_tb_graph` method available directly under
+      the ``tb_graph`` alias.
+
+      :param \*args: All args to pass to the :meth:`add_tb_graph` method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`add_tb_graph` method.
+
+
+
+   .. py:method:: add_tb_hparams(*args, **kwargs)
+
+      Adds hyper parameters to tb summary.
+
+      Wrapper that calls the :obj:`torch.utils.tensorboard.SummaryWriter.add_hparams`
+      method while first making sure a SummaryWriter object exits. The ``add_hparams``
+      method adds a set of hyperparameters to be compared in TensorBoard.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+      :raises NotImplementedError: Raised if you try to call this method when using the
+          TensorFlow backend.
+
+
+
+   .. py:method:: flush_tb_writer(*args, **kwargs)
+
+      Flush tb event file to disk.
+
+
+      Wrapper that calls the
+      :obj:`torch.utils.tensorboard.SummaryWriter.flush` or
+      :obj:`tf.summary.flush` (depending on the backend) method while first making
+      sure a SummaryWriter object exits. These methods can be used to flush the event
+      file to disk.
+
+      :param \*args: All args to pass to the Summary/SummaryWriter object.
+      :param \*\*kwargs: All kwargs to pass to the Summary/SummaryWriter object.
+
+
+
+.. py:class:: EpochLogger(*args, **kwargs)
+
+   Bases: :py:obj:`Logger`
+
+
+   A variant of :class:`Logger` tailored for tracking average values over epochs.
+
+   **Typical use case:** there is some quantity which is calculated many times
+   throughout an epoch, and at the end of the epoch, you would like to
+   report the average/std/min/max value of that quantity.
+
+   With an EpochLogger, each time the quantity is calculated, you would
+   use
+
+   .. code-block:: python
+
+       epoch_logger.store(NameOfQuantity=quantity_value)
+
+   to load it into the EpochLogger's state. Then at the end of the epoch, you
+   would use
+
+   .. code-block:: python
+
+       epoch_logger.log_tabular(NameOfQuantity, **options)
+
+   to record the desired values.
+
+   .. attribute:: epoch_dict
+
+      Dictionary used to store variables you want to log into the
+      :class:`EpochLogger` current state.
+
+      :type: dict
+
+   Initialise a EpochLogger.
+
+
+   .. py:attribute:: epoch_dict
+
+
+   .. py:attribute:: _tb_index_dict
+
+
+   .. py:attribute:: _n_table_dumps
+      :value: 0
+
+
+
+   .. py:method:: store(tb_write=False, tb_aliases=dict(), extend=False, global_step=None, **kwargs)
+
+      Save something into the :class:`EpochLogger`'s current state.
+
+      Provide an arbitrary number of keyword arguments with numerical
+      values.
+
+      :param tb_write: Boolean or dict of key boolean pairs
+                       specifying whether you also want to write the value to the TensorBoard
+                       logfile. Defaults to ``False``.
+      :type tb_write: Union[bool, dict], optional
+      :param tb_aliases: Dictionary that can be used to set aliases for
+                         the variables you want to store. Defaults to empty :obj:`dict`.
+      :type tb_aliases: dict, optional
+      :param extend: Boolean specifying whether you want to extend the
+                     values to the log buffer. By default ``False`` meaning the values are
+                     appended to the buffer.
+      :type extend: bool, optional
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+
+   .. py:method:: log_to_tb(keys, val=None, with_min_and_max=False, average_only=False, tb_prefix=None, tb_alias=None, global_step=None)
+
+      Log a diagnostic to TensorBoard. This function takes or a list of keys or a
+      key-value pair. If only keys are supplied, averages will be calculated using
+      the new data found in the Loggers internal storage. If a key-value pair is
+      supplied, this pair will be directly logged to TensorBoard.
+
+      :param keys: The name(s) of the diagnostic.
+      :type keys: Union[list[str], str]
+      :param val: A value for the diagnostic.
+      :param with_min_and_max: If ``True``, log min and max values of the
+                               diagnostic.
+      :type with_min_and_max: bool
+      :param average_only: If ``True``, do not log the standard deviation
+                           of the diagnostic.
+      :type average_only: bool
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+
+   .. py:method:: log_tabular(key, val=None, with_min_and_max=False, average_only=False, tb_write=False, tb_prefix=None, tb_alias=None)
+
+      Log a value or possibly the mean/std/min/max values of a diagnostic.
+
+      :param key: The name of the diagnostic. If you are logging a
+                  diagnostic whose state has previously been saved with
+                  :meth:`store`, the key here has to match the key you used there.
+      :type key: str
+      :param val: A value for the diagnostic. If you have previously saved
+                  values for this key via :meth:`store`, do *not* provide a ``val``
+                  here.
+      :param with_min_and_max: If ``True``, log min and max values of the
+                               diagnostic over the epoch.
+      :type with_min_and_max: bool
+      :param average_only: If ``True``, do not log the standard deviation
+                           of the diagnostic over the epoch.
+      :type average_only: bool
+      :param tb_write: Boolean specifying whether you also want to write
+                       the value to the TensorBoard logfile. Defaults to False.
+      :type tb_write: bool, optional
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+
+
+
+   .. py:method:: dump_tabular(*args, **kwargs)
+
+      Small wrapper around the :meth:`Logger.dump_tabular` method which
+      makes sure that the TensorBoard index track dictionary is reset after the table
+      is dumped.
+
+      :param \*args: All args to pass to parent method.
+      :param \*\*kwargs: All kwargs to pass to parent method.
+
+
+
+   .. py:method:: get_stats(key)
+
+      Lets an algorithm ask the logger for mean/std/min/max of a diagnostic.
+
+      :param key: The key for which you want to get the stats.
+      :type key: str
+
+      :returns:
+
+                tuple containing:
+
+                    - mean(:obj:`float`): The current mean value.
+                    - std(:obj:`float`): The current  mean standard deviation.
+                    - min(:obj:`float`): The current mean value.
+                    - max(:obj:`float`): The current mean value.
+      :rtype: (tuple)
+
+
+
+   .. py:method:: _log_tb_diagnostics(key, with_min_and_max=False, average_only=False, tb_prefix=None, tb_alias=None, global_step=None)
+
+      Calculates the diagnostics of a given key from all the new data found in the
+      Loggers internal storage.
+
+      :param key: The name of the diagnostic.
+      :type key: Union[list[str], str]
+      :param with_min_and_max: If ``True``, log min and max values of the
+                               diagnostic.
+      :type with_min_and_max: bool
+      :param average_only: If ``True``, do not log the standard deviation
+                           of the diagnostic.
+      :type average_only: bool
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+

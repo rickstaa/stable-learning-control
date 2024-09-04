@@ -1,0 +1,155 @@
+stable_learning_control.utils.test_policy
+=========================================
+
+.. py:module:: stable_learning_control.utils.test_policy
+
+.. autoapi-nested-parse::
+
+   A set of functions that can be used to see a algorithm perform in the environment
+   it was trained on.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.test_policy.parser
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.test_policy._retrieve_iter_folder
+   stable_learning_control.utils.test_policy._retrieve_model_folder
+   stable_learning_control.utils.test_policy.load_policy_and_env
+   stable_learning_control.utils.test_policy.load_tf_policy
+   stable_learning_control.utils.test_policy.load_pytorch_policy
+   stable_learning_control.utils.test_policy.run_policy
+
+
+Module Contents
+---------------
+
+.. py:function:: _retrieve_iter_folder(fpath, itr)
+
+   Retrieves the path of the requested model iteration.
+
+   :param fpath: The path where the model is found.
+   :type fpath: str
+   :param itr: The current policy iteration (checkpoint).
+   :type itr: int
+
+   :raises IOError: Raised if the model is corrupt.
+   :raises FileNotFoundError: Raised if the model path did not exist.
+
+   :returns: The model iteration path.
+   :rtype: str
+
+
+.. py:function:: _retrieve_model_folder(fpath)
+
+   Tries to retrieve the model folder and backend from the given path.
+
+   :param fpath: The path where the model is found.
+   :type fpath: str
+
+   :raises IOError: Raised if the model is corrupt.
+   :raises FileNotFoundError: Raised if the model path did not exist.
+
+   :returns:
+
+             tuple containing:
+
+                 - model_folder (:obj:`func`): The model folder.
+                 - backend (:obj:`str`): The inferred backend. Options are ``tf2`` and
+                     ``torch``.
+   :rtype: (tuple)
+
+
+.. py:function:: load_policy_and_env(fpath, itr='last')
+
+   Load a policy from save, whether it's TF or PyTorch, along with RL env.
+
+   :param fpath: The path where the model is found.
+   :type fpath: str
+   :param itr: The current policy iteration (checkpoint). Defaults to
+               ``last``.
+   :type itr: str, optional
+   :param deterministic: Whether you want the action from the policy to
+                         be deterministic. Defaults to ``False``.
+   :type deterministic: bool, optional
+
+   :raises FileNotFoundError: Thrown when the fpath does not exist.
+   :raises EnvLoadError: Thrown when something went wrong trying to load the saved
+       environment.
+   :raises PolicyLoadError: Thrown when something went wrong trying to load the saved
+       policy.
+
+   :returns:
+
+             tuple containing:
+
+                 - env (:obj:`gym.env`): The gymnasium environment.
+                 - get_action (:obj:`func`): The policy get_action function.
+   :rtype: (tuple)
+
+
+.. py:function:: load_tf_policy(fpath, env, itr='last')
+
+   Load a TensorFlow policy saved with Stable learning control Logger.
+
+   :param fpath: The path where the model is found.
+   :type fpath: str
+   :param env: The gymnasium environment in which you want to test the
+               policy.
+   :type env: :obj:`gym.env`
+   :param itr: The current policy iteration. Defaults to "last".
+   :type itr: str, optional
+
+   :returns: The policy.
+   :rtype: tf.keras.Model
+
+
+.. py:function:: load_pytorch_policy(fpath, env, itr='last')
+
+   Load a pytorch policy saved with Stable Learning Control Logger.
+
+   :param fpath: The path where the model is found.
+   :type fpath: str
+   :param env: The gymnasium environment in which you want to test the
+               policy.
+   :type env: :obj:`gym.env`
+   :param itr: The current policy iteration. Defaults to "last".
+   :type itr: str, optional
+
+   :returns: The policy.
+   :rtype: torch.nn.Module
+
+
+.. py:function:: run_policy(env, policy, max_ep_len=None, num_episodes=100, render=True, deterministic=True)
+
+   Evaluates a policy inside a given gymnasium environment.
+
+   :param env: The gymnasium environment.
+   :type env: :obj:`gym.env`
+   :param policy: The policy.
+   :type policy: Union[tf.keras.Model, torch.nn.Module]
+   :param max_ep_len: The maximum episode length. Defaults to ``None``.
+   :type max_ep_len: int, optional
+   :param num_episodes: Number of episodes you want to perform in the
+                        environment. Defaults to 100.
+   :type num_episodes: int, optional
+   :param deterministic: Whether you want the action from the policy to
+                         be deterministic. Defaults to ``True``.
+   :type deterministic: bool, optional
+   :param render: Whether you want to render the episode to the screen.
+                  Defaults to ``True``.
+   :type render: bool, optional
+
+
+.. py:data:: parser
+

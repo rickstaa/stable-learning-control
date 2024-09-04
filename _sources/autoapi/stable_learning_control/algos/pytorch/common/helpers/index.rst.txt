@@ -1,0 +1,123 @@
+stable_learning_control.algos.pytorch.common.helpers
+====================================================
+
+.. py:module:: stable_learning_control.algos.pytorch.common.helpers
+
+.. autoapi-nested-parse::
+
+   Contains several Pytorch helper functions.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.pytorch.common.helpers.retrieve_device
+   stable_learning_control.algos.pytorch.common.helpers.mlp
+   stable_learning_control.algos.pytorch.common.helpers.count_vars
+   stable_learning_control.algos.pytorch.common.helpers.compare_models
+   stable_learning_control.algos.pytorch.common.helpers.rescale
+   stable_learning_control.algos.pytorch.common.helpers.np_to_torch
+
+
+Module Contents
+---------------
+
+.. py:function:: retrieve_device(device_type='cpu')
+
+   Retrieves the available computational device given a device type.
+
+   :param device_type: The device type (options: ``cpu``, ``gpu``, ``gpu:0``,
+                       ``gpu:1``, etc.). Defaults to ``cpu``.
+   :type device_type: str
+
+   :returns: The Pytorch device object.
+   :rtype: :obj:`torch.device`
+
+
+.. py:function:: mlp(sizes, activation, output_activation=nn.Identity)
+
+   Create a multi-layered perceptron using pytorch.
+
+   :param sizes: The size of each of the layers.
+   :type sizes: list
+   :param activation: The
+                      activation function used for the hidden layers.
+   :type activation: union[:obj:`torch.nn.modules.activation`, :obj:`str`]
+   :param output_activation: The activation function used for the output layers. Defaults to
+                             :class:`torch.nn.Identity`.
+   :type output_activation: union[:obj:`torch.nn.modules.activation`, :obj:`str`], optional
+
+   :returns: The multi-layered perceptron.
+   :rtype: torch.nn.Sequential
+
+
+.. py:function:: count_vars(module)
+
+   Returns the total number of parameters of a pytorch module.
+
+   :param module: The module.
+   :type module: torch.nn.Module
+
+   :returns: The total number of parameters inside the module.
+   :rtype: :obj:`numpy.int64`
+
+
+.. py:function:: compare_models(model_1, model_2)
+
+   Compares two models to see if the weights are equal.
+
+   :param model_1: The first Pytorch model.
+   :type model_1: torch.nn.Module
+   :param model_2: The second Pytorch model.
+   :type model_2: torch.nn.Module
+
+   :raises Exception: Raises Key error if the graph of the two models is different.
+
+   :returns: Bool specifying whether the weights of two models are equal.
+   :rtype: bool
+
+
+.. py:function:: rescale(data, min_bound, max_bound)
+
+   Rescale normalized data (i.e. between ``-1`` and ``1``) to a desired range.
+
+   :param data: Normalized input data.
+   :type data: Union[torch.Tensor, numpy.ndarray, list]
+   :param min_bound: Array containing the minimum value of
+                     the desired range.
+   :type min_bound: Union[numpy.ndarray, list]
+   :param max_bound: Array containing the maximum value of
+                     the desired range.
+   :type max_bound: Union[numpy.ndarray, list]
+
+   :returns:
+
+             Array which has it values scaled between
+                 the min and max boundaries.
+   :rtype: Union[Torch.Tensor, numpy.ndarray]
+
+
+.. py:function:: np_to_torch(input_object, dtype=None, device=None)
+
+   Converts all numpy arrays in a python object to Torch Tensors.
+
+   :param input_item: The python object.
+   :type input_item: obj
+   :param dtype: The type you want to use for storing the data in the
+                 tensor. Defaults to ``None`` (i.e. torch default will be used).
+   :type dtype: type, optional
+   :param device: The computational device on which the tensors should be
+                  stored. (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.). Defaults
+                  to ``None`` (i.e. torch default device will be used).
+   :type device: str, optional
+
+   :returns:
+
+             The output python object in which numpy arrays have been converted to
+                 torch tensors.
+   :rtype: object
+
+

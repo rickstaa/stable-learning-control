@@ -1,0 +1,77 @@
+stable_learning_control.user_config
+===================================
+
+.. py:module:: stable_learning_control.user_config
+
+.. autoapi-nested-parse::
+
+   File used for storing several configuration values for the SLC package.
+
+   .. literalinclude:: /../../stable_learning_control/user_config.py
+      :language: python
+      :linenos:
+      :lines: 8-
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.user_config.DEFAULT_BACKEND
+   stable_learning_control.user_config.DEFAULT_DATA_DIR
+   stable_learning_control.user_config.FORCE_DATESTAMP
+   stable_learning_control.user_config.DEFAULT_SHORTHAND
+   stable_learning_control.user_config.WAIT_BEFORE_LAUNCH
+   stable_learning_control.user_config.PRINT_CONFIG
+   stable_learning_control.user_config.DEFAULT_STD_OUT_TYPE
+   stable_learning_control.user_config.DEFAULT_WANDB_JOB_TYPE
+   stable_learning_control.user_config.DEFAULT_WANDB_PROJECT
+   stable_learning_control.user_config.TB_HPARAMS_FILTER
+   stable_learning_control.user_config.TB_HPARAMS_METRICS
+
+
+Module Contents
+---------------
+
+.. py:data:: DEFAULT_BACKEND
+
+.. py:data:: DEFAULT_DATA_DIR
+
+.. py:data:: FORCE_DATESTAMP
+   :value: False
+
+
+.. py:data:: DEFAULT_SHORTHAND
+   :value: True
+
+
+.. py:data:: WAIT_BEFORE_LAUNCH
+   :value: 5
+
+
+.. py:data:: PRINT_CONFIG
+   :value: False
+
+
+.. py:data:: DEFAULT_STD_OUT_TYPE
+   :value: 'line'
+
+
+.. py:data:: DEFAULT_WANDB_JOB_TYPE
+   :value: 'train'
+
+
+.. py:data:: DEFAULT_WANDB_PROJECT
+   :value: 'stable-learning-control'
+
+
+.. py:data:: TB_HPARAMS_FILTER
+   :value: ['epochs', 'num_of_test_episodes', 'seed', 'device', 'save_freq', 'start_policy', 'export']
+
+
+.. py:data:: TB_HPARAMS_METRICS
+   :value: ['AverageEpRet', 'AverageTestEpRet']
+
+

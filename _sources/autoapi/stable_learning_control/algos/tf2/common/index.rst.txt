@@ -1,0 +1,59 @@
+stable_learning_control.algos.tf2.common
+========================================
+
+.. py:module:: stable_learning_control.algos.tf2.common
+
+.. autoapi-nested-parse::
+
+   Contains several functions that are used across all the RL algorithms.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/stable_learning_control/algos/tf2/common/bijectors/index
+   /autoapi/stable_learning_control/algos/tf2/common/get_lr_scheduler/index
+   /autoapi/stable_learning_control/algos/tf2/common/helpers/index
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.common.get_lr_scheduler
+
+
+Package Contents
+----------------
+
+.. py:function:: get_lr_scheduler(decaying_lr_type, lr_start, lr_final, steps)
+
+   Creates a learning rate scheduler.
+
+   :param decaying_lr_type: The learning rate decay type that is used (options are:
+                            ``linear`` and ``exponential`` and ``constant``).
+   :type decaying_lr_type: str
+   :param lr_start: Initial learning rate.
+   :type lr_start: float
+   :param lr_final: Final learning rate.
+   :type lr_final: float
+   :param steps: Number of steps/epochs used in the training. This
+                 includes the starting step/epoch.
+   :type steps: int, optional
+
+   :returns:
+
+             A learning rate
+                 scheduler object.
+   :rtype: tensorflow.keras.optimizers.schedules.LearningRateSchedule
+
+   .. seealso::
+       See the :tf2:`TensorFlow <keras/optimizers/schedules>` documentation on how to
+       implement other decay options.
+
+

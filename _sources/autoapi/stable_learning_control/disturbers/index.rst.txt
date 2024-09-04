@@ -1,0 +1,256 @@
+stable_learning_control.disturbers
+==================================
+
+.. py:module:: stable_learning_control.disturbers
+
+.. autoapi-nested-parse::
+
+   Contains the disturbers that are available in the SLC package.
+
+   .. note::
+       These disturbers are implemented as gymnasium:`gymnasium wrappers <api/wrappers/>`.
+       Because of this, they can be used with any :gymnasium:`gymnasium environment <>`. If
+       you want to add a new disturber, you only have to ensure that it is a Python class
+       that inherits from the :class:`gym.Wrapper` class.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/stable_learning_control/disturbers/action_impulse_disturber/index
+   /autoapi/stable_learning_control/disturbers/action_random_noise_disturber/index
+   /autoapi/stable_learning_control/disturbers/env_attributes_disturber/index
+   /autoapi/stable_learning_control/disturbers/observation_random_noise_disturber/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.disturbers.ActionImpulseDisturber
+   stable_learning_control.disturbers.ActionRandomNoiseDisturber
+   stable_learning_control.disturbers.EnvAttributesDisturber
+   stable_learning_control.disturbers.ObservationRandomNoiseDisturber
+
+
+Package Contents
+----------------
+
+.. py:class:: ActionImpulseDisturber(env, magnitude, time)
+
+   Bases: :py:obj:`gymnasium.ActionWrapper`
+
+
+   A gymnasium wrapper that can be used to disturb the action of a gymnasium
+   environment with a impulse applied at a certain time step.
+
+   .. attribute:: impulse_magnitude
+
+      The magnitude of the impulse.
+
+      :type: float
+
+   .. attribute:: impulse_time
+
+      The time (s) at which to apply the impulse.
+
+      :type: float
+
+   Initialise the ActionImpulseDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param magnitude: The impulse magnitude to apply.
+   :type magnitude: float
+   :param time: The time (s) at which to apply the impulse.
+   :type time: float
+
+
+   .. py:attribute:: time_warning
+      :value: False
+
+
+
+   .. py:attribute:: time_step_warning
+      :value: False
+
+
+
+   .. py:attribute:: _track_time
+      :value: False
+
+
+
+   .. py:attribute:: _time_step_attr
+      :value: None
+
+
+
+   .. py:attribute:: _time_attr
+      :value: None
+
+
+
+   .. py:attribute:: magnitude
+
+
+   .. py:attribute:: impulse_time
+
+
+   .. py:attribute:: max_episode_steps
+
+
+   .. py:method:: track_time()
+
+      Track the time of the environment.
+
+
+
+   .. py:method:: action(action)
+
+      Add a impulse to the action.
+
+      :param action: The action.
+      :type action: np.ndarray
+
+      :returns: The action with added impulse.
+      :rtype: np.ndarray
+
+
+
+.. py:class:: ActionRandomNoiseDisturber(env, mean, std)
+
+   Bases: :py:obj:`gymnasium.ActionWrapper`
+
+
+   A gymnasium wrapper that can be used to disturb the action of a gymnasium
+   environment with normally distributed random noise.
+
+   .. attribute:: mean
+
+      The mean of the noise normal distribution.
+
+      :type: float
+
+   .. attribute:: std
+
+      The standard deviation of the noise normal distribution.
+
+      :type: float
+
+   Initialise the ActionRandomNoiseDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param mean: The mean of the noise normal distribution.
+   :type mean: float
+   :param std: The standard deviation of the noise normal distribution.
+   :type std: float
+
+
+   .. py:attribute:: mean
+
+
+   .. py:attribute:: std
+
+
+   .. py:method:: action(action)
+
+      Add normally distributed random noise to the action.
+
+      :param action: The action.
+      :type action: np.ndarray
+
+      :returns: The action with added noise.
+      :rtype: np.ndarray
+
+
+
+.. py:class:: EnvAttributesDisturber(env, attributes, values)
+
+   Bases: :py:obj:`gymnasium.Wrapper`
+
+
+   A gymnasium wrapper that can be used to disturb a physics parameter of a
+   gymnasium environment.
+
+   .. attribute:: disturbance_label
+
+      A label for the disturbance that can be used for
+      logging or plotting. Used in the
+      :mod:`~stable_learning_control.utils.eval_robustness` utility.
+
+      :type: str
+
+   Initialise the EnvAttributesDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param attributes: A list of attributes to disturb.
+   :type attributes: list
+   :param values: A list of values to set the parameters to.
+   :type values: list
+
+   :raises ValueError: The number of parameters and values must be the same.
+   :raises AttributeError: The parameter does not exist in the environment.
+
+
+   .. py:attribute:: attributes
+
+
+   .. py:attribute:: values
+
+
+.. py:class:: ObservationRandomNoiseDisturber(env, mean, std)
+
+   Bases: :py:obj:`gymnasium.ObservationWrapper`
+
+
+   A gymnasium wrapper that can be used to disturb the observation of a gymnasium
+   environment with normally distributed random noise.
+
+   .. attribute:: mean
+
+      The mean of the noise normal distribution.
+
+      :type: float
+
+   .. attribute:: std
+
+      The standard deviation of the noise normal distribution.
+
+      :type: float
+
+   Initialise the ObservationRandomNoiseDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param mean: The mean of the noise normal distribution.
+   :type mean: float
+   :param std: The standard deviation of the noise normal distribution.
+   :type std: float
+
+
+   .. py:attribute:: mean
+
+
+   .. py:attribute:: std
+
+
+   .. py:method:: observation(observation)
+
+      Add normally distributed random noise to the observation.
+
+      :param observation: The observation.
+      :type observation: np.ndarray
+
+      :returns: The observation with added noise.
+      :rtype: np.ndarray
+
+
+

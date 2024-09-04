@@ -1,0 +1,146 @@
+stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic
+====================================================================
+
+.. py:module:: stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic
+
+.. autoapi-nested-parse::
+
+   Lyapunov (soft) actor critic policy.
+
+   This module contains a Pytorch implementation of the Lyapunov Actor Critic policy of
+   `Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.HIDDEN_SIZES_DEFAULT
+   stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.ACTIVATION_DEFAULT
+   stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.OUTPUT_ACTIVATION_DEFAULT
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic
+
+
+Module Contents
+---------------
+
+.. py:data:: HIDDEN_SIZES_DEFAULT
+
+.. py:data:: ACTIVATION_DEFAULT
+
+.. py:data:: OUTPUT_ACTIVATION_DEFAULT
+
+.. py:class:: LyapunovActorCritic(observation_space, action_space, hidden_sizes=HIDDEN_SIZES_DEFAULT, activation=ACTIVATION_DEFAULT, output_activation=OUTPUT_ACTIVATION_DEFAULT)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Lyapunov (soft) Actor-Critic network.
+
+   .. attribute:: self.pi
+
+      The squashed gaussian policy network (actor).
+
+      :type: :class:`~stable_learning_control.algos.pytorch.policies.actors.squashed_gaussian_actor.SquashedGaussianActor`
+
+   .. attribute:: self.L
+
+      The soft L-network (critic).
+
+      :type: :obj:`~stable_learning_control.algos.pytorch.policies.critics.L_critic.LCritic`
+
+   Initialise the LyapunovActorCritic object.
+
+   :param observation_space: A gymnasium observation space.
+   :type observation_space: :obj:`gym.space.box.Box`
+   :param action_space: A gymnasium action space.
+   :type action_space: :obj:`gym.space.box.Box`
+   :param hidden_sizes: Sizes of the hidden
+                        layers for the actor. Defaults to ``(256, 256)``.
+   :type hidden_sizes: Union[dict, tuple, list], optional
+   :param activation: The (actor and critic) hidden layers activation function. Defaults to
+                      :class:`torch.nn.ReLU`.
+   :type activation: Union[:obj:`dict`, :obj:`torch.nn.modules.activation`], optional
+   :param output_activation: The (actor and critic) output activation function. Defaults to
+                             :class:`torch.nn.ReLU` for the actor and nn.Identity for the critic.
+   :type output_activation: Union[:obj:`dict`, :obj:`torch.nn.modules.activation`], optional
+
+   .. note::
+       It is currently not possible to set the critic output activation function
+       when using the LyapunovActorCritic. This is since it by design requires the
+       critic output activation to by of type :meth:`torch.square`.
+
+
+   .. py:attribute:: obs_dim
+
+
+   .. py:attribute:: act_dim
+
+
+   .. py:attribute:: act_limits
+
+
+   .. py:attribute:: pi
+
+
+   .. py:attribute:: L
+
+
+   .. py:method:: forward(obs, act, deterministic=False, with_logprob=True)
+
+      Performs a forward pass through all the networks (Actor and L critic).
+
+      :param obs: The tensor of observations.
+      :type obs: torch.Tensor
+      :param act: The tensor of actions.
+      :type act: torch.Tensor
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If false the action is sampled from the stochastic
+                            policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+      :param with_logprob: Whether we want to return the log probability
+                           of an action. Defaults to ``True``.
+      :type with_logprob: bool, optional
+
+      :returns:
+
+                tuple containing:
+
+                    - pi_action (:obj:`torch.Tensor`): The actions given by the policy.
+                    - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.
+                    - L (:obj:`torch.Tensor`): Critic L values.
+      :rtype: (tuple)
+
+      .. note::
+          Useful for when you want to print out the full network graph using
+          TensorBoard.
+
+
+
+   .. py:method:: act(obs, deterministic=False)
+
+      Returns the action from the current state given the current policy.
+
+      :param obs: The current observation (state).
+      :type obs: torch.Tensor
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The action from the current state given the current policy.
+      :rtype: numpy.ndarray
+
+
+

@@ -1,0 +1,97 @@
+stable_learning_control.common.exceptions
+=========================================
+
+.. py:module:: stable_learning_control.common.exceptions
+
+.. autoapi-nested-parse::
+
+   Module containing several SLC exceptions.
+
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.common.exceptions.EnvLoadError
+   stable_learning_control.common.exceptions.PolicyLoadError
+
+
+Module Contents
+---------------
+
+.. py:exception:: EnvLoadError(message='', log_message='', **details)
+
+   Bases: :py:obj:`Exception`
+
+
+   Custom exception that is raised when the saved environment could not be loaded.
+
+   .. attribute:: log_message
+
+      The full log message.
+
+      :type: str
+
+   .. attribute:: details
+
+      Dictionary containing extra Exception information.
+
+      :type: dict
+
+   Initialise the EePoseLookupError exception object.
+
+   :param message: Exception message specifying whether the exception
+                   occurred. Defaults to ``""``.
+   :type message: str, optional
+   :param log_message: Full log message. Defaults to ``""``.
+   :type log_message: str, optional
+   :param details: Additional dictionary that can be used to supply the user
+                   with more details about why the exception occurred.
+   :type details: dict
+
+
+   .. py:attribute:: log_message
+
+
+   .. py:attribute:: details
+
+
+.. py:exception:: PolicyLoadError(message='', log_message='', **details)
+
+   Bases: :py:obj:`Exception`
+
+
+   Custom exception that is raised when the saved policy could not be loaded.
+
+   .. attribute:: log_message
+
+      The full log message.
+
+      :type: str
+
+   .. attribute:: details
+
+      Dictionary containing extra Exception information.
+
+      :type: dict
+
+   Initialise the EePoseLookupError exception object.
+
+   :param message: Exception message specifying whether the exception
+                   occurred. Defaults to ``""``.
+   :type message: str, optional
+   :param log_message: Full log message. Defaults to ``""``.
+   :type log_message: str, optional
+   :param details: Additional dictionary that can be used to supply the user
+                   with more details about why the exception occurred.
+   :type details: dict
+
+
+   .. py:attribute:: log_message
+
+
+   .. py:attribute:: details
+
+

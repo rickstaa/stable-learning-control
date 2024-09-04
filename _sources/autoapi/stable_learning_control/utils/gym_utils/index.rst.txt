@@ -1,0 +1,83 @@
+stable_learning_control.utils.gym_utils
+=======================================
+
+.. py:module:: stable_learning_control.utils.gym_utils
+
+.. autoapi-nested-parse::
+
+   Contains utilities that can be used with the
+   `gymnasium package <https://gymnasium.farama.org/>`_.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.gym_utils.DISCRETE_SPACES
+   stable_learning_control.utils.gym_utils.CONTINUOUS_SPACES
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.gym_utils.is_gym_env
+   stable_learning_control.utils.gym_utils.is_continuous_space
+   stable_learning_control.utils.gym_utils.is_discrete_space
+   stable_learning_control.utils.gym_utils.validate_gym_env
+
+
+Module Contents
+---------------
+
+.. py:data:: DISCRETE_SPACES
+
+.. py:data:: CONTINUOUS_SPACES
+
+.. py:function:: is_gym_env(env)
+
+   Checks whether object is a gymnasium environment.
+
+   :param env: A python object.
+   :type env: object
+
+   :returns: Boolean specifying whether object is gymnasium environment.
+   :rtype: bool
+
+
+.. py:function:: is_continuous_space(space)
+
+   Checks whether a given space is continuous.
+
+   :param space: The gymnasium space object.
+   :type space: :obj:`gym.spaces`
+
+   :returns: Boolean specifying whether the space is discrete.
+   :rtype: bool
+
+
+.. py:function:: is_discrete_space(space)
+
+   Checks whether a given space is discrete.
+
+   :param space: The gymnasium space object.
+   :type space: :obj:`gym.spaces`
+
+   :returns: Boolean specifying whether the space is discrete.
+   :rtype: bool
+
+
+.. py:function:: validate_gym_env(arg_dict)
+
+   Make sure that env_name is a real, registered gymnasium environment.
+
+   :param cmd: The cmd dictionary.
+   :type cmd: dict
+
+   :raises AssertError: Raised when a environment is supplied that is not a valid gymnasium
+       environment.
+
+

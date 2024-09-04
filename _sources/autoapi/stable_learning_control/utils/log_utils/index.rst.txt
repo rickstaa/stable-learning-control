@@ -1,0 +1,373 @@
+stable_learning_control.utils.log_utils
+=======================================
+
+.. py:module:: stable_learning_control.utils.log_utils
+
+.. autoapi-nested-parse::
+
+   Several utilities and helper functions used for logging.
+
+   .. note::
+       This module was based on
+       `spinningup repository <https://github.com/openai/spinningup/tree/master/spinup/utils/logx.py>`_.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/stable_learning_control/utils/log_utils/helpers/index
+   /autoapi/stable_learning_control/utils/log_utils/logx/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.log_utils.EpochLogger
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.log_utils.colorize
+   stable_learning_control.utils.log_utils.dict_to_mdtable
+   stable_learning_control.utils.log_utils.log_to_std_out
+   stable_learning_control.utils.log_utils.setup_logger_kwargs
+
+
+Package Contents
+----------------
+
+.. py:function:: colorize(string, color, bold=False, highlight=False)
+
+   Colorize a string.
+
+   .. seealso::
+       This function wraps the :meth:`gym.utils.colorize` function to make sure that it
+       also works with empty color strings.
+
+   :param string: The string you want to colorize.
+   :type string: str
+   :param color: The color you want to use.
+   :type color: str
+   :param bold: Whether you want the text to be bold. Defaults to
+                ``False``.
+   :type bold: bool, optional
+   :param highlight: Whether you want to highlight the text. Defaults to
+                     ``False``.
+   :type highlight: bool, optional
+
+   :returns: Colorized string.
+   :rtype: str
+
+
+.. py:function:: dict_to_mdtable(d, key='Name', val='Value')
+
+   Convert a dictionary to a markdown table.
+
+   :param d: The dictionary you want to convert.
+   :type d: dict
+   :param key: The name of the key column. Defaults to ``"Name"``.
+   :type key: str, optional
+   :param val: The name of the value column. Defaults to ``"Value"``.
+   :type val: str, optional
+
+   :returns: The markdown table.
+   :rtype: str
+
+
+.. py:function:: log_to_std_out(msg, color='', bold=False, highlight=False, type=None, *args, **kwargs)
+
+   Print a colorized message to stdout.
+
+   :param msg: Message you want to log.
+   :type msg: str
+   :param color: Color you want the message to have. Defaults to
+                 ``""``.
+   :type color: str, optional
+   :param bold: Whether you want the text to be bold text has to be
+                bold.
+   :type bold: bool, optional
+   :param highlight: Whether you want to highlight the text.
+                     Defaults to ``False``.
+   :type highlight: bool, optional
+   :param type: The log message type. Options are: ``info``, ``warning``
+                and ``error``. Defaults to ``None``.
+   :type type: str, optional
+   :param \*args: All args to pass to the print function.
+   :param \*\*kwargs: All kwargs to pass to the print function.
+
+
+.. py:function:: setup_logger_kwargs(exp_name, seed=None, save_checkpoints=False, use_tensorboard=False, tb_log_freq='low', use_wandb=False, wandb_job_type=DEFAULT_WANDB_JOB_TYPE, wandb_project=DEFAULT_WANDB_PROJECT, wandb_group=None, wandb_run_name=None, quiet=False, verbose_fmt=DEFAULT_STD_OUT_TYPE, verbose_vars=[], data_dir=None, datestamp=False)
+
+   Sets up the output_dir for a logger and returns a dict for logger kwargs.
+
+   If no seed is given and datestamp is false,
+
+   ::
+
+       output_dir = data_dir/exp_name
+
+   If a seed is given and datestamp is false,
+
+   ::
+
+       output_dir = data_dir/exp_name/exp_name_s[seed]
+
+   If datestamp is true, amend to
+
+   ::
+
+       output_dir = data_dir/YY-MM-DD_exp_name/YY-MM-DD_HH-MM-SS_exp_name_s[seed]
+
+   You can force datestamp=True by setting ``FORCE_DATESTAMP=True`` in
+   ``stable_learning_control/user_config.py``.
+
+   :param exp_name: Name for experiment.
+   :type exp_name: str
+   :param seed: Seed for random number generators used by experiment.
+   :type seed: int, optional
+   :param save_checkpoints: Save checkpoints during training.
+                            Defaults to ``False``.
+   :type save_checkpoints: bool, optional
+   :param use_tensorboard: Whether you want to use TensorBoard. Defaults
+                           to ``True``.
+   :type use_tensorboard: bool, optional
+   :param tb_log_freq: The TensorBoard log frequency. Options are ``low``
+                       (Recommended: logs at every epoch) and ``high`` (logs at every SGD update "
+                       batch). Defaults to ``low`` since this is less resource intensive.
+   :type tb_log_freq: str, optional
+   :param use_wandb: Whether you want to use Weights & Biases. Defaults
+                     to ``False``.
+   :type use_wandb: bool, optional
+   :param wandb_job_type: The Weights & Biases job type. Defaults to
+                          ``None``.
+   :type wandb_job_type: str, optional
+   :param wandb_project: The name of the Weights & Biases project you
+                         want to log to. Defaults to ``None``.
+   :type wandb_project: str, optional
+   :param wandb_group: The name of the Weights & Biases group you want to
+                       assign the run to. Defaults to ``None``.
+   :type wandb_group: str, optional
+   :param wandb_run_name: The name of the Weights & Biases run. Defaults
+                          to ``None`` which means that the run name is automatically generated.
+   :type wandb_run_name: str, optional
+   :param quiet: Whether you want to suppress logging of the diagnostics
+                 to the stdout. Defaults to ``False``.
+   :type quiet: bool, optional
+   :param verbose_fmt: The format in which the diagnostics are
+                       displayed to the terminal. Options are ``table`` which supplies them as a
+                       table and ``line`` which prints them in one line. Defaults to ``line``.
+   :type verbose_fmt: str, optional
+   :param verbose_vars: A list of variables you want to log to the
+                        stdout. By default all variables are logged.
+   :type verbose_vars: list, optional
+   :param data_dir: Path to folder where results should be saved.
+                    Default is the ``DEFAULT_DATA_DIR`` in
+                    ``stable_learning_control/user_config.py``. Defaults to ``None``.
+   :type data_dir: str, optional
+   :param datestamp: Whether to include a date and timestamp in the
+                     name of the save directory. Defaults to ``False``.
+   :type datestamp: bool, optional
+
+   :returns:
+
+             logger_kwargs
+                 A dict containing output_dir and exp_name.
+   :rtype: dict
+
+
+.. py:class:: EpochLogger(*args, **kwargs)
+
+   Bases: :py:obj:`Logger`
+
+
+   A variant of :class:`Logger` tailored for tracking average values over epochs.
+
+   **Typical use case:** there is some quantity which is calculated many times
+   throughout an epoch, and at the end of the epoch, you would like to
+   report the average/std/min/max value of that quantity.
+
+   With an EpochLogger, each time the quantity is calculated, you would
+   use
+
+   .. code-block:: python
+
+       epoch_logger.store(NameOfQuantity=quantity_value)
+
+   to load it into the EpochLogger's state. Then at the end of the epoch, you
+   would use
+
+   .. code-block:: python
+
+       epoch_logger.log_tabular(NameOfQuantity, **options)
+
+   to record the desired values.
+
+   .. attribute:: epoch_dict
+
+      Dictionary used to store variables you want to log into the
+      :class:`EpochLogger` current state.
+
+      :type: dict
+
+   Initialise a EpochLogger.
+
+
+   .. py:attribute:: epoch_dict
+
+
+   .. py:attribute:: _tb_index_dict
+
+
+   .. py:attribute:: _n_table_dumps
+      :value: 0
+
+
+
+   .. py:method:: store(tb_write=False, tb_aliases=dict(), extend=False, global_step=None, **kwargs)
+
+      Save something into the :class:`EpochLogger`'s current state.
+
+      Provide an arbitrary number of keyword arguments with numerical
+      values.
+
+      :param tb_write: Boolean or dict of key boolean pairs
+                       specifying whether you also want to write the value to the TensorBoard
+                       logfile. Defaults to ``False``.
+      :type tb_write: Union[bool, dict], optional
+      :param tb_aliases: Dictionary that can be used to set aliases for
+                         the variables you want to store. Defaults to empty :obj:`dict`.
+      :type tb_aliases: dict, optional
+      :param extend: Boolean specifying whether you want to extend the
+                     values to the log buffer. By default ``False`` meaning the values are
+                     appended to the buffer.
+      :type extend: bool, optional
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+
+   .. py:method:: log_to_tb(keys, val=None, with_min_and_max=False, average_only=False, tb_prefix=None, tb_alias=None, global_step=None)
+
+      Log a diagnostic to TensorBoard. This function takes or a list of keys or a
+      key-value pair. If only keys are supplied, averages will be calculated using
+      the new data found in the Loggers internal storage. If a key-value pair is
+      supplied, this pair will be directly logged to TensorBoard.
+
+      :param keys: The name(s) of the diagnostic.
+      :type keys: Union[list[str], str]
+      :param val: A value for the diagnostic.
+      :param with_min_and_max: If ``True``, log min and max values of the
+                               diagnostic.
+      :type with_min_and_max: bool
+      :param average_only: If ``True``, do not log the standard deviation
+                           of the diagnostic.
+      :type average_only: bool
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+
+   .. py:method:: log_tabular(key, val=None, with_min_and_max=False, average_only=False, tb_write=False, tb_prefix=None, tb_alias=None)
+
+      Log a value or possibly the mean/std/min/max values of a diagnostic.
+
+      :param key: The name of the diagnostic. If you are logging a
+                  diagnostic whose state has previously been saved with
+                  :meth:`store`, the key here has to match the key you used there.
+      :type key: str
+      :param val: A value for the diagnostic. If you have previously saved
+                  values for this key via :meth:`store`, do *not* provide a ``val``
+                  here.
+      :param with_min_and_max: If ``True``, log min and max values of the
+                               diagnostic over the epoch.
+      :type with_min_and_max: bool
+      :param average_only: If ``True``, do not log the standard deviation
+                           of the diagnostic over the epoch.
+      :type average_only: bool
+      :param tb_write: Boolean specifying whether you also want to write
+                       the value to the TensorBoard logfile. Defaults to False.
+      :type tb_write: bool, optional
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+
+
+
+   .. py:method:: dump_tabular(*args, **kwargs)
+
+      Small wrapper around the :meth:`Logger.dump_tabular` method which
+      makes sure that the TensorBoard index track dictionary is reset after the table
+      is dumped.
+
+      :param \*args: All args to pass to parent method.
+      :param \*\*kwargs: All kwargs to pass to parent method.
+
+
+
+   .. py:method:: get_stats(key)
+
+      Lets an algorithm ask the logger for mean/std/min/max of a diagnostic.
+
+      :param key: The key for which you want to get the stats.
+      :type key: str
+
+      :returns:
+
+                tuple containing:
+
+                    - mean(:obj:`float`): The current mean value.
+                    - std(:obj:`float`): The current  mean standard deviation.
+                    - min(:obj:`float`): The current mean value.
+                    - max(:obj:`float`): The current mean value.
+      :rtype: (tuple)
+
+
+
+   .. py:method:: _log_tb_diagnostics(key, with_min_and_max=False, average_only=False, tb_prefix=None, tb_alias=None, global_step=None)
+
+      Calculates the diagnostics of a given key from all the new data found in the
+      Loggers internal storage.
+
+      :param key: The name of the diagnostic.
+      :type key: Union[list[str], str]
+      :param with_min_and_max: If ``True``, log min and max values of the
+                               diagnostic.
+      :type with_min_and_max: bool
+      :param average_only: If ``True``, do not log the standard deviation
+                           of the diagnostic.
+      :type average_only: bool
+      :param tb_prefix: A prefix which can be added to group the
+                        variables.
+      :type tb_prefix: str, optional
+      :param tb_alias: A tb alias for the variable you want to store
+                       store. Defaults to empty :obj:`dict`. If not supplied the variable name
+                       is used.
+      :type tb_alias: str, optional
+      :param global_step: Global step value to record. Uses internal step
+                          counter if global step is not supplied.
+      :type global_step: int, optional
+
+
+

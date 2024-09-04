@@ -1,0 +1,76 @@
+stable_learning_control.utils.serialization_utils
+=================================================
+
+.. py:module:: stable_learning_control.utils.serialization_utils
+
+.. autoapi-nested-parse::
+
+   Module used for serializing json objects.
+
+   .. note::
+       This module was based on
+       `spinningup repository <https://github.com/openai/spinningup/tree/master/spinup/utils/serialization_utils.py>`_.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.serialization_utils.convert_json
+   stable_learning_control.utils.serialization_utils.is_json_serializable
+   stable_learning_control.utils.serialization_utils.save_to_json
+   stable_learning_control.utils.serialization_utils.load_from_json
+
+
+Module Contents
+---------------
+
+.. py:function:: convert_json(obj)
+
+   Convert obj to a version which can be serialised with JSON.
+
+   :param obj: Object which you want to convert to json.
+   :type obj: object
+
+   :returns: Serialised json object.
+   :rtype: object
+
+
+.. py:function:: is_json_serializable(v)
+
+   Check if object can be serialised with JSON.
+
+   :param v: object you want to check.
+   :type v: object
+
+   :returns: Boolean specifying whether the object can be serialised by json.
+   :rtype: bool
+
+
+.. py:function:: save_to_json(input_object, output_filename, output_path)
+
+   Save python object to Json file. This method will serialize the object to
+   JSON, while handling anything which can't be serialized in a graceful way
+   (writing as informative a string as possible).
+
+   :param input_object: The input object you want to save.
+   :type input_object: object
+   :param output_filename: The output filename.
+   :type output_filename: str
+   :param output_path: The output path.
+   :type output_path: str
+
+
+.. py:function:: load_from_json(path)
+
+   Load data from json file.
+
+   :param path: The path of the json file you want to load.
+   :type path: str
+
+   :returns: The Json load object.
+   :rtype: (object)
+
+

@@ -1,0 +1,96 @@
+stable_learning_control.algos.tf2.common.helpers
+================================================
+
+.. py:module:: stable_learning_control.algos.tf2.common.helpers
+
+.. autoapi-nested-parse::
+
+   Several TensorFlow helper functions.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.common.helpers.set_device
+   stable_learning_control.algos.tf2.common.helpers.mlp
+   stable_learning_control.algos.tf2.common.helpers.count_vars
+   stable_learning_control.algos.tf2.common.helpers.rescale
+   stable_learning_control.algos.tf2.common.helpers.full_model_summary
+
+
+Module Contents
+---------------
+
+.. py:function:: set_device(device_type='cpu')
+
+   Sets the computational device given a device type.
+
+   :param device_type: The device type (options: ``cpu``, ``gpu``, ``gpu:0``,
+                       ``gpu:1``, etc.). Defaults to ``cpu``.
+   :type device_type: str
+
+   :returns: The type of device that is used.
+   :rtype: str
+
+
+.. py:function:: mlp(sizes, activation, output_activation=None, name='')
+
+   Create a multi-layered perceptron using TensorFlow.
+
+   :param sizes: The size of each of the layers.
+   :type sizes: list
+   :param activation: The activation
+                      function used for the hidden layers.
+   :type activation: union[:obj:`tf.keras.activations`, :obj:`str`]
+   :param output_activation: The activation function used for the output layers. Defaults to ``None``.
+   :type output_activation: union[:obj:`tf.keras.activations`, :obj:`str`], optional
+   :param name: A nameprefix that is added before the layer name. Defaults
+                to an empty string.
+   :type name: str, optional
+
+   :returns: The multi-layered perceptron.
+   :rtype: tf.keras.Sequential
+
+
+.. py:function:: count_vars(module)
+
+   Returns the total number of parameters of a TensorFlow module.
+
+   :param module: The TensorFlow model.
+   :type module: Union[tf.keras.Model, tf.module]
+
+   :returns: The total number of parameters inside the module.
+   :rtype: numpy.int64
+
+
+.. py:function:: rescale(data, min_bound, max_bound)
+
+   Rescale normalized data (i.e. between ``-1`` and ``1``) to a desired range.
+
+   :param data: Normalized input data.
+   :type data: Union[numpy.ndarray, list]
+   :param min_bound: Array containing the minimum value of
+                     the desired range.
+   :type min_bound: Union[numpy.ndarray, list]
+   :param max_bound: Array containing the maximum value of
+                     the desired range.
+   :type max_bound: Union[numpy.ndarray, list]
+
+   :returns:
+
+             Array which has it values scaled between the min and max
+                 boundaries.
+   :rtype: numpy.ndarray
+
+
+.. py:function:: full_model_summary(model)
+
+   Prints a full summary of all the layers of a TensorFlow model.
+
+   :param layer: The model to print the full summary of.
+   :type layer: :mod:`~tensorflow.keras.layers`
+
+

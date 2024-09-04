@@ -1,0 +1,43 @@
+stable_learning_control.utils.eval_utils
+========================================
+
+.. py:module:: stable_learning_control.utils.eval_utils
+
+.. autoapi-nested-parse::
+
+   Helper functions for evaluating the performance of trained agents.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.eval_utils.test_agent
+
+
+Module Contents
+---------------
+
+.. py:function:: test_agent(policy, env, num_episodes)
+
+   Evaluate the Performance of a agent in a separate test environment.
+
+   :param policy: The policy you want to test.
+   :type policy: Union[torch.nn.Module, tf.Module]
+   :param env: The environment in which you want to test the agent.
+   :type env: :obj:`gym.Env`
+   :param num_episodes: The number of episodes you want to perform in the test
+                        environment.
+   :type num_episodes: int
+
+   :returns:
+
+             tuple containing:
+
+                 - ep_ret(:obj:`list`): Episode retentions.
+                 - ep_len(:obj:`list`): Episode lengths.
+   :rtype: tuple
+
+

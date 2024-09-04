@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.algos.pytorch.common.get_lr_scheduler &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="stable_learning_control.algos.pytorch.common.helpers" href="../helpers/index.html" />
+    <link rel="prev" title="stable_learning_control.algos.pytorch.common.buffers" href="../buffers/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html">
+            
+              <img src="../../../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">stable_learning_control</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">stable_learning_control.algos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../common/index.html">stable_learning_control.common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../disturbers/index.html">stable_learning_control.disturbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../utils/index.html">stable_learning_control.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">stable_learning_control</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">stable_learning_control.algos</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">stable_learning_control.algos.pytorch</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">stable_learning_control.algos.pytorch.common</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.algos.pytorch.common.get_lr_scheduler</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/autoapi/stable_learning_control/algos/pytorch/common/get_lr_scheduler/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-stable_learning_control.algos.pytorch.common.get_lr_scheduler">
+<span id="stable-learning-control-algos-pytorch-common-get-lr-scheduler"></span><h1>stable_learning_control.algos.pytorch.common.get_lr_scheduler<a class="headerlink" href="#module-stable_learning_control.algos.pytorch.common.get_lr_scheduler" title="Permalink to this heading"></a></h1>
+<p>Contains functions used for creating Pytorch learning rate schedulers.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.ConstantLRScheduler" title="stable_learning_control.algos.pytorch.common.get_lr_scheduler.ConstantLRScheduler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantLRScheduler</span></code></a></p></td>
+<td><p>A learning rate scheduler that keeps the learning rate constant.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_exponential_decay_rate" title="stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_exponential_decay_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_exponential_decay_rate</span></code></a>(lr_start, lr_final, steps)</p></td>
+<td><p>Calculates the exponential decay rate needed to go from a initial learning rate</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_linear_decay_rate" title="stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_linear_decay_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linear_decay_rate</span></code></a>(lr_init, lr_final, steps)</p></td>
+<td><p>Returns a linear decay factor (G) that enables a learning rate to transition</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_lr_scheduler" title="stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_lr_scheduler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_lr_scheduler</span></code></a>(optimizer, decaying_lr_type, ...)</p></td>
+<td><p>Creates a learning rate scheduler.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.estimate_step_learning_rate" title="stable_learning_control.algos.pytorch.common.get_lr_scheduler.estimate_step_learning_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_step_learning_rate</span></code></a>(lr_scheduler, lr_start, ...)</p></td>
+<td><p>Estimates the learning rate at a given step.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="stable_learning_control.algos.pytorch.common.get_lr_scheduler.ConstantLRScheduler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.pytorch.common.get_lr_scheduler.</span></span><span class="sig-name descname"><span class="pre">ConstantLRScheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/pytorch/common/get_lr_scheduler.html#ConstantLRScheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.ConstantLRScheduler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LambdaLR.html#torch.optim.lr_scheduler.LambdaLR" title="(in PyTorch v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.LambdaLR</span></code></a></p>
+<p>A learning rate scheduler that keeps the learning rate constant.</p>
+<p>Initialize the constant learning rate scheduler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>optimizer</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/optim.html#torch.optim.Optimizer" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.optim.Optimizer</span></code></a>) – The wrapped optimizer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_exponential_decay_rate">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.pytorch.common.get_lr_scheduler.</span></span><span class="sig-name descname"><span class="pre">get_exponential_decay_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lr_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_final</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/pytorch/common/get_lr_scheduler.html#get_exponential_decay_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_exponential_decay_rate" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the exponential decay rate needed to go from a initial learning rate
+to a final learning rate in N steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The starting learning rate.</p></li>
+<li><p><strong>lr_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The final learning rate.</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of steps.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The exponential decay rate (high precision).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.12)">decimal.Decimal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_linear_decay_rate">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.pytorch.common.get_lr_scheduler.</span></span><span class="sig-name descname"><span class="pre">get_linear_decay_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lr_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_final</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/pytorch/common/get_lr_scheduler.html#get_linear_decay_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_linear_decay_rate" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a linear decay factor (G) that enables a learning rate to transition
+from an initial value (<cite>lr_init</cite>) at step 0 to a final value (<cite>lr_final</cite>) at a
+specified step (N). This decay factor is compatible with the
+<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LambdaLR.html#torch.optim.lr_scheduler.LambdaLR" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.LambdaLR</span></code></a> scheduler. The decay factor is calculated
+using the following formula:</p>
+<div class="math">
+<p><img src="../../../../../../_images/math/f228bbf55f78035cb000b955360c529ed39e28a4.svg" alt="lr_{terminal} = lr_{init} * (1.0 - G \cdot step)"/></p>
+</div><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The initial learning rate.</p></li>
+<li><p><strong>lr_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The final learning rate you want to achieve.</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of steps/epochs over which the learning rate should
+decay. This is equal to epochs -1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Linear learning rate decay factor (G).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.12)">decimal.Decimal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_lr_scheduler">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.pytorch.common.get_lr_scheduler.</span></span><span class="sig-name descname"><span class="pre">get_lr_scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decaying_lr_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_final</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/pytorch/common/get_lr_scheduler.html#get_lr_scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_lr_scheduler" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a learning rate scheduler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="(in PyTorch v2.4)"><em>torch.optim.Adam</em></a>) – Wrapped optimizer.</p></li>
+<li><p><strong>decaying_lr_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The learning rate decay type that is used
+(options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code> and <code class="docutils literal notranslate"><span class="pre">constant</span></code>).</p></li>
+<li><p><strong>lr_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Initial learning rate.</p></li>
+<li><p><strong>lr_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Final learning rate.</p></li>
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of steps/epochs used in the training. This
+includes the starting step/epoch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A learning rate scheduler object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pytorch.org/docs/stable/optim.html#module-torch.optim.lr_scheduler" title="(in PyTorch v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>See the <a class="reference external" href="https://pytorch.org/docs/stable/optim.html">pytorch</a> documentation on how to
+implement other decay options.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.pytorch.common.get_lr_scheduler.estimate_step_learning_rate">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.pytorch.common.get_lr_scheduler.</span></span><span class="sig-name descname"><span class="pre">estimate_step_learning_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_final</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_after</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/pytorch/common/get_lr_scheduler.html#estimate_step_learning_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.pytorch.common.get_lr_scheduler.estimate_step_learning_rate" title="Permalink to this definition"></a></dt>
+<dd><p>Estimates the learning rate at a given step.</p>
+<p>This function estimates the learning rate for a specific training step. It differs
+from the <cite>get_last_lr</cite> method of the learning rate scheduler, which returns the
+learning rate at the last scheduler step, not necessarily the current training step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lr_scheduler</strong> (<em>torch.optim.lr_scheduler</em>) – The learning rate scheduler.</p></li>
+<li><p><strong>lr_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The initial learning rate.</p></li>
+<li><p><strong>update_after</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The step number after which the learning rate should start
+decreasing.</p></li>
+<li><p><strong>lr_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – The final learning rate.</p></li>
+<li><p><strong>total_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The total number of steps/epochs in the training process.
+Excludes the initial step.</p></li>
+<li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The current step number. Excludes the initial step.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The learning rate at the given step.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../buffers/index.html" class="btn btn-neutral float-left" title="stable_learning_control.algos.pytorch.common.buffers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../helpers/index.html" class="btn btn-neutral float-right" title="stable_learning_control.algos.pytorch.common.helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

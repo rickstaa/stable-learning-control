@@ -1,0 +1,92 @@
+stable_learning_control.algos.tf2.common.bijectors
+==================================================
+
+.. py:module:: stable_learning_control.algos.tf2.common.bijectors
+
+.. autoapi-nested-parse::
+
+   Module that contains several TensorFlow
+   `bijectors <https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector>`_.
+   For more information on Bijectors see
+   `the TensorFlow documentation <https://www.tensorflow.org/probability/api_docs/python/tfp/bijectors/Bijector>`_ and
+   `this stackoverflow question <https://stackoverflow.com/questions/56425301/what-is-bijectors-in-layman-terms-in-tensorflow-probability>`_.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.common.bijectors.SquashBijector
+
+
+Module Contents
+---------------
+
+.. py:class:: SquashBijector(validate_args=False, name='tanh')
+
+   Bases: :py:obj:`tensorflow_probability.bijectors.Bijector`
+
+
+   A squash bijector used to keeps track of the distribution properties when the
+   distribution is transformed using the tanh squash function.
+
+   Initiate squashed bijector object.
+
+   :param validate_args: Whether to validate input with asserts. If
+                         validate_args is False, and the inputs are invalid, correct behavior is
+                         not guaranteed. Defaults to False.
+   :type validate_args: bool, optional
+   :param name: The name to give Ops created by the initialiser.
+                Defaults to "tanh".
+   :type name: str, optional
+
+
+   .. py:method:: _forward(x)
+
+      Forward function. Useful for turning one random outcome into another random
+      outcome from a different distribution.
+
+      :param x: The input to the 'forward' evaluation.
+      :type x: structure
+
+      :returns: Returns the forward Bijector evaluation, i.e., X = g(Y).
+      :rtype: structure
+
+
+
+   .. py:method:: _inverse(y)
+
+      Inverse bijection function. Useful for 'reversing' a transformation to
+      compute one probability in terms of another.
+
+      :param y: The input to the 'inverse' evaluation.
+      :type y: structure
+
+      :returns: Return tensor if this bijector is injective. If not
+                injective, returns the k-tuple containing the unique k points (x1, ..., xk)
+                such that g(xi) = y.
+      :rtype: structure
+
+
+
+   .. py:method:: _forward_log_det_jacobian(x)
+
+      The log of the absolute value of the determinant of the matrix of all
+      first-order partial derivatives of the inverse function. Useful for inverting a
+      transformation to compute one probability in terms of another. Geometrically,
+      the Jacobian determinant is the volume of the transformation and is used to
+      scale the probability.
+
+      :param x: The input to the 'forward' Jacobian determinant evaluation.
+      :type x: structure
+
+      :returns:
+
+                Result tensor if this bijector is injective. If not
+                    injective this is not implemented.
+      :rtype: structure
+
+
+

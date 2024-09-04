@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.utils.log_utils.helpers &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.utils.log_utils.helpers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for stable_learning_control.utils.log_utils.helpers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Several logging related helper functions.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">gymnasium.utils</span> <span class="kn">import</span> <span class="n">colorize</span> <span class="k">as</span> <span class="n">gym_colorize</span>
+
+<span class="kn">from</span> <span class="nn">stable_learning_control.user_config</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DEFAULT_DATA_DIR</span><span class="p">,</span>
+    <span class="n">DEFAULT_STD_OUT_TYPE</span><span class="p">,</span>
+    <span class="n">DEFAULT_WANDB_JOB_TYPE</span><span class="p">,</span>
+    <span class="n">DEFAULT_WANDB_PROJECT</span><span class="p">,</span>
+    <span class="n">FORCE_DATESTAMP</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">stable_learning_control.utils.mpi_utils.mpi_tools</span> <span class="kn">import</span> <span class="n">proc_id</span>
+
+<div class="viewcode-block" id="LOG_TYPES"><a class="viewcode-back" href="../../../../autoapi/stable_learning_control/utils/log_utils/helpers/index.html#stable_learning_control.utils.log_utils.helpers.LOG_TYPES">[docs]</a><span class="n">LOG_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO: &quot;</span><span class="p">},</span>
+    <span class="s2">&quot;warning&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;WARNING: &quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;ERROR: &quot;</span><span class="p">},</span>
+<span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="colorize"><a class="viewcode-back" href="../../../../autoapi/stable_learning_control/utils/log_utils/index.html#stable_learning_control.utils.log_utils.helpers.colorize">[docs]</a><span class="k">def</span> <span class="nf">colorize</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">highlight</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Colorize a string.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        This function wraps the :meth:`gym.utils.colorize` function to make sure that it</span>
+<span class="sd">        also works with empty color strings.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The string you want to colorize.</span>
+<span class="sd">        color (str): The color you want to use.</span>
+<span class="sd">        bold (bool, optional): Whether you want the text to be bold. Defaults to</span>
+<span class="sd">            ``False``.</span>
+<span class="sd">        highlight (bool, optional):  Whether you want to highlight the text. Defaults to</span>
+<span class="sd">            ``False``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Colorized string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">color</span><span class="p">:</span>  <span class="c1"># If not empty.</span>
+        <span class="k">return</span> <span class="n">gym_colorize</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">bold</span><span class="p">,</span> <span class="n">highlight</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">string</span></div>
+
+
+<div class="viewcode-block" id="log_to_std_out"><a class="viewcode-back" href="../../../../autoapi/stable_learning_control/utils/log_utils/index.html#stable_learning_control.utils.log_utils.helpers.log_to_std_out">[docs]</a><span class="k">def</span> <span class="nf">log_to_std_out</span><span class="p">(</span>
+    <span class="n">msg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">highlight</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print a colorized message to stdout.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        msg (str): Message you want to log.</span>
+<span class="sd">        color (str, optional): Color you want the message to have. Defaults to</span>
+<span class="sd">            ``&quot;&quot;``.</span>
+<span class="sd">        bold (bool, optional): Whether you want the text to be bold text has to be</span>
+<span class="sd">            bold.</span>
+<span class="sd">        highlight (bool, optional):  Whether you want to highlight the text.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">        type (str, optional): The log message type. Options are: ``info``, ``warning``</span>
+<span class="sd">            and ``error``. Defaults to ``None``.</span>
+<span class="sd">        *args: All args to pass to the print function.</span>
+<span class="sd">        **kwargs: All kwargs to pass to the print function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">proc_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">LOG_TYPES</span><span class="p">[</span><span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">LOG_TYPES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">else</span> <span class="n">color</span>
+        <span class="p">)</span>
+        <span class="n">bold</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">LOG_TYPES</span><span class="p">[</span><span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="s2">&quot;bold&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">LOG_TYPES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">else</span> <span class="n">bold</span>
+        <span class="p">)</span>
+        <span class="n">highlight</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">LOG_TYPES</span><span class="p">[</span><span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="s2">&quot;highlight&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">LOG_TYPES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">else</span> <span class="n">highlight</span>
+        <span class="p">)</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">LOG_TYPES</span><span class="p">[</span><span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">LOG_TYPES</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">colorize</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)),</span> <span class="n">color</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="n">bold</span><span class="p">,</span> <span class="n">highlight</span><span class="o">=</span><span class="n">highlight</span><span class="p">),</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="setup_logger_kwargs"><a class="viewcode-back" href="../../../../utils/loggers.html#stable_learning_control.utils.log_utils.helpers.setup_logger_kwargs">[docs]</a><span class="k">def</span> <span class="nf">setup_logger_kwargs</span><span class="p">(</span>
+    <span class="n">exp_name</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">save_checkpoints</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">use_tensorboard</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">tb_log_freq</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span>
+    <span class="n">use_wandb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">wandb_job_type</span><span class="o">=</span><span class="n">DEFAULT_WANDB_JOB_TYPE</span><span class="p">,</span>
+    <span class="n">wandb_project</span><span class="o">=</span><span class="n">DEFAULT_WANDB_PROJECT</span><span class="p">,</span>
+    <span class="n">wandb_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">wandb_run_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">verbose_fmt</span><span class="o">=</span><span class="n">DEFAULT_STD_OUT_TYPE</span><span class="p">,</span>
+    <span class="n">verbose_vars</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">data_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">datestamp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets up the output_dir for a logger and returns a dict for logger kwargs.</span>
+
+<span class="sd">    If no seed is given and datestamp is false,</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        output_dir = data_dir/exp_name</span>
+
+<span class="sd">    If a seed is given and datestamp is false,</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        output_dir = data_dir/exp_name/exp_name_s[seed]</span>
+
+<span class="sd">    If datestamp is true, amend to</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        output_dir = data_dir/YY-MM-DD_exp_name/YY-MM-DD_HH-MM-SS_exp_name_s[seed]</span>
+
+<span class="sd">    You can force datestamp=True by setting ``FORCE_DATESTAMP=True`` in</span>
+<span class="sd">    ``stable_learning_control/user_config.py``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        exp_name (str): Name for experiment.</span>
+<span class="sd">        seed (int, optional): Seed for random number generators used by experiment.</span>
+<span class="sd">        save_checkpoints (bool, optional): Save checkpoints during training.</span>
+<span class="sd">            Defaults to ``False``.</span>
+<span class="sd">        use_tensorboard (bool, optional): Whether you want to use TensorBoard. Defaults</span>
+<span class="sd">            to ``True``.</span>
+<span class="sd">        tb_log_freq (str, optional): The TensorBoard log frequency. Options are ``low``</span>
+<span class="sd">            (Recommended: logs at every epoch) and ``high`` (logs at every SGD update &quot;</span>
+<span class="sd">            batch). Defaults to ``low`` since this is less resource intensive.</span>
+<span class="sd">        use_wandb (bool, optional): Whether you want to use Weights &amp; Biases. Defaults</span>
+<span class="sd">            to ``False``.</span>
+<span class="sd">        wandb_job_type (str, optional): The Weights &amp; Biases job type. Defaults to</span>
+<span class="sd">            ``None``.</span>
+<span class="sd">        wandb_project (str, optional): The name of the Weights &amp; Biases project you</span>
+<span class="sd">            want to log to. Defaults to ``None``.</span>
+<span class="sd">        wandb_group (str, optional): The name of the Weights &amp; Biases group you want to</span>
+<span class="sd">            assign the run to. Defaults to ``None``.</span>
+<span class="sd">        wandb_run_name (str, optional): The name of the Weights &amp; Biases run. Defaults</span>
+<span class="sd">            to ``None`` which means that the run name is automatically generated.</span>
+<span class="sd">        quiet (bool, optional): Whether you want to suppress logging of the diagnostics</span>
+<span class="sd">            to the stdout. Defaults to ``False``.</span>
+<span class="sd">        verbose_fmt (str, optional): The format in which the diagnostics are</span>
+<span class="sd">            displayed to the terminal. Options are ``table`` which supplies them as a</span>
+<span class="sd">            table and ``line`` which prints them in one line. Defaults to ``line``.</span>
+<span class="sd">        verbose_vars (list, optional): A list of variables you want to log to the</span>
+<span class="sd">            stdout. By default all variables are logged.</span>
+<span class="sd">        data_dir (str, optional): Path to folder where results should be saved.</span>
+<span class="sd">            Default is the ``DEFAULT_DATA_DIR`` in</span>
+<span class="sd">            ``stable_learning_control/user_config.py``. Defaults to ``None``.</span>
+<span class="sd">        datestamp (bool, optional): Whether to include a date and timestamp in the</span>
+<span class="sd">            name of the save directory. Defaults to ``False``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: logger_kwargs</span>
+<span class="sd">            A dict containing output_dir and exp_name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Datestamp forcing.</span>
+    <span class="n">datestamp</span> <span class="o">=</span> <span class="n">datestamp</span> <span class="ow">or</span> <span class="n">FORCE_DATESTAMP</span>
+
+    <span class="c1"># Make base path.</span>
+    <span class="n">ymd_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">datestamp</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">relpath</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">ymd_time</span><span class="p">,</span> <span class="n">exp_name</span><span class="p">])</span>
+
+    <span class="c1"># Make a seed-specific subfolder in the experiment directory.</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">datestamp</span><span class="p">:</span>
+            <span class="n">hms_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H-%M-%S&quot;</span><span class="p">)</span>
+            <span class="n">subfolder</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">hms_time</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">exp_name</span><span class="p">,</span> <span class="s2">&quot;_s&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">seed</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subfolder</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">exp_name</span><span class="p">,</span> <span class="s2">&quot;_s&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">seed</span><span class="p">)])</span>
+        <span class="n">relpath</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">relpath</span><span class="p">,</span> <span class="n">subfolder</span><span class="p">)</span>
+
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="ow">or</span> <span class="n">DEFAULT_DATA_DIR</span>
+    <span class="n">logger_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">relpath</span><span class="p">),</span>
+        <span class="n">exp_name</span><span class="o">=</span><span class="n">exp_name</span><span class="p">,</span>
+        <span class="n">save_checkpoints</span><span class="o">=</span><span class="n">save_checkpoints</span><span class="p">,</span>
+        <span class="n">use_tensorboard</span><span class="o">=</span><span class="n">use_tensorboard</span><span class="p">,</span>
+        <span class="n">use_wandb</span><span class="o">=</span><span class="n">use_wandb</span><span class="p">,</span>
+        <span class="n">wandb_job_type</span><span class="o">=</span><span class="n">wandb_job_type</span><span class="p">,</span>
+        <span class="n">wandb_project</span><span class="o">=</span><span class="n">wandb_project</span><span class="p">,</span>
+        <span class="n">wandb_group</span><span class="o">=</span><span class="n">wandb_group</span><span class="p">,</span>
+        <span class="n">wandb_run_name</span><span class="o">=</span><span class="n">wandb_run_name</span><span class="p">,</span>
+        <span class="n">tb_log_freq</span><span class="o">=</span><span class="n">tb_log_freq</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
+        <span class="n">verbose_fmt</span><span class="o">=</span><span class="n">verbose_fmt</span><span class="p">,</span>
+        <span class="n">verbose_vars</span><span class="o">=</span><span class="n">verbose_vars</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">logger_kwargs</span></div>
+
+
+<div class="viewcode-block" id="dict_to_mdtable"><a class="viewcode-back" href="../../../../autoapi/stable_learning_control/utils/log_utils/index.html#stable_learning_control.utils.log_utils.helpers.dict_to_mdtable">[docs]</a><span class="k">def</span> <span class="nf">dict_to_mdtable</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a markdown table.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d (dict): The dictionary you want to convert.</span>
+<span class="sd">        key (str, optional): The name of the key column. Defaults to ``&quot;Name&quot;``.</span>
+<span class="sd">        val (str, optional): The name of the value column. Defaults to ``&quot;Value&quot;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The markdown table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2"> |&quot;</span><span class="p">]</span>
+    <span class="n">rows</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;|--|--|&quot;</span><span class="p">]</span>
+    <span class="n">rows</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> |&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="s2">&quot;  </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

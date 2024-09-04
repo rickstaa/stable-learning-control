@@ -1,0 +1,62 @@
+stable_learning_control.utils.mpi_utils.mpi_tf2
+===============================================
+
+.. py:module:: stable_learning_control.utils.mpi_utils.mpi_tf2
+
+.. autoapi-nested-parse::
+
+   Helper methods for managing TF2 MPI processes.
+
+   .. note::
+       This module is not yet translated to TF2. It is not used by any of the current
+       algorithms, but is kept here for future reference.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.mpi_utils.mpi_tf2.MpiAdamOptimizer
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.mpi_utils.mpi_tf2.flat_concat
+   stable_learning_control.utils.mpi_utils.mpi_tf2.assign_params_from_flat
+   stable_learning_control.utils.mpi_utils.mpi_tf2.sync_params
+   stable_learning_control.utils.mpi_utils.mpi_tf2.sync_all_params
+
+
+Module Contents
+---------------
+
+.. py:function:: flat_concat(xs)
+
+.. py:function:: assign_params_from_flat(x, params)
+
+.. py:function:: sync_params(params)
+
+.. py:function:: sync_all_params()
+
+   Sync all tf variables across MPI processes.
+
+
+.. py:class:: MpiAdamOptimizer(**kwargs)
+
+   Bases: :py:obj:`object`
+
+
+   Adam optimizer that averages gradients across MPI processes.
+
+   The compute_gradients method is taken from Baselines `MpiAdamOptimizer`_.
+   For documentation on method arguments, see the TensorFlow docs page for
+   the base :class:`~tf.keras.optimizers.AdamOptimizer`.
+
+   .. _`MpiAdamOptimizer`: https://github.com/openai/baselines/tree/master/baselines/common/mpi_adam_optimizer.py
+
+

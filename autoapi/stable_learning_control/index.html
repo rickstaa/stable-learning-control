@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="stable_learning_control.algos" href="algos/index.html" />
+    <link rel="prev" title="API Reference" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">stable_learning_control</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="algos/index.html">stable_learning_control.algos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="common/index.html">stable_learning_control.common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="disturbers/index.html">stable_learning_control.disturbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="utils/index.html">stable_learning_control.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="run/index.html">stable_learning_control.run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="user_config/index.html">stable_learning_control.user_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="version/index.html">stable_learning_control.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#package-contents">Package Contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#stable_learning_control.lac_pytorch"><code class="docutils literal notranslate"><span class="pre">lac_pytorch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stable_learning_control.latc_pytorch"><code class="docutils literal notranslate"><span class="pre">latc_pytorch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stable_learning_control.sac_pytorch"><code class="docutils literal notranslate"><span class="pre">sac_pytorch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stable_learning_control.tf_installed"><code class="docutils literal notranslate"><span class="pre">tf_installed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stable_learning_control.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stable_learning_control.__version_tuple__"><code class="docutils literal notranslate"><span class="pre">__version_tuple__</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">stable_learning_control</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/autoapi/stable_learning_control/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-stable_learning_control">
+<span id="stable-learning-control"></span><h1>stable_learning_control<a class="headerlink" href="#module-stable_learning_control" title="Permalink to this heading"></a></h1>
+<p>Module that Initialises the stable_learning_control package.</p>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="algos/index.html">stable_learning_control.algos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common/index.html">stable_learning_control.common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="disturbers/index.html">stable_learning_control.disturbers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">stable_learning_control.utils</a></li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="run/index.html">stable_learning_control.run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_config/index.html">stable_learning_control.user_config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version/index.html">stable_learning_control.version</a></li>
+</ul>
+</div>
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.__version__" title="stable_learning_control.__version__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__version__</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.__version_tuple__" title="stable_learning_control.__version_tuple__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__version_tuple__</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.lac_pytorch" title="stable_learning_control.lac_pytorch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lac_pytorch</span></code></a>(env_fn[, actor_critic, ac_kwargs, ...])</p></td>
+<td><p>Trains the LAC algorithm in a given environment.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.latc_pytorch" title="stable_learning_control.latc_pytorch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latc_pytorch</span></code></a>(env_fn[, actor_critic])</p></td>
+<td><p>Trains the LATC algorithm in a given environment.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.sac_pytorch" title="stable_learning_control.sac_pytorch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sac_pytorch</span></code></a>(env_fn[, actor_critic, ac_kwargs, ...])</p></td>
+<td><p>Trains the SAC algorithm in a given environment.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.tf_installed" title="stable_learning_control.tf_installed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tf_installed</span></code></a>()</p></td>
+<td><p>Checks if TensorFlow is installed.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.lac_pytorch">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.</span></span><span class="sig-name descname"><span class="pre">lac_pytorch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_critic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict(hidden_sizes={'actor':</span> <span class="pre">[256]</span> <span class="pre">*</span> <span class="pre">2,</span> <span class="pre">'critic':</span> <span class="pre">[256]</span> <span class="pre">*</span> <span class="pre">2},</span> <span class="pre">activation=nn.ReLU,</span> <span class="pre">output_activation=nn.ReLU)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'minimize'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_ep_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_per_epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_per_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_test_episodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha3</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polyak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.995</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_entropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptive_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_labda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_a_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_c_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_alpha_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_labda_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DEFAULT_DECAY_TYPE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_a_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_c_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_alpha_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_labda_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_decay_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DEFAULT_DECAY_REFERENCE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replay_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">int(1000000.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stable_learning_control.lac_pytorch" title="Permalink to this definition"></a></dt>
+<dd><p>Trains the LAC algorithm in a given environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_fn</strong> – A function which creates a copy of the environment. The environment
+must satisfy the gymnasium API.</p></li>
+<li><p><strong>actor_critic</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><em>torch.nn.Module</em></a><em>, </em><em>optional</em>) – <p>The constructor method for a
+Torch Module with an <code class="docutils literal notranslate"><span class="pre">act</span></code> method, a <code class="docutils literal notranslate"><span class="pre">pi</span></code> module and several
+<code class="docutils literal notranslate"><span class="pre">Q</span></code> or <code class="docutils literal notranslate"><span class="pre">L</span></code> modules. The <code class="docutils literal notranslate"><span class="pre">act</span></code> method and <code class="docutils literal notranslate"><span class="pre">pi</span></code> module should
+accept batches of observations as inputs, and the <code class="docutils literal notranslate"><span class="pre">Q*</span></code> and <code class="docutils literal notranslate"><span class="pre">L</span></code>
+modules should accept a batch of observations and a batch of actions as
+inputs. When called, these modules should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>Output Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">act</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Numpy array of actions for each</div>
+<div class="line">observation.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Q*/L</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing one current estimate</div>
+<div class="line">of <code class="docutils literal notranslate"><span class="pre">Q*/L</span></code> for the provided</div>
+<div class="line">observations and actions. (Critical:</div>
+<div class="line">make sure to flatten this!)</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">pi</span></code> should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing actions from policy</div>
+<div class="line">given observations.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">logp_pi</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing log probabilities of</div>
+<div class="line">actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>. Importantly:</div>
+<div class="line">gradients should be able to flow back</div>
+<div class="line">into <code class="docutils literal notranslate"><span class="pre">a</span></code>.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Defaults to
+<a class="reference internal" href="algos/pytorch/policies/lyapunov_actor_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorCritic</span></code></a></p>
+</p></li>
+<li><p><strong>ac_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – <p>Any kwargs appropriate for the ActorCritic
+object you provided to LAC. Defaults to:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Kwarg</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hidden_sizes_actor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">256</span> <span class="pre">x</span> <span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hidden_sizes_critic</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">256</span> <span class="pre">x</span> <span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">activation</span></code></p></td>
+<td><p><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ReLU</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">output_activation</span></code></p></td>
+<td><p><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ReLU</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
+<li><p><strong>opt_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The optimization type you want to use. Options
+<code class="docutils literal notranslate"><span class="pre">maximize</span></code> and <code class="docutils literal notranslate"><span class="pre">minimize</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">maximize</span></code>.</p></li>
+<li><p><strong>max_ep_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum length of trajectory / episode /
+rollout. Defaults to the environment maximum.</p></li>
+<li><p><strong>epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of epochs to run and train agent. Defaults
+to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p><strong>steps_per_epoch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of steps of interaction
+(state-action pairs) for the agent and the environment in each epoch.
+Defaults to <code class="docutils literal notranslate"><span class="pre">2048</span></code>.</p></li>
+<li><p><strong>start_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of steps for uniform-random action
+selection, before running real policy. Helps exploration. Defaults to
+<code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><strong>update_every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of env interactions that should elapse
+between gradient descent updates. Defaults to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p><strong>update_after</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of env interactions to collect before
+starting to do gradient descent updates. Ensures replay buffer
+is full enough for useful updates. Defaults to <code class="docutils literal notranslate"><span class="pre">1000</span></code>.</p></li>
+<li><p><strong>steps_per_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of gradient descent steps that are
+performed for each gradient descent update. This determines the ratio of
+env steps to gradient steps (i.e. <code class="xref py py-obj docutils literal notranslate"><span class="pre">update_every</span></code>/
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">steps_per_update</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p><strong>num_test_episodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of episodes used to test the
+deterministic policy at the end of each epoch. This is used for logging
+the performance. Defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Entropy regularization coefficient (Equivalent to
+inverse of reward scale in the original SAC paper). Defaults to
+<code class="docutils literal notranslate"><span class="pre">0.99</span></code>.</p></li>
+<li><p><strong>alpha3</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The Lyapunov constraint error boundary. Defaults
+to <code class="docutils literal notranslate"><span class="pre">0.2</span></code>.</p></li>
+<li><p><strong>labda</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The Lyapunov Lagrance multiplier. Defaults to
+<code class="docutils literal notranslate"><span class="pre">0.99</span></code>.</p></li>
+<li><p><strong>gamma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Discount factor. (Always between 0 and 1.).
+Defaults to <code class="docutils literal notranslate"><span class="pre">0.99</span></code>.</p></li>
+<li><p><strong>polyak</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – <p>Interpolation factor in polyak averaging for
+target networks. Target networks are updated towards main networks
+according to:</p>
+<div class="math">
+<p><img src="../../_images/math/a870a04782c115a9eb9eca78c12004e4b075c3d9.svg" alt="\theta_{\text{targ}} \leftarrow
+\rho \theta_{\text{targ}} + (1-\rho) \theta"/></p>
+</div><p>where <img class="math" src="../../_images/math/2fbecaad8bd4b240f53ad914202698a230a98713.svg" alt="\rho"/> is polyak (Always between 0 and 1, usually close to 1.).
+In some papers <img class="math" src="../../_images/math/2fbecaad8bd4b240f53ad914202698a230a98713.svg" alt="\rho"/> is defined as (1 - <img class="math" src="../../_images/math/5a42b9d040dc41318429f68d53cd32fdbde54393.svg" alt="\tau"/>) where
+<img class="math" src="../../_images/math/5a42b9d040dc41318429f68d53cd32fdbde54393.svg" alt="\tau"/> is the soft replacement factor. Defaults to <code class="docutils literal notranslate"><span class="pre">0.995</span></code>.</p>
+</p></li>
+<li><p><strong>target_entropy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – <p>Initial target entropy used while learning
+the entropy temperature (alpha). Defaults to the
+maximum information (bits) contained in action space. This can be
+calculated according to :</p>
+<div class="math">
+<p><img src="../../_images/math/2a0fb232d73f170ee01e8bc9cfa646b44e64488c.svg" alt="-{\prod }_{i=0}^{n}action\_di{m}_{i}\phantom{\rule{0ex}{0ex}}"/></p>
+</div></p></li>
+<li><p><strong>adaptive_temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Enabled Automating Entropy Adjustment
+for maximum Entropy RL_learning.</p></li>
+<li><p><strong>lr_a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used for the actor. Defaults to
+<code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
+<li><p><strong>lr_c</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used for the (lyapunov) critic.
+Defaults to <code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
+<li><p><strong>lr_alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used for the entropy temperature.
+Defaults to <code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
+<li><p><strong>lr_labda</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used for the Lyapunov Lagrance
+multiplier. Defaults to <code class="docutils literal notranslate"><span class="pre">3e-4</span></code>.</p></li>
+<li><p><strong>lr_a_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The final actor learning rate that is achieved
+at the end of the training. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-10</span></code>.</p></li>
+<li><p><strong>lr_c_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The final critic learning rate that is achieved
+at the end of the training. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-10</span></code>.</p></li>
+<li><p><strong>lr_alpha_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The final alpha learning rate that is
+achieved at the end of the training. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-10</span></code>.</p></li>
+<li><p><strong>lr_labda_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The final labda learning rate that is
+achieved at the end of the training. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-10</span></code>.</p></li>
+<li><p><strong>lr_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used (options
+are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code> and <code class="docutils literal notranslate"><span class="pre">constant</span></code>). Defaults to
+<code class="docutils literal notranslate"><span class="pre">linear</span></code>.Can be overridden by the specific learning rate decay types.</p></li>
+<li><p><strong>lr_a_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used for
+the actor learning rate (options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code> and
+<code class="docutils literal notranslate"><span class="pre">constant</span></code>). If not specified, the general learning rate decay type is used.</p></li>
+<li><p><strong>lr_c_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used for
+the critic learning rate (options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code> and
+<code class="docutils literal notranslate"><span class="pre">constant</span></code>). If not specified, the general learning rate decay type is used.</p></li>
+<li><p><strong>lr_alpha_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used
+for the alpha learning rate (options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code>
+and <code class="docutils literal notranslate"><span class="pre">constant</span></code>). If not specified, the general learning rate decay type is used.</p></li>
+<li><p><strong>lr_labda_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used
+for the labda learning rate (options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code>
+and <code class="docutils literal notranslate"><span class="pre">constant</span></code>). If not specified, the general learning rate decay type is used.</p></li>
+<li><p><strong>lr_decay_ref</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The reference variable that is used for decaying
+the learning rate (options: <code class="docutils literal notranslate"><span class="pre">epoch</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">epoch</span></code>.</p></li>
+<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Minibatch size for SGD. Defaults to <code class="docutils literal notranslate"><span class="pre">256</span></code>.</p></li>
+<li><p><strong>replay_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum length of replay buffer. Defaults to
+<code class="docutils literal notranslate"><span class="pre">1e6</span></code>.</p></li>
+<li><p><strong>horizon_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The length of the finite-horizon used for the
+Lyapunov Critic target. Defaults to <code class="docutils literal notranslate"><span class="pre">0</span></code> meaning the infinite-horizon
+bellman backup is used.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Seed for random number generators. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The device the networks are placed on (options: <code class="docutils literal notranslate"><span class="pre">cpu</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu:0</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu:1</span></code>, etc.). Defaults to <code class="docutils literal notranslate"><span class="pre">cpu</span></code>.</p></li>
+<li><p><strong>logger_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Keyword args for EpochLogger.</p></li>
+<li><p><strong>save_freq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – How often (in terms of gap between epochs) to save
+the current policy and value function.</p></li>
+<li><p><strong>start_policy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path of a already trained policy to use as the starting
+point for the training. By default a new policy is created.</p></li>
+<li><p><strong>export</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to export the model as a <code class="docutils literal notranslate"><span class="pre">TorchScript</span></code> such
+that it can be deployed on hardware. By default <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>policy (<code class="xref py py-class docutils literal notranslate"><span class="pre">LAC</span></code>): The trained actor-critic policy.</p></li>
+<li><p>replay_buffer (union[<a class="reference internal" href="algos/pytorch/common/buffers/index.html#stable_learning_control.algos.pytorch.common.buffers.ReplayBuffer" title="stable_learning_control.algos.pytorch.common.buffers.ReplayBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReplayBuffer</span></code></a>, <a class="reference internal" href="algos/pytorch/common/buffers/index.html#stable_learning_control.algos.pytorch.common.buffers.FiniteHorizonReplayBuffer" title="stable_learning_control.algos.pytorch.common.buffers.FiniteHorizonReplayBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">FiniteHorizonReplayBuffer</span></code></a>]):
+The replay buffer used during training.</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.latc_pytorch">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.</span></span><span class="sig-name descname"><span class="pre">latc_pytorch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_critic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stable_learning_control.latc_pytorch" title="Permalink to this definition"></a></dt>
+<dd><p>Trains the LATC algorithm in a given environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_fn</strong> – A function which creates a copy of the environment. The environment
+must satisfy the gymnasium API.</p></li>
+<li><p><strong>actor_critic</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><em>torch.nn.Module</em></a><em>, </em><em>optional</em>) – <p>The constructor method for a
+Torch Module with an <code class="docutils literal notranslate"><span class="pre">act</span></code> method, a <code class="docutils literal notranslate"><span class="pre">pi</span></code> module and several
+<code class="docutils literal notranslate"><span class="pre">Q</span></code> or <code class="docutils literal notranslate"><span class="pre">L</span></code> modules. The <code class="docutils literal notranslate"><span class="pre">act</span></code> method and <code class="docutils literal notranslate"><span class="pre">pi</span></code> module should
+accept batches of observations as inputs, and the <code class="docutils literal notranslate"><span class="pre">Q*</span></code> and <code class="docutils literal notranslate"><span class="pre">L</span></code>
+modules should accept a batch of observations and a batch of actions as
+inputs. When called, these modules should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>Output Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">act</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Numpy array of actions for each</div>
+<div class="line">observation.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Q*/L</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing one current estimate</div>
+<div class="line">of <code class="docutils literal notranslate"><span class="pre">Q*/L</span></code> for the provided</div>
+<div class="line">observations and actions. (Critical:</div>
+<div class="line">make sure to flatten this!)</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">pi</span></code> should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing actions from policy</div>
+<div class="line">given observations.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">logp_pi</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing log probabilities of</div>
+<div class="line">actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>. Importantly:</div>
+<div class="line">gradients should be able to flow back</div>
+<div class="line">into <code class="docutils literal notranslate"><span class="pre">a</span></code>.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Defaults to
+<a class="reference internal" href="algos/pytorch/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a></p>
+</p></li>
+<li><p><strong>*args</strong> – The positional arguments to pass to the <a class="reference internal" href="algos/pytorch/lac/lac/index.html#stable_learning_control.algos.pytorch.lac.lac.lac" title="stable_learning_control.algos.pytorch.lac.lac.lac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lac()</span></code></a> method.</p></li>
+<li><p><strong>**kwargs</strong> – The keyword arguments to pass to the <a class="reference internal" href="algos/pytorch/lac/lac/index.html#stable_learning_control.algos.pytorch.lac.lac.lac" title="stable_learning_control.algos.pytorch.lac.lac.lac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lac()</span></code></a> method.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Wraps the <a class="reference internal" href="algos/pytorch/lac/lac/index.html#stable_learning_control.algos.pytorch.lac.lac.lac" title="stable_learning_control.algos.pytorch.lac.lac.lac"><code class="xref py py-func docutils literal notranslate"><span class="pre">lac()</span></code></a> function so
+that the <a class="reference internal" href="algos/pytorch/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a>
+architecture is used as the actor critic.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.sac_pytorch">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.</span></span><span class="sig-name descname"><span class="pre">sac_pytorch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_critic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict(hidden_sizes={'actor':</span> <span class="pre">[256]</span> <span class="pre">*</span> <span class="pre">2,</span> <span class="pre">'critic':</span> <span class="pre">[256]</span> <span class="pre">*</span> <span class="pre">2},</span> <span class="pre">activation={'actor':</span> <span class="pre">nn.ReLU,</span> <span class="pre">'critic':</span> <span class="pre">nn.ReLU},</span> <span class="pre">output_activation={'actor':</span> <span class="pre">nn.ReLU,</span> <span class="pre">'critic':</span> <span class="pre">nn.Identity})</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'maximize'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_ep_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_per_epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_per_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_test_episodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polyak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.995</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_entropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptive_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_a_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_c_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_alpha_final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DEFAULT_DECAY_TYPE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_a_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_c_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_alpha_decay_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_decay_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DEFAULT_DECAY_REFERENCE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replay_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">int(1000000.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dict()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stable_learning_control.sac_pytorch" title="Permalink to this definition"></a></dt>
+<dd><p>Trains the SAC algorithm in a given environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_fn</strong> – A function which creates a copy of the environment. The environment
+must satisfy the gymnasium API.</p></li>
+<li><p><strong>actor_critic</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><em>torch.nn.Module</em></a><em>, </em><em>optional</em>) – <p>The constructor method for a
+Torch Module with an <code class="docutils literal notranslate"><span class="pre">act</span></code> method, a <code class="docutils literal notranslate"><span class="pre">pi</span></code> module and several
+<code class="docutils literal notranslate"><span class="pre">Q</span></code> or <code class="docutils literal notranslate"><span class="pre">L</span></code> modules. The <code class="docutils literal notranslate"><span class="pre">act</span></code> method and <code class="docutils literal notranslate"><span class="pre">pi</span></code> module should
+accept batches of observations as inputs, and the <code class="docutils literal notranslate"><span class="pre">Q*</span></code> and <code class="docutils literal notranslate"><span class="pre">L</span></code>
+modules should accept a batch of observations and a batch of actions as
+inputs. When called, these modules should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>Output Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">act</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Numpy array of actions for each</div>
+<div class="line">observation.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Q*/L</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing one current estimate</div>
+<div class="line">of <code class="docutils literal notranslate"><span class="pre">Q*/L</span></code> for the provided</div>
+<div class="line">observations and actions. (Critical:</div>
+<div class="line">make sure to flatten this!)</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">pi</span></code> should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing actions from policy</div>
+<div class="line">given observations.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">logp_pi</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing log probabilities of</div>
+<div class="line">actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>. Importantly:</div>
+<div class="line">gradients should be able to flow back</div>
+<div class="line">into <code class="docutils literal notranslate"><span class="pre">a</span></code>.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Defaults to
+<a class="reference internal" href="algos/pytorch/policies/soft_actor_critic/index.html#stable_learning_control.algos.pytorch.policies.soft_actor_critic.SoftActorCritic" title="stable_learning_control.algos.pytorch.policies.soft_actor_critic.SoftActorCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">SoftActorCritic</span></code></a></p>
+</p></li>
+<li><p><strong>ac_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – <p>Any kwargs appropriate for the ActorCritic
+object you provided to SAC. Defaults to:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Kwarg</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hidden_sizes_actor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">64</span> <span class="pre">x</span> <span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hidden_sizes_critic</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">128</span> <span class="pre">x</span> <span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">activation</span></code></p></td>
+<td><p><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ReLU</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">output_activation</span></code></p></td>
+<td><p><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html#torch.nn.ReLU" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.ReLU</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
+<li><p><strong>opt_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The optimization type you want to use. Options
+<code class="docutils literal notranslate"><span class="pre">maximize</span></code> and <code class="docutils literal notranslate"><span class="pre">minimize</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">maximize</span></code>.</p></li>
+<li><p><strong>max_ep_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum length of trajectory / episode /
+rollout. Defaults to the environment maximum.</p></li>
+<li><p><strong>epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of epochs to run and train agent. Defaults
+to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p><strong>steps_per_epoch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of steps of interaction
+(state-action pairs) for the agent and the environment in each epoch.
+Defaults to <code class="docutils literal notranslate"><span class="pre">2048</span></code>.</p></li>
+<li><p><strong>start_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of steps for uniform-random action
+selection, before running real policy. Helps exploration. Defaults to
+<code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><strong>update_every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of env interactions that should elapse
+between gradient descent updates. Defaults to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p><strong>update_after</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of env interactions to collect before
+starting to do gradient descent updates. Ensures replay buffer
+is full enough for useful updates. Defaults to <code class="docutils literal notranslate"><span class="pre">1000</span></code>.</p></li>
+<li><p><strong>steps_per_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of gradient descent steps that are
+performed for each gradient descent update. This determines the ratio of
+env steps to gradient steps (i.e. <code class="xref py py-obj docutils literal notranslate"><span class="pre">update_every</span></code>/
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">steps_per_update</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p><strong>num_test_episodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of episodes used to test the
+deterministic policy at the end of each epoch. This is used for logging
+the performance. Defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Entropy regularization coefficient (Equivalent to
+inverse of reward scale in the original SAC paper). Defaults to
+<code class="docutils literal notranslate"><span class="pre">0.99</span></code>.</p></li>
+<li><p><strong>gamma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Discount factor. (Always between 0 and 1.).
+Defaults to <code class="docutils literal notranslate"><span class="pre">0.99</span></code>.</p></li>
+<li><p><strong>polyak</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – <p>Interpolation factor in polyak averaging for
+target networks. Target networks are updated towards main networks
+according to:</p>
+<div class="math">
+<p><img src="../../_images/math/a870a04782c115a9eb9eca78c12004e4b075c3d9.svg" alt="\theta_{\text{targ}} \leftarrow
+\rho \theta_{\text{targ}} + (1-\rho) \theta"/></p>
+</div><p>where <img class="math" src="../../_images/math/2fbecaad8bd4b240f53ad914202698a230a98713.svg" alt="\rho"/> is polyak (Always between 0 and 1, usually close to 1.).
+In some papers <img class="math" src="../../_images/math/2fbecaad8bd4b240f53ad914202698a230a98713.svg" alt="\rho"/> is defined as (1 - <img class="math" src="../../_images/math/5a42b9d040dc41318429f68d53cd32fdbde54393.svg" alt="\tau"/>) where
+<img class="math" src="../../_images/math/5a42b9d040dc41318429f68d53cd32fdbde54393.svg" alt="\tau"/> is the soft replacement factor. Defaults to <code class="docutils literal notranslate"><span class="pre">0.995</span></code>.</p>
+</p></li>
+<li><p><strong>target_entropy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – <p>Initial target entropy used while learning
+the entropy temperature (alpha). Defaults to the
+maximum information (bits) contained in action space. This can be
+calculated according to :</p>
+<div class="math">
+<p><img src="../../_images/math/2a0fb232d73f170ee01e8bc9cfa646b44e64488c.svg" alt="-{\prod }_{i=0}^{n}action\_di{m}_{i}\phantom{\rule{0ex}{0ex}}"/></p>
+</div></p></li>
+<li><p><strong>adaptive_temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Enabled Automating Entropy Adjustment
+for maximum Entropy RL_learning.</p></li>
+<li><p><strong>lr_a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used for the actor. Defaults to
+<code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
+<li><p><strong>lr_c</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used for the (soft) critic. Defaults to
+<code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
+<li><p><strong>lr_alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Learning rate used for the entropy temperature.
+Defaults to <code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
+<li><p><strong>lr_a_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The final actor learning rate that is achieved
+at the end of the training. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-10</span></code>.</p></li>
+<li><p><strong>lr_c_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The final critic learning rate that is achieved
+at the end of the training. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-10</span></code>.</p></li>
+<li><p><strong>lr_alpha_final</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – The final alpha learning rate that is
+achieved at the end of the training. Defaults to <code class="docutils literal notranslate"><span class="pre">1e-10</span></code>.</p></li>
+<li><p><strong>lr_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used (options
+are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code> and <code class="docutils literal notranslate"><span class="pre">constant</span></code>). Defaults to
+<code class="docutils literal notranslate"><span class="pre">linear</span></code>. Can be overridden by the specific learning rate decay types.</p></li>
+<li><p><strong>lr_a_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used for
+the actor learning rate (options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code> and
+<code class="docutils literal notranslate"><span class="pre">constant</span></code>). If not specified, the general learning rate decay type is used.</p></li>
+<li><p><strong>lr_c_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used for
+the critic learning rate (options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code> and
+<code class="docutils literal notranslate"><span class="pre">constant</span></code>). If not specified, the general learning rate decay type is used.</p></li>
+<li><p><strong>lr_alpha_decay_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The learning rate decay type that is used
+for the alpha learning rate (options are: <code class="docutils literal notranslate"><span class="pre">linear</span></code> and <code class="docutils literal notranslate"><span class="pre">exponential</span></code>
+and <code class="docutils literal notranslate"><span class="pre">constant</span></code>). If not specified, the general learning rate decay type is used.</p></li>
+<li><p><strong>lr_decay_ref</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The reference variable that is used for decaying
+the learning rate (options: <code class="docutils literal notranslate"><span class="pre">epoch</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">epoch</span></code>.</p></li>
+<li><p><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Minibatch size for SGD. Defaults to <code class="docutils literal notranslate"><span class="pre">256</span></code>.</p></li>
+<li><p><strong>replay_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Maximum length of replay buffer. Defaults to
+<code class="docutils literal notranslate"><span class="pre">1e6</span></code>.</p></li>
+<li><p><strong>seed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Seed for random number generators. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The device the networks are placed on (options: <code class="docutils literal notranslate"><span class="pre">cpu</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu:0</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu:1</span></code>, etc.). Defaults to <code class="docutils literal notranslate"><span class="pre">cpu</span></code>.</p></li>
+<li><p><strong>logger_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Keyword args for EpochLogger.</p></li>
+<li><p><strong>save_freq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – How often (in terms of gap between epochs) to save
+the current policy and value function.</p></li>
+<li><p><strong>start_policy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path of a already trained policy to use as the starting
+point for the training. By default a new policy is created.</p></li>
+<li><p><strong>export</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to export the model as a <code class="docutils literal notranslate"><span class="pre">TorchScript</span></code> such
+that it can be deployed on hardware. By default <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>policy (<code class="xref py py-class docutils literal notranslate"><span class="pre">SAC</span></code>): The trained actor-critic policy.</p></li>
+<li><p>replay_buffer (union[<a class="reference internal" href="algos/common/buffers/index.html#stable_learning_control.algos.common.buffers.ReplayBuffer" title="stable_learning_control.algos.common.buffers.ReplayBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReplayBuffer</span></code></a>, <a class="reference internal" href="algos/common/buffers/index.html#stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer" title="stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">FiniteHorizonReplayBuffer</span></code></a>]):
+The replay buffer used during training.</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.tf_installed">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.</span></span><span class="sig-name descname"><span class="pre">tf_installed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/stable_learning_control/utils/import_utils.html#tf_installed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.tf_installed" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if TensorFlow is installed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if TensorFlow is installed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="stable_learning_control.__version__">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'6.0.0'</span></em><a class="reference internal" href="../../_modules/stable_learning_control/version.html#__version__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.__version__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="stable_learning_control.__version_tuple__">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.</span></span><span class="sig-name descname"><span class="pre">__version_tuple__</span></span><a class="reference internal" href="../../_modules/stable_learning_control/version.html#__version_tuple__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.__version_tuple__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="algos/index.html" class="btn btn-neutral float-right" title="stable_learning_control.algos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

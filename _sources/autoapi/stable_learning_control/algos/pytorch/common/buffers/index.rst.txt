@@ -1,0 +1,157 @@
+stable_learning_control.algos.pytorch.common.buffers
+====================================================
+
+.. py:module:: stable_learning_control.algos.pytorch.common.buffers
+
+.. autoapi-nested-parse::
+
+   Contains several replay buffers used in the Pytorch algorithms.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.pytorch.common.buffers.ReplayBuffer
+   stable_learning_control.algos.pytorch.common.buffers.FiniteHorizonReplayBuffer
+   stable_learning_control.algos.pytorch.common.buffers.TrajectoryBuffer
+
+
+Module Contents
+---------------
+
+.. py:class:: ReplayBuffer(device='cpu', *args, **kwargs)
+
+   Bases: :py:obj:`stable_learning_control.algos.common.buffers.ReplayBuffer`
+
+
+   Wrapper around the general FIFO
+   :obj:`~stable_learning_control.common.buffers.ReplayBuffer` which makes
+   sure a :obj:`torch.tensor` is returned when sampling.
+
+   .. attribute:: device
+
+      The device the experiences are placed on (options: ``cpu``,
+      ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
+
+      :type: str
+
+   Initialise the ReplayBuffer object.
+
+   :param device: The computational device to put the sampled
+                  experiences on (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``,
+                  etc.). Defaults to ``cpu``.
+   :type device: str, optional
+   :param \*args: All args to pass to the :class:`ReplayBuffer` parent class.
+   :param \*\*kwargs: All kwargs to pass to the class:`ReplayBuffer` parent class.
+
+
+   .. py:attribute:: device
+
+
+   .. py:method:: sample_batch(*args, **kwargs)
+
+      Retrieve a batch of experiences from buffer.
+
+      :param \*args: All args to pass to the :meth:`~ReplayBuffer.sample_batch` parent
+                     method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`~ReplayBuffer.sample_batch`
+                         parent method.
+
+      :returns: A batch of experiences.
+      :rtype: dict
+
+
+
+.. py:class:: FiniteHorizonReplayBuffer(device='cpu', *args, **kwargs)
+
+   Bases: :py:obj:`stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer`
+
+
+   Wrapper around the general FIFO
+   :obj:`~stable_learning_control.common.buffers.FiniteHorizonReplayBuffer` which makes
+   sure a :obj:`torch.tensor` is returned when sampling.
+
+   .. attribute:: device
+
+      The device the experiences are placed on (options: ``cpu``,
+      ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
+
+      :type: str
+
+   Initialise the FiniteHorizonReplayBuffer object.
+
+   :param device: The computational device to put the sampled
+                  experiences on (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``,
+                  etc.). Defaults to ``cpu``.
+   :type device: str, optional
+   :param \*args: All args to pass to the :class:`FiniteHorizonReplayBuffer` parent
+                  class.
+   :param \*\*kwargs: All kwargs to pass to the class:`FiniteHorizonReplayBuffer` parent
+                      class.
+
+
+   .. py:attribute:: device
+
+
+   .. py:method:: sample_batch(*args, **kwargs)
+
+      Retrieve a batch of experiences from buffer.
+
+      :param \*args: All args to pass to the
+                     :meth:`~FiniteHorizonReplayBuffer.sample_batch` parent method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`~ReplayBuffer.sample_batch`
+                         parent method.
+
+      :returns: A batch of experiences.
+      :rtype: dict
+
+
+
+.. py:class:: TrajectoryBuffer(device='cpu', *args, **kwargs)
+
+   Bases: :py:obj:`stable_learning_control.algos.common.buffers.TrajectoryBuffer`
+
+
+   Wrapper around the general
+   :obj:`~stable_learning_control.common.buffers.TrajectoryBuffer` which
+   makes sure a :obj:`torch.tensor` is returned when sampling.
+
+   .. attribute:: device
+
+      The device the experiences are placed on (options: ``cpu``,
+      ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
+
+      :type: str
+
+   Initialise the TrajectoryBuffer object.
+
+   :param device: The computational device to put the sampled
+                  experiences on (options: ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.).
+                  Defaults to ``cpu``.
+   :type device: str, optional
+   :param \*args: All args to pass to the :class:`TrajectoryBuffer` parent class.
+   :param \*\*kwargs: All kwargs to pass to the :class:`TrajectoryBuffer` parent class.
+
+
+   .. py:attribute:: device
+
+
+   .. py:method:: get(*args, **kwargs)
+
+      Retrieve the trajectory buffer.
+
+      Call this at the end of an epoch to get all of the data from
+      the buffer. Also, resets some pointers in the buffer.
+
+      :param \*args: All args to pass to the :meth:`~TrajectoryBuffer.get` parent method.
+      :param \*\*kwargs: All kwargs to pass to the :meth:`~TrajectoryBuffer.get` parent
+                         method.
+
+      :returns: The trajectory buffer.
+      :rtype: dict
+
+
+

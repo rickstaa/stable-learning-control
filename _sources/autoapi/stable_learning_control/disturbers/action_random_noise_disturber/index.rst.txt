@@ -1,0 +1,72 @@
+stable_learning_control.disturbers.action_random_noise_disturber
+================================================================
+
+.. py:module:: stable_learning_control.disturbers.action_random_noise_disturber
+
+.. autoapi-nested-parse::
+
+   Contains a small gymnasium wrapper that can be used to disturb the action of
+   a gymnasium environment with normally distributed random noise (i.e. ``mean`` and
+   ``std``).
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.disturbers.action_random_noise_disturber.ActionRandomNoiseDisturber
+
+
+Module Contents
+---------------
+
+.. py:class:: ActionRandomNoiseDisturber(env, mean, std)
+
+   Bases: :py:obj:`gymnasium.ActionWrapper`
+
+
+   A gymnasium wrapper that can be used to disturb the action of a gymnasium
+   environment with normally distributed random noise.
+
+   .. attribute:: mean
+
+      The mean of the noise normal distribution.
+
+      :type: float
+
+   .. attribute:: std
+
+      The standard deviation of the noise normal distribution.
+
+      :type: float
+
+   Initialise the ActionRandomNoiseDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param mean: The mean of the noise normal distribution.
+   :type mean: float
+   :param std: The standard deviation of the noise normal distribution.
+   :type std: float
+
+
+   .. py:attribute:: mean
+
+
+   .. py:attribute:: std
+
+
+   .. py:method:: action(action)
+
+      Add normally distributed random noise to the action.
+
+      :param action: The action.
+      :type action: np.ndarray
+
+      :returns: The action with added noise.
+      :rtype: np.ndarray
+
+
+

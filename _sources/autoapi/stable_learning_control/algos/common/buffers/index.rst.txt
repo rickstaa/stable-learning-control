@@ -1,0 +1,411 @@
+stable_learning_control.algos.common.buffers
+============================================
+
+.. py:module:: stable_learning_control.algos.common.buffers
+
+.. autoapi-nested-parse::
+
+   This module contains several replay buffers that are used in multiple Pytorch and
+   TensorFlow algorithms.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.common.buffers.ReplayBuffer
+   stable_learning_control.algos.common.buffers.FiniteHorizonReplayBuffer
+   stable_learning_control.algos.common.buffers.TrajectoryBuffer
+
+
+Module Contents
+---------------
+
+.. py:class:: ReplayBuffer(obs_dim, act_dim, size)
+
+   A simple first-in-first-out (FIFO) experience replay buffer.
+
+   .. attribute:: obs_buf
+
+      Buffer containing the current state.
+
+      :type: numpy.ndarray
+
+   .. attribute:: obs_next_buf
+
+      Buffer containing the next state.
+
+      :type: numpy.ndarray
+
+   .. attribute:: act_buf
+
+      Buffer containing the current action.
+
+      :type: numpy.ndarray
+
+   .. attribute:: rew_buf
+
+      Buffer containing the current reward.
+
+      :type: numpy.ndarray
+
+   .. attribute:: done_buf
+
+      Buffer containing information whether the episode was
+      terminated after the action was taken.
+
+      :type: numpy.ndarray
+
+   .. attribute:: ptr
+
+      The current buffer index.
+
+      :type: int
+
+   Initialise the ReplayBuffer object.
+
+   :param obs_dim: The size of the observation space.
+   :type obs_dim: tuple
+   :param act_dim: The size of the action space.
+   :type act_dim: tuple
+   :param size: The replay buffer size.
+   :type size: int
+
+
+   .. py:attribute:: obs_buf
+
+
+   .. py:attribute:: obs_next_buf
+
+
+   .. py:attribute:: act_buf
+
+
+   .. py:attribute:: rew_buf
+
+
+   .. py:attribute:: done_buf
+
+
+   .. py:method:: store(obs, act, rew, next_obs, done)
+
+      Add experience tuple to buffer.
+
+      :param obs: Start state (observation).
+      :type obs: numpy.ndarray
+      :param act: Action.
+      :type act: numpy.ndarray
+      :param rew: Reward.
+      :type rew: :obj:`numpy.float64`
+      :param next_obs: Next state (observation)
+      :type next_obs: numpy.ndarray
+      :param done: Boolean specifying whether the terminal state was reached.
+      :type done: bool
+
+
+
+   .. py:method:: sample_batch(batch_size=32)
+
+      Retrieve a batch of experiences from buffer.
+
+      :param batch_size: The batch size. Defaults to ``32``.
+      :type batch_size: int, optional
+
+      :returns: A batch of experiences.
+      :rtype: dict
+
+
+
+.. py:class:: FiniteHorizonReplayBuffer(obs_dim, act_dim, size, horizon_length)
+
+   Bases: :py:obj:`ReplayBuffer`
+
+
+   A first-in-first-out (FIFO) experience replay buffer that also stores the
+   expected cumulative finite-horizon reward.
+
+   .. note::
+       The expected cumulative finite-horizon reward is calculated using the following
+       formula:
+
+       .. math::
+           L_{target}(s,a) = \sum_{t}^{t+N} \mathbb{E}_{c_{t}}
+
+   .. attribute:: horizon_length
+
+      The length of the finite-horizon.
+
+      :type: int
+
+   .. attribute:: horizon_rew_buf
+
+      Buffer containing the expected cumulative
+      finite-horizon reward.
+
+      :type: numpy.ndarray
+
+   Initialise the FiniteHorizonReplayBuffer object.
+
+   :param obs_dim: The size of the observation space.
+   :type obs_dim: tuple
+   :param act_dim: The size of the action space.
+   :type act_dim: tuple
+   :param size: The replay buffer size.
+   :type size: int
+   :param horizon_length: The length of the finite-horizon.
+   :type horizon_length: int
+
+
+   .. py:attribute:: horizon_length
+
+
+   .. py:attribute:: _path_start_ptr
+      :value: 0
+
+
+
+   .. py:attribute:: _path_length
+      :value: 0
+
+
+
+   .. py:attribute:: horizon_rew_buf
+
+
+   .. py:method:: store(obs, act, rew, next_obs, done, truncated)
+
+      Add experience tuple to buffer and calculate expected cumulative finite
+      horizon reward if the episode is done or truncated.
+
+      :param obs: Start state (observation).
+      :type obs: numpy.ndarray
+      :param act: Action.
+      :type act: numpy.ndarray
+      :param rew: Reward.
+      :type rew: :obj:`numpy.float64`
+      :param next_obs: Next state (observation)
+      :type next_obs: numpy.ndarray
+      :param done: Boolean specifying whether the terminal state was reached.
+      :type done: bool
+      :param truncated: Boolean specifying whether the episode was truncated.
+      :type truncated: bool
+
+
+
+   .. py:method:: sample_batch(batch_size=32)
+
+      Retrieve a batch of experiences and their expected cumulative finite-horizon
+      reward from buffer.
+
+      :param batch_size: The batch size. Defaults to ``32``.
+      :type batch_size: int, optional
+
+      :returns: A batch of experiences.
+      :rtype: dict
+
+
+
+.. py:class:: TrajectoryBuffer(obs_dim, act_dim, size, preempt=False, min_trajectory_size=3, incomplete=False, gamma=0.99, lam=0.95)
+
+   A simple FIFO trajectory buffer. It can store trajectories of varying lengths
+   for Monte Carlo or TD-N learning algorithms.
+
+   .. attribute:: obs_buf
+
+      Buffer containing the current state.
+
+      :type: numpy.ndarray
+
+   .. attribute:: obs_next_buf
+
+      Buffer containing the next state.
+
+      :type: numpy.ndarray
+
+   .. attribute:: act_buf
+
+      Buffer containing the current action.
+
+      :type: numpy.ndarray
+
+   .. attribute:: rew_buf
+
+      Buffer containing the current reward.
+
+      :type: numpy.ndarray
+
+   .. attribute:: done_buf
+
+      Buffer containing information whether the episode was
+      terminated after the action was taken.
+
+      :type: numpy.ndarray
+
+   .. attribute:: traj_lengths
+
+      List with the lengths of each trajectory in the
+      buffer.
+
+      :type: list
+
+   .. attribute:: ptr
+
+      The current buffer index.
+
+      :type: int
+
+   .. attribute:: traj_ptr
+
+      The start index of the current trajectory.
+
+      :type: int
+
+   .. attribute:: traj_ptrs
+
+      The start indexes of each trajectory.
+
+      :type: list
+
+   .. attribute:: n_traj
+
+      The number of trajectories currently stored in the buffer.
+
+      :type: int
+
+   .. warning::
+       This buffer has not be rigorously tested and should therefore still be regarded
+       as experimental.
+
+   Initialise the TrajectoryBuffer object.
+
+   :param obs_dim: The size of the observation space.
+   :type obs_dim: tuple
+   :param act_dim: The size of the action space.
+   :type act_dim: tuple
+   :param size: The replay buffer size.
+   :type size: int
+   :param preempt: Whether the buffer can be retrieved before it is
+                   full. Defaults to ``False``.
+   :type preempt: bool, optional
+   :param min_trajectory_size: The minimum trajectory length that can
+                               be stored in the buffer. Defaults to ``3``.
+   :type min_trajectory_size: int, optional
+   :param incomplete: Whether the buffer can store incomplete
+                      trajectories (i.e. trajectories which do not contain the final state).
+                      Defaults to ``False``.
+   :type incomplete: int, optional
+   :param gamma: The General Advantage Estimate (GAE) discount
+                 factor (Always between 0 and 1). Defaults to ``0.99``.
+   :type gamma: float, optional
+   :param lam: The GAE bias-variance trade-off factor (always between
+               0 and 1). Defaults to ``0.95``.
+   :type lam: lam, optional
+
+
+   .. py:attribute:: obs_buf
+
+
+   .. py:attribute:: obs_next_buf
+
+
+   .. py:attribute:: act_buf
+
+
+   .. py:attribute:: rew_buf
+
+
+   .. py:attribute:: done_buf
+
+
+   .. py:attribute:: adv_buf
+
+
+   .. py:attribute:: ret_buf
+
+
+   .. py:attribute:: val_buf
+
+
+   .. py:attribute:: logp_buf
+
+
+   .. py:attribute:: traj_ptrs
+      :value: []
+
+
+
+   .. py:attribute:: traj_lengths
+      :value: []
+
+
+
+   .. py:attribute:: _preempt
+
+
+   .. py:method:: store(obs, act, rew, next_obs, done, val=None, logp=None)
+
+      Append one timestep of agent-environment interaction to the buffer.
+
+      :param obs: Start state (observation).
+      :type obs: numpy.ndarray
+      :param act: Action.
+      :type act: numpy.ndarray
+      :param rew: Reward.
+      :type rew: :obj:`numpy.float64`
+      :param next_obs: Next state (observation)
+      :type next_obs: numpy.ndarray
+      :param done: Boolean specifying whether the terminal state was reached.
+      :type done: bool
+      :param val: The (action) values. Defaults to ``None``.
+      :type val: numpy.ndarray, optional
+      :param logp: The log probabilities of the actions.
+                   Defaults to ``None``.
+      :type logp: numpy.ndarray, optional
+
+
+
+   .. py:method:: finish_path(last_val=0)
+
+      Call this at the end of a trajectory or when one gets cut off by an epoch
+      ends. This function increments the buffer pointers and calculates the advantage
+      and rewards-to-go if it contains (action) values.
+
+      .. note::
+          When (action) values are stored in the buffer, this function looks back in
+          the buffer to where the trajectory started and uses rewards and value
+          estimates from the whole trajectory to compute advantage estimates with
+          GAE-Lambda and compute the rewards-to-go for each state to use as the
+          targets for the value function.
+
+          The "last_val" argument should be 0 if the trajectory ended because the
+          agent reached a terminal state (died), and otherwise should be V(s_T), the
+          value function estimated for the last state. This allows us to bootstrap
+          the reward-to-go calculation to account for timesteps beyond the arbitrary
+          episode horizon (or epoch cutoff).
+
+
+
+   .. py:method:: get(flat=False)
+
+      Retrieve the trajectory buffer.
+
+      Call this at the end of an epoch to get all of the data from
+      the buffer. Also, resets some pointers in the buffer.
+
+      :param flat: Retrieve a flat buffer (i.e. the trajectories are
+                   concatenated). Defaults to ``False``.
+      :type flat: bool, optional
+
+      .. note:
+          If you set flat to ``True`` all the trajectories will be concatenated into
+          one array. You can use the :attr:`~TrajectoryBuffer.traj_lengths` or
+          :attr:`traj_ptrs` attributes to split this array into distinct
+          trajectories.
+
+      :returns: The trajectory buffer.
+      :rtype: dict
+
+
+

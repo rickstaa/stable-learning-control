@@ -1,0 +1,268 @@
+stable_learning_control.utils.run_utils
+=======================================
+
+.. py:module:: stable_learning_control.utils.run_utils
+
+.. autoapi-nested-parse::
+
+   Contains utilities and helper functions/classes that can be used for calling
+   experiments.
+
+   .. note::
+       This module was based on
+       `spinningup repository <https://github.com/openai/spinningup/tree/master/spinup/utils/run_utils.py>`__.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.run_utils.DIV_LINE_WIDTH
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.run_utils.ExperimentGrid
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.run_utils.call_experiment
+
+
+Module Contents
+---------------
+
+.. py:data:: DIV_LINE_WIDTH
+   :value: 80
+
+
+.. py:function:: call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None, datestamp=False, **kwargs)
+
+   Run a function (thunk) with hyperparameters (:obj:`kwargs`), plus configuration.
+
+   This wraps a few pieces of functionality which are useful when you want
+   to run many experiments in sequence, including logger configuration and
+   splitting into multiple processes for MPI.
+
+   There's also a SpinningUp-specific convenience added into executing the
+   thunk: if ``env_name`` is one of the **kwargs** passed to call_experiment, it's
+   assumed that the thunk accepts an argument called ``env_fn``, and that
+   the ``env_fn`` should make a gymnasium environment with the given ``env_name``.
+
+   The way the experiment is actually executed is slightly complicated: the
+   function is serialised to a string, and then ``run_entrypoint.py`` is
+   executed in a subprocess call with the serialised string as an argument.
+   ``run_entrypoint.py`` unserializes the function call and executes it.
+   We choose to do it this way---instead of just calling the function
+   directly here---to avoid leaking state between successive experiments.
+
+   :param exp_name: Name for experiment.
+   :type exp_name: str
+   :param thunk: A python function.
+   :type thunk: callable
+   :param seed: Seed for random number generators.
+   :type seed: int
+   :param num_cpu: Number of MPI processes to split into. Also accepts
+                   'auto', which will set up as many procs as there are cpus on
+                   the machine.
+   :type num_cpu: int
+   :param data_dir: Used in configuring the logger, to decide where
+                    to store experiment results. Note: if left as ``None``, data_dir will
+                    default to ``DEFAULT_DATA_DIR`` from
+                    :mod:`stable_learning_control.user_config`.
+   :type data_dir: str
+   :param datestamp: Whether a datestamp should be added to the experiment name.
+   :type datestamp: bool
+   :param kwargs: All kwargs to pass to thunk.
+
+
+.. py:class:: ExperimentGrid(name='')
+
+   Tool for running many experiments given hyperparameter ranges.
+
+   Initialise the ExperimentGrid object.
+
+   :param name: Experimental grid id.
+   :type name: str
+
+
+   .. py:attribute:: keys
+      :value: []
+
+
+
+   .. py:attribute:: vals
+      :value: []
+
+
+
+   .. py:attribute:: shs
+      :value: []
+
+
+
+   .. py:attribute:: in_names
+      :value: []
+
+
+
+   .. py:method:: name(_name)
+
+      Validate grid id.
+
+      :param _name: Input object.
+      :type _name: object
+
+
+
+   .. py:method:: print()
+
+      Print a helpful report about the experiment grid.
+
+
+
+   .. py:method:: _default_shorthand(key)
+
+      Create grid key shorthands.
+
+      Create a default shorthand for the key, built from the first three letters of
+      each colon-separated part. But if the first three letters contains something
+      which isn't alphanumeric, shear that off.
+
+      :param key: Full grid key name.
+      :type key: str
+
+      :returns: Generated shorthand.
+      :rtype: str
+
+
+
+   .. py:method:: add(key, vals, shorthand=None, in_name=False)
+
+      Add a parameter (key) to the grid config, with potential values (vals).
+
+      By default, if a shorthand isn't given, one is automatically generated
+      from the key using the first three letters of each colon-separated
+      term. To disable this behavior, change :attr:`DEFAULT_SHORTHAND` in the
+      :mod:`stable_learning_control.user_config` file to ``False``.
+
+      :param key: Name of parameter.
+      :type key: str
+      :param vals: Allowed values of parameter.
+      :type vals: value or list of values
+      :param shorthand: Optional, shortened name of parameter. For
+                        example, maybe the parameter ``steps_per_epoch`` is shortened
+                        to ``steps``.
+      :type shorthand: str
+      :param in_name: When constructing variant names, force the
+                      inclusion of this parameter into the name.
+      :type in_name: bool
+
+
+
+   .. py:method:: variant_name(variant)
+
+      Given a variant (dict of valid param/value pairs), make an exp_name.
+
+      A variant's name is constructed as the grid name (if you've given it
+      one), plus param names (or shorthands if available) and values
+      separated by underscores.
+
+      Note: if ``seed`` is a parameter, it is not included in the name.
+
+      :param variant: The variant name.
+      :type variant: str
+
+
+
+   .. py:method:: _variants(keys, vals)
+
+      Recursively builds list of valid variants.
+
+      :param keys: Hyperparameter key name.
+      :type keys: object
+      :param vals: Grid value.
+      :type vals: object
+
+      :returns: List of valid variants.
+      :rtype: list
+
+
+
+   .. py:method:: variants()
+
+      Makes a list of dicts, where each dict is a valid config in the grid.
+
+      There is special handling for variant parameters whose names take
+      the form
+
+          ``'full:param:name'``.
+
+      The colons are taken to indicate that these parameters should
+      have a nested dict structure. eg, if there are two params,
+
+          ====================  ===
+          Key                   Val
+          ====================  ===
+          ``'base:param:a'``    1
+          ``'base:param:b'``    2
+          ====================  ===
+
+      the variant dict will have the structure
+
+      .. parsed-literal::
+
+          variant = {
+              base: {
+                  param : {
+                      a : 1,
+                      b : 2
+                      }
+                  }
+              }
+
+
+
+   .. py:method:: run(thunk, num_cpu=1, data_dir=None, datestamp=False)
+
+      Run each variant in the grid with function 'thunk'.
+
+      Note: 'thunk' must be either a callable function, or a string. If it is
+      a string, it must be the name of a parameter whose values are all
+      callable functions.
+
+      Uses :meth:`call_experiment` to actually launch each experiment, and gives
+      each variant a name using :meth:`variant_name`.
+
+      Maintenance note: the args for ExperimentGrid.run should track closely
+      to the args for call_experiment. However, ``seed`` is omitted because
+      we presume the user may add it as a parameter in the grid.
+
+      :param thunk: A python function.
+      :type thunk: callable
+      :param seed: Seed for random number generators.
+      :type seed: int
+      :param num_cpu: Number of MPI processes to split into. Also accepts
+                      'auto', which will set up as many procs as there are cpus on
+                      the machine.
+      :type num_cpu: int
+      :param data_dir: Used in configuring the logger, to decide where
+                       to store experiment results. Note: if left as ``None``, data_dir will
+                       default to ``DEFAULT_DATA_DIR`` from
+                       :mod:`stable_learning_control.user_config`.
+      :type data_dir: str
+      :param datestamp: Whether a datestamp should be added to the experiment
+                        name.
+      :type datestamp: bool
+
+
+

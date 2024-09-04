@@ -1,0 +1,63 @@
+stable_learning_control.utils.safer_eval_util
+=============================================
+
+.. py:module:: stable_learning_control.utils.safer_eval_util
+
+.. autoapi-nested-parse::
+
+   A module that makes eval calls inside the utility scripts safer.
+
+   This is done by setting the globals to a dictionary containing only modules we want the
+   end user to access. This way, users can not use the eval method to (accidentally)
+   execute arbitrary code on the system through the CLI.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.safer_eval_util.tf
+   stable_learning_control.utils.safer_eval_util.tf_nn
+   stable_learning_control.utils.safer_eval_util.torch_nn
+   stable_learning_control.utils.safer_eval_util.AVAILABLE_GLOBAL_MODULES
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.safer_eval_util.safer_eval
+
+
+Module Contents
+---------------
+
+.. py:data:: tf
+
+.. py:data:: tf_nn
+
+.. py:data:: torch_nn
+
+.. py:data:: AVAILABLE_GLOBAL_MODULES
+
+.. py:function:: safer_eval(*args, backend=None)
+
+   Function that executes the eval function with a safer set of globals.
+
+   .. note::
+       This is done by setting the globals to a dictionary containing only modules we
+       want the end user to access. This way, users can not use the eval method to
+       (accidentally) execute arbitrary code on the system through the CLI.
+
+   :param backend: The machine learning backend you want to use. Options are ``tf2``
+                   or ``torch``. Defaults to ``None`` meaning no backend is assumed and both
+                   backends are tried.
+   :type backend: str
+
+   :returns: The eval return values.
+   :rtype: args
+
+

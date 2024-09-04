@@ -1,0 +1,168 @@
+stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic
+=====================================================================
+
+.. py:module:: stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic
+
+.. autoapi-nested-parse::
+
+   Lyapunov (soft) Actor-Twin critic policy.
+
+   This module contains a modified Pytorch implementation of the Lyapunov Actor-Critic
+   policy of `Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_. Like the original SAC
+   algorithm, this LAC variant uses two critics instead of one to mitigate a possible
+   underestimation bias, while the original LAC only uses one critic.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.HIDDEN_SIZES_DEFAULT
+   stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.ACTIVATION_DEFAULT
+   stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.OUTPUT_ACTIVATION_DEFAULT
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic
+
+
+Module Contents
+---------------
+
+.. py:data:: HIDDEN_SIZES_DEFAULT
+
+.. py:data:: ACTIVATION_DEFAULT
+
+.. py:data:: OUTPUT_ACTIVATION_DEFAULT
+
+.. py:class:: LyapunovActorTwinCritic(observation_space, action_space, hidden_sizes=HIDDEN_SIZES_DEFAULT, activation=ACTIVATION_DEFAULT, output_activation=OUTPUT_ACTIVATION_DEFAULT, name='lyapunov_actor_critic')
+
+   Bases: :py:obj:`tensorflow.keras.Model`
+
+
+   Lyapunov (soft) Actor-Twin Critic network.
+
+   .. attribute:: self.pi
+
+      The squashed gaussian policy network (actor).
+
+      :type: :class:`~stable_learning_control.algos.tf2.policies.actors.squashed_gaussian_actor.SquashedGaussianActor`
+
+   .. attribute:: self.L
+
+      The soft L-network (critic).
+
+      :type: :obj:`~stable_learning_control.algos.tf2.policies.critics.L_critic.LCritic`
+
+   .. attribute:: self.L2
+
+      The second soft L-network (critic).
+
+      :type: :obj:`~stable_learning_control.algos.tf2.policies.critics.L_critic.LCritic`
+
+   Initialise the LyapunovActorTwinCritic object.
+
+   :param observation_space: A gymnasium observation space.
+   :type observation_space: :obj:`gym.space.box.Box`
+   :param action_space: A gymnasium action space.
+   :type action_space: :obj:`gym.space.box.Box`
+   :param hidden_sizes: Sizes of the hidden
+                        layers for the actor. Defaults to ``(256, 256)``.
+   :type hidden_sizes: Union[dict, tuple, list], optional
+   :param activation: The
+                      (actor and critic) hidden layers activation function. Defaults to
+                      :obj:`tf.nn.relu`.
+   :type activation: Union[:obj:`dict`, :obj:`tf.keras.activations`], optional
+   :param output_activation: The actor  output activation function. Defaults to :obj:`tf.nn.relu`.
+   :type output_activation: Union[:obj:`dict`, :obj:`tf.keras.activations`], optional
+   :param name: The name given to the LyapunovActorCritic. Defaults to
+                "lyapunov_actor_critic".
+   :type name: str, optional
+
+   .. note::
+       It is currently not possible to set the critic output activation function
+       when using the LyapunovActorTwinCritic. This is since it by design requires the
+       critic output activation to by of type :meth:`tf.math.square`.
+
+
+   .. py:attribute:: obs_dim
+
+
+   .. py:attribute:: act_dim
+
+
+   .. py:attribute:: act_limits
+
+
+   .. py:attribute:: pi
+
+
+   .. py:attribute:: L
+
+
+   .. py:attribute:: L2
+
+
+   .. py:attribute:: obs_dummy
+
+
+   .. py:attribute:: act_dummy
+
+
+   .. py:method:: call(inputs, deterministic=False, with_logprob=True)
+
+      Performs a forward pass through all the networks (Actor and both  L critics).
+
+      :param inputs: tuple containing:
+
+                     -   obs (tf.Tensor): The tensor of observations.
+                     -   act (tf.Tensor): The tensor of actions.
+      :type inputs: tuple
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If false the action is sampled from the stochastic
+                            policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+      :param with_logprob: Whether we want to return the log probability
+                           of an action. Defaults to ``True``.
+      :type with_logprob: bool, optional
+
+      :returns:
+
+                tuple containing:
+
+                    - pi_action (:obj:`tf.Tensor`): The actions given by the policy.
+                    - logp_pi (:obj:`tf.Tensor`): The log probabilities of each of these actions.
+                    - L (:obj:`tf.Tensor`): First critic L values.
+                    - L2 (:obj:`tf.Tensor`): Second critic L values.
+      :rtype: (tuple)
+
+      .. note::
+          Useful for when you want to print out the full network graph using
+          TensorBoard.
+
+
+
+   .. py:method:: act(obs, deterministic=False)
+
+      Returns the action from the current state given the current policy.
+
+      :param obs: The current observation (state).
+      :type obs: numpy.ndarray
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The action from the current state given the current policy.
+      :rtype: numpy.ndarray
+
+
+

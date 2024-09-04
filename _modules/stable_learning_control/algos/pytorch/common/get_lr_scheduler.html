@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.algos.pytorch.common.get_lr_scheduler &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html">
+            
+              <img src="../../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../autoapi/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.algos.pytorch.common.get_lr_scheduler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for stable_learning_control.algos.pytorch.common.get_lr_scheduler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains functions used for creating Pytorch learning rate schedulers.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">import</span> <span class="nn">torch.optim</span>
+
+
+<div class="viewcode-block" id="ConstantLRScheduler"><a class="viewcode-back" href="../../../../../autoapi/stable_learning_control/algos/pytorch/common/get_lr_scheduler/index.html#stable_learning_control.algos.pytorch.common.get_lr_scheduler.ConstantLRScheduler">[docs]</a><span class="k">class</span> <span class="nc">ConstantLRScheduler</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LambdaLR</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A learning rate scheduler that keeps the learning rate constant.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the constant learning rate scheduler.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            optimizer (:class:`torch.optim.Optimizer`): The wrapped optimizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">lr_lambda</span><span class="o">=</span><span class="k">lambda</span> <span class="n">step</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_exponential_decay_rate"><a class="viewcode-back" href="../../../../../autoapi/stable_learning_control/algos/pytorch/common/get_lr_scheduler/index.html#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_exponential_decay_rate">[docs]</a><span class="k">def</span> <span class="nf">get_exponential_decay_rate</span><span class="p">(</span><span class="n">lr_start</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the exponential decay rate needed to go from a initial learning rate</span>
+<span class="sd">    to a final learning rate in N steps.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lr_start (float): The starting learning rate.</span>
+<span class="sd">        lr_final (float): The final learning rate.</span>
+<span class="sd">        steps (int): The number of steps.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        decimal.Decimal: The exponential decay rate (high precision).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="n">lr_final</span><span class="p">)</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">lr_start</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">steps</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">gamma</span></div>
+
+
+<div class="viewcode-block" id="get_linear_decay_rate"><a class="viewcode-back" href="../../../../../autoapi/stable_learning_control/algos/pytorch/common/get_lr_scheduler/index.html#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_linear_decay_rate">[docs]</a><span class="k">def</span> <span class="nf">get_linear_decay_rate</span><span class="p">(</span><span class="n">lr_init</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a linear decay factor (G) that enables a learning rate to transition</span>
+<span class="sd">    from an initial value (`lr_init`) at step 0 to a final value (`lr_final`) at a</span>
+<span class="sd">    specified step (N). This decay factor is compatible with the</span>
+<span class="sd">    :class:`torch.optim.lr_scheduler.LambdaLR` scheduler. The decay factor is calculated</span>
+<span class="sd">    using the following formula:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        lr_{terminal} = lr_{init} * (1.0 - G \cdot step)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lr_init (float): The initial learning rate.</span>
+<span class="sd">        lr_final (float): The final learning rate you want to achieve.</span>
+<span class="sd">        steps (int): The number of steps/epochs over which the learning rate should</span>
+<span class="sd">            decay. This is equal to epochs -1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        decimal.Decimal: Linear learning rate decay factor (G).</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: W605</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span>
+        <span class="p">((</span><span class="n">Decimal</span><span class="p">(</span><span class="n">lr_final</span><span class="p">)</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">lr_init</span><span class="p">))</span> <span class="o">-</span> <span class="n">Decimal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_lr_scheduler"><a class="viewcode-back" href="../../../../../autoapi/stable_learning_control/algos/pytorch/common/index.html#stable_learning_control.algos.pytorch.common.get_lr_scheduler.get_lr_scheduler">[docs]</a><span class="k">def</span> <span class="nf">get_lr_scheduler</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">decaying_lr_type</span><span class="p">,</span> <span class="n">lr_start</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a learning rate scheduler.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        optimizer (torch.optim.Adam): Wrapped optimizer.</span>
+<span class="sd">        decaying_lr_type (str): The learning rate decay type that is used</span>
+<span class="sd">            (options are: ``linear`` and ``exponential`` and ``constant``).</span>
+<span class="sd">        lr_start (float): Initial learning rate.</span>
+<span class="sd">        lr_final (float): Final learning rate.</span>
+<span class="sd">        steps (int, optional): Number of steps/epochs used in the training. This</span>
+<span class="sd">            includes the starting step/epoch.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`torch.optim.lr_scheduler`: A learning rate scheduler object.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        See the :torch:`pytorch &lt;docs/stable/optim.html&gt;` documentation on how to</span>
+<span class="sd">        implement other decay options.</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+    <span class="k">if</span> <span class="n">decaying_lr_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;constant&quot;</span> <span class="ow">and</span> <span class="n">lr_start</span> <span class="o">!=</span> <span class="n">lr_final</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">decaying_lr_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;exponential&quot;</span><span class="p">:</span>
+            <span class="n">exponential_decay_rate</span> <span class="o">=</span> <span class="n">get_exponential_decay_rate</span><span class="p">(</span>
+                <span class="n">lr_start</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ExponentialLR</span><span class="p">(</span>
+                <span class="n">optimizer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">exponential_decay_rate</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">lr_multiplier_function</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;Returns a learning rate multiplier at each steps that makes the</span>
+<span class="sd">                learning rate decay linearly.</span>
+
+<span class="sd">                Returns:</span>
+<span class="sd">                    numpy.longdouble: A learning rate multiplier.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span>
+                    <span class="n">Decimal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                    <span class="o">-</span> <span class="p">(</span>
+                        <span class="n">get_linear_decay_rate</span><span class="p">(</span><span class="n">lr_start</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+                        <span class="o">*</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LambdaLR</span><span class="p">(</span>
+                <span class="n">optimizer</span><span class="p">,</span> <span class="n">lr_lambda</span><span class="o">=</span><span class="n">lr_multiplier_function</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">lr_scheduler</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ConstantLRScheduler</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="estimate_step_learning_rate"><a class="viewcode-back" href="../../../../../autoapi/stable_learning_control/algos/pytorch/common/get_lr_scheduler/index.html#stable_learning_control.algos.pytorch.common.get_lr_scheduler.estimate_step_learning_rate">[docs]</a><span class="k">def</span> <span class="nf">estimate_step_learning_rate</span><span class="p">(</span>
+    <span class="n">lr_scheduler</span><span class="p">,</span> <span class="n">lr_start</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="n">update_after</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">,</span> <span class="n">step</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimates the learning rate at a given step.</span>
+
+<span class="sd">    This function estimates the learning rate for a specific training step. It differs</span>
+<span class="sd">    from the `get_last_lr` method of the learning rate scheduler, which returns the</span>
+<span class="sd">    learning rate at the last scheduler step, not necessarily the current training step.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lr_scheduler (torch.optim.lr_scheduler): The learning rate scheduler.</span>
+<span class="sd">        lr_start (float): The initial learning rate.</span>
+<span class="sd">        update_after (int): The step number after which the learning rate should start</span>
+<span class="sd">            decreasing.</span>
+<span class="sd">        lr_final (float): The final learning rate.</span>
+<span class="sd">        total_steps (int): The total number of steps/epochs in the training process.</span>
+<span class="sd">            Excludes the initial step.</span>
+<span class="sd">        step (int): The current step number. Excludes the initial step.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The learning rate at the given step.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="n">update_after</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="p">,</span> <span class="n">ConstantLRScheduler</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">lr_start</span>
+
+    <span class="c1"># Estimate the learning rate at a given step for the lt_scheduler type.</span>
+    <span class="n">adjusted_step</span> <span class="o">=</span> <span class="n">step</span> <span class="o">-</span> <span class="n">update_after</span>
+    <span class="n">adjusted_total_steps</span> <span class="o">=</span> <span class="n">total_steps</span> <span class="o">-</span> <span class="n">update_after</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LambdaLR</span><span class="p">):</span>
+        <span class="n">decay_rate</span> <span class="o">=</span> <span class="n">get_linear_decay_rate</span><span class="p">(</span><span class="n">lr_start</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="n">adjusted_total_steps</span><span class="p">)</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">Decimal</span><span class="p">(</span><span class="n">lr_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-</span> <span class="n">decay_rate</span> <span class="o">*</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">adjusted_step</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">ExponentialLR</span><span class="p">):</span>
+        <span class="n">decay_rate</span> <span class="o">=</span> <span class="n">get_exponential_decay_rate</span><span class="p">(</span>
+            <span class="n">lr_start</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">,</span> <span class="n">adjusted_total_steps</span>
+        <span class="p">)</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="n">lr_start</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="n">decay_rate</span><span class="p">)</span> <span class="o">**</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">adjusted_step</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">supported_schedulers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LambdaLR&quot;</span><span class="p">,</span> <span class="s2">&quot;ExponentialLR&quot;</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The learning rate scheduler is not supported for this function. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Supported schedulers are: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">supported_schedulers</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">lr</span><span class="p">,</span> <span class="n">lr_final</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

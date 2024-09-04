@@ -1,0 +1,26 @@
+stable_learning_control.utils.mpi_utils
+=======================================
+
+.. py:module:: stable_learning_control.utils.mpi_utils
+
+.. autoapi-nested-parse::
+
+   Several utilities and helper functions used for managing MPI processes.
+
+   .. note::
+       This module was based on
+       `spinningup repository <https://github.com/openai/spinningup/tree/master/spinup/utils/mpi_tools.py>`_.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/stable_learning_control/utils/mpi_utils/mpi_pytorch/index
+   /autoapi/stable_learning_control/utils/mpi_utils/mpi_tf2/index
+   /autoapi/stable_learning_control/utils/mpi_utils/mpi_tools/index
+
+

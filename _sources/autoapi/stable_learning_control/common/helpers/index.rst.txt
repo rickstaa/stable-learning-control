@@ -1,0 +1,257 @@
+stable_learning_control.common.helpers
+======================================
+
+.. py:module:: stable_learning_control.common.helpers
+
+.. autoapi-nested-parse::
+
+   Contains several helper functions that are used throughout the SLC package.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.common.helpers.atleast_2d
+   stable_learning_control.common.helpers.convert_to_tuple
+   stable_learning_control.common.helpers.flatten
+   stable_learning_control.common.helpers.get_unique_list
+   stable_learning_control.common.helpers.combine_shapes
+   stable_learning_control.common.helpers.strict_dict_update
+   stable_learning_control.common.helpers.valid_str
+   stable_learning_control.common.helpers.all_bools
+   stable_learning_control.common.helpers.is_scalar
+   stable_learning_control.common.helpers.get_env_id
+   stable_learning_control.common.helpers.get_env_class
+   stable_learning_control.common.helpers.parse_config_env_key
+   stable_learning_control.common.helpers.convert_to_snake_case
+   stable_learning_control.common.helpers.friendly_err
+   stable_learning_control.common.helpers.flatten_dict
+   stable_learning_control.common.helpers.convert_to_wandb_config
+   stable_learning_control.common.helpers.convert_to_tb_config
+
+
+Module Contents
+---------------
+
+.. py:function:: atleast_2d(array, axis=1)
+
+   Similar to :meth:`numpy.atleast_2d` but with an additional ``axis`` argument
+   which can be used to specify where the extra dimension should be-added.
+
+   :param array: [description]
+   :type array: numpy.ndarray
+   :param axis: Position in the expanded axes where the new axis (or axes)
+                is placed if the dimension is smaller than 2. Defaults to ``1``.
+   :type axis: int, optional
+
+   :returns: The 2D numpy array.
+   :rtype: numpy.ndarray
+
+
+.. py:function:: convert_to_tuple(input_var)
+
+   Converts input into a tuple.
+
+   :param input_arg: A input variable.
+   :type input_arg: Union[int, float, list]
+
+   :returns: A tuple.
+   :rtype: tuple
+
+
+.. py:function:: flatten(items)
+
+   Flatten a list with any nested iterable.
+
+   :param items: A nested list.
+   :type items: list
+
+   :returns: A flattened version of the list.
+   :rtype: list
+
+
+.. py:function:: get_unique_list(input_list, trim=True)
+
+   Removes non-unique items from a list.
+
+   :param input_list: The input list.
+   :type input_list: list
+   :param trim: Trim empty items. Defaults to ``True``.
+   :type trim: list, optional
+
+   :returns: The new list containing only unique items.
+   :rtype: list
+
+
+.. py:function:: combine_shapes(*args, remove_none=False)
+
+   Combines multiple tuples/ints/floats into one tuple.
+
+   :param \*args: Input arguments to combine.
+   :type \*args: Union[tuple,int,float]
+   :param remove_none: Remove ``None`` values from the resulting tuple.
+   :type remove_none: bool, optional
+
+   :returns: A tuple in which al the input arguments are combined.
+   :rtype: Tuple
+
+
+.. py:function:: strict_dict_update(input_dict, update_obj)
+
+   Updates a dictionary with values supplied in another :obj:`dict` or python
+   :class:`object`. This function performs a strict update, meaning it does not add
+   new keys to the original dictionary.Additionally, if a Python object is supplied, it
+   will be applied to all keys in the dictionary.
+
+   :param input_dict: The input dictionary.
+   :type input_dict: dict
+   :param update_dict: Dictionary or list containing the update
+                       values.
+   :type update_dict: Union[dict, list]
+
+   :returns:
+
+             tuple containing:
+
+                 - input_dict(:obj:`list`): The new updated dictionary.
+                 - ignored (:obj:`str`): The ignored keys.
+   :rtype: (tuple)
+
+
+.. py:function:: valid_str(v)
+
+   Convert a value or values to a string which could go in a filepath.
+
+   .. note::
+       Partly based on `this gist`_.
+
+       .. _`this gist`: https://gist.github.com/seanh/93666
+
+   :param v: List with values.
+   :type v: list
+
+
+.. py:function:: all_bools(vals)
+
+   Check if list contains only strings.
+
+   :param vals: List with values.
+   :type vals: list
+
+   :returns: Boolean specifying the result.
+   :rtype: bool
+
+
+.. py:function:: is_scalar(obj)
+
+   Recursive function that checks whether a input
+
+   :param obj: Object for which you want to check if it is a scalar.
+   :type obj: object
+
+   :returns: Boolean specifying whether the object is a scalar.
+   :rtype: boole
+
+
+.. py:function:: get_env_id(env)
+
+   Returns the environment id of a given environment.
+
+   :param env: The environment.
+   :type env: :obj:`gym.Env`
+
+   :returns: The environment id.
+   :rtype: str
+
+
+.. py:function:: get_env_class(env)
+
+   Get the environment class.
+
+   :param env: The environment.
+   :type env: :obj:`gym.Env`
+
+   :returns: The environment class.
+   :rtype: str
+
+
+.. py:function:: parse_config_env_key(config)
+
+   Replace environment objects (i.e. gym.Env) with their id and class path if they
+   are present in the config. Also removes the 'env_fn' from the config.
+
+   :param config: The configuration dictionary.
+   :type config: dict
+
+   :returns: The parsed configuration dictionary.
+   :rtype: dict
+
+
+.. py:function:: convert_to_snake_case(input_str)
+
+   Converts a string from camel/pascal case to snake case.
+
+   :param input_str: The input string.
+   :type input_str: str
+
+   :returns: The converted string.
+   :rtype: str
+
+
+.. py:function:: friendly_err(err_msg, prepend=True, append=True)
+
+   Add whitespace line to error message to make it more readable.
+
+   :param err_msg: Error message.
+   :type err_msg: str
+   :param prepend: whether to prepend empty whitespace line before the
+                   string. Defaults to ``True``.
+   :type prepend: bool, optional
+   :param append: Whether to append empty whitespace line after the
+                  string. Defaults to ``True``.
+   :type append: bool, optional
+
+   :returns: Error message with extra whitespace line.
+   :rtype: str
+
+
+.. py:function:: flatten_dict(d, parent_key='', sep='.')
+
+   Flattens a nested dictionary.
+
+   :param d: The input dictionary.
+   :type d: dict
+   :param parent_key: The parent key. Defaults to ``""``.
+   :type parent_key: str, optional
+   :param sep: The separator. Defaults to ``"."``.
+   :type sep: str, optional
+
+   :returns: The flattened dictionary.
+   :rtype: dict
+
+
+.. py:function:: convert_to_wandb_config(config)
+
+   Transform the config to a format that looks better on Weights & Biases.
+
+   :param config: The config that should be transformed.
+   :type config: dict
+
+   :returns: The transformed config.
+   :rtype: dict
+
+
+.. py:function:: convert_to_tb_config(config)
+
+   Transform the config to a format that looks better on TensorBoard.
+
+   :param config: The config that should be transformed.
+   :type config: dict
+
+   :returns: The transformed config.
+   :rtype: dict
+
+

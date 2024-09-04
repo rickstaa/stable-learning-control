@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.utils.gym_utils &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="stable_learning_control.utils.import_utils" href="../import_utils/index.html" />
+    <link rel="prev" title="stable_learning_control.utils.eval_utils" href="../eval_utils/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">stable_learning_control</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../algos/index.html">stable_learning_control.algos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../common/index.html">stable_learning_control.common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../disturbers/index.html">stable_learning_control.disturbers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">stable_learning_control.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">stable_learning_control</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">stable_learning_control.utils</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.utils.gym_utils</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/autoapi/stable_learning_control/utils/gym_utils/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-stable_learning_control.utils.gym_utils">
+<span id="stable-learning-control-utils-gym-utils"></span><h1>stable_learning_control.utils.gym_utils<a class="headerlink" href="#module-stable_learning_control.utils.gym_utils" title="Permalink to this heading"></a></h1>
+<p>Contains utilities that can be used with the
+<a class="reference external" href="https://gymnasium.farama.org/">gymnasium package</a>.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.gym_utils.DISCRETE_SPACES" title="stable_learning_control.utils.gym_utils.DISCRETE_SPACES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DISCRETE_SPACES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.utils.gym_utils.CONTINUOUS_SPACES" title="stable_learning_control.utils.gym_utils.CONTINUOUS_SPACES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONTINUOUS_SPACES</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.gym_utils.is_gym_env" title="stable_learning_control.utils.gym_utils.is_gym_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_gym_env</span></code></a>(env)</p></td>
+<td><p>Checks whether object is a gymnasium environment.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.utils.gym_utils.is_continuous_space" title="stable_learning_control.utils.gym_utils.is_continuous_space"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_continuous_space</span></code></a>(space)</p></td>
+<td><p>Checks whether a given space is continuous.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.gym_utils.is_discrete_space" title="stable_learning_control.utils.gym_utils.is_discrete_space"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_discrete_space</span></code></a>(space)</p></td>
+<td><p>Checks whether a given space is discrete.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.utils.gym_utils.validate_gym_env" title="stable_learning_control.utils.gym_utils.validate_gym_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_gym_env</span></code></a>(arg_dict)</p></td>
+<td><p>Make sure that env_name is a real, registered gymnasium environment.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="stable_learning_control.utils.gym_utils.DISCRETE_SPACES">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.gym_utils.</span></span><span class="sig-name descname"><span class="pre">DISCRETE_SPACES</span></span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/gym_utils.html#DISCRETE_SPACES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.gym_utils.DISCRETE_SPACES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="stable_learning_control.utils.gym_utils.CONTINUOUS_SPACES">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.gym_utils.</span></span><span class="sig-name descname"><span class="pre">CONTINUOUS_SPACES</span></span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/gym_utils.html#CONTINUOUS_SPACES"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.gym_utils.CONTINUOUS_SPACES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.gym_utils.is_gym_env">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.gym_utils.</span></span><span class="sig-name descname"><span class="pre">is_gym_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/gym_utils.html#is_gym_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.gym_utils.is_gym_env" title="Permalink to this definition"></a></dt>
+<dd><p>Checks whether object is a gymnasium environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – A python object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean specifying whether object is gymnasium environment.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.gym_utils.is_continuous_space">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.gym_utils.</span></span><span class="sig-name descname"><span class="pre">is_continuous_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/gym_utils.html#is_continuous_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.gym_utils.is_continuous_space" title="Permalink to this definition"></a></dt>
+<dd><p>Checks whether a given space is continuous.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>space</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">gym.spaces</span></code>) – The gymnasium space object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean specifying whether the space is discrete.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.gym_utils.is_discrete_space">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.gym_utils.</span></span><span class="sig-name descname"><span class="pre">is_discrete_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/gym_utils.html#is_discrete_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.gym_utils.is_discrete_space" title="Permalink to this definition"></a></dt>
+<dd><p>Checks whether a given space is discrete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>space</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">gym.spaces</span></code>) – The gymnasium space object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean specifying whether the space is discrete.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.gym_utils.validate_gym_env">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.gym_utils.</span></span><span class="sig-name descname"><span class="pre">validate_gym_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/gym_utils.html#validate_gym_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.gym_utils.validate_gym_env" title="Permalink to this definition"></a></dt>
+<dd><p>Make sure that env_name is a real, registered gymnasium environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – The cmd dictionary.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertError</strong> – Raised when a environment is supplied that is not a valid gymnasium
+environment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../eval_utils/index.html" class="btn btn-neutral float-left" title="stable_learning_control.utils.eval_utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../import_utils/index.html" class="btn btn-neutral float-right" title="stable_learning_control.utils.import_utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

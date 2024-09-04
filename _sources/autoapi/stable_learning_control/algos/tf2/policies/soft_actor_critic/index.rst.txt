@@ -1,0 +1,165 @@
+stable_learning_control.algos.tf2.policies.soft_actor_critic
+============================================================
+
+.. py:module:: stable_learning_control.algos.tf2.policies.soft_actor_critic
+
+.. autoapi-nested-parse::
+
+   Soft actor critic policy.
+
+   This module contains a TensorFlow 2.x implementation of the Soft Actor Critic policy of
+   `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.policies.soft_actor_critic.HIDDEN_SIZES_DEFAULT
+   stable_learning_control.algos.tf2.policies.soft_actor_critic.ACTIVATION_DEFAULT
+   stable_learning_control.algos.tf2.policies.soft_actor_critic.OUTPUT_ACTIVATION_DEFAULT
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.policies.soft_actor_critic.SoftActorCritic
+
+
+Module Contents
+---------------
+
+.. py:data:: HIDDEN_SIZES_DEFAULT
+
+.. py:data:: ACTIVATION_DEFAULT
+
+.. py:data:: OUTPUT_ACTIVATION_DEFAULT
+
+.. py:class:: SoftActorCritic(observation_space, action_space, hidden_sizes=HIDDEN_SIZES_DEFAULT, activation=ACTIVATION_DEFAULT, output_activation=OUTPUT_ACTIVATION_DEFAULT, name='soft_actor_critic')
+
+   Bases: :py:obj:`tensorflow.keras.Model`
+
+
+   Soft Actor-Critic network.
+
+   .. attribute:: self.pi
+
+      The squashed gaussian policy network (actor).
+
+      :type: :class:`~stable_learning_control.algos.tf2.policies.actors.SquashedGaussianActor`
+
+   .. attribute:: self.Q1
+
+      The first soft Q-network (critic).
+
+      :type: :class:`~stable_learning_control.algos.tf2.policies.critics.QCritic`
+
+   .. attribute:: self.Q1
+
+      
+
+      :type: :class:`~stable_learning_control.algos.tf2.policies.critics.QCritic`); The second soft Q-network (critic
+
+   Initialise the SoftActorCritic object.
+
+   :param observation_space: A gymnasium observation space.
+   :type observation_space: :obj:`gym.space.box.Box`
+   :param action_space: A gymnasium action space.
+   :type action_space: :obj:`gym.space.box.Box`
+   :param hidden_sizes: Sizes of the hidden
+                        layers for the actor. Defaults to ``(256, 256)``.
+   :type hidden_sizes: Union[dict, tuple, list], optional
+   :param activation: The
+                      (actor and critic) hidden layers activation function. Defaults to
+                      :obj:`tf.nn.relu`.
+   :type activation: Union[:obj:`dict`, :obj:`tf.keras.activations`], optional
+   :param output_activation: The (actor and critic)  output activation function. Defaults to
+                             :obj:`tf.nn.relu` for the actor and the Identity function for the
+                             critic.
+   :type output_activation: Union[:obj:`dict`, :obj:`tf.keras.activations`], optional
+   :param name: The name given to the SoftActorCritic. Defaults to
+                "soft_actor_critic".
+   :type name: str, optional
+
+
+   .. py:attribute:: obs_dim
+
+
+   .. py:attribute:: act_dim
+
+
+   .. py:attribute:: act_limits
+
+
+   .. py:attribute:: pi
+
+
+   .. py:attribute:: Q1
+
+
+   .. py:attribute:: Q2
+
+
+   .. py:attribute:: obs_dummy
+
+
+   .. py:attribute:: act_dummy
+
+
+   .. py:method:: call(inputs, deterministic=False, with_logprob=True)
+
+      Performs a forward pass through all the networks (Actor, Q critic 1 and Q
+      critic 2).
+
+      :param inputs: tuple containing:
+
+                     -   obs (tf.Tensor): The tensor of observations.
+                     -   act (tf.Tensor): The tensor of actions.
+      :type inputs: tuple
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If false the action is sampled from the stochastic
+                            policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+      :param with_logprob: Whether we want to return the log probability
+                           of an action. Defaults to ``True``.
+      :type with_logprob: bool, optional
+
+      :returns:
+
+                tuple containing:
+
+                    - pi_action (:obj:`tensorflow.Tensor`): The actions given by the policy.
+                    - logp_pi (:obj:`tensorflow.Tensor`): The log probabilities of each of these actions.
+                    - Q1(:obj:`tensorflow.Tensor`): Q-values of the first critic.
+                    - Q2(:obj:`tensorflow.Tensor`): Q-values of the second critic.
+      :rtype: (tuple)
+
+      .. note::
+          Useful for when you want to print out the full network graph using
+          TensorBoard.
+
+
+
+   .. py:method:: act(obs, deterministic=False)
+
+      Returns the action from the current state given the current policy.
+
+      :param obs: The current observation (state).
+      :type obs: tf.Tensor
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The action from the current state given the current
+                policy.
+      :rtype: numpy.ndarray
+
+
+

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.utils.mpi_utils.mpi_tools &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="stable_learning_control.utils.eval_robustness" href="../../eval_robustness/index.html" />
+    <link rel="prev" title="stable_learning_control.utils.mpi_utils.mpi_tf2" href="../mpi_tf2/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html">
+            
+              <img src="../../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">stable_learning_control</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../../algos/index.html">stable_learning_control.algos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../common/index.html">stable_learning_control.common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../disturbers/index.html">stable_learning_control.disturbers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../../index.html">stable_learning_control.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">stable_learning_control</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">stable_learning_control.utils</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">stable_learning_control.utils.mpi_utils</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.utils.mpi_utils.mpi_tools</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/autoapi/stable_learning_control/utils/mpi_utils/mpi_tools/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-stable_learning_control.utils.mpi_utils.mpi_tools">
+<span id="stable-learning-control-utils-mpi-utils-mpi-tools"></span><h1>stable_learning_control.utils.mpi_utils.mpi_tools<a class="headerlink" href="#module-stable_learning_control.utils.mpi_utils.mpi_tools" title="Permalink to this heading"></a></h1>
+<p>Module used for managing MPI processes.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_fork" title="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_fork"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi_fork</span></code></a>(n[, bind_to_core])</p></td>
+<td><p>Re-launches the current script with workers linked by MPI.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.msg" title="stable_learning_control.utils.mpi_utils.mpi_tools.msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msg</span></code></a>(m[, string])</p></td>
+<td><p>Send message from one MPI process to the other.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.pprint" title="stable_learning_control.utils.mpi_utils.mpi_tools.pprint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pprint</span></code></a>([input_str, end, comm])</p></td>
+<td><p>Print for MPI parallel programs: Only rank <code class="docutils literal notranslate"><span class="pre">0</span></code> prints <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.proc_id" title="stable_learning_control.utils.mpi_utils.mpi_tools.proc_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">proc_id</span></code></a>()</p></td>
+<td><p>Get rank of calling process.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.allreduce" title="stable_learning_control.utils.mpi_utils.mpi_tools.allreduce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">allreduce</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Reduced results of a operation across all processes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.num_procs" title="stable_learning_control.utils.mpi_utils.mpi_tools.num_procs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_procs</span></code></a>()</p></td>
+<td><p>Count active MPI processes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.broadcast" title="stable_learning_control.utils.mpi_utils.mpi_tools.broadcast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast</span></code></a>(x[, root])</p></td>
+<td><p>Broadcast variable to other MPI processes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_op" title="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_op"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi_op</span></code></a>(x, op)</p></td>
+<td><p>Perform a MPI operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_sum" title="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi_sum</span></code></a>(x)</p></td>
+<td><p>Take the sum of a scalar or vector over MPI processes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_avg" title="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_avg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi_avg</span></code></a>(x)</p></td>
+<td><p>Average a scalar or vector over MPI processes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../utils/mpi.html#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_statistics_scalar" title="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_statistics_scalar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi_statistics_scalar</span></code></a>(x[, with_min_and_max])</p></td>
+<td><p>Get mean/std and optional min/max of scalar x across MPI processes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_fork">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">mpi_fork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_to_core</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#mpi_fork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_fork" title="Permalink to this definition"></a></dt>
+<dd><p>Re-launches the current script with workers linked by MPI.</p>
+<p>Also, terminates the original process that launched it.</p>
+<p>Taken almost without modification from the Baselines function of the
+<a class="reference external" href="https://github.com/openai/baselines/tree/master/baselines/common/mpi_fork.py">same name</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of process to split into.</p></li>
+<li><p><strong>bind_to_core</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Bind each MPI process to a core. Defaults to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.msg">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Send message from one MPI process to the other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Message you want to send.</p></li>
+<li><p><strong>string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – Additional process description. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.pprint">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">pprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">MPI.COMM_WORLD</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#pprint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.pprint" title="Permalink to this definition"></a></dt>
+<dd><p>Print for MPI parallel programs: Only rank <code class="docutils literal notranslate"><span class="pre">0</span></code> prints <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The string you want to print.</p></li>
+<li><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The print end character.</p></li>
+<li><p><strong>comm</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi4py.MPI.COMM_WORLD</span></code>) – MPI communicator.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.proc_id">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">proc_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#proc_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.proc_id" title="Permalink to this definition"></a></dt>
+<dd><p>Get rank of calling process.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.allreduce">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">allreduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#allreduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.allreduce" title="Permalink to this definition"></a></dt>
+<dd><p>Reduced results of a operation across all processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – All args to pass to thunk.</p></li>
+<li><p><strong>**kwargs</strong> – All kwargs to pass to thunk.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.num_procs">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">num_procs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#num_procs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.num_procs" title="Permalink to this definition"></a></dt>
+<dd><p>Count active MPI processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of mpi processes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.broadcast">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#broadcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.broadcast" title="Permalink to this definition"></a></dt>
+<dd><p>Broadcast variable to other MPI processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – Variable you want to broadcast.</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Rank of the root process. Defaults to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_op">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">mpi_op</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#mpi_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_op" title="Permalink to this definition"></a></dt>
+<dd><p>Perform a MPI operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – Python variable.</p></li>
+<li><p><strong>op</strong> (<em>mpi4py.MPI.Op</em>) – Operation type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reduced mpi operation result.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_sum">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">mpi_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#mpi_sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_sum" title="Permalink to this definition"></a></dt>
+<dd><p>Take the sum of a scalar or vector over MPI processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – Python variable.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reduced sum.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_avg">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">mpi_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#mpi_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_avg" title="Permalink to this definition"></a></dt>
+<dd><p>Average a scalar or vector over MPI processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – Python variable.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reduced average.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.mpi_utils.mpi_tools.mpi_statistics_scalar">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.mpi_utils.mpi_tools.</span></span><span class="sig-name descname"><span class="pre">mpi_statistics_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_min_and_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/stable_learning_control/utils/mpi_utils/mpi_tools.html#mpi_statistics_scalar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.mpi_utils.mpi_tools.mpi_statistics_scalar" title="Permalink to this definition"></a></dt>
+<dd><p>Get mean/std and optional min/max of scalar x across MPI processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – An array containing samples of the scalar to produce statistics
+for.</p></li>
+<li><p><strong>with_min_and_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – If true, return min and max of x in
+addition to mean and std. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reduced mean and standard deviation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../mpi_tf2/index.html" class="btn btn-neutral float-left" title="stable_learning_control.utils.mpi_utils.mpi_tf2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../eval_robustness/index.html" class="btn btn-neutral float-right" title="stable_learning_control.utils.eval_robustness" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

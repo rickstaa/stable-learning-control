@@ -1,0 +1,81 @@
+stable_learning_control.utils.import_utils
+==========================================
+
+.. py:module:: stable_learning_control.utils.import_utils
+
+.. autoapi-nested-parse::
+
+   Contains functions that can be used to import modules and classes while repressing
+   the :class`ImportError` when a module is not found.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.import_utils.lazy_importer
+   stable_learning_control.utils.import_utils.tf_installed
+   stable_learning_control.utils.import_utils.import_tf
+
+
+Module Contents
+---------------
+
+.. py:function:: lazy_importer(module_name, class_name=None, frail=False)
+
+   A simple lazy importer tries to import a module/class but is too lazy to complain
+   when it is not found. This function can be used to (lazily) load modules and
+   classes, meaning only loading them if available.
+
+   :param module_name: The python module you want to import (eg. tensorflow.nn).
+   :type module_name: str
+   :param class_name: The python class you want to import from a given python
+                      module by default ``None``.
+   :type class_name: str
+   :param frail: Throw ImportError when module can not be imported.
+                 Defaults to ``False``.
+   :type frail: bool, optional
+
+   :raises ImportError: A custom import error that is raised when the module is not
+       installed and ``frail`` is ``True``.
+
+   :returns:
+
+             The imported (class) module. Returns ``None`` if the module is not
+                 found.
+   :rtype: module
+
+
+.. py:function:: tf_installed()
+
+   Checks if TensorFlow is installed.
+
+   :returns: Returns ``True`` if TensorFlow is installed.
+   :rtype: bool
+
+
+.. py:function:: import_tf(module_name=None, class_name=None, frail=True)
+
+   Tries to import TensorFlow and throws custom warning if TensorFlow is not
+   installed.
+
+   :param module_name: The tensorflow python module you want to import
+                       (eg. tensorflow.nn). By default ``None``, meaning the TensorFlow package is
+                       imported.
+   :type module_name: str, optional
+   :param class_name: The python class you want to import from the tensorflow python
+                      module (eg. Adam from :mod:`tensorflow.keras.optimizers`). By default
+                      ``None``.
+   :type class_name: str
+   :param frail: Throw :class:`ImportError` when TensorFlow can not be
+                 imported. Defaults to ``True``.
+   :type frail: bool, optional
+
+   :raises ImportError: A custom import error if TensorFlow is not installed.
+
+   :returns: The imported (class) module.
+   :rtype: module
+
+

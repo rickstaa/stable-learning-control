@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.algos.tf2.common.helpers &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="stable_learning_control.algos.tf2.lac" href="../../lac/index.html" />
+    <link rel="prev" title="stable_learning_control.algos.tf2.common.get_lr_scheduler" href="../get_lr_scheduler/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html">
+            
+              <img src="../../../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../../../index.html">stable_learning_control</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../../../index.html">stable_learning_control.algos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../common/index.html">stable_learning_control.common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../disturbers/index.html">stable_learning_control.disturbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../utils/index.html">stable_learning_control.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">stable_learning_control</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">stable_learning_control.algos</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">stable_learning_control.algos.tf2</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">stable_learning_control.algos.tf2.common</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.algos.tf2.common.helpers</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/autoapi/stable_learning_control/algos/tf2/common/helpers/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-stable_learning_control.algos.tf2.common.helpers">
+<span id="stable-learning-control-algos-tf2-common-helpers"></span><h1>stable_learning_control.algos.tf2.common.helpers<a class="headerlink" href="#module-stable_learning_control.algos.tf2.common.helpers" title="Permalink to this heading"></a></h1>
+<p>Several TensorFlow helper functions.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.algos.tf2.common.helpers.set_device" title="stable_learning_control.algos.tf2.common.helpers.set_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_device</span></code></a>([device_type])</p></td>
+<td><p>Sets the computational device given a device type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.algos.tf2.common.helpers.mlp" title="stable_learning_control.algos.tf2.common.helpers.mlp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mlp</span></code></a>(sizes, activation[, output_activation, name])</p></td>
+<td><p>Create a multi-layered perceptron using TensorFlow.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.algos.tf2.common.helpers.count_vars" title="stable_learning_control.algos.tf2.common.helpers.count_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_vars</span></code></a>(module)</p></td>
+<td><p>Returns the total number of parameters of a TensorFlow module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.algos.tf2.common.helpers.rescale" title="stable_learning_control.algos.tf2.common.helpers.rescale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rescale</span></code></a>(data, min_bound, max_bound)</p></td>
+<td><p>Rescale normalized data (i.e. between <code class="docutils literal notranslate"><span class="pre">-1</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>) to a desired range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.algos.tf2.common.helpers.full_model_summary" title="stable_learning_control.algos.tf2.common.helpers.full_model_summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_model_summary</span></code></a>(model)</p></td>
+<td><p>Prints a full summary of all the layers of a TensorFlow model.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.tf2.common.helpers.set_device">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.tf2.common.helpers.</span></span><span class="sig-name descname"><span class="pre">set_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/tf2/common/helpers.html#set_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.tf2.common.helpers.set_device" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the computational device given a device type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>device_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The device type (options: <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu:0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gpu:1</span></code>, etc.). Defaults to <code class="docutils literal notranslate"><span class="pre">cpu</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The type of device that is used.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.tf2.common.helpers.mlp">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.tf2.common.helpers.</span></span><span class="sig-name descname"><span class="pre">mlp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/tf2/common/helpers.html#mlp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.tf2.common.helpers.mlp" title="Permalink to this definition"></a></dt>
+<dd><p>Create a multi-layered perceptron using TensorFlow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sizes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The size of each of the layers.</p></li>
+<li><p><strong>activation</strong> (union[<a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/activations" title="(in TensorFlow v2.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tf.keras.activations</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>]) – The activation
+function used for the hidden layers.</p></li>
+<li><p><strong>output_activation</strong> (union[<a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/activations" title="(in TensorFlow v2.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tf.keras.activations</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>], optional) – The activation function used for the output layers. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – A nameprefix that is added before the layer name. Defaults
+to an empty string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The multi-layered perceptron.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Sequential" title="(in TensorFlow v2.8)">tf.keras.Sequential</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.tf2.common.helpers.count_vars">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.tf2.common.helpers.</span></span><span class="sig-name descname"><span class="pre">count_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/tf2/common/helpers.html#count_vars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.tf2.common.helpers.count_vars" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the total number of parameters of a TensorFlow module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>module</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model" title="(in TensorFlow v2.8)"><em>tf.keras.Model</em></a><em>, </em><em>tf.module</em><em>]</em>) – The TensorFlow model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total number of parameters inside the module.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.int64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.tf2.common.helpers.rescale">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.tf2.common.helpers.</span></span><span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bound</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/tf2/common/helpers.html#rescale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.tf2.common.helpers.rescale" title="Permalink to this definition"></a></dt>
+<dd><p>Rescale normalized data (i.e. between <code class="docutils literal notranslate"><span class="pre">-1</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>) to a desired range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>numpy.ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>]</em>) – Normalized input data.</p></li>
+<li><p><strong>min_bound</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>numpy.ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>]</em>) – Array containing the minimum value of
+the desired range.</p></li>
+<li><p><strong>max_bound</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><em>numpy.ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>]</em>) – Array containing the maximum value of
+the desired range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Array which has it values scaled between the min and max</dt><dd><p>boundaries.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.tf2.common.helpers.full_model_summary">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.tf2.common.helpers.</span></span><span class="sig-name descname"><span class="pre">full_model_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../../_modules/stable_learning_control/algos/tf2/common/helpers.html#full_model_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.tf2.common.helpers.full_model_summary" title="Permalink to this definition"></a></dt>
+<dd><p>Prints a full summary of all the layers of a TensorFlow model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>layer</strong> (<a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/layers" title="(in TensorFlow v2.8)"><code class="docutils literal notranslate"><span class="pre">tf.keras.layers</span></code></a>) – The model to print the full summary of.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../get_lr_scheduler/index.html" class="btn btn-neutral float-left" title="stable_learning_control.algos.tf2.common.get_lr_scheduler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../lac/index.html" class="btn btn-neutral float-right" title="stable_learning_control.algos.tf2.lac" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

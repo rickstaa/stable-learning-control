@@ -1,0 +1,252 @@
+stable_learning_control.utils.eval_robustness
+=============================================
+
+.. py:module:: stable_learning_control.utils.eval_robustness
+
+.. autoapi-nested-parse::
+
+   Contains a utility that can be used to evaluate the stability and robustness of an
+   algorithm. See the :ref:`Robustness Evaluation Documentation <robustness_eval>` for
+   more information.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.eval_robustness.args
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.eval_robustness.get_human_readable_disturber_label
+   stable_learning_control.utils.eval_robustness.add_disturbance_label_column
+   stable_learning_control.utils.eval_robustness.get_available_disturbers
+   stable_learning_control.utils.eval_robustness.get_available_disturbers_string
+   stable_learning_control.utils.eval_robustness.print_available_disturbers
+   stable_learning_control.utils.eval_robustness.load_disturber
+   stable_learning_control.utils.eval_robustness.retrieve_disturber_variants
+   stable_learning_control.utils.eval_robustness.run_disturbed_policy
+   stable_learning_control.utils.eval_robustness.plot_robustness_results
+
+
+Module Contents
+---------------
+
+.. py:function:: get_human_readable_disturber_label(disturber_label)
+
+   Get a human readable label for a given disturber label.
+
+   :param disturber_label: The disturber label.
+   :type disturber_label: str
+
+   :returns: The human readable disturber label.
+   :rtype: str
+
+
+.. py:function:: add_disturbance_label_column(dataframe)
+
+   Add a column that contains a disturbance label. This label will be created
+   by concatenating all disturber parameters.
+
+   .. note::
+       This function will not add a disturbance label if the dataframe already contains
+       a disturbance label.
+
+   :param dataframe: The dataframe containing the disturber parameters.
+   :type dataframe: pd.DataFrame
+
+   :returns: The dataframe with the disturbance label column.
+   :rtype: pd.DataFrame
+
+   :raises ValueError: If the dataframe does not contain a 'disturber' column.
+
+
+.. py:function:: get_available_disturbers()
+
+   Get all disturbers that are available in the ``stable_learning_control`` package.
+
+   :returns: List with all available disturbers.
+   :rtype: list
+
+
+.. py:function:: get_available_disturbers_string()
+
+   Get a string with all available disturbers that are available in the
+   ``stable_learning_control`` package.
+
+   :returns: String with all available disturbers.
+   :rtype: str
+
+
+.. py:function:: print_available_disturbers()
+
+   Print all available disturbers that are available in the
+   ``stable_learning_control`` package.
+
+
+.. py:function:: load_disturber(disturber_id)
+
+   Load a given disturber. The disturber name can include an unloaded module in
+   "module:disturber_name" style. If no module is given, the disturber is loaded from
+   the ``stable_learning_control.disturbers`` module.
+
+   :param disturber_id: The name of the disturber you want to load.
+   :type disturber_id: str
+
+   :returns: The loaded disturber object.
+
+   :raises ModuleNotFoundError: If the given module could not be imported.
+   :raises TypeError: If the given disturber is not a subclass of the :class:`gym.Wrapper`
+       class.
+   :raises AttributeError: If the given disturber does not exist in the given module.
+
+
+.. py:function:: retrieve_disturber_variants(disturber_range_dict)
+
+   Retrieves all disturber variants from the given disturber configuration
+   dictionary. Variants are created by combining the key values over indexes.
+
+   :param disturber_range_dict: The disturber configuration dictionary.
+   :type disturber_range_dict: dict
+
+   :returns: List with all disturber variants.
+   :rtype: list
+
+   :raises TypeError: Thrown when the values in the disturber configuration variables are
+       not of type ``float``, ``int`` or ``list``.
+   :raises ValueError: Thrown when the values in the disturber configuration variables do
+       not have the same length.
+
+
+.. py:function:: run_disturbed_policy(env, policy, disturber, disturber_config, include_baseline=True, max_ep_len=None, num_episodes=100, render=True, deterministic=True, save_result=False, output_dir=None, use_wandb=False, wandb_job_type=None, wandb_project=None, wandb_group=None, wandb_run_name=None)
+
+   Evaluates the disturbed policy inside a given gymnasium environment. This
+   function loops to all the disturbances that are specified in the environment and
+   outputs the results of all these episodes as a :obj:pandas.Dataframe`.
+
+   :param env: The gymnasium environment.
+   :type env: :obj:`gym.env`
+   :param policy: The policy.
+   :type policy: Union[tf.keras.Model, torch.nn.Module]
+   :param disturber (obj: `gym.Wrapper`): The disturber you want to use.
+   :param disturber_config: The disturber configuration dictionary. Contains the
+                            variables that you want to pass to the disturber. It sets up the range of
+                            disturbances you wish to evaluate.
+   :type disturber_config: dict
+   :param include_baseline: Whether you want to automatically add the baseline
+                            (i.e. zero disturbance) when it not present. Defaults to ``True``.
+   :type include_baseline: bool
+   :param max_ep_len: The maximum episode length. Defaults to ``None``.
+                      Meaning the maximum episode length of the environment is used.
+   :type max_ep_len: int, optional
+   :param num_episodes: Number of episodes you want to perform in the
+                        environment. Defaults to ``100``.
+   :type num_episodes: int, optional
+   :param render: Whether you want to render the episode to the screen.
+                  Defaults to ``True``.
+   :type render: bool, optional
+   :param deterministic: Whether you want the action from the policy to
+                         be deterministic. Defaults to ``True``.
+   :type deterministic: bool, optional
+   :param save_result: Whether you want to save the dataframe with the
+                       results to disk. Defaults to ``False``.
+   :type save_result: bool, optional
+   :param output_dir: A directory for saving the diagnostics to. If
+                      ``None``, defaults to a temp directory of the form
+                      ``/tmp/experiments/somerandomnumber``.
+   :type output_dir: str, optional
+   :param use_wandb: Whether to use Weights & Biases for logging.
+                     Defaults to ``False``.
+   :type use_wandb: bool, optional
+   :param wandb_job_type: The type of job you are running. Defaults
+                          to ``None``.
+   :type wandb_job_type: str, optional
+   :param wandb_project: The name of the Weights & Biases
+                         project. Defaults to ``None`` which means that the project name is
+                         automatically generated.
+   :type wandb_project: str, optional
+   :param wandb_group: The name of the Weights & Biases group you want
+                       to assign the run to. Defaults to ``None``.
+   :type wandb_group: str, optional
+   :param wandb_run_name: The name of the Weights & Biases run. Defaults
+                          to ``None`` which means that the run name is automatically generated.
+   :type wandb_run_name: str, optional
+
+   :returns:
+
+             Dataframe that contains information about all the
+                 episodes and disturbances.
+   :rtype: :obj:`pandas.DataFrame`
+
+   :raises AssertionError: Thrown when the environment or policy is not found.
+
+
+.. py:function:: plot_robustness_results(dataframe, observations=None, references=None, reference_errors=None, absolute_reference_errors=False, merge_reference_errors=False, use_subplots=False, use_time=False, save_plots=False, font_scale=1.5, figs_fmt='pdf', output_dir=None, use_wandb=False, wandb_job_type=None, wandb_project=None, wandb_group=None, wandb_run_name=None)
+
+   Creates several useful plots out of a robustness evaluation dataframe that was
+   collected in the :meth:`run_disturbed_policy` method.
+
+   :param dataframe: The data frame that contains the robustness
+                     evaluation information information.
+   :type dataframe: pandas.DataFrame
+   :param observations: The observations you want to show in the observations plot.
+                        By default for clarity only the first 6 observations are shown.
+   :type observations: list
+   :param references: The references you want to show in the reference plot. By
+                      default for clarity only the first references is shown.
+   :type references: list
+   :param reference_errors: The reference errors you want to show in the reference
+                            error plot. By default for clarity only the first reference error is shown.
+   :type reference_errors: list
+   :param absolute_reference_errors: Whether you want to plot the absolute
+                                     reference errors instead of relative reference errors. Defaults to
+                                     ``False``.
+   :type absolute_reference_errors: bool
+   :param merge_reference_errors: Whether you want to merge the reference errors
+                                  into one reference error. Defaults to ``False``.
+   :type merge_reference_errors: bool
+   :param use_subplots: Whether you want to use subplots instead of separate
+                        figures. Defaults to ``False``.
+   :type use_subplots: bool
+   :param use_time: Whether you want to use the time as the x-axis. Defaults to
+                    ``False``.
+   :type use_time: bool
+   :param save_plots: Whether you want to save the created plots to disk. Defaults
+                      to ``False``.
+   :type save_plots: bool
+   :param font_scale: The font scale you want to use for the plot text. Defaults to
+                      ``1.5``.
+   :type font_scale: int
+   :param figs_fmt: In which format you want to save the plots. Defaults
+                    to ``pdf``.
+   :type figs_fmt: str, optional
+   :param output_dir: The directory where you want to save the output
+                      figures to. If ``None``, defaults to a temp directory of the form
+                      ``/tmp/experiments/somerandomnumber``.
+   :type output_dir: str, optional
+   :param use_wandb: Whether to use Weights & Biases for logging.
+                     Defaults to ``False``.
+   :type use_wandb: bool, optional
+   :param wandb_job_type: The type of job you are running. Defaults
+                          to ``None``.
+   :type wandb_job_type: str, optional
+   :param wandb_project: The name of the Weights & Biases
+                         project. Defaults to ``None`` which means that the project name is
+                         automatically generated.
+   :type wandb_project: str, optional
+   :param wandb_group: The name of the Weights & Biases group you want
+                       to assign the run to. Defaults to ``None``.
+   :type wandb_group: str, optional
+   :param wandb_run_name: The name of the Weights & Biases run. Defaults
+                          to ``None`` which means that the run name is automatically generated.
+   :type wandb_run_name: str, optional
+
+
+.. py:data:: args
+

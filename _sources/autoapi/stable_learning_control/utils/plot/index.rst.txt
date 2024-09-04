@@ -1,0 +1,237 @@
+stable_learning_control.utils.plot
+==================================
+
+.. py:module:: stable_learning_control.utils.plot
+
+.. autoapi-nested-parse::
+
+   Module used for plotting the training results.
+
+   .. note::
+       This module was based on
+       `Spinning Up repository <https://github.com/openai/spinningup/tree/master/spinup/utils/plot.py>`__.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.plot.DIV_LINE_WIDTH
+   stable_learning_control.utils.plot.VALID_DATA_FILES
+   stable_learning_control.utils.plot.exp_idx
+   stable_learning_control.utils.plot.units
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.plot.plot_data
+   stable_learning_control.utils.plot.get_datasets
+   stable_learning_control.utils.plot.get_all_datasets
+   stable_learning_control.utils.plot.make_plots
+   stable_learning_control.utils.plot.plot
+
+
+Module Contents
+---------------
+
+.. py:data:: DIV_LINE_WIDTH
+   :value: 50
+
+
+.. py:data:: VALID_DATA_FILES
+   :value: ['progress.txt', 'progress.csv']
+
+
+.. py:data:: exp_idx
+   :value: 0
+
+
+.. py:data:: units
+
+.. py:function:: plot_data(data, xaxis='Epoch', value='AverageEpRet', condition='Condition1', errorbar='sd', smooth=1, font_scale=1.5, style='darkgrid', **kwargs)
+
+   Function used to plot data.
+
+   :param data: The data you want to plot.
+   :type data: obj
+   :param xaxis: Pick what column from data is used for the x-axis.
+                 Defaults to ``TotalEnvInteracts``.
+   :type xaxis: str
+   :param value: Pick what columns from data to graph on the y-axis.
+                 Submitting multiple values will produce multiple graphs. Defaults
+                 to ``Performance``, which is not an actual output of any algorithm.
+                 Instead, ``Performance`` refers to either ``AverageEpRet``, the
+                 correct performance measure for the on-policy algorithms, or
+                 ``AverageTestEpRet``, the correct performance measure for the
+                 off-policy algorithms. The plotter will automatically figure out
+                 which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
+                 each separate logdir.
+   :type value: str
+   :param condition: The condition to search for. By default
+                     ``Condition1``.
+   :type condition: str, optional
+   :param errorbar: The error bar you want to use for the plot. Defaults
+                    to ``sd``.
+   :type errorbar: str
+   :param smooth: Smooth data by averaging it over a fixed window. This
+                  parameter says how wide the averaging window will be.
+   :type smooth: int
+   :param font_scale: The font scale you want to use for the plot text.
+   :type font_scale: int
+   :param style: The style you want to use for the plot.
+   :type style: str
+
+
+.. py:function:: get_datasets(logdir, condition=None)
+
+   Recursively look through logdir for output files produced by
+   :class:`~stable_learning_control.utils.log_utils.logx.EpochLogger`.
+
+   Assumes that any file ``progress.(csv|txt)`` is a valid hit.
+
+   :param logdir: The log directory to search in.
+   :type logdir: str
+   :param condition: The condition to search for. By default ``None``.
+   :type condition: str, optional
+
+
+.. py:function:: get_all_datasets(all_logdirs, legend=None, select=None, exclude=None)
+
+   For every entry in all_logdirs,
+       1) check if the entry is a real directory and if it is,
+          pull data from it;
+
+       2) if not, check to see if the entry is a prefix for a
+          real directory, and pull data from that.
+
+   :param all_logdirs: A list of lig directories you want to use.
+   :type all_logdirs: list
+   :param legend: Optional way to specify legend for the plot. The
+                  plotter legend will automatically use the ``exp_name`` from the
+                  config.json file, unless you tell it otherwise through this flag.
+                  This only works if you provide a name for each directory that
+                  will get plotted. (Note: this may not be the same as the number
+                  of logdir args you provide! Recall that the plotter looks for
+                  autocompletes of the logdir args: there may be more than one
+                  match for a given logdir prefix, and you will need to provide a
+                  legend string for each one of those matches---unless you have
+                  removed some of them as candidates via selection or exclusion
+                  rules (below).)
+   :type legend: list[str]
+   :param select: Optional selection rule: the plotter will only show
+                  curves from logdirs that contain all of these substrings.
+   :type select: list[str]
+   :param exclude: Optional exclusion rule: plotter will only show
+                   curves from logdirs that do not contain these substrings.
+   :type exclude: list[str]
+
+
+.. py:function:: make_plots(all_logdirs, legend=None, xaxis=None, values=None, count=False, font_scale=1.5, style='darkgrid', smooth=1, select=None, exclude=None, estimator='mean')
+
+   Function used for generating the plots.
+
+   :param logdir: As many log directories (or prefixes to log
+                  directories, which the plotter will autocomplete internally) as
+                  you'd like to plot from.
+   :type logdir: str
+   :param legend: Optional way to specify legend for the plot. The
+                  plotter legend will automatically use the ``exp_name`` from the
+                  config.json file, unless you tell it otherwise through this flag.
+                  This only works if you provide a name for each directory that
+                  will get plotted. (Note: this may not be the same as the number
+                  of logdir args you provide! Recall that the plotter looks for
+                  autocompletes of the logdir args: there may be more than one
+                  match for a given logdir prefix, and you will need to provide a
+                  legend string for each one of those matches---unless you have
+                  removed some of them as candidates via selection or exclusion
+                  rules (below).)
+   :type legend: list[str]
+   :param xaxis: Pick what column from data is used for the x-axis.
+                 Defaults to ``TotalEnvInteracts``.
+   :type xaxis: str
+   :param values: Pick what columns from data to graph on the y-axis.
+                  Submitting multiple values will produce multiple graphs. Defaults
+                  to ``Performance``, which is not an actual output of any algorithm.
+                  Instead, ``Performance`` refers to either ``AverageEpRet``, the
+                  correct performance measure for the on-policy algorithms, or
+                  ``AverageTestEpRet``, the correct performance measure for the
+                  off-policy algorithms. The plotter will automatically figure out
+                  which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
+                  each separate logdir.
+   :type values: list
+   :param count: Optional flag. By default, the plotter shows y-values which
+                 are averaged across all results that share an ``exp_name``,
+                 which is typically a set of identical experiments that only vary
+                 in random seed. But if you'd like to see all of those curves
+                 separately, use the ``--count`` flag.
+   :param font_scale: The font scale you want to use for the plot text.
+   :type font_scale: int
+   :param style: The style you want to use for the plot.
+   :type style: str
+   :param smooth: Smooth data by averaging it over a fixed window. This
+                  parameter says how wide the averaging window will be.
+   :type smooth: int
+   :param select: Optional selection rule: the plotter will only show
+                  curves from logdirs that contain all of these substrings.
+   :type select: list[str]
+   :param exclude: Optional exclusion rule: plotter will only show
+                   curves from logdirs that do not contain these substrings.
+   :type exclude: list[str]
+   :param estimator: The estimator you want to use in your plot (ie. mean, min max).
+   :type estimator: str
+
+
+.. py:function:: plot()
+
+   Run the plot utility.
+
+   :param logdir: As many log directories (or prefixes to log
+                  directories, which the plotter will autocomplete internally) as
+                  you'd like to plot from.
+   :type logdir: list[str]
+   :param legend: Optional way to specify legend for the plot. The
+                  plotter legend will automatically use the ``exp_name`` from the
+                  config.json file, unless you tell it otherwise through this flag.
+                  This only works if you provide a name for each directory that
+                  will get plotted. (Note: this may not be the same as the number
+                  of logdir args you provide! Recall that the plotter looks for
+                  autocompletes of the logdir args: there may be more than one
+                  match for a given logdir prefix, and you will need to provide a
+                  legend string for each one of those matches---unless you have
+                  removed some of them as candidates via selection or exclusion
+                  rules (below).)
+   :type legend: list[str]
+   :param xaxis: Pick what column from data is used for the x-axis.
+                 Defaults to ``TotalEnvInteracts``.
+   :type xaxis: str
+   :param value: Pick what columns from data to graph on the y-axis.
+                 Submitting multiple values will produce multiple graphs. Defaults
+                 to ``Performance``, which is not an actual output of any algorithm.
+                 Instead, ``Performance`` refers to either ``AverageEpRet``, the
+                 correct performance measure for the on-policy algorithms, or
+                 ``AverageTestEpRet``, the correct performance measure for the
+                 off-policy algorithms. The plotter will automatically figure out
+                 which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
+                 each separate logdir.
+   :type value: str
+   :param count: Optional flag. By default, the plotter shows y-values which
+                 are averaged across all results that share an ``exp_name``,
+                 which is typically a set of identical experiments that only vary
+                 in random seed. But if you'd like to see all of those curves
+                 separately, use the ``--count`` flag.
+   :param smooth: Smooth data by averaging it over a fixed window. This
+                  parameter says how wide the averaging window will be.
+   :type smooth: int
+   :param select: Optional selection rule: the plotter will only show
+                  curves from logdirs that contain all of these substrings.
+   :type select: list[str]
+   :param exclude: Optional exclusion rule: plotter will only show
+                   curves from logdirs that do not contain these substrings.
+   :type exclude: list[str]
+
+

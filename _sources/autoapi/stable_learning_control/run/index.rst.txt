@@ -1,0 +1,179 @@
+stable_learning_control.run
+===========================
+
+.. py:module:: stable_learning_control.run
+
+.. autoapi-nested-parse::
+
+   Responsible for creating the CLI for the stable_learning_control package. It can
+   be used to start the training of an algorithm, or run any of the other utilities.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.run.RUN_KEYS
+   stable_learning_control.run.SUBSTITUTIONS
+   stable_learning_control.run.MPI_COMPATIBLE_ALGOS
+   stable_learning_control.run.BASE_ALGO_NAMES
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.run._parse_hyperparameter_variants
+   stable_learning_control.run._parse_exp_cfg
+   stable_learning_control.run._parse_eval_cfg
+   stable_learning_control.run._add_backend_to_cmd
+   stable_learning_control.run._process_arg
+   stable_learning_control.run._add_with_backends
+   stable_learning_control.run._parse_and_execute_grid_search
+   stable_learning_control.run.run
+
+
+Module Contents
+---------------
+
+.. py:data:: RUN_KEYS
+   :value: ['num_cpu', 'data_dir', 'datestamp']
+
+
+.. py:data:: SUBSTITUTIONS
+
+.. py:data:: MPI_COMPATIBLE_ALGOS
+   :value: []
+
+
+.. py:data:: BASE_ALGO_NAMES
+   :value: ['sac', 'lac', 'latc']
+
+
+.. py:function:: _parse_hyperparameter_variants(exp_val)
+
+   Function parses exp config values to make sure that comma/space separated
+   strings (i.e. ``5, 3, 2`` or ``5 3 2``)) are recognized as hyperparameter variants.
+
+   :param exp_val: The variable to parse.
+   :type exp_val: object
+
+   :returns:
+
+             A hyper parameter string or list.
+                 Returns ``None`` if ``exp_val`` is ``None``.
+   :rtype: union[:obj:`str`, :obj:`list`, :obj:`None`]
+
+
+.. py:function:: _parse_exp_cfg(cmd_line_args)
+
+   This function parses the cmd line args to see if it contains the ``exp_cfg``
+   flag. If this flag is present it uses the ``exp_cfg`` file path (next cmd_line arg)
+   to add any hyperparameters found in this experimental configuration file to the cmd
+   line arguments.
+
+   :param cmd_line_args: The cmd line input arguments.
+   :type cmd_line_args: list
+
+   :returns:
+
+             Modified cmd line argument list that also contains any hyperparameters
+                 that were specified in a experimental cfg file.
+   :rtype: list
+
+   .. note::
+       This function assumes comma/space separated strings (i.e. ``5, 3, 2`` or
+       ``5 3 2``)) to be hyperparmeter variants.
+
+
+.. py:function:: _parse_eval_cfg(cmd_line_args)
+
+   This function parses the cmd line args to see if it contains the ``eval_cfg``
+   flag. If this flag is present it uses the ``eval_cfg`` file path (next cmd_line arg)
+   to add any hyperparameters found in this eval configuration file to the cmd
+   line arguments.
+
+   :param cmd_line_args: The cmd line input arguments.
+   :type cmd_line_args: list
+
+   :returns:
+
+             Modified cmd line argument list that also contains any hyperparameters
+                 that were specified in a eval cfg file.
+   :rtype: list
+
+   .. note::
+       This function assumes comma/space separated strings (i.e. ``5, 3, 2`` or
+       ``5 3 2``)) to be hyperparmeter variants.
+
+
+.. py:function:: _add_backend_to_cmd(cmd)
+
+   Adds the backend suffix to the input command.
+
+   :param cmd: The cmd string.
+   :type cmd: str
+
+   :returns:
+
+             tuple containing:
+
+                 - cmd (:obj:`str`): The new cmd.
+                 - backend (:obj:`str`): The used backend (options: ``tf2`` or ``pytorch``).
+   :rtype: (tuple)
+
+   :raises AssertError: Raised when a the TensorFlow backend is requested but TensorFlow is not
+       installed.
+
+
+.. py:function:: _process_arg(arg, backend=None)
+
+   Process an arg by eval-ing it, so users can specify more than just strings at
+   the command line (eg allows for users to give functions as args).
+
+   :param arg: Input argument.
+   :type arg: str
+   :param backend: The machine learning backend you want to use. Options are ``tf2``
+                   or ``torch``. By default ``None``, meaning no backend is assumed.
+   :type backend: str
+
+   :returns: Processed input argument.
+   :rtype: obj
+
+
+.. py:function:: _add_with_backends(algo_list)
+
+   Helper function to build lists with backend-specific function names
+
+   :param algo_list: List of algorithms.
+   :type algo_list: list
+
+   :returns: The algorithms with their backends.
+   :rtype: list
+
+
+.. py:function:: _parse_and_execute_grid_search(cmd, args)
+
+   Interprets algorithm name and cmd line args into an ExperimentGrid.
+
+   :param cmd: The requested CLI command.
+   :type cmd: str
+   :param args: The command arguments.
+   :type args: list
+
+   :raises ImportError: A custom import error if TensorFlow is not installed.
+
+
+.. py:function:: run(input_args)
+
+   Function that is used to run the experiments. I modified this component
+   compared to the SpiningUp such that I can import it in other
+   modules.
+
+   :param input_args: List with command line argument.
+   :type input_args: list
+
+

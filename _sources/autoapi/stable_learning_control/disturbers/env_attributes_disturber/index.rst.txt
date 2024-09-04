@@ -1,0 +1,58 @@
+stable_learning_control.disturbers.env_attributes_disturber
+===========================================================
+
+.. py:module:: stable_learning_control.disturbers.env_attributes_disturber
+
+.. autoapi-nested-parse::
+
+   Contains a small gymnasium wrapper that can be used to disturb a physics parameter of
+   a gymnasium environment.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.disturbers.env_attributes_disturber.EnvAttributesDisturber
+
+
+Module Contents
+---------------
+
+.. py:class:: EnvAttributesDisturber(env, attributes, values)
+
+   Bases: :py:obj:`gymnasium.Wrapper`
+
+
+   A gymnasium wrapper that can be used to disturb a physics parameter of a
+   gymnasium environment.
+
+   .. attribute:: disturbance_label
+
+      A label for the disturbance that can be used for
+      logging or plotting. Used in the
+      :mod:`~stable_learning_control.utils.eval_robustness` utility.
+
+      :type: str
+
+   Initialise the EnvAttributesDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param attributes: A list of attributes to disturb.
+   :type attributes: list
+   :param values: A list of values to set the parameters to.
+   :type values: list
+
+   :raises ValueError: The number of parameters and values must be the same.
+   :raises AttributeError: The parameter does not exist in the environment.
+
+
+   .. py:attribute:: attributes
+
+
+   .. py:attribute:: values
+
+

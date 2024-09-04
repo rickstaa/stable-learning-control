@@ -1,0 +1,84 @@
+stable_learning_control.algos.pytorch.policies.critics.L_critic
+===============================================================
+
+.. py:module:: stable_learning_control.algos.pytorch.policies.critics.L_critic
+
+.. autoapi-nested-parse::
+
+   Lyapunov critic policy.
+
+   This module contains a Pytorch implementation of the Lyapunov Critic policy of
+   `Han et al. 2020 <https://arxiv.org/abs/2004.14288>`_.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.pytorch.policies.critics.L_critic.LCritic
+
+
+Module Contents
+---------------
+
+.. py:class:: LCritic(obs_dim, act_dim, hidden_sizes, activation=nn.ReLU)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Soft Lyapunov critic Network.
+
+   .. attribute:: L
+
+      The layers of the network.
+
+      :type: torch.nn.Sequential
+
+   Initialise the LCritic object.
+
+   :param obs_dim: Dimension of the observation space.
+   :type obs_dim: int
+   :param act_dim: Dimension of the action space.
+   :type act_dim: int
+   :param hidden_sizes: Sizes of the hidden layers.
+   :type hidden_sizes: list
+   :param activation: The activation
+                      function. Defaults to :obj:`torch.nn.ReLU`.
+   :type activation: :obj:`torch.nn.modules.activation`, optional
+
+
+   .. py:attribute:: __device_warning_logged
+      :value: False
+
+
+
+   .. py:attribute:: _obs_same_device
+      :value: False
+
+
+
+   .. py:attribute:: _act_same_device
+      :value: False
+
+
+
+   .. py:attribute:: L
+
+
+   .. py:method:: forward(obs, act)
+
+      Perform forward pass through the network.
+
+      :param obs: The tensor of observations.
+      :type obs: torch.Tensor
+      :param act: The tensor of actions.
+      :type act: torch.Tensor
+
+      :returns:     The tensor containing the lyapunov values of the input observations and
+                    actions.
+      :rtype: torch.Tensor
+
+
+

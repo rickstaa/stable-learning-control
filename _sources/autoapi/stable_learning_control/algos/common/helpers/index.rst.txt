@@ -1,0 +1,84 @@
+stable_learning_control.algos.common.helpers
+============================================
+
+.. py:module:: stable_learning_control.algos.common.helpers
+
+.. autoapi-nested-parse::
+
+   Functions that are used in multiple Pytorch and TensorFlow algorithms.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.common.helpers.tf
+   stable_learning_control.algos.common.helpers.tensorflow
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.common.helpers.heuristic_target_entropy
+   stable_learning_control.algos.common.helpers.get_activation_function
+   stable_learning_control.algos.common.helpers.discount_cumsum
+
+
+Module Contents
+---------------
+
+.. py:data:: tf
+
+.. py:data:: tensorflow
+
+.. py:function:: heuristic_target_entropy(action_space)
+
+   Returns a heuristic target entropy for a given action space using the method
+   explained in `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
+
+   :param action_space: The action space.
+   :type action_space: :obj:`:obj:`gym.spaces``
+
+   :raises NotImplementedError: If no heuristic target entropy has yet been implemented
+       for the given action space.
+
+   :returns: The target entropy.
+   :rtype: :obj:`numpy.int64`
+
+
+.. py:function:: get_activation_function(activation_fn_name, backend='torch')
+
+   Get a given torch activation function.
+
+   :param activation_fn_name: The name of the activation function you want to
+                              retrieve.
+   :type activation_fn_name: str
+   :param backend: The machine learning backend you want to use. Options are
+                   ``torch`` or ``tf2``. By default ``torch``.
+   :type backend: str
+
+   :raises ValueError: Thrown if the activation function does not exist within the
+       backend.
+
+   :returns: The torch activation function.
+   :rtype: :obj:`torch.nn.modules.activation`
+
+
+.. py:function:: discount_cumsum(x, discount)
+
+   Calculate the discounted cumsum.
+
+   .. seealso::
+       Magic from rllab for computing discounted cumulative sums of vectors.
+
+   Input:
+       vector x: [x0, x1, x2]
+
+   Output:
+       [x0 + discount * x1 + discount^2 * x2, x1 + discount * x2, x2]
+
+

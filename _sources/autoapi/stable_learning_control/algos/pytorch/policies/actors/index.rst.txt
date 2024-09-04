@@ -1,0 +1,182 @@
+stable_learning_control.algos.pytorch.policies.actors
+=====================================================
+
+.. py:module:: stable_learning_control.algos.pytorch.policies.actors
+
+.. autoapi-nested-parse::
+
+   Actor network structures.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor
+
+
+Package Contents
+----------------
+
+.. py:class:: SquashedGaussianActor(obs_dim, act_dim, hidden_sizes, activation=nn.ReLU, output_activation=nn.ReLU, act_limits=None, log_std_min=-20, log_std_max=2.0)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   The squashed gaussian actor network.
+
+   .. attribute:: net
+
+      The input/hidden layers of the
+      network.
+
+      :type: torch.nn.Sequential
+
+   .. attribute:: mu
+
+      The output layer which returns the mean of
+      the actions.
+
+      :type: torch.nn.Linear
+
+   .. attribute:: log_std_layer
+
+      The output layer which returns
+      the log standard deviation of the actions.
+
+      :type: torch.nn.Linear
+
+   .. attribute:: act_limits
+
+      The ``high`` and ``low`` action bounds of the
+      environment. Used for rescaling the actions that comes out of network
+      from ``(-1, 1)`` to ``(low, high)``. No scaling will be applied if left
+      empty.
+
+      :type: dict, optional
+
+   Initialise the SquashedGaussianActor object.
+
+   :param obs_dim: Dimension of the observation space.
+   :type obs_dim: int
+   :param act_dim: Dimension of the action space.
+   :type act_dim: int
+   :param hidden_sizes: Sizes of the hidden layers.
+   :type hidden_sizes: list
+   :param activation: The activation function.
+                      Defaults to :obj:`torch.nn.ReLU`.
+   :type activation: :obj:`torch.nn.modules.activation`
+   :param output_activation: The
+                             activation function used for the output layers. Defaults to
+                             :obj:`torch.nn.ReLU`.
+   :type output_activation: :obj:`torch.nn.modules.activation`, optional
+   :param act_limits: The ``high`` and ``low`` action bounds of the
+                      environment. Used for rescaling the actions that comes out of network
+                      from ``(-1, 1)`` to ``(low, high)``.
+   :type act_limits: dict
+   :param log_std_min: The minimum log standard deviation. Defaults
+                       to ``-20``.
+   :type log_std_min: int, optional
+   :param log_std_max: The maximum log standard deviation. Defaults
+                       to ``2.0``.
+   :type log_std_max: float, optional
+
+
+   .. py:attribute:: __device_warning_logged
+      :value: False
+
+
+
+   .. py:attribute:: act_limits
+
+
+   .. py:attribute:: _log_std_min
+
+
+   .. py:attribute:: _log_std_max
+
+
+   .. py:attribute:: net
+
+
+   .. py:attribute:: mu_layer
+
+
+   .. py:attribute:: log_std_layer
+
+
+   .. py:method:: forward(obs, deterministic=False, with_logprob=True)
+
+      Perform forward pass through the network.
+
+      :param obs: The tensor of observations.
+      :type obs: torch.Tensor
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If false the action is sampled from the stochastic
+                            policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+      :param with_logprob: Whether we want to return the log probability
+                           of an action. Defaults to ``True``.
+      :type with_logprob: bool, optional
+
+      :returns:
+
+                tuple containing:
+
+                    - pi_action (:obj:`torch.Tensor`): The actions given by the policy.
+                    - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.
+      :rtype: (tuple)
+
+
+
+   .. py:method:: act(obs, deterministic=False)
+
+      Returns the action from the current state given the current policy.
+
+      :param obs: The current observation (state).
+      :type obs: torch.Tensor
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The action from the current state given the current
+                policy.
+      :rtype: numpy.ndarray
+
+
+
+   .. py:method:: get_action(obs, deterministic=False)
+
+      Simple warpper for making the :meth:`act` method available under the
+      'get_action' alias.
+
+      :param obs: The current observation (state).
+      :type obs: torch.Tensor
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns:
+
+                The action from the current state given the current
+                    policy.
+      :rtype: numpy.ndarray
+
+
+

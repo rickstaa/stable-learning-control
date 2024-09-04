@@ -1,0 +1,72 @@
+stable_learning_control.disturbers.observation_random_noise_disturber
+=====================================================================
+
+.. py:module:: stable_learning_control.disturbers.observation_random_noise_disturber
+
+.. autoapi-nested-parse::
+
+   Contains a small gymnasium wrapper that can be used to disturb the observation of
+   a gymnasium environment with normally distributed random noise (i.e. ``mean`` and
+   ``std``).
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.disturbers.observation_random_noise_disturber.ObservationRandomNoiseDisturber
+
+
+Module Contents
+---------------
+
+.. py:class:: ObservationRandomNoiseDisturber(env, mean, std)
+
+   Bases: :py:obj:`gymnasium.ObservationWrapper`
+
+
+   A gymnasium wrapper that can be used to disturb the observation of a gymnasium
+   environment with normally distributed random noise.
+
+   .. attribute:: mean
+
+      The mean of the noise normal distribution.
+
+      :type: float
+
+   .. attribute:: std
+
+      The standard deviation of the noise normal distribution.
+
+      :type: float
+
+   Initialise the ObservationRandomNoiseDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param mean: The mean of the noise normal distribution.
+   :type mean: float
+   :param std: The standard deviation of the noise normal distribution.
+   :type std: float
+
+
+   .. py:attribute:: mean
+
+
+   .. py:attribute:: std
+
+
+   .. py:method:: observation(observation)
+
+      Add normally distributed random noise to the observation.
+
+      :param observation: The observation.
+      :type observation: np.ndarray
+
+      :returns: The observation with added noise.
+      :rtype: np.ndarray
+
+
+

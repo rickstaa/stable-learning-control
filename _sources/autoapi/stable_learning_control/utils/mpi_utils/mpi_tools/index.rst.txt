@@ -1,0 +1,155 @@
+stable_learning_control.utils.mpi_utils.mpi_tools
+=================================================
+
+.. py:module:: stable_learning_control.utils.mpi_utils.mpi_tools
+
+.. autoapi-nested-parse::
+
+   Module used for managing MPI processes.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.mpi_utils.mpi_tools.mpi_fork
+   stable_learning_control.utils.mpi_utils.mpi_tools.msg
+   stable_learning_control.utils.mpi_utils.mpi_tools.pprint
+   stable_learning_control.utils.mpi_utils.mpi_tools.proc_id
+   stable_learning_control.utils.mpi_utils.mpi_tools.allreduce
+   stable_learning_control.utils.mpi_utils.mpi_tools.num_procs
+   stable_learning_control.utils.mpi_utils.mpi_tools.broadcast
+   stable_learning_control.utils.mpi_utils.mpi_tools.mpi_op
+   stable_learning_control.utils.mpi_utils.mpi_tools.mpi_sum
+   stable_learning_control.utils.mpi_utils.mpi_tools.mpi_avg
+   stable_learning_control.utils.mpi_utils.mpi_tools.mpi_statistics_scalar
+
+
+Module Contents
+---------------
+
+.. py:function:: mpi_fork(n, bind_to_core=False)
+
+   Re-launches the current script with workers linked by MPI.
+
+   Also, terminates the original process that launched it.
+
+   Taken almost without modification from the Baselines function of the
+   `same name`_.
+
+   .. _`same name`: https://github.com/openai/baselines/tree/master/baselines/common/mpi_fork.py
+
+   :param n: Number of process to split into.
+   :type n: int
+   :param bind_to_core: Bind each MPI process to a core. Defaults to
+                        ``False``.
+   :type bind_to_core: bool, optional
+
+
+.. py:function:: msg(m, string='')
+
+   Send message from one MPI process to the other.
+
+   :param m: Message you want to send.
+   :type m: str
+   :param string: Additional process description. Defaults to ``""``.
+   :type string: str, optional
+
+
+.. py:function:: pprint(input_str='', end='\n', comm=MPI.COMM_WORLD)
+
+   Print for MPI parallel programs: Only rank ``0`` prints :obj:`str`.
+
+   :param input_str: The string you want to print.
+   :type input_str: str
+   :param end: The print end character.
+   :type end: str
+   :param comm: MPI communicator.
+   :type comm: :obj:`mpi4py.MPI.COMM_WORLD`
+
+
+.. py:function:: proc_id()
+
+   Get rank of calling process.
+
+
+.. py:function:: allreduce(*args, **kwargs)
+
+   Reduced results of a operation across all processes.
+
+   :param \*args: All args to pass to thunk.
+   :param \*\*kwargs: All kwargs to pass to thunk.
+
+   :returns: Result object.
+   :rtype: object
+
+
+.. py:function:: num_procs()
+
+   Count active MPI processes.
+
+   :returns: The number of mpi processes.
+   :rtype: int
+
+
+.. py:function:: broadcast(x, root=0)
+
+   Broadcast variable to other MPI processes.
+
+   :param x: Variable you want to broadcast.
+   :type x: object
+   :param root: Rank of the root process. Defaults to ``0``.
+   :type root: int, optional
+
+
+.. py:function:: mpi_op(x, op)
+
+   Perform a MPI operation.
+
+   :param x: Python variable.
+   :type x: object
+   :param op: Operation type
+   :type op: mpi4py.MPI.Op
+
+   :returns: Reduced mpi operation result.
+   :rtype: object
+
+
+.. py:function:: mpi_sum(x)
+
+   Take the sum of a scalar or vector over MPI processes.
+
+   :param x: Python variable.
+   :type x: object
+
+   :returns: Reduced sum.
+   :rtype: object
+
+
+.. py:function:: mpi_avg(x)
+
+   Average a scalar or vector over MPI processes.
+
+   :param x: Python variable.
+   :type x: object
+
+   :returns: Reduced average.
+   :rtype: object
+
+
+.. py:function:: mpi_statistics_scalar(x, with_min_and_max=False)
+
+   Get mean/std and optional min/max of scalar x across MPI processes.
+
+   :param x: An array containing samples of the scalar to produce statistics
+             for.
+   :param with_min_and_max: If true, return min and max of x in
+                            addition to mean and std. Defaults to ``False``.
+   :type with_min_and_max: bool, optional
+
+   :returns: Reduced mean and standard deviation.
+   :rtype: tuple
+
+

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.utils.eval_robustness &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="stable_learning_control.utils.eval_utils" href="../eval_utils/index.html" />
+    <link rel="prev" title="stable_learning_control.utils.mpi_utils.mpi_tools" href="../mpi_utils/mpi_tools/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html">
+            
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">stable_learning_control</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../algos/index.html">stable_learning_control.algos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../common/index.html">stable_learning_control.common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../disturbers/index.html">stable_learning_control.disturbers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">stable_learning_control.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#attributes">Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">stable_learning_control</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">stable_learning_control.utils</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.utils.eval_robustness</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/autoapi/stable_learning_control/utils/eval_robustness/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-stable_learning_control.utils.eval_robustness">
+<span id="stable-learning-control-utils-eval-robustness"></span><h1>stable_learning_control.utils.eval_robustness<a class="headerlink" href="#module-stable_learning_control.utils.eval_robustness" title="Permalink to this heading"></a></h1>
+<p>Contains a utility that can be used to evaluate the stability and robustness of an
+algorithm. See the <a class="reference internal" href="../../../../usage/eval_robustness.html#robustness-eval"><span class="std std-ref">Robustness Evaluation Documentation</span></a> for
+more information.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.args" title="stable_learning_control.utils.eval_robustness.args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">args</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.get_human_readable_disturber_label" title="stable_learning_control.utils.eval_robustness.get_human_readable_disturber_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_human_readable_disturber_label</span></code></a>(disturber_label)</p></td>
+<td><p>Get a human readable label for a given disturber label.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.add_disturbance_label_column" title="stable_learning_control.utils.eval_robustness.add_disturbance_label_column"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_disturbance_label_column</span></code></a>(dataframe)</p></td>
+<td><p>Add a column that contains a disturbance label. This label will be created</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.get_available_disturbers" title="stable_learning_control.utils.eval_robustness.get_available_disturbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_available_disturbers</span></code></a>()</p></td>
+<td><p>Get all disturbers that are available in the <code class="docutils literal notranslate"><span class="pre">stable_learning_control</span></code> package.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.get_available_disturbers_string" title="stable_learning_control.utils.eval_robustness.get_available_disturbers_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_available_disturbers_string</span></code></a>()</p></td>
+<td><p>Get a string with all available disturbers that are available in the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.print_available_disturbers" title="stable_learning_control.utils.eval_robustness.print_available_disturbers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_available_disturbers</span></code></a>()</p></td>
+<td><p>Print all available disturbers that are available in the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.load_disturber" title="stable_learning_control.utils.eval_robustness.load_disturber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_disturber</span></code></a>(disturber_id)</p></td>
+<td><p>Load a given disturber. The disturber name can include an unloaded module in</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.retrieve_disturber_variants" title="stable_learning_control.utils.eval_robustness.retrieve_disturber_variants"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retrieve_disturber_variants</span></code></a>(disturber_range_dict)</p></td>
+<td><p>Retrieves all disturber variants from the given disturber configuration</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.run_disturbed_policy" title="stable_learning_control.utils.eval_robustness.run_disturbed_policy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_disturbed_policy</span></code></a>(env, policy, disturber, ...[, ...])</p></td>
+<td><p>Evaluates the disturbed policy inside a given gymnasium environment. This</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stable_learning_control.utils.eval_robustness.plot_robustness_results" title="stable_learning_control.utils.eval_robustness.plot_robustness_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_robustness_results</span></code></a>(dataframe[, observations, ...])</p></td>
+<td><p>Creates several useful plots out of a robustness evaluation dataframe that was</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.get_human_readable_disturber_label">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">get_human_readable_disturber_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disturber_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#get_human_readable_disturber_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.get_human_readable_disturber_label" title="Permalink to this definition"></a></dt>
+<dd><p>Get a human readable label for a given disturber label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>disturber_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The disturber label.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The human readable disturber label.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.add_disturbance_label_column">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">add_disturbance_label_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#add_disturbance_label_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.add_disturbance_label_column" title="Permalink to this definition"></a></dt>
+<dd><p>Add a column that contains a disturbance label. This label will be created
+by concatenating all disturber parameters.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function will not add a disturbance label if the dataframe already contains
+a disturbance label.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataframe</strong> (<em>pd.DataFrame</em>) – The dataframe containing the disturber parameters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dataframe with the disturbance label column.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – If the dataframe does not contain a ‘disturber’ column.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.get_available_disturbers">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">get_available_disturbers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#get_available_disturbers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.get_available_disturbers" title="Permalink to this definition"></a></dt>
+<dd><p>Get all disturbers that are available in the <code class="docutils literal notranslate"><span class="pre">stable_learning_control</span></code> package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List with all available disturbers.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.get_available_disturbers_string">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">get_available_disturbers_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#get_available_disturbers_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.get_available_disturbers_string" title="Permalink to this definition"></a></dt>
+<dd><p>Get a string with all available disturbers that are available in the
+<code class="docutils literal notranslate"><span class="pre">stable_learning_control</span></code> package.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String with all available disturbers.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.print_available_disturbers">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">print_available_disturbers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#print_available_disturbers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.print_available_disturbers" title="Permalink to this definition"></a></dt>
+<dd><p>Print all available disturbers that are available in the
+<code class="docutils literal notranslate"><span class="pre">stable_learning_control</span></code> package.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.load_disturber">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">load_disturber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disturber_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#load_disturber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.load_disturber" title="Permalink to this definition"></a></dt>
+<dd><p>Load a given disturber. The disturber name can include an unloaded module in
+“module:disturber_name” style. If no module is given, the disturber is loaded from
+the <code class="docutils literal notranslate"><span class="pre">stable_learning_control.disturbers</span></code> module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>disturber_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The name of the disturber you want to load.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded disturber object.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ModuleNotFoundError" title="(in Python v3.12)"><strong>ModuleNotFoundError</strong></a> – If the given module could not be imported.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If the given disturber is not a subclass of the <a class="reference external" href="https://www.gymlibrary.dev/api/core/#gym.Wrapper" title="(in Gym)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym.Wrapper</span></code></a>
+class.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.12)"><strong>AttributeError</strong></a> – If the given disturber does not exist in the given module.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.retrieve_disturber_variants">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">retrieve_disturber_variants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">disturber_range_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#retrieve_disturber_variants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.retrieve_disturber_variants" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieves all disturber variants from the given disturber configuration
+dictionary. Variants are created by combining the key values over indexes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>disturber_range_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – The disturber configuration dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List with all disturber variants.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – Thrown when the values in the disturber configuration variables are
+not of type <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – Thrown when the values in the disturber configuration variables do
+not have the same length.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.run_disturbed_policy">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">run_disturbed_policy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disturber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disturber_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_ep_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_episodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_wandb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_job_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#run_disturbed_policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.run_disturbed_policy" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the disturbed policy inside a given gymnasium environment. This
+function loops to all the disturbances that are specified in the environment and
+outputs the results of all these episodes as a :obj:pandas.Dataframe`.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">gym.env</span></code>) – The gymnasium environment.</p></li>
+<li><p><strong>policy</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model" title="(in TensorFlow v2.8)"><em>tf.keras.Model</em></a><em>, </em><a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><em>torch.nn.Module</em></a><em>]</em>) – The policy.</p></li>
+<li><p><strong>(</strong><strong>obj</strong> (<em>disturber</em>) – <cite>gym.Wrapper</cite>): The disturber you want to use.</p></li>
+<li><p><strong>disturber_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – The disturber configuration dictionary. Contains the
+variables that you want to pass to the disturber. It sets up the range of
+disturbances you wish to evaluate.</p></li>
+<li><p><strong>include_baseline</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to automatically add the baseline
+(i.e. zero disturbance) when it not present. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>max_ep_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The maximum episode length. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Meaning the maximum episode length of the environment is used.</p></li>
+<li><p><strong>num_episodes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – Number of episodes you want to perform in the
+environment. Defaults to <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p><strong>render</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether you want to render the episode to the screen.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>deterministic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether you want the action from the policy to
+be deterministic. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>save_result</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether you want to save the dataframe with the
+results to disk. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – A directory for saving the diagnostics to. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to a temp directory of the form
+<code class="docutils literal notranslate"><span class="pre">/tmp/experiments/somerandomnumber</span></code>.</p></li>
+<li><p><strong>use_wandb</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use Weights &amp; Biases for logging.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>wandb_job_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The type of job you are running. Defaults
+to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>wandb_project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the Weights &amp; Biases
+project. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> which means that the project name is
+automatically generated.</p></li>
+<li><p><strong>wandb_group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the Weights &amp; Biases group you want
+to assign the run to. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>wandb_run_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the Weights &amp; Biases run. Defaults
+to <code class="docutils literal notranslate"><span class="pre">None</span></code> which means that the run name is automatically generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Dataframe that contains information about all the</dt><dd><p>episodes and disturbances.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.12)"><strong>AssertionError</strong></a> – Thrown when the environment or policy is not found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.plot_robustness_results">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">plot_robustness_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">references</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">absolute_reference_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_reference_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_plots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figs_fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pdf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_wandb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_job_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_project</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wandb_run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#plot_robustness_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.plot_robustness_results" title="Permalink to this definition"></a></dt>
+<dd><p>Creates several useful plots out of a robustness evaluation dataframe that was
+collected in the <a class="reference internal" href="#stable_learning_control.utils.eval_robustness.run_disturbed_policy" title="stable_learning_control.utils.eval_robustness.run_disturbed_policy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_disturbed_policy()</span></code></a> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataframe</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.2)"><em>pandas.DataFrame</em></a>) – The data frame that contains the robustness
+evaluation information information.</p></li>
+<li><p><strong>observations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The observations you want to show in the observations plot.
+By default for clarity only the first 6 observations are shown.</p></li>
+<li><p><strong>references</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The references you want to show in the reference plot. By
+default for clarity only the first references is shown.</p></li>
+<li><p><strong>reference_errors</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The reference errors you want to show in the reference
+error plot. By default for clarity only the first reference error is shown.</p></li>
+<li><p><strong>absolute_reference_errors</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to plot the absolute
+reference errors instead of relative reference errors. Defaults to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>merge_reference_errors</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to merge the reference errors
+into one reference error. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>use_subplots</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to use subplots instead of separate
+figures. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>use_time</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to use the time as the x-axis. Defaults to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>save_plots</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether you want to save the created plots to disk. Defaults
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>font_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The font scale you want to use for the plot text. Defaults to
+<code class="docutils literal notranslate"><span class="pre">1.5</span></code>.</p></li>
+<li><p><strong>figs_fmt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – In which format you want to save the plots. Defaults
+to <code class="docutils literal notranslate"><span class="pre">pdf</span></code>.</p></li>
+<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The directory where you want to save the output
+figures to. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to a temp directory of the form
+<code class="docutils literal notranslate"><span class="pre">/tmp/experiments/somerandomnumber</span></code>.</p></li>
+<li><p><strong>use_wandb</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use Weights &amp; Biases for logging.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>wandb_job_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The type of job you are running. Defaults
+to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>wandb_project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the Weights &amp; Biases
+project. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> which means that the project name is
+automatically generated.</p></li>
+<li><p><strong>wandb_group</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the Weights &amp; Biases group you want
+to assign the run to. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>wandb_run_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – The name of the Weights &amp; Biases run. Defaults
+to <code class="docutils literal notranslate"><span class="pre">None</span></code> which means that the run name is automatically generated.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="stable_learning_control.utils.eval_robustness.args">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.utils.eval_robustness.</span></span><span class="sig-name descname"><span class="pre">args</span></span><a class="reference internal" href="../../../../_modules/stable_learning_control/utils/eval_robustness.html#args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.utils.eval_robustness.args" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../mpi_utils/mpi_tools/index.html" class="btn btn-neutral float-left" title="stable_learning_control.utils.mpi_utils.mpi_tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../eval_utils/index.html" class="btn btn-neutral float-right" title="stable_learning_control.utils.eval_utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

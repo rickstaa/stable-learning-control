@@ -1,0 +1,50 @@
+stable_learning_control.utils.mpi_utils.mpi_pytorch
+===================================================
+
+.. py:module:: stable_learning_control.utils.mpi_utils.mpi_pytorch
+
+.. autoapi-nested-parse::
+
+   Helper methods for managing Pytorch MPI processes.
+
+   .. note::
+       This module is not yet used in any of the current algorithms, but is kept here for
+       future reference.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.utils.mpi_utils.mpi_pytorch.setup_pytorch_for_mpi
+   stable_learning_control.utils.mpi_utils.mpi_pytorch.mpi_avg_grads
+   stable_learning_control.utils.mpi_utils.mpi_pytorch.sync_params
+
+
+Module Contents
+---------------
+
+.. py:function:: setup_pytorch_for_mpi()
+
+   Avoid slowdowns caused by each separate process's PyTorch using more than its
+   fair share of CPU resources.
+
+
+.. py:function:: mpi_avg_grads(module)
+
+   Average contents of gradient buffers across MPI processes.
+
+   :param module: Python object for which you want to average the gradients.
+   :type module: object
+
+
+.. py:function:: sync_params(module)
+
+   Sync all parameters of module across all MPI processes.
+
+   :param module: Python object for which you want to average the gradients.
+   :type module: object
+
+

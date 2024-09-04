@@ -1,0 +1,744 @@
+stable_learning_control.algos.tf2
+=================================
+
+.. py:module:: stable_learning_control.algos.tf2
+
+.. autoapi-nested-parse::
+
+   Contains the TensorFlow 2.x implementations of the RL algorithms.
+
+
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/stable_learning_control/algos/tf2/common/index
+   /autoapi/stable_learning_control/algos/tf2/lac/index
+   /autoapi/stable_learning_control/algos/tf2/latc/index
+   /autoapi/stable_learning_control/algos/tf2/policies/index
+   /autoapi/stable_learning_control/algos/tf2/sac/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.LAC
+   stable_learning_control.algos.tf2.SAC
+
+
+Package Contents
+----------------
+
+.. py:class:: LAC(env, actor_critic=None, ac_kwargs=dict(hidden_sizes={'actor': [256] * 2, 'critic': [256] * 2}, activation=nn.relu, output_activation={'actor': nn.relu}), opt_type='minimize', alpha=0.99, alpha3=0.2, labda=0.99, gamma=0.99, polyak=0.995, target_entropy=None, adaptive_temperature=True, lr_a=0.0001, lr_c=0.0003, lr_alpha=0.0001, lr_labda=0.0003, device='cpu', name='LAC')
+
+   Bases: :py:obj:`tensorflow.keras.Model`
+
+
+   The Lyapunov (soft) Actor-Critic (LAC) algorithm.
+
+   .. attribute:: ac
+
+      The (lyapunov) actor critic module.
+
+      :type: tf.Module
+
+   .. attribute:: ac_
+
+      The (lyapunov) target actor critic module.
+
+      :type: tf.Module
+
+   .. attribute:: log_alpha
+
+      The temperature Lagrance multiplier.
+
+      :type: tf.Variable
+
+   .. attribute:: log_labda
+
+      The Lyapunov Lagrance multiplier.
+
+      :type: tf.Variable
+
+   Initialise the LAC algorithm.
+
+   :param env: The gymnasium environment the LAC is training in. This is
+               used to retrieve the activation and observation space dimensions. This
+               is used while creating the network sizes. The environment must satisfy
+               the gymnasium API.
+   :type env: :obj:`gym.env`
+   :param actor_critic: The constructor method for a
+                        TensorFlow Module with an ``act`` method, a ``pi`` module and several
+                        ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
+                        accept batches of observations as inputs, and the ``Q*`` and ``L``
+                        modules should accept a batch of observations and a batch of actions as
+                        inputs. When called, these modules should return:
+
+                        ===========  ================  ======================================
+                        Call         Output Shape      Description
+                        ===========  ================  ======================================
+                        ``act``      (batch, act_dim)  | Numpy array of actions for each
+                                                       | observation.
+                        ``Q*/L``     (batch,)          | Tensor containing one current estimate
+                                                       | of ``Q*/L`` for the provided
+                                                       | observations and actions. (Critical:
+                                                       | make sure to flatten this!)
+                        ===========  ================  ======================================
+
+                        Calling ``pi`` should return:
+
+                        ===========  ================  ======================================
+                        Symbol       Shape             Description
+                        ===========  ================  ======================================
+                        ``a``        (batch, act_dim)  | Tensor containing actions from policy
+                                                       | given observations.
+                        ``logp_pi``  (batch,)          | Tensor containing log probabilities of
+                                                       | actions in ``a``. Importantly:
+                                                       | gradients should be able to flow back
+                                                       | into ``a``.
+                        ===========  ================  ======================================
+
+                        Defaults to
+                        :class:`~stable_learning_control.algos.tf2.policies.lyapunov_actor_critic.LyapunovActorCritic`
+   :type actor_critic: tf.Module, optional
+   :param ac_kwargs: Any kwargs appropriate for the ActorCritic
+                     object you provided to LAC. Defaults to:
+
+                     =======================  ============================================
+                     Kwarg                    Value
+                     =======================  ============================================
+                     ``hidden_sizes_actor``    ``256 x 2``
+                     ``hidden_sizes_critic``   ``256 x 2``
+                     ``activation``            :class:`tf.nn.relu`
+                     ``output_activation``     :class:`tf.nn.relu`
+                     =======================  ============================================
+   :type ac_kwargs: dict, optional
+   :param opt_type: The optimization type you want to use. Options
+                    ``maximize`` and ``minimize``. Defaults to ``maximize``.
+   :type opt_type: str, optional
+   :param alpha: Entropy regularization coefficient (Equivalent to
+                 inverse of reward scale in the original SAC paper). Defaults to
+                 ``0.99``.
+   :type alpha: float, optional
+   :param alpha3: The Lyapunov constraint error boundary. Defaults
+                  to ``0.2``.
+   :type alpha3: float, optional
+   :param labda: The Lyapunov Lagrance multiplier. Defaults to
+                 ``0.99``.
+   :type labda: float, optional
+   :param gamma: Discount factor. (Always between 0 and 1.).
+                 Defaults to ``0.99`` per Haarnoja et al. 2018, not ``0.995`` as in
+                 Han et al. 2020.
+   :type gamma: float, optional
+   :param polyak: Interpolation factor in polyak averaging for
+                  target networks. Target networks are updated towards main networks
+                  according to:
+
+                  .. math:: \theta_{\text{targ}} \leftarrow
+                      \rho \theta_{\text{targ}} + (1-\rho) \theta
+
+                  where :math:`\rho` is polyak (Always between 0 and 1, usually close to
+                  1.). In some papers :math:`\rho` is defined as (1 - :math:`\tau`)
+                  where :math:`\tau` is the soft replacement factor. Defaults to
+                  ``0.995``.
+   :type polyak: float, optional
+   :param target_entropy: Initial target entropy used while learning
+                          the entropy temperature (alpha). Defaults to the
+                          maximum information (bits) contained in action space. This can be
+                          calculated according to :
+
+                          .. math::
+                              -{\prod }_{i=0}^{n}action\_di{m}_{i}\phantom{\rule{0ex}{0ex}}
+   :type target_entropy: float, optional
+   :param adaptive_temperature: Enabled Automating Entropy Adjustment
+                                for maximum Entropy RL_learning.
+   :type adaptive_temperature: bool, optional
+   :param lr_a: Learning rate used for the actor. Defaults to
+                ``1e-4``.
+   :type lr_a: float, optional
+   :param lr_c: Learning rate used for the (lyapunov) critic.
+                Defaults to ``1e-4``.
+   :type lr_c: float, optional
+   :param lr_alpha: Learning rate used for the entropy temperature.
+                    Defaults to ``1e-4``.
+   :type lr_alpha: float, optional
+   :param lr_labda: Learning rate used for the Lyapunov Lagrance
+                    multiplier. Defaults to ``3e-4``.
+   :type lr_labda: float, optional
+   :param device: The device the networks are placed on (options:
+                  ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.). Defaults to ``cpu``.
+   :type device: str, optional
+
+   .. attention::
+       This class will behave differently when the ``actor_critic`` argument
+       is set to the :class:`~stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic`.
+       For more information see the :ref:`LATC <latc>` documentation.
+
+
+   .. py:attribute:: _device
+
+
+   .. py:attribute:: _setup_kwargs
+
+
+   .. py:attribute:: _act_dim
+
+
+   .. py:attribute:: _obs_dim
+
+
+   .. py:attribute:: _adaptive_temperature
+
+
+   .. py:attribute:: _opt_type
+
+
+   .. py:attribute:: _polyak
+
+
+   .. py:attribute:: _gamma
+
+
+   .. py:attribute:: _alpha3
+
+
+   .. py:attribute:: _lr_a
+
+
+   .. py:attribute:: _lr_lag
+
+
+   .. py:attribute:: _lr_c
+
+
+   .. py:attribute:: _use_twin_critic
+      :value: False
+
+
+
+   .. py:attribute:: log_alpha
+
+
+   .. py:attribute:: log_labda
+
+
+   .. py:attribute:: actor_critic
+
+
+   .. py:attribute:: ac
+
+
+   .. py:attribute:: ac_targ
+
+
+   .. py:attribute:: _pi_optimizer
+
+
+   .. py:attribute:: _pi_params
+
+
+   .. py:attribute:: _log_labda_optimizer
+
+
+   .. py:attribute:: _c_params
+
+
+   .. py:attribute:: _c_optimizer
+
+
+   .. py:method:: call(s, deterministic=False)
+
+      Wrapper around the :meth:`get_action` method that enables users to also
+      receive actions directly by invoking ``LAC(observations)``.
+
+      :param s: The current state.
+      :type s: numpy.ndarray
+      :param deterministic: Whether to return a deterministic action.
+                            Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The current action.
+      :rtype: numpy.ndarray
+
+
+
+   .. py:method:: get_action(s, deterministic=False)
+
+      Returns the current action of the policy.
+
+      :param s: The current state.
+      :type s: numpy.ndarray
+      :param deterministic: Whether to return a deterministic action.
+                            Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The current action.
+      :rtype: numpy.ndarray
+
+
+
+   .. py:method:: update(data)
+
+      Update the actor critic network using stochastic gradient descent.
+
+      :param data: Dictionary containing a batch of experiences.
+      :type data: dict
+
+
+
+   .. py:method:: save(path, checkpoint_name='checkpoint')
+
+      Can be used to save the current model state.
+
+      :param path: The path where you want to save the policy.
+      :type path: str
+      :param checkpoint_name: The name you want to use for the checkpoint.
+      :type checkpoint_name: str
+
+      :raises Exception: Raises an exception if something goes wrong during saving.
+
+      .. note::
+          This function saved the model weights using the
+          :meth:`tf.keras.Model.save_weights` method (see
+          :tf2:`keras/Model#save_weights`). The model should therefore be restored
+          using the :meth:`tf.keras.Model.load_weights` method (see
+          :tf2:`keras/Model#load_weights`). If
+          you want to deploy the full model use the :meth:`export` method instead.
+
+
+
+   .. py:method:: restore(path, restore_lagrance_multipliers=False)
+
+      Restores a already trained policy. Used for transfer learning.
+
+      :param path: The path where the model :attr:`state_dict` of the policy is
+                   found.
+      :type path: str
+      :param restore_lagrance_multipliers: Whether you want to restore
+                                           the Lagrance multipliers. By fault ``False``.
+      :type restore_lagrance_multipliers: bool, optional
+
+      :raises Exception: Raises an exception if something goes wrong during loading.
+
+
+
+   .. py:method:: export(path)
+
+      Can be used to export the model in the ``SavedModel`` format such that it can
+      be deployed to hardware.
+
+      :param path: The path where you want to export the policy too.
+      :type path: str
+
+
+
+   .. py:method:: build()
+
+      Function that can be used to build the full model structure such that it can
+      be visualized using the `tf.keras.Model.summary()`. This is done by calling the
+      build method of the parent class with the correct input shape.
+
+      .. note::
+          This is done by calling the build methods of the submodules.
+
+
+
+   .. py:method:: summary()
+
+      Small wrapper around the :meth:`tf.keras.Model.summary()` method used to
+      apply a custom format to the model summary.
+
+
+
+   .. py:method:: full_summary()
+
+      Prints a full summary of all the layers of the TensorFlow model
+
+
+
+   .. py:method:: set_learning_rates(lr_a=None, lr_c=None, lr_alpha=None, lr_labda=None)
+
+      Adjusts the learning rates of the optimizers.
+
+      :param lr_a: The learning rate of the actor optimizer. Defaults
+                   to ``None``.
+      :type lr_a: float, optional
+      :param lr_c: The learning rate of the (Lyapunov) Critic. Defaults
+                   to ``None``.
+      :type lr_c: float, optional
+      :param lr_alpha: The learning rate of the temperature optimizer.
+                       Defaults to ``None``.
+      :type lr_alpha: float, optional
+      :param lr_labda: The learning rate of the Lyapunov Lagrance
+                       multiplier optimizer. Defaults to ``None``.
+      :type lr_labda: float, optional
+
+
+
+   .. py:method:: _init_targets()
+
+      Updates the target network weights to the main network weights.
+
+
+
+   .. py:method:: _update_targets()
+
+      Updates the target networks based on a Exponential moving average
+      (Polyak averaging).
+
+
+
+   .. py:property:: alpha
+      Property used to clip :attr:`alpha` to be equal or bigger than ``0.0`` to
+      prevent it from becoming nan when :attr:`log_alpha` becomes ``-inf``. For
+      :attr:`alpha` no upper bound is used.
+
+
+   .. py:property:: labda
+      Property used to clip :attr:`lambda` to be equal or bigger than ``0.0`` in
+      order to prevent it from becoming ``nan`` when log_labda becomes -inf. Further
+      we clip it to be lower or equal than ``1.0`` in order to prevent lambda from
+      exploding when the the hyperparameters are chosen badly.
+
+
+   .. py:property:: target_entropy
+      The target entropy used while learning the entropy temperature
+      :attr:`alpha`.
+
+
+   .. py:property:: device
+      ``cpu``, ``gpu``, ``gpu:0``,
+      ``gpu:1``, etc.).
+
+      :type: The device the networks are placed on (options
+
+
+.. py:class:: SAC(env, actor_critic=None, ac_kwargs=dict(hidden_sizes={'actor': [256] * 2, 'critic': [256] * 2}, activation={'actor': nn.relu, 'critic': nn.relu}, output_activation={'actor': nn.relu, 'critic': None}), opt_type='maximize', alpha=0.99, gamma=0.99, polyak=0.995, target_entropy=None, adaptive_temperature=True, lr_a=0.0001, lr_c=0.0003, lr_alpha=0.0001, device='cpu', name='SAC')
+
+   Bases: :py:obj:`tensorflow.keras.Model`
+
+
+   The Soft Actor Critic algorithm.
+
+   .. attribute:: ac
+
+      The (soft) actor critic module.
+
+      :type: tf.Module
+
+   .. attribute:: ac_
+
+      The (soft) target actor critic module.
+
+      :type: tf.Module
+
+   .. attribute:: log_alpha
+
+      The temperature Lagrance multiplier.
+
+      :type: tf.Variable
+
+   Initialise the SAC algorithm.
+
+   :param env: The gymnasium environment the SAC is training in. This is
+               used to retrieve the activation and observation space dimensions. This
+               is used while creating the network sizes. The environment must satisfy
+               the gymnasium API.
+   :type env: :obj:`gym.env`
+   :param actor_critic: The constructor method for a
+                        TensorFlow Module with an ``act`` method, a ``pi`` module and several
+                        ``Q`` or ``L`` modules. The ``act`` method and ``pi`` module should
+                        accept batches of observations as inputs, and the ``Q*`` and ``L``
+                        modules should accept a batch of observations and a batch of actions as
+                        inputs. When called, these modules should return:
+
+                        ===========  ================  ======================================
+                        Call         Output Shape      Description
+                        ===========  ================  ======================================
+                        ``act``      (batch, act_dim)  | Numpy array of actions for each
+                                                       | observation.
+                        ``Q*/L``     (batch,)          | Tensor containing one current estimate
+                                                       | of ``Q*/L`` for the provided
+                                                       | observations and actions. (Critical:
+                                                       | make sure to flatten this!)
+                        ===========  ================  ======================================
+   :type actor_critic: tf.Module, optional
+
+      epoch
+           ===========  ================  ======================================
+           Symbol       Shape             Description
+           ===========  ================  ======================================
+           ``a``        (batch, act_dim)  | Tensor containing actions from policy
+                                          | given observations.
+           ``logp_pi``  (batch,)          | Tensor containing log probabilities of
+                                          | actions in ``a``. Importantly:
+                                          | gradients should be able to flow back
+                                          | into ``a``.
+           ===========  ================  ======================================
+
+           Defaults to
+           :class:`~stable_learning_control.algos.tf2.policies.soft_actor_critic.SoftActorCritic`
+       ac_kwargs (dict, optional): Any kwargs appropriate for the ActorCritic
+           object you provided to SAC. Defaults to:
+
+           =======================  ============================================
+           Kwarg                    Value
+           =======================  ============================================
+           ``hidden_sizes_actor``    ``64 x 2``
+           ``hidden_sizes_critic``   ``128 x 2``
+           ``activation``            :class:`tf.nn.relu`
+           ``output_activation``     :class:`tf.nn.relu`
+           =======================  ============================================
+       opt_type (str, optional): The optimization type you want to use. Options
+           ``maximize`` and ``minimize``. Defaults to ``maximize``.
+       alpha (float, optional): Entropy regularization coefficient (Equivalent to
+           inverse of reward scale in the original SAC paper). Defaults to
+           ``0.99``.
+       gamma (float, optional): Discount factor. (Always between 0 and 1.).
+           Defaults to ``0.99``.
+       polyak (float, optional): Interpolation factor in polyak averaging for
+           target networks. Target networks are updated towards main networks
+           according to:
+
+           .. math:: \theta_{\text{targ}} \leftarrow
+               \rho \theta_{\text{targ}} + (1-\rho) \theta
+
+           where :math:`\rho` is polyak (Always between 0 and 1, usually close to
+           1.). In some papers :math:`\rho` is defined as (1 - :math:`\tau`)
+           where :math:`\tau` is the soft replacement factor. Defaults to
+           ``0.995``.
+       target_entropy (float, optional): Initial target entropy used while learning
+           the entropy temperature (alpha). Defaults to the
+           maximum information (bits) contained in action space. This can be
+           calculated according to :
+
+           .. math::
+               -{\prod }_{i=0}^{n}action\_di{m}_{i}\phantom{\rule{0ex}{0ex}}
+       adaptive_temperature (bool, optional): Enabled Automating Entropy Adjustment
+           for maximum Entropy RL_learning.
+       lr_a (float, optional): Learning rate used for the actor. Defaults to
+           ``1e-4``.
+       lr_c (float, optional): Learning rate used for the (soft) critic.
+           Defaults to ``1e-4``.
+       lr_alpha (float, optional): Learning rate used for the entropy temperature.
+           Defaults to ``1e-4``.
+       device (str, optional): The device the networks are placed on (options:
+           ``cpu``, ``gpu``, ``gpu:0``, ``gpu:1``, etc.). Defaults to ``cpu``.
+
+
+   .. py:attribute:: _device
+
+
+   .. py:attribute:: _setup_kwargs
+
+
+   .. py:attribute:: _act_dim
+
+
+   .. py:attribute:: _obs_dim
+
+
+   .. py:attribute:: _adaptive_temperature
+
+
+   .. py:attribute:: _opt_type
+
+
+   .. py:attribute:: _polyak
+
+
+   .. py:attribute:: _gamma
+
+
+   .. py:attribute:: _lr_a
+
+
+   .. py:attribute:: _lr_c
+
+
+   .. py:attribute:: log_alpha
+
+
+   .. py:attribute:: actor_critic
+
+
+   .. py:attribute:: ac
+
+
+   .. py:attribute:: ac_targ
+
+
+   .. py:attribute:: _pi_optimizer
+
+
+   .. py:attribute:: _pi_params
+
+
+   .. py:attribute:: _c_params
+
+
+   .. py:attribute:: _c_optimizer
+
+
+   .. py:method:: call(s, deterministic=False)
+
+      Wrapper around the :meth:`get_action` method that enables users to also
+      receive actions directly by invoking ``SAC(observations)``.
+
+      :param s: The current state.
+      :type s: numpy.ndarray
+      :param deterministic: Whether to return a deterministic action.
+                            Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The current action.
+      :rtype: numpy.ndarray
+
+
+
+   .. py:method:: get_action(s, deterministic=False)
+
+      Returns the current action of the policy.
+
+      :param s: The current state.
+      :type s: numpy.ndarray
+      :param deterministic: Whether to return a deterministic action.
+                            Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The current action.
+      :rtype: numpy.ndarray
+
+
+
+   .. py:method:: update(data)
+
+      Update the actor critic network using stochastic gradient descent.
+
+      :param data: Dictionary containing a batch of experiences.
+      :type data: dict
+
+
+
+   .. py:method:: save(path, checkpoint_name='checkpoint')
+
+      Can be used to save the current model state.
+
+      :param path: The path where you want to save the policy.
+      :type path: str
+      :param checkpoint_name: The name you want to use for the checkpoint.
+      :type checkpoint_name: str
+
+      :raises Exception: Raises an exception if something goes wrong during saving.
+
+      .. note::
+          This function saved the model weights using the
+          :meth:`tf.keras.Model.save_weights` method (see
+          :tf2:`keras/Model#save_weights`). The model should therefore be restored
+          using the :meth:`tf.keras.Model.load_weights` method (see
+          :tf2:`keras/Model#load_weights`). If
+          you want to deploy the full model use the :meth:`export` method instead.
+
+
+
+   .. py:method:: restore(path, restore_lagrance_multipliers=False)
+
+      Restores a already trained policy. Used for transfer learning.
+
+      :param path: The path where the model :attr:`state_dict` of the policy is
+                   found.
+      :type path: str
+      :param restore_lagrance_multipliers: Whether you want to restore
+                                           the Lagrance multipliers. By fault ``False``.
+      :type restore_lagrance_multipliers: bool, optional
+
+      :raises Exception: Raises an exception if something goes wrong during loading.
+
+
+
+   .. py:method:: export(path)
+
+      Can be used to export the model in the ``SavedModel`` format such that it can
+      be deployed to hardware.
+
+      :param path: The path where you want to export the policy too.
+      :type path: str
+
+
+
+   .. py:method:: build()
+
+      Function that can be used to build the full model structure such that it can
+      be visualized using the `tf.keras.Model.summary()`. This is done by calling the
+      build method of the parent class with the correct input shape.
+
+      .. note::
+          This is done by calling the build methods of the submodules.
+
+
+
+   .. py:method:: summary()
+
+      Small wrapper around the :meth:`tf.keras.Model.summary()` method used to
+      apply a custom format to the model summary.
+
+
+
+   .. py:method:: full_summary()
+
+      Prints a full summary of all the layers of the TensorFlow model
+
+
+
+   .. py:method:: set_learning_rates(lr_a=None, lr_c=None, lr_alpha=None)
+
+      Adjusts the learning rates of the optimizers.
+
+      :param lr_a: The learning rate of the actor optimizer. Defaults
+                   to ``None``.
+      :type lr_a: float, optional
+      :param lr_c: The learning rate of the (soft) Critic. Defaults
+                   to ``None``.
+      :type lr_c: float, optional
+      :param lr_alpha: The learning rate of the temperature optimizer.
+                       Defaults to ``None``.
+      :type lr_alpha: float, optional
+
+
+
+   .. py:method:: _init_targets()
+
+      Updates the target network weights to the main network weights.
+
+
+
+   .. py:method:: _update_targets()
+
+      Updates the target networks based on a Exponential moving average
+      (Polyak averaging).
+
+
+
+   .. py:property:: alpha
+      Property used to clip :attr:`alpha` to be equal or bigger than ``0.0`` to
+      prevent it from becoming nan when :attr:`log_alpha` becomes ``-inf``. For
+      :attr:`alpha` no upper bound is used.
+
+
+   .. py:property:: target_entropy
+      The target entropy used while learning the entropy temperature
+      :attr:`alpha`.
+
+
+   .. py:property:: device
+      ``cpu``, ``gpu``, ``gpu:0``,
+      ``gpu:1``, etc.).
+
+      :type: The device the networks are placed on (options
+
+

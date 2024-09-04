@@ -1,0 +1,179 @@
+stable_learning_control.algos.tf2.policies.actors.squashed_gaussian_actor
+=========================================================================
+
+.. py:module:: stable_learning_control.algos.tf2.policies.actors.squashed_gaussian_actor
+
+.. autoapi-nested-parse::
+
+   Squashed Gaussian Actor policy.
+
+   This module contains a TensorFlow 2.x implementation of the Squashed Gaussian Actor
+   policy of `Haarnoja et al. 2019 <https://arxiv.org/abs/1812.05905>`_.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.algos.tf2.policies.actors.squashed_gaussian_actor.SquashedGaussianActor
+
+
+Module Contents
+---------------
+
+.. py:class:: SquashedGaussianActor(obs_dim, act_dim, hidden_sizes, activation=nn.relu, output_activation=nn.relu, act_limits=None, log_std_min=-20, log_std_max=2.0, name='gaussian_actor', **kwargs)
+
+   Bases: :py:obj:`tensorflow.keras.Model`
+
+
+   The squashed gaussian actor network.
+
+   .. attribute:: net
+
+      The input/hidden layers of the
+      network.
+
+      :type: tf.keras.Sequential
+
+   .. attribute:: mu
+
+      The output layer which returns the mean of
+      the actions.
+
+      :type: tf.keras.Sequential
+
+   .. attribute:: log_std_layer
+
+      The output layer which returns
+      the log standard deviation of the actions.
+
+      :type: tf.keras.Sequential
+
+   .. attribute:: act_limits
+
+      The ``high`` and ``low`` action bounds of the
+      environment. Used for rescaling the actions that comes out of network
+      from ``(-1, 1)`` to ``(low, high)``. No scaling will be applied if left
+      empty.
+
+      :type: dict, optional
+
+   Initialise the SquashedGaussianActor object.
+
+   :param obs_dim: Dimension of the observation space.
+   :type obs_dim: int
+   :param act_dim: Dimension of the action space.
+   :type act_dim: int
+   :param hidden_sizes: Sizes of the hidden layers.
+   :type hidden_sizes: list
+   :param activation: The activation function. Defaults
+                      to :obj:`tf.nn.relu`.
+   :type activation: :obj:`tf.keras.activations`
+   :param output_activation: The activation
+                             function used for the output layers. Defaults to :obj:`tf.nn.relu`.
+   :type output_activation: :obj:`tf.keras.activations`, optional
+   :param act_limits: The ``high`` and ``low`` action bounds of the
+                      environment. Used for rescaling the actions that comes out of network
+                      from ``(-1, 1)`` to ``(low, high)``.
+   :type act_limits: dict
+   :param log_std_min: The minimum log standard deviation. Defaults
+                       to ``-20``.
+   :type log_std_min: int, optional
+   :param log_std_max: The maximum log standard deviation. Defaults
+                       to ``2.0``.
+   :type log_std_max: float, optional
+   :param name: The Lyapunov critic name. Defaults to
+                ``gaussian_actor``.
+   :type name: str, optional
+   :param \*\*kwargs: All kwargs to pass to the :mod:`tf.keras.Model`. Can be used
+                      to add additional inputs or outputs.
+
+
+   .. py:attribute:: act_limits
+
+
+   .. py:attribute:: _log_std_min
+
+
+   .. py:attribute:: _log_std_max
+
+
+   .. py:attribute:: _squash_bijector
+
+
+   .. py:attribute:: _normal_distribution
+
+
+   .. py:attribute:: net
+
+
+   .. py:attribute:: mu_layer
+
+
+   .. py:attribute:: log_std_layer
+
+
+   .. py:method:: call(obs, deterministic=False, with_logprob=True)
+
+      Perform forward pass through the network.
+
+      :param obs: The tensor of observations.
+      :type obs: numpy.ndarray
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+      :param with_logprob: Whether we want to return the log probability
+                           of an action. Defaults to ``True``.
+      :type with_logprob: bool, optional
+
+      :returns:
+
+                tuple containing:
+
+                    - pi_action (:obj:`tensorflow.Tensor`): The actions given by the policy.
+                    - logp_pi (:obj:`tensorflow.Tensor`): The log probabilities of each of these actions.
+      :rtype: (tuple)
+
+
+
+   .. py:method:: act(obs, deterministic=False)
+
+      Returns the action from the current state given the current policy.
+
+      :param obs: The current observation (state).
+      :type obs: numpy.ndarray
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The action from the current state given the current
+                policy.
+      :rtype: numpy.ndarray
+
+
+
+   .. py:method:: get_action(obs, deterministic=False)
+
+      Simple wrapper for making the :meth:`act` method available under the
+      'get_action' alias.
+
+      :param obs: The current observation (state).
+      :type obs: numpy.ndarray
+      :param deterministic: Whether we want to use a deterministic
+                            policy (used at test time). When true the mean action of the stochastic
+                            policy is returned. If ``False`` the action is sampled from the
+                            stochastic policy. Defaults to ``False``.
+      :type deterministic: bool, optional
+
+      :returns: The action from the current state given the current
+                policy.
+      :rtype: numpy.ndarray
+
+
+

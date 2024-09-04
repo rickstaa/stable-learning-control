@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lyapunov Actor-Twin Critic (LATC) &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Soft Actor-Critic" href="sac.html" />
+    <link rel="prev" title="Lyapunov Actor-Critic (LAC)" href="lac.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker.html">Use with Docker</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../algorithms.html">Available Agents</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../algorithms.html#stable-agents">Stable Agents</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="lac.html">Lyapunov Actor-Critic (LAC)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Lyapunov Actor-Twin Critic (LATC)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../algorithms.html#unstable-agents">Unstable Agents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../algorithms.html">Available Agents</a></li>
+      <li class="breadcrumb-item active">Lyapunov Actor-Twin Critic (LATC)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/rickstaa/stable-learning-control/blob/main/docs/source/usage/algorithms/latc.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="lyapunov-actor-twin-critic-latc">
+<span id="latc"></span><h1><a class="toc-backref" href="#id1" role="doc-backlink">Lyapunov Actor-Twin Critic (LATC)</a><a class="headerlink" href="#lyapunov-actor-twin-critic-latc" title="Permalink to this heading"></a></h1>
+<nav class="contents" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#lyapunov-actor-twin-critic-latc" id="id1">Lyapunov Actor-Twin Critic (LATC)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#background" id="id2">Background</a></p>
+<ul>
+<li><p><a class="reference internal" href="#differences-with-the-lac-algorithm" id="id3">Differences with the LAC algorithm</a></p></li>
+<li><p><a class="reference internal" href="#quick-fact" id="id4">Quick Fact</a></p></li>
+<li><p><a class="reference internal" href="#further-reading" id="id5">Further Reading</a></p></li>
+<li><p><a class="reference internal" href="#pseudocode" id="id6">Pseudocode</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#implementation" id="id7">Implementation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#algorithm-pytorch-version" id="id8">Algorithm: PyTorch Version</a></p></li>
+<li><p><a class="reference internal" href="#saved-model-contents-pytorch-version" id="id9">Saved Model Contents: PyTorch Version</a></p></li>
+<li><p><a class="reference internal" href="#algorithm-tensorflow-version" id="id10">Algorithm: TensorFlow Version</a></p></li>
+<li><p><a class="reference internal" href="#saved-model-contents-tensorflow-version" id="id11">Saved Model Contents: TensorFlow Version</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>This document assumes you are familiar with the <a class="reference internal" href="lac.html#lac"><span class="std std-ref">Lyapunov Actor-Critic (LAC)</span></a> algorithm.
+It is not a comprehensive guide but mainly depicts the difference between the
+<a class="reference internal" href="#latc"><span class="std std-ref">Lyapunov Actor-Twin Critic</span></a> and <a class="reference internal" href="lac.html#lac"><span class="std std-ref">Lyapunov Actor-Critic (LAC)</span></a> algorithms. It
+is therefore meant to complement the <a class="reference internal" href="lac.html#lac"><span class="std std-ref">LAC</span></a> algorithm documentation.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Like the LAC algorithm, this LATC algorithm only guarantees stability in <strong>mean cost</strong> when trained on
+environments with a positive definite cost function (i.e. environments in which the cost is minimised).
+The <code class="docutils literal notranslate"><span class="pre">opt_type</span></code> argument can be set to <code class="docutils literal notranslate"><span class="pre">maximise</span></code> when training in environments where the reward is
+maximised. However, because the <a class="reference external" href="https://www.cds.caltech.edu/~murray/courses/cds101/fa02/caltech/mls93-lyap.pdf">Lyapunov’s stability conditions</a> are not satisfied, the LAC algorithm
+no longer guarantees stability in <strong>mean</strong> cost.</p>
+</div>
+<section id="background">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Background</a><a class="headerlink" href="#background" title="Permalink to this heading"></a></h2>
+<p>The Laypunov Actor-Twin Critic (LATC) algorithm is a successor to the <a class="reference internal" href="lac.html#lac"><span class="std std-ref">LAC</span></a> algorithm. In contrast
+to its predecessor, the LATC algorithm employs a dual-critic approach, aligning it more closely with the
+<a class="reference internal" href="sac.html#sac"><span class="std std-ref">SAC</span></a> algorithm upon which LAC was built initially. In the SAC framework, these dual critics
+served to counteract overestimation bias by selecting the minimum value from both critics for the actor updates.
+In our case, we employ the maximum to minimise the cost, thus addressing potential underestimation bias in
+Lyapunov values. For a deeper exploration of this concept, refer to the research paper by <a class="reference external" href="https://arxiv.org/abs/1801.01290">Haarnoja et. al 2019</a>.
+For more information on the inner workings of the LAC algorithm, refer to the <a class="reference internal" href="lac.html#lac"><span class="std std-ref">LAC</span></a> algorithm
+documentation. Below only the differences between the LAC and LATC algorithms are discussed.</p>
+<section id="differences-with-the-lac-algorithm">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Differences with the LAC algorithm</a><a class="headerlink" href="#differences-with-the-lac-algorithm" title="Permalink to this heading"></a></h3>
+<p>Like its direct predecessor, the LATC algorithm also uses <strong>entropy regularisation</strong> to increase exploration and a
+Gaussian actor and value-critic to develop the best action. The main difference lies in the fact that the
+<a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a>
+contains two critic instead of one. These critics are identical to the critic used in the <a class="reference internal" href="lac.html#lac"><span class="std std-ref">LAC</span></a>
+algorithm but trained separately. Following their maximum is used to update the actor. Because of this the policy issues
+optimised according to</p>
+<div class="math" id="equation-latc-policy-update">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-latc-policy-update" title="Permalink to this equation"></a></span><img src="../../_images/math/4a21aa58742656005fa7c29e41e7f1def849dc80.svg" alt="\min_{\theta} \underE{s \sim \mathcal{D} \\ \xi \sim \mathcal{N}}{\lambda(\bm{L_{c_{max}}(s^{'}, f_{\theta}(\epsilon, s^{'})})-L_{c}(s, a) + \alpha_{3}c) + \mathcal{\alpha}\log \pi_{\theta}(f_{\theta}(\epsilon, s)|s) + \mathcal{H}_{t}}"/></p>
+</div><p>Where <img class="math" src="../../_images/math/bbe665eef48c8e13929c83d7700527ae3ea5da7b.svg" alt="L_{c_{max}}"/> now represents the maximum of the two critics. The rest of the algorithm remains the same.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Because the LATC and LAC algorithms are so similar, the <a class="reference internal" href="#stable_learning_control.algos.pytorch.latc.latc" title="stable_learning_control.algos.pytorch.latc.latc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">latc()</span></code></a> is
+implemented as a wrapper around the <a class="reference internal" href="lac.html#stable_learning_control.algos.pytorch.lac.lac" title="stable_learning_control.algos.pytorch.lac.lac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lac()</span></code></a> function. This wrapper
+only changes the actor-critic architecture to <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a>.
+To prevent code duplication, the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/policies/lyapunov_actor_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">stable_learning_control.algos.pytorch.policies.lyapunov_actor_critic.LyapunovActorCritic</span></code></a> class
+was modified to use the maximum of the two critics when the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a>
+class is set as the actor-critic architecture.</p>
+</div>
+</section>
+<section id="quick-fact">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Quick Fact</a><a class="headerlink" href="#quick-fact" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>LATC is an off-policy algorithm.</p></li>
+<li><p>It is guaranteed to be stable in mean cost.</p></li>
+<li><p>The version of LATC implemented here can only be used for environments with continuous action spaces.</p></li>
+<li><p>An alternate version of LATC, which slightly changes the policy update rule, can be implemented to handle discrete action spaces.</p></li>
+<li><p>The SLC implementation of LATC does not support parallelisation.</p></li>
+</ul>
+</section>
+<section id="further-reading">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Further Reading</a><a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h3>
+<p>For more information on the LATC algorithm, please check out the <a class="reference internal" href="lac.html#lac"><span class="std std-ref">LAC</span></a> documentation and the original paper of <a class="reference external" href="https://arxiv.org/abs/2004.14288">Han et al., 2020</a>.</p>
+</section>
+<section id="pseudocode">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Pseudocode</a><a class="headerlink" href="#pseudocode" title="Permalink to this heading"></a></h3>
+<div class="math">
+<p><img src="../../_images/math/7e6272f16a6aa90307106c82ccaa2a08f09e8c7c.svg" alt="\begin{algorithm}[H]
+    \caption{Lyapunov-based Actor-Twin Critic (LATC)}
+    \label{alg1}
+\begin{algorithmic}[1]
+    \REQUIRE Maximum episode length $N$ and maximum update steps $M$
+    \REPEAT
+        \STATE Samples $s_{0}$ according to $\rho$
+        \FOR{$t=1$ to $N$}
+            \STATE Sample $a$ from $\pi(a|s)$ and step forward
+            \STATE Observe $s'$, $c$ and store ($s$, $a$, $c$, $s'$) in $\mathcal{D}$
+        \ENDFOR
+        \FOR{$i=1$ to $M$}
+            \STATE Sample mini-batches of transitions from $D$ and update $L_{c}$, $L2_{c}$, $\pi$, Lagrance multipliers with eq. (7) and (14) of Han et al., 2020 and the new actor update rule described above
+        \ENDFOR
+    \UNTIL{eq. 11 of Han et al., 2020 is satisfied}
+\end{algorithmic}
+\end{algorithm}"/></p>
+</div></section>
+</section>
+<section id="implementation">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Implementation</a><a class="headerlink" href="#implementation" title="Permalink to this heading"></a></h2>
+<div class="admonition-you-should-know admonition">
+<p class="admonition-title">You Should Know</p>
+<p>In what follows, we give documentation for the PyTorch and TensorFlow implementations of LATC in SLC.
+They have nearly identical function calls and docstrings, except for details relating to model construction.
+However, we include both full docstrings for completeness.</p>
+</div>
+<section id="algorithm-pytorch-version">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Algorithm: PyTorch Version</a><a class="headerlink" href="#algorithm-pytorch-version" title="Permalink to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.pytorch.latc.latc">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.pytorch.latc.</span></span><span class="sig-name descname"><span class="pre">latc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_critic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/stable_learning_control/algos/pytorch/latc/latc.html#latc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.pytorch.latc.latc" title="Permalink to this definition"></a></dt>
+<dd><p>Trains the LATC algorithm in a given environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_fn</strong> – A function which creates a copy of the environment. The environment
+must satisfy the gymnasium API.</p></li>
+<li><p><strong>actor_critic</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><em>torch.nn.Module</em></a><em>, </em><em>optional</em>) – <p>The constructor method for a
+Torch Module with an <code class="docutils literal notranslate"><span class="pre">act</span></code> method, a <code class="docutils literal notranslate"><span class="pre">pi</span></code> module and several
+<code class="docutils literal notranslate"><span class="pre">Q</span></code> or <code class="docutils literal notranslate"><span class="pre">L</span></code> modules. The <code class="docutils literal notranslate"><span class="pre">act</span></code> method and <code class="docutils literal notranslate"><span class="pre">pi</span></code> module should
+accept batches of observations as inputs, and the <code class="docutils literal notranslate"><span class="pre">Q*</span></code> and <code class="docutils literal notranslate"><span class="pre">L</span></code>
+modules should accept a batch of observations and a batch of actions as
+inputs. When called, these modules should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>Output Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">act</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Numpy array of actions for each</div>
+<div class="line">observation.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Q*/L</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing one current estimate</div>
+<div class="line">of <code class="docutils literal notranslate"><span class="pre">Q*/L</span></code> for the provided</div>
+<div class="line">observations and actions. (Critical:</div>
+<div class="line">make sure to flatten this!)</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">pi</span></code> should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing actions from policy</div>
+<div class="line">given observations.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">logp_pi</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing log probabilities of</div>
+<div class="line">actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>. Importantly:</div>
+<div class="line">gradients should be able to flow back</div>
+<div class="line">into <code class="docutils literal notranslate"><span class="pre">a</span></code>.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Defaults to
+<a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a></p>
+</p></li>
+<li><p><strong>*args</strong> – The positional arguments to pass to the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/lac/lac/index.html#stable_learning_control.algos.pytorch.lac.lac.lac" title="stable_learning_control.algos.pytorch.lac.lac.lac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lac()</span></code></a> method.</p></li>
+<li><p><strong>**kwargs</strong> – The keyword arguments to pass to the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/lac/lac/index.html#stable_learning_control.algos.pytorch.lac.lac.lac" title="stable_learning_control.algos.pytorch.lac.lac.lac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lac()</span></code></a> method.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Wraps the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/lac/lac/index.html#stable_learning_control.algos.pytorch.lac.lac.lac" title="stable_learning_control.algos.pytorch.lac.lac.lac"><code class="xref py py-func docutils literal notranslate"><span class="pre">lac()</span></code></a> function so
+that the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.pytorch.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a>
+architecture is used as the actor critic.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="saved-model-contents-pytorch-version">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Saved Model Contents: PyTorch Version</a><a class="headerlink" href="#saved-model-contents-pytorch-version" title="Permalink to this heading"></a></h3>
+<p>The PyTorch version of the LATC algorithm is implemented by subclassing the <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></a> class. Because of this and because
+the LATC algorithm is implemented as a wrapper around the LAC algorithm; the model weights are saved using the <code class="docutils literal notranslate"><span class="pre">model_state</span></code> dictionary ( <a class="reference internal" href="../../autoapi/stable_learning_control/algos/pytorch/lac/index.html#stable_learning_control.algos.pytorch.lac.LAC.state_dict" title="stable_learning_control.algos.pytorch.lac.LAC.state_dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code></a>).
+These saved weights can be found in the <code class="docutils literal notranslate"><span class="pre">torch_save/model_state.pt</span></code> file. For an example of how to load a model using
+this file, see <a class="reference internal" href="../saving_and_loading.html#saving-and-loading"><span class="std std-ref">Experiment Outputs</span></a> or the <a class="reference external" href="https://pytorch.org/tutorials/beginner/saving_loading_models.html">PyTorch documentation</a>.</p>
+</section>
+<section id="algorithm-tensorflow-version">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Algorithm: TensorFlow Version</a><a class="headerlink" href="#algorithm-tensorflow-version" title="Permalink to this heading"></a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The TensorFlow version is still experimental. It is not guaranteed to work, and it is not
+guaranteed to be up-to-date with the PyTorch version.</p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="stable_learning_control.algos.tf2.latc.latc">
+<span class="sig-prename descclassname"><span class="pre">stable_learning_control.algos.tf2.latc.</span></span><span class="sig-name descname"><span class="pre">latc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_critic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/stable_learning_control/algos/tf2/latc/latc.html#latc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stable_learning_control.algos.tf2.latc.latc" title="Permalink to this definition"></a></dt>
+<dd><p>Trains the LATC algorithm in a given environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env_fn</strong> – A function which creates a copy of the environment. The environment
+must satisfy the gymnasium API.</p></li>
+<li><p><strong>actor_critic</strong> (<a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/Module" title="(in TensorFlow v2.8)"><em>tf.Module</em></a><em>, </em><em>optional</em>) – <p>The constructor method for a
+TensorFlow Module with an <code class="docutils literal notranslate"><span class="pre">act</span></code> method, a <code class="docutils literal notranslate"><span class="pre">pi</span></code> module and several <code class="docutils literal notranslate"><span class="pre">Q</span></code>
+or <code class="docutils literal notranslate"><span class="pre">L</span></code> modules. The <code class="docutils literal notranslate"><span class="pre">act</span></code> method and <code class="docutils literal notranslate"><span class="pre">pi</span></code> module should accept batches
+of observations as inputs, and the <code class="docutils literal notranslate"><span class="pre">Q*</span></code> and
+<code class="docutils literal notranslate"><span class="pre">L</span></code> modules should accept a batch of observations and a batch of actions
+as inputs. When called, these modules should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Call</p></th>
+<th class="head"><p>Output Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">act</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Numpy array of actions for each</div>
+<div class="line">observation.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Q*/L</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing one current estimate</div>
+<div class="line">of <code class="docutils literal notranslate"><span class="pre">Q*/L</span></code> for the provided</div>
+<div class="line">observations and actions. (Critical:</div>
+<div class="line">make sure to flatten this!)</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">pi</span></code> should return:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">a</span></code></p></td>
+<td><p>(batch, act_dim)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing actions from policy</div>
+<div class="line">given observations.</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">logp_pi</span></code></p></td>
+<td><p>(batch,)</p></td>
+<td><div class="line-block">
+<div class="line">Tensor containing log probabilities of</div>
+<div class="line">actions in <code class="docutils literal notranslate"><span class="pre">a</span></code>. Importantly:</div>
+<div class="line">gradients should be able to flow back</div>
+<div class="line">into <code class="docutils literal notranslate"><span class="pre">a</span></code>.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Defaults to
+<a class="reference internal" href="../../autoapi/stable_learning_control/algos/tf2/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a></p>
+</p></li>
+<li><p><strong>*args</strong> – The positional arguments to pass to the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/tf2/lac/lac/index.html#stable_learning_control.algos.tf2.lac.lac.lac" title="stable_learning_control.algos.tf2.lac.lac.lac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lac()</span></code></a> method.</p></li>
+<li><p><strong>**kwargs</strong> – The keyword arguments to pass to the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/tf2/lac/lac/index.html#stable_learning_control.algos.tf2.lac.lac.lac" title="stable_learning_control.algos.tf2.lac.lac.lac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lac()</span></code></a> method.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Wraps the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/tf2/lac/lac/index.html#stable_learning_control.algos.tf2.lac.lac.lac" title="stable_learning_control.algos.tf2.lac.lac.lac"><code class="xref py py-func docutils literal notranslate"><span class="pre">lac()</span></code></a> function so
+that the <a class="reference internal" href="../../autoapi/stable_learning_control/algos/tf2/policies/lyapunov_actor_twin_critic/index.html#stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic" title="stable_learning_control.algos.tf2.policies.lyapunov_actor_twin_critic.LyapunovActorTwinCritic"><code class="xref py py-class docutils literal notranslate"><span class="pre">LyapunovActorTwinCritic</span></code></a>
+architecture is used as the actor critic.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="saved-model-contents-tensorflow-version">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Saved Model Contents: TensorFlow Version</a><a class="headerlink" href="#saved-model-contents-tensorflow-version" title="Permalink to this heading"></a></h3>
+<p>The TensorFlow version of the LATC algorithm is implemented by subclassing the <code class="xref py py-class docutils literal notranslate"><span class="pre">tf.nn.Model</span></code> class. As a result, both the
+full model and the current model weights are saved. The complete model can be found in the <code class="docutils literal notranslate"><span class="pre">saved_model.pb</span></code> file, while the current
+weights checkpoints are found in the <code class="docutils literal notranslate"><span class="pre">tf_safe/weights_checkpoint*</span></code> file. For an example of using these two methods, see <a class="reference internal" href="../saving_and_loading.html#saving-and-loading"><span class="std std-ref">Experiment Outputs</span></a>
+or the <a class="reference external" href="https://www.tensorflow.org/tutorials/keras/save_and_load">TensorFlow documentation</a>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lac.html" class="btn btn-neutral float-left" title="Lyapunov Actor-Critic (LAC)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sac.html" class="btn btn-neutral float-right" title="Soft Actor-Critic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

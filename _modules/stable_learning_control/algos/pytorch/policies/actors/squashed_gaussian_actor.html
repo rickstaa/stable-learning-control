@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>stable_learning_control.algos.pytorch.policies.actors.squashed_gaussian_actor &mdash; stable-learning-control 6.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=eafc0fe6" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/modify.css?v=519ed47b" />
+
+  
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js?v=9497d378"></script>
+        <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../../index.html">
+            
+              <img src="../../../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                6.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/docker.html">Use with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/algorithms.html">Available Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/running.html">Running Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/hyperparameter_tuning.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/saving_and_loading.html">Experiment Outputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/plotting.html">Plotting Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/eval_robustness.html">Evaluating Robustness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Utilities</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/loggers.html">Loggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/mpi.html">MPI Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/run_utils.html">Run Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/plotter.html">Plotter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../utils/testers.html">Policy testers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/contributing.html">Contribute to stable-learning-control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/doc_dev.html">Build the documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../dev/license.html">License</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../autoapi/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Etc.</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../etc/acknowledgements.html">Acknowledgements</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">stable-learning-control</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">stable_learning_control.algos.pytorch.policies.actors.squashed_gaussian_actor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for stable_learning_control.algos.pytorch.policies.actors.squashed_gaussian_actor</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Squashed Gaussian Actor policy.</span>
+
+<span class="sd">This module contains a Pytorch implementation of the Squashed Gaussian Actor policy of</span>
+<span class="sd">`Haarnoja et al. 2019 &lt;https://arxiv.org/abs/1812.05905&gt;`_.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">torch.distributions.normal</span> <span class="kn">import</span> <span class="n">Normal</span>
+
+<span class="kn">from</span> <span class="nn">stable_learning_control.algos.pytorch.common.helpers</span> <span class="kn">import</span> <span class="n">mlp</span><span class="p">,</span> <span class="n">rescale</span>
+<span class="kn">from</span> <span class="nn">stable_learning_control.utils.log_utils.helpers</span> <span class="kn">import</span> <span class="n">log_to_std_out</span>
+
+
+<div class="viewcode-block" id="SquashedGaussianActor"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor">[docs]</a><span class="k">class</span> <span class="nc">SquashedGaussianActor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The squashed gaussian actor network.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        net (torch.nn.Sequential): The input/hidden layers of the</span>
+<span class="sd">            network.</span>
+<span class="sd">        mu (torch.nn.Linear): The output layer which returns the mean of</span>
+<span class="sd">            the actions.</span>
+<span class="sd">        log_std_layer (torch.nn.Linear): The output layer which returns</span>
+<span class="sd">            the log standard deviation of the actions.</span>
+<span class="sd">        act_limits (dict, optional): The ``high`` and ``low`` action bounds of the</span>
+<span class="sd">            environment. Used for rescaling the actions that comes out of network</span>
+<span class="sd">            from ``(-1, 1)`` to ``(low, high)``. No scaling will be applied if left</span>
+<span class="sd">            empty.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">obs_dim</span><span class="p">,</span>
+        <span class="n">act_dim</span><span class="p">,</span>
+        <span class="n">hidden_sizes</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span>
+        <span class="n">output_activation</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">,</span>
+        <span class="n">act_limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_std_min</span><span class="o">=-</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">log_std_max</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise the SquashedGaussianActor object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs_dim (int): Dimension of the observation space.</span>
+<span class="sd">            act_dim (int): Dimension of the action space.</span>
+<span class="sd">            hidden_sizes (list): Sizes of the hidden layers.</span>
+<span class="sd">            activation (:obj:`torch.nn.modules.activation`): The activation function.</span>
+<span class="sd">                Defaults to :obj:`torch.nn.ReLU`.</span>
+<span class="sd">            output_activation (:obj:`torch.nn.modules.activation`, optional): The</span>
+<span class="sd">                activation function used for the output layers. Defaults to</span>
+<span class="sd">                :obj:`torch.nn.ReLU`.</span>
+<span class="sd">            act_limits (dict): The ``high`` and ``low`` action bounds of the</span>
+<span class="sd">                environment. Used for rescaling the actions that comes out of network</span>
+<span class="sd">                from ``(-1, 1)`` to ``(low, high)``.</span>
+<span class="sd">            log_std_min (int, optional): The minimum log standard deviation. Defaults</span>
+<span class="sd">                to ``-20``.</span>
+<span class="sd">            log_std_max (float, optional): The maximum log standard deviation. Defaults</span>
+<span class="sd">                to ``2.0``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="SquashedGaussianActor.__device_warning_logged"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.__device_warning_logged">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">__device_warning_logged</span> <span class="o">=</span> <span class="kc">False</span></div>
+<div class="viewcode-block" id="SquashedGaussianActor.act_limits"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.act_limits">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">act_limits</span> <span class="o">=</span> <span class="n">act_limits</span></div>
+<div class="viewcode-block" id="SquashedGaussianActor._log_std_min"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor._log_std_min">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_log_std_min</span> <span class="o">=</span> <span class="n">log_std_min</span></div>
+<div class="viewcode-block" id="SquashedGaussianActor._log_std_max"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor._log_std_max">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_log_std_max</span> <span class="o">=</span> <span class="n">log_std_max</span></div>
+
+<div class="viewcode-block" id="SquashedGaussianActor.net"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.net">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">mlp</span><span class="p">([</span><span class="n">obs_dim</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">hidden_sizes</span><span class="p">),</span> <span class="n">activation</span><span class="p">,</span> <span class="n">output_activation</span><span class="p">)</span></div>
+<div class="viewcode-block" id="SquashedGaussianActor.mu_layer"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.mu_layer">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">mu_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_sizes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">act_dim</span><span class="p">)</span></div>
+<div class="viewcode-block" id="SquashedGaussianActor.log_std_layer"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/actors/squashed_gaussian_actor/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.log_std_layer">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">log_std_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_sizes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">act_dim</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SquashedGaussianActor.forward"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">with_logprob</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform forward pass through the network.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs (torch.Tensor): The tensor of observations.</span>
+<span class="sd">            deterministic (bool, optional): Whether we want to use a deterministic</span>
+<span class="sd">                policy (used at test time). When true the mean action of the stochastic</span>
+<span class="sd">                policy is returned. If false the action is sampled from the stochastic</span>
+<span class="sd">                policy. Defaults to ``False``.</span>
+<span class="sd">            with_logprob (bool, optional): Whether we want to return the log probability</span>
+<span class="sd">                of an action. Defaults to ``True``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): tuple containing:</span>
+
+<span class="sd">                - pi_action (:obj:`torch.Tensor`): The actions given by the policy.</span>
+<span class="sd">                - logp_pi (:obj:`torch.Tensor`): The log probabilities of each of these actions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+        <span class="c1"># Make sure the observations are on the right device.</span>
+        <span class="k">if</span> <span class="n">obs</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__device_warning_logged</span><span class="p">:</span>
+                <span class="n">device_warn_msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;The observations were automatically moved from &quot;</span>
+                    <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; to &#39;</span><span class="si">{}</span><span class="s2">&#39; during the &#39;</span><span class="si">{}</span><span class="s2">&#39; forward pass.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">obs</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+                    <span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">&quot;Please place your observations on the &#39;</span><span class="si">{}</span><span class="s2">&#39; &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span>
+                    <span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">&quot;before calling the &#39;</span><span class="si">{}</span><span class="s2">&#39; as converting them &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+                    <span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">&quot;during the forward pass slows down the algorithm.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">log_to_std_out</span><span class="p">(</span><span class="n">device_warn_msg</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__device_warning_logged</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Calculate mean action and standard deviation.</span>
+        <span class="n">net_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_layer</span><span class="p">(</span><span class="n">net_out</span><span class="p">)</span>
+        <span class="n">log_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_std_layer</span><span class="p">(</span><span class="n">net_out</span><span class="p">)</span>
+        <span class="n">log_std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">log_std</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_std_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_std_max</span><span class="p">)</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_std</span><span class="p">)</span>
+
+        <span class="c1"># Pre-squash distribution and sample</span>
+        <span class="n">pi_distribution</span> <span class="o">=</span> <span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">deterministic</span><span class="p">:</span>
+            <span class="c1"># Only used for evaluating policy at test time.</span>
+            <span class="n">pi_action</span> <span class="o">=</span> <span class="n">mu</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pi_action</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">pi_distribution</span><span class="o">.</span><span class="n">rsample</span><span class="p">()</span>
+            <span class="p">)</span>  <span class="c1"># Sample while using the parameterization trick.</span>
+
+        <span class="c1"># Compute logprob from Gaussian, and then apply correction for Tanh squashing.</span>
+        <span class="k">if</span> <span class="n">with_logprob</span><span class="p">:</span>
+            <span class="c1"># NOTE: The correction formula is a little bit magic. To get an</span>
+            <span class="c1"># understanding of where it comes from, check out the original SAC paper</span>
+            <span class="c1"># (arXiv 1801.01290) and look in appendix C. This is a more</span>
+            <span class="c1"># numerically-stable equivalent to Eq 21. Try deriving it yourself as a</span>
+            <span class="c1"># (very difficult) exercise. :)</span>
+            <span class="n">sum_axis</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">obs</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">logp_pi</span> <span class="o">=</span> <span class="n">pi_distribution</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">pi_action</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">logp_pi</span> <span class="o">-=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">pi_action</span> <span class="o">-</span> <span class="n">F</span><span class="o">.</span><span class="n">softplus</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi_action</span><span class="p">)))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">axis</span><span class="o">=</span><span class="n">sum_axis</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logp_pi</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Calculate scaled action and return the action and its log probability.</span>
+        <span class="n">pi_action</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">pi_action</span><span class="p">)</span>  <span class="c1"># Squash gaussian to be between -1 and 1</span>
+
+        <span class="c1"># Rescale the normalized actions such that they are in range of the environment.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">act_limits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pi_action</span> <span class="o">=</span> <span class="n">rescale</span><span class="p">(</span>
+                <span class="n">pi_action</span><span class="p">,</span>
+                <span class="n">min_bound</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">act_limits</span><span class="p">[</span><span class="s2">&quot;low&quot;</span><span class="p">],</span>
+                <span class="n">max_bound</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">act_limits</span><span class="p">[</span><span class="s2">&quot;high&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pi_action</span><span class="p">,</span> <span class="n">logp_pi</span></div>
+
+<div class="viewcode-block" id="SquashedGaussianActor.act"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.act">[docs]</a>    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the action from the current state given the current policy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs (torch.Tensor): The current observation (state).</span>
+<span class="sd">            deterministic (bool, optional): Whether we want to use a deterministic</span>
+<span class="sd">                policy (used at test time). When true the mean action of the stochastic</span>
+<span class="sd">                policy is returned. If ``False`` the action is sampled from the</span>
+<span class="sd">                stochastic policy. Defaults to ``False``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: The action from the current state given the current</span>
+<span class="sd">            policy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SquashedGaussianActor.get_action"><a class="viewcode-back" href="../../../../../../autoapi/stable_learning_control/algos/pytorch/policies/index.html#stable_learning_control.algos.pytorch.policies.actors.SquashedGaussianActor.get_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simple warpper for making the :meth:`act` method available under the</span>
+<span class="sd">        &#39;get_action&#39; alias.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obs (torch.Tensor): The current observation (state).</span>
+<span class="sd">            deterministic (bool, optional): Whether we want to use a deterministic</span>
+<span class="sd">                policy (used at test time). When true the mean action of the stochastic</span>
+<span class="sd">                policy is returned. If ``False`` the action is sampled from the</span>
+<span class="sd">                stochastic policy. Defaults to ``False``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: The action from the current state given the current</span>
+<span class="sd">                policy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="n">deterministic</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Rick Staa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

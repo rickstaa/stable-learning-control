@@ -1,0 +1,137 @@
+stable_learning_control.disturbers.action_impulse_disturber
+===========================================================
+
+.. py:module:: stable_learning_control.disturbers.action_impulse_disturber
+
+.. autoapi-nested-parse::
+
+   Contains a small gymnasium wrapper that can be used to disturb the action of
+   a gymnasium environment with a impulse applied at a certain time step (i.e.
+   ``magnitude`` and ``time``).
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   stable_learning_control.disturbers.action_impulse_disturber.ActionImpulseDisturber
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   stable_learning_control.disturbers.action_impulse_disturber.get_time_attribute
+   stable_learning_control.disturbers.action_impulse_disturber.get_time_step_attribute
+
+
+Module Contents
+---------------
+
+.. py:function:: get_time_attribute(env)
+
+   Get the time attribute of the environment.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+
+   :returns: The time attribute of the environment.
+   :rtype: str
+
+
+.. py:function:: get_time_step_attribute(env)
+
+   Get the time step attribute of the environment.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+
+   :returns: The time step attribute of the environment.
+   :rtype: str
+
+
+.. py:class:: ActionImpulseDisturber(env, magnitude, time)
+
+   Bases: :py:obj:`gymnasium.ActionWrapper`
+
+
+   A gymnasium wrapper that can be used to disturb the action of a gymnasium
+   environment with a impulse applied at a certain time step.
+
+   .. attribute:: impulse_magnitude
+
+      The magnitude of the impulse.
+
+      :type: float
+
+   .. attribute:: impulse_time
+
+      The time (s) at which to apply the impulse.
+
+      :type: float
+
+   Initialise the ActionImpulseDisturber object.
+
+   :param env: The gymnasium environment.
+   :type env: gym.Env
+   :param magnitude: The impulse magnitude to apply.
+   :type magnitude: float
+   :param time: The time (s) at which to apply the impulse.
+   :type time: float
+
+
+   .. py:attribute:: time_warning
+      :value: False
+
+
+
+   .. py:attribute:: time_step_warning
+      :value: False
+
+
+
+   .. py:attribute:: _track_time
+      :value: False
+
+
+
+   .. py:attribute:: _time_step_attr
+      :value: None
+
+
+
+   .. py:attribute:: _time_attr
+      :value: None
+
+
+
+   .. py:attribute:: magnitude
+
+
+   .. py:attribute:: impulse_time
+
+
+   .. py:attribute:: max_episode_steps
+
+
+   .. py:method:: track_time()
+
+      Track the time of the environment.
+
+
+
+   .. py:method:: action(action)
+
+      Add a impulse to the action.
+
+      :param action: The action.
+      :type action: np.ndarray
+
+      :returns: The action with added impulse.
+      :rtype: np.ndarray
+
+
+
