@@ -55,7 +55,7 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 # NOTE: Ensure you have pip>=21.2 for the recursive dependencies to work.
 tf2 = [
-    "tensorflow>=2.12.0",
+    "tensorflow>=2.20.0",
     "tensorflow-probability>=0.20.1",
 ]
 tuning = [
